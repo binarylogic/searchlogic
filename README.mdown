@@ -78,9 +78,18 @@ Create a searcher for each model you want to search. For example if you want to 
 
     # script/console
     
+    # you can call any method upon instantiation
     @searcher = UserSearcher.new(:first_name_contains => "Ben")
+    
+    # you can set conditions on the target model
     @searcher.last_name_is = "Johnson"
+    @searcher.id_less_than = 100
     @searcher.created_at_after = Time.now
+    
+    # you can set conditions on ANY of the target model relationships
+    @searcher.some_relationship.id_greater_than = 2
+    
+    # then you can run the search and have it returns the results in different ways
     @searcher.search # => returns all users with the above conditions
     @searcher.all # => same as above
     @searcher.count # => returns the count of all users with the above conditions
