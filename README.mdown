@@ -1,7 +1,7 @@
 # Searchgasm
 
 ## What is searchgasm?
-Have you ever wanted to search the database in the same manner that you use your models? This plugin does exactly that. By no means is this meant to perform complex or large text based searches, it aims to make setting up search forms and searching the database as simple as setting up model forms and performing CRUD tasks. Here's the quick and dirty of what this search utility can do:
+Have you ever wanted to search the database in the same manner that you use your models? This plugin does exactly that. By no means is this meant to perform complex or large text based searches, it aims to make setting up search forms and searching the database as simple as setting up model forms and performing CRUD tasks.
 
 ## Quick example
 
