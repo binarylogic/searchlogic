@@ -43,9 +43,9 @@ I like to put all of my searcher files in app/searchers and in my environment.rb
     
     config.load_paths += %W( #{RAILS_ROOT}/app/searchers )
 
-Then setup your searcher configuration by adding a file in config/initializers called search_logic.rb. The following is the default configuration, only add this file if you plan on changing this, or you want to enforce the defaults:
+Then setup your searcher configuration by adding a file in config/initializers called searchgasm.rb. The following is the default configuration, only add this file if you plan on changing this, or you want to enforce the defaults:
 
-    # config/initializer/search_logic.rb
+    # config/initializer/searchgasm.rb
     
     Searcher::Base.configure do |config|
         config.per_page = 0 # defaults to 0
