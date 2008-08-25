@@ -1,0 +1,107 @@
+# Searchgasm
+
+## What is searchgasm?
+Have you ever wanted to search the database in the same manner that you use your models? This plugin does exactly that. By no means is this meant to perform complex or large text based searches, it aims to make setting up search forms and searching the database as simple as setting up model forms and performing CRUD tasks. Here's the quick and dirty of what this search utility can do:
+
+## Quick example
+
+  @searcher = UserSearcher.new
+  @searcher.first_name_contains = "Ben"
+  @searcher.created_at_after = Time.now
+  @searcher.per_page = 10 # set to 0 to return all
+  @searcher.page = 2
+  @searcher.order_by = "last_name"
+  @searcher.order_as = "ASC"
+  @searcher.search
+  => returns users matching ALL of the conditions above
+  
+## Getting started
+
+### 1. Install the plugin
+
+  script/plugin install git://github.com/Squeegy/fleximage.git
+
+### 2. Set up your configuration (optional)
+
+I like to put all of my searcher files in app/searchers and in my environment.rb I add the following configuration:
+  
+  config.load_paths += %W( #{RAILS_ROOT}/app/searchers )
+
+Then setup your searcher configuration by adding a file in config/initializers called search_logic.rb. The following is the default configuration, only add this file if you plan on changing this, or you want to enforce the defaults:
+
+    Searcher::Base.configure do |config|
+        config.per_page = 0 # defaults to 0
+        config.order_as = "DESC" # defaults to "DESC". the order_by configuration depends on the model, it defaults to the primary key, order_by is best suited in your actual searcher
+        config.ignore_blanks = true # defaults to true
+    end
+  
+### 3. Set up your searchers
+  
+Create a searcher for each model you want to search. For example if you want to search the User model you would create app/searchers/user_searcher.rb with the following content:
+  
+    class UserSearcher < Searchgasm::Base
+        # The following configuration is optional will override what you set in your initializer
+        per_page 0
+        order_by "id"
+        order_as "DESC"
+        ignore_blanks true
+    end
+
+### 3. Test it out
+
+    @searcher = UserSearcher.new(:first_name_contains => "Ben")
+    @searcher.last_name_contains = "Johnson"
+    @searcher.search
+    => returns all users with the above conditions
+    @searcher.all
+    => same as above
+    @searcher.count
+    => returns the count of all users with the above conditions
+    @searcher.first
+    => returns the first user with the above conditions
+
+## Available conditions (by column type)
+Each column in the respective model come preloaded with conditions that can easily be applied by calling a method in the following format: searcher_object.#{column_name}_#{condition}=
+
+Here are the conditions available for each column type, they are pretty self explanitory:
+
+### string & text
+is, equals, is_not, does_not_equal, begins_with, starts_with, contains, keywords, ends_with 
+
+### datetime, timestamp, time, date
+is, equals, is_not, does_not_equal, greater_than, gt, after, greater_than_or_equal_to, at_least, gte, less_than, lt, before, less_than_or_equal_to, lte, at_most
+
+### integer, float, decimal
+is, equals, is_not, does_not_equal, greater_than, gt, greater_than_or_equal_to, at_least, gte, less_than, lt, less_than_or_equal_to, lte, at_most
+
+## Advanced examples
+
+### 1. Advanced ordering
+coming soon
+
+### 2. Scoping
+coming soon
+
+### 3. Matching ANY of the conditions, not ALL
+coming soon
+
+### 4. Saving a search for later
+coming soon
+
+### 5. Roll your own special conditions using hooks
+coming soon
+
+### 6. Creating "smart" relationships, such as itunes smart playlists
+coming soon
+
+## Real world example
+
+Note to self: show restful searching via index method with a data table that can be ordered and paginated.
+
+## Disclaimer
+
+As selfish as it sounds, I made this plugin for my own personal needs. Obviously there is still some work to do, such as writing tests and better documentation. I am not an ActiveRecord expert and I don't know exactly how it's built, but I tried my best to mimic a lot of its features and the quality of it's code. I am always open to suggestions, if you have any please send them my way. You can get ahold of me through my website www.binarylogic.com
+
+The bottom line is that this plugin has cleaned up my code quite a bit and made my life much easier, especially around the tedious / repetitive tasks such as creating search forms or data tables. I hope it can do the same for you.
+
+Copyright (c) 2007 Ben Johnson of [Binary Logic](http://www.binarylogic.com), released under the MIT license
