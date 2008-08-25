@@ -5,27 +5,26 @@ Have you ever wanted to search the database in the same manner that you use your
 
 ## Quick example
 
-  @searcher = UserSearcher.new
-  @searcher.first_name_contains = "Ben"
-  @searcher.created_at_after = Time.now
-  @searcher.per_page = 10 # set to 0 to return all
-  @searcher.page = 2
-  @searcher.order_by = "last_name"
-  @searcher.order_as = "ASC"
-  @searcher.search
-  => returns users matching ALL of the conditions above
+    @searcher = UserSearcher.new
+    @searcher.first_name_contains = "Ben"
+    @searcher.created_at_after = Time.now
+    @searcher.per_page = 10 # set to 0 to return all
+    @searcher.page = 2
+    @searcher.order_by = "last_name"
+    @searcher.order_as = "ASC"
+    @searcher.search # => returns users matching ALL of the conditions above
   
 ## Getting started
 
 ### 1. Install the plugin
 
-  script/plugin install git://github.com/binarylogic/searchgasm.git
+    script/plugin install git://github.com/binarylogic/searchgasm.git
 
 ### 2. Set up your configuration (optional)
 
 I like to put all of my searcher files in app/searchers and in my environment.rb I add the following configuration:
   
-  config.load_paths += %W( #{RAILS_ROOT}/app/searchers )
+    config.load_paths += %W( #{RAILS_ROOT}/app/searchers )
 
 Then setup your searcher configuration by adding a file in config/initializers called search_logic.rb. The following is the default configuration, only add this file if you plan on changing this, or you want to enforce the defaults:
 
