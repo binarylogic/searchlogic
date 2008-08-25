@@ -3,10 +3,10 @@
 ## What is searchgasm?
 Have you ever wanted to search the database in the same manner that you use your models? This plugin does exactly that. By no means is this meant to perform complex or large text based searches, it aims to make setting up search forms and searching the database as simple as setting up model forms and performing CRUD tasks.
 
+
 ## Quick example
 
 Let's assume you have 3 models: User, Order, LineItem. A user has many orders. An order has many line items. This is a simple example of how to perform a search:
-
 
     @searcher = UserSearcher.new
     # Set some basic conditions
@@ -28,12 +28,15 @@ Let's assume you have 3 models: User, Order, LineItem. A user has many orders. A
     
     # Search
     @searcher.search # => returns users matching ALL of the conditions above
-  
+
+
 ## Getting started
 
 ### 1. Install the plugin
 
     script/plugin install git://github.com/binarylogic/searchgasm.git
+
+
 
 ### 2. Set up your configuration (optional)
 
@@ -52,9 +55,11 @@ Then setup your searcher configuration by adding a file in config/initializers c
         config.order_as = "DESC" # defaults to "DESC". the order_by configuration depends on the model, it defaults to the primary key, order_by is best suited in your actual searcher
         config.ignore_blanks = true # defaults to true
     end
-  
+
+
+
 ### 3. Set up your searchers
-  
+
 Create a searcher for each model you want to search. For example if you want to search the User model you would create app/searchers/user_searcher.rb with the following content:
   
     # app/searchers/user_searcher.rb
@@ -67,7 +72,9 @@ Create a searcher for each model you want to search. For example if you want to 
         ignore_blanks true
     end
 
-### 3. Test it out
+
+
+### 4. Test it out
 
     # script/console
     
@@ -79,7 +86,9 @@ Create a searcher for each model you want to search. For example if you want to 
     @searcher.count # => returns the count of all users with the above conditions
     @searcher.first # => returns the first user with the above conditions
 
+
 ## Available conditions (by column type)
+
 Each column in the respective model come preloaded with conditions that can easily be applied by calling a method in the following format: searcher_object.#{column_name}_#{condition}=
 
 Here are the conditions available for each column type, they are pretty self explanitory:
@@ -93,32 +102,41 @@ is, equals, is\_not, does\_not\_equal, greater\_than, gt, after, greater\_than\_
 ### integer, float, decimal
 is, equals, is\_not, does\_not\_equal, greater\_than, gt, greater\_than\_or\_equal\_to, at\_least, gte, less\_than, lt, less\_than\_or\_equal\_to, lte, at_most
 
+
 ## Advanced examples
 
 ### 1. Advanced ordering
 coming soon
 
+
 ### 2. Searching through relationships
 coming soon
+
 
 ### 3. Scoping
 coming soon
 
+
 ### 4. Matching ANY of the conditions, not ALL
 coming soon
+
 
 ### 5. Saving a search for later
 coming soon
 
+
 ### 6. Roll your own special conditions using hooks
 coming soon
+
 
 ### 7. Creating "smart" relationships, such as itunes smart playlists
 coming soon
 
+
 ## Real world example
 
 Note to self: show restful searching via index method with a data table that can be ordered and paginated.
+
 
 ## Disclaimer
 
