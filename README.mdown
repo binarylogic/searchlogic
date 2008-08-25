@@ -19,7 +19,7 @@ Have you ever wanted to search the database in the same manner that you use your
 
 ### 1. Install the plugin
 
-  script/plugin install git://github.com/Squeegy/fleximage.git
+  script/plugin install git://github.com/binarylogic/searchgasm.git
 
 ### 2. Set up your configuration (optional)
 
