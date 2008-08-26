@@ -217,12 +217,12 @@ module BinaryLogic
             write_inheritable_hash(:config, config)
           end
 
-          def order_by
+          def order_by(value = nil)
             write_inheritable_hash(:config, config.merge(:order_by => value || config[:order_by]))
           end
           alias_method :order_by=, :order_by
           
-          def order_as
+          def order_as(value = nil)
             write_inheritable_hash(:config, config.merge(:order_as => value || config[:order_as]))
           end
           alias_method :order_as=, :order_as
@@ -232,8 +232,8 @@ module BinaryLogic
           end
           alias_method :per_page=, :per_page
           
-          def ignore_blanks
-            write_inheritable_hash(:config, config.merge(:per_page => value || config[:per_page]))
+          def ignore_blanks(value = nil)
+            write_inheritable_hash(:config, config.merge(:ignore_blanks => value || config[:ignore_blanks]))
           end
           alias_method :ignore_blanks=, :ignore_blanks
           
