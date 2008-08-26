@@ -292,7 +292,7 @@ module BinaryLogic
             next if ignore_blanks? && value == "" # this is for HTML form and they leave a field blank, if you want to search using a blank explicity call the method, dont use attributes= (ex: search.whatever =)
             if respond_to?("#{attribute}=")
               send("#{attribute}=", value)
-            elsif respond_to?("#{attribute}") && (searcher = send("#{attribute}")).is_a?(ActiveRecord::Searcher::Base)
+            elsif respond_to?("#{attribute}") && (searcher = send("#{attribute}")).is_a?(::Searchgasm::Base)
               searcher.attributes = value
             end
           end
