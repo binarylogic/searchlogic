@@ -380,7 +380,7 @@ module BinaryLogic
             end
           end
 
-          find_options[:conditions] = [conditions_strs.join(options[:match_conditions] == :any ? " or " : " and "), *conditions_subs] if conditions_strs.size > 0
+          find_options[:conditions] = [conditions_strs.join(" and "), *conditions_subs] if conditions_strs.size > 0
                     
           self.class.associations.each do |association|
             next unless send("#{association}_used?")
