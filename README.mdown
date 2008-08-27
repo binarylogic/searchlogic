@@ -72,8 +72,8 @@ Then setup your searcher configuration by adding a file in config/initializers c
     
     Searcher::Base.configure do |config|
         # the following values are the defaults
-        config.per_page = 0 # can use "limit" instead
-        config.order_as = "DESC" # the order_by configuration depends on the model, it defaults to the primary key, order_by is best suited in your actual searcher file (see below)
+        config.per_page = 0             # can use "limit" instead
+        config.order_as = "DESC"        # the order_by configuration depends on the model, it defaults to the primary key, order_by is best suited in your searcher file (see below)
         config.ignore_blanks = true
     end
 
@@ -88,8 +88,8 @@ Create a searcher for each model you want to search. For example if you want to 
         # The following configuration values are the defaults. Therefore none of the below configurations are neccessary
         # They are only neccesssary if you want to override the defaults
         
-        searching User # this is not neccessary, automatically inferred by the name of the class
-        per_page 0 # can use "limit" if you prefer
+        searching User      # this is not neccessary, automatically inferred by the name of the class
+        per_page 0          # can use "limit" if you prefer
         order_by "id"
         order_as "DESC"
         ignore_blanks true
@@ -161,10 +161,13 @@ Ordering records works in the same manner and is just as powerful.
 Let assume a user belongs to a user group, and a user group belongs to an account:
 
     searcher = UserSearcher.new
-    searcher.order_by = :first_name # orders by the users first name
-    searcher.order_by = {:user_group => :name} # orders by the user groups name
-    searcher.order_by = {:user_group => {:account => :name}} # orders by the user's user group account name
+    searcher.order_by = :first_name                             # orders by the users first name
+    searcher.order_by = {:user_group => :name}                  # orders by the user groups name
+    searcher.order_by = {:user_group => {:account => :name}}    # orders by the user's user group account name
 
+You can change the direction of the order by doing:
+
+    searcher.order_as = "ASC" # or "DESC"
 
 
 ### 3. Searching through relationships
