@@ -2,55 +2,63 @@
 
 ## What is searchgasm?
 
-Searchgasm is orgasmic. Maybe not orgasmic, but you will probably enjoy using it. Have you ever wanted to search the database in the same manner that you use your models? This plugin does exactly that. If you know how to use ActiveRecord you already know how to use this. The beauty in this plugin is that it brings the same power of ActiveRecord to searching. Take a resource for example. You let a hash of parameters be passed for creating and updating records. Why not do the same for searching? Check it out:
+Searchgasm is orgasmic. Maybe not orgasmic, but you will get aroused. So go grab a towel and let's dive in.
 
-    def index
-        @searcher = NameOfYourModelSearcher.new(params[:search_params])
-        @records = @searcher.search
-    end
+Have you ever wanted to search the database in the same manner that you use your models? This plugin does exactly that. If you know how to use ActiveRecord you already know how to use this. That's the beauty of this plugin, it brings the same power of ActiveRecord to searching without cluttering your models. Clean, simple, easy to use. Check it...
+
+## Do we really need another search plugin?
+
+The answer is YES, and here's why:
+
+1. None of the plugins I found solved the problem I was having: DRYing up my controllers and views. You can't get more DRY than 1 line of code in your controller: @users = UserSearcher.search(params[:search])
+
+2. This plugin won't clutter up your models. Just like observers, you have searchers. Their sole purpose is to search a model. Any configuration or code dealing with searching will be in this file. Keeping everything nice, clean, and organized.
+
+3. Because conditions can be called like ActiveRecord attributes, you can integrate easily with rails helpers. Such as form\_for and fields\_for. Wouldn't it be nice to use your form builder for your search forms and not just your model forms? What if you need to add a condition to a search form? Just add the field in the form and you're done.
+
+4. One plugin to do it all. I don't need a plugin for searching, a plugin for paginating, a plugin for data tables, etc. This plugin handles it all from searching, paginating, ordering, etc. And it's simple.
+
+## Super Simple Example
+
+    searcher = UserSearcher.new(:first_name_contains => "Ben")
+    searcher.created_at_after = Time.now
+    @users = searcher.search
+    # Any condition can be called upon instantiation or as an attribute, for a list of all conditions visit the wiki
+
+There are 3 other ways to perform the exact same search. Use whatever tickles your fancy:
+
+    # 1
+    @users = UserSearcher.search(
+        :first_name_contains => "Ben",
+        :created_at_after => Time.now
+    )
     
-Put that in your pipe and smoke it! Your resource now has a powerful search with 2 lines of code. The power is in the params now. The can pass a set of params that represent conditions and basically formulate their own search. No more writing manual SQL and no more writing lengthy code to perform a simple search. It's all right there and it works just like creating and updating records. So there is virtually no learning curve.
-
-By no means is this meant to perform complex or large text based searches, it aims to bring simple searching to the same level as everything else in rails.
-
-
-
-## Example
-
-Let's assume the following model relationships: users => orders => line items
-
-    @searcher = UserSearcher.new
+    # 2
+    searcher = User.new_search(:first_name_contains => "Ben")
+    searcher.created_at_after = Time.now
+    @users = searcher.search
     
-    # Basic conditions
-    @searcher.first_name_contains = "Ben"
-    @searcher.last_name_is = "Johnson"
-    @searcher.created_at_after = Time.now
-    @searcher.age_greater_than = 18
-    
-    # Array conditions
-    @searcher.email_contains = ["ben", "johnson"]       # combines the 2: email LIKE '%ben%' and email LIKE '%johnson%'.
-                                                        # Arrays are applicable for any condition (see below)
-    
-    # Relationship conditions
-    @searcher.orders.created_at_after = Time.now
-    @searcher.orders.total_greater_than = 100
-    @searcher.orders.line_items.total_less_than = 20
-    
-    # Options on how to return the data
-    @searcher.per_page = 10             # set to 0 to return all, can also use "limit" instead
-    @searcher.page = 2
-    @searcher.order_by = "last_name"    # see below for "advanced" ordering
-    @searcher.order_as = "ASC"
-    
-    # Search
-    @searcher.search    # => returns users matching ALL of the conditions above
-    @searcher.all       # => alias for search
-    @searcher.count
-    @searcher.first
+    #3
+    @users = User.search(
+        :first_name_contains => "Ben",
+        :created_at_after => Time.now
+    )
 
-Just to be clear, everything is escaped using ActiveRecord's built in functions. So SQL injection is not possible.
+## All features
 
+1. A plethora of conditions for ALL columns in a model. (See a all available conditions)
+2. Use the same conditions when setting up your relationships or named scopes.
+3. Scope searches with relationships and named scopes.
+4. Enhanced keyword searching including blacklisting non-meaningful words and other "search enhancing" features. (Read more)
+5. "Smart" condition building for multiple values. (Read more)
+6. Traverse though ALL relationships and create conditions on them. (Read more)
+7. Advanced ordering, order your results in complex ways easily. (Read more)
+8. Super simple pagination support, with helpers to make your views a breeze. (Read more)
+9. Hooks to create you own "special" conditions. (Read more)
 
+## Ready to get started?
+
+I highly recommend glancing at the wiki. This readme only covers the basics. The wiki goes over the features above, how to use them, and how they work.
 
 ## Getting started
 
@@ -58,10 +66,9 @@ Just to be clear, everything is escaped using ActiveRecord's built in functions.
 
     script/plugin install git://github.com/binarylogic/searchgasm.git
 
-
 ### 2. Set up your configuration (optional)
 
-You can just put your searcher files in your models folder, but I like to put all of my searcher files in app/searchers and in my environment.rb I add the following configuration:
+You can just put your searcher files in your models folder, but I recommend putting them in app/searchers to keep things less cluttered. In environment.rb I add the following configuration:
   
     # config/environment.rb
     
@@ -96,6 +103,10 @@ Create a searcher for each model you want to search. For example if you want to 
         order_as "DESC"
         ignore_blanks true
     end
+    
+Most of your searchers will look like the following:
+
+    class UserSearcher < Searchgasm::Base; end
 
 
 ### 4. Test it out
@@ -104,169 +115,14 @@ Create a searcher for each model you want to search. For example if you want to 
     
     UserSearcher.search(:first_name_contains => "Ben")
 
-Play around with it. Check out the features below to perform different searches.
+Play around with it. Check out the features above to perform different searches and discover all this plugin has to offer.
 
 
+## Credits
 
-## Available conditions (by column type)
+Author: Ben Johnson of [Binary Logic](http://www.binarylogic.com)
+---
+Credit to Zack Ham and Robert Malko in helping with feature suggestions, cleaning up the readme / wiki, and cleaning up my code.
 
-Each column in the respective model come preloaded with conditions that can easily be applied by calling a method in the following format: searcher_object.#{column_name}_#{condition}=
-
-Here are the conditions available for each column type, they are pretty self explanatory:
-
-### string, text
-is, equals, is\_not, does\_not\_equal, begins\_with, starts\_with, contains, keywords, ends_with 
-
-### datetime, timestamp, time, date
-is, equals, is\_not, does\_not\_equal, greater\_than, gt, after, greater\_than\_or\_equal\_to, at\_least, gte, less\_than, lt, before, less\_than\_or\_equal\_to, lte, at_most
-
-### integer, float, decimal
-is, equals, is\_not, does\_not\_equal, greater\_than, gt, greater\_than\_or\_equal\_to, at\_least, gte, less\_than, lt, less\_than\_or\_equal\_to, lte, at_most
-
-
-
-## Condition to SQL reference
-
-*is, equals*                => column = ?
-*is\_not, does\_not\_equal_*            => column != ?
-
-
-
-
-## Features
-
-### 1. Flexible ways to perform searches
-
-Let's assume a user has many orders:
-
-    UserSearcher.search(
-        :first_name_contains => "Ben",
-        :orders => {:total_greater_than => 0, :created_at_after => Time.now}
-    )
-    
-Or you can perform the same search this way:
-
-    searcher = UserSearcher.new
-    searcher.first_name_contains = "Ben"
-    searcher.orders.total_greater_than = 0
-    searcher.orders.created_at_after = Time.now
-    searcher.search
-    
-All attributes and configurations can be called right upon instantiation, just like AcitveRecord:
-
-    searcher = UserSearcher.new(
-        :first_name_contains => "Ben",
-        :orders => {:total_greater_than => 0, :created_at_after => Time.now}
-    )
-    searcher.search
-
-
-
-### 2. Advanced ordering
-
-Ordering records works in the same manner and is just as powerful.
-
-Let assume a user belongs to a user group, and a user group belongs to an account:
-
-    searcher = UserSearcher.new
-    searcher.order_by = :first_name                             # orders by the users first name
-    searcher.order_by = {:user_group => :name}                  # orders by the user groups name
-    searcher.order_by = {:user_group => {:account => :name}}    # orders by the user's user group account name
-
-You can change the direction of the order by doing:
-
-    searcher.order_as = "ASC" # or "DESC"
-
-
-### 3. Searching through relationships
-
-As I'm sure you saw in the example above you can traverse through all of your model relationships as you would with an ActiveRecord object:
-
-Lets assume the following relationship: account => user groups => users => orders => line items
-
-    searcher = AccountSearcher.new
-    searcher.user_groups.users.orders.line_items.total_less_than = 100
-
-Obviously this is something you want to try to avoid because the resulting query would be very intense, but you get the idea. Just like ActiveRecord, this can be an SQL train wreck if you are not careful, so I would advise thinking about the query you are going to execute while you set up your conditions.
-
-
-
-### 4. Multiple values for a single condition
-Doing this is just as simple as setting any other condition. There is a trick though: Based on the condition it automatically determines if you want to match ALL or ANY.
-
-Just keep this rule in mind: Whenever possible narrow the search, without making it impossible.
-
-For example:
-
-    searcher = UserSearcher.new
-    searcher.first_name_is = ["Ben", "David", "Bob"]
-
-It is impossible for someone's first name to be all 3. So we assume you want users that have ANY of the first names. Another example:
-
-    searcher = UserSearcher.new
-    searcher.first_name_keywords = ["Ben", "David", "Bob"]
-    
-It is possible for a user to have a first name with all 3 of those words, not likely, but possible. So we assume you want users that have ALL of those words in their first name. This is useful for basic keywords searching.
-
-
-
-### 5. Scoping
-Let's assume: account => users. You are searching users and want to scope the search to users within a specific account. You can do this in a number of ways:
-
-    @account.users.search(:first_name_contains => "ben")
-
-Or this way:
-
-    searcher = @account.users.build_search(:first_name_contains => "Ben")
-    searcher.search
-    
-Or this way:
-
-    searcher = UserSearcher.new
-    searcher.scope = @account.users
-    searcher.first_name_contains = "ben"
-    searcher.search
-
-
-
-### 6. Matching ANY of the conditions, not ALL
-example coming soon
-
-
-
-### 7. Saving a search for later
-example coming soon
-
-
-
-### 8. Roll your own special conditions using hooks
-example coming soon
-
-
-
-### 9. Creating "smart" relationships, such as itunes smart playlists
-example coming soon
-
-
-
-## Real world example
-
-Note to self: show restful searching via index method with a data table that can be ordered and paginated.
-
-
-
-## Features on the to do list
-
-1. Extend ActiveResource, or allow searchers to use resources. Want to think this through a little more.
-
-
-
-## Disclaimer
-
-As selfish as it sounds, I made this plugin for my own personal needs. Obviously there is still some work to do, such as writing tests and better documentation. I am not an ActiveRecord expert, but I tried my best to mimic a lot of its features and the quality of it's code. So that running a search would feel like ActiveRecord. I am always open to suggestions, if you have any please send them my way. You can get ahold of me through my website [www.binarylogic.com](http://www.binarylogic.com).
-
-This plugin was not created as an attempt to replace writing SQL. SQL is very powerful and you can't get any more flexible and powerful than pure SQL. This was created to help DRY up a lot of my code.
-
-The bottom line is that this plugin has cleaned up my code quite a bit and made my life much easier, especially around the tedious / repetitive tasks such as creating search forms, data tables, and searchable resources. I hope it can do the same for you.
 
 Copyright (c) 2007 Ben Johnson of [Binary Logic](http://www.binarylogic.com), released under the MIT license

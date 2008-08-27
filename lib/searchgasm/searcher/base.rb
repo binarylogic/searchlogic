@@ -76,7 +76,7 @@ module BinaryLogic
             when :begins_with
               alias_conditions << :starts_with
             when :contains
-              alias_conditions << :keywords
+              alias_conditions << :like
             when :greater_than
               alias_conditions << :gt
               alias_conditions << :after if [:datetime, :timestamp, :time, :date].include?(condition.type)
@@ -106,7 +106,7 @@ module BinaryLogic
             condition_names = [:equals, :does_not_equal]
             case type
             when :string, :text
-              condition_names += [:begins_with, :contains, :ends_with]
+              condition_names += [:begins_with, :contains, :keywords, :ends_with]
             when :integer, :float, :decimal, :datetime, :timestamp, :time, :date
               condition_names += [:greater_than, :greater_than_or_equal_to, :less_than, :less_than_or_equal_to]
             end
