@@ -1,11 +1,23 @@
 module BinaryLogic
   module Searchgasm
     module Searcher
-      class AssociationCollection
+      module AssociationCollection
         def build_search(attributes = {})
-          raise @reflection.inspect
-          "#{@reflection.klass.name}Searcher".constantize
+          searcher_class.new(attributes.merge(:scope => searcher_scope))
         end
+        
+        def search(attributes = {})
+          searcher_class.search(attributes.merge(:scope => searcher_scope))
+        end
+          
+        private
+          def searcher_class
+            "#{@reflection.klass.name}Searcher".constantize
+          end
+          
+          def searcher_scope
+            @owner.send(@reflection.name)
+          end
       end
     end
   end

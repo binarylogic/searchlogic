@@ -123,6 +123,14 @@ is, equals, is\_not, does\_not\_equal, greater\_than, gt, greater\_than\_or\_equ
 
 
 
+## Condition to SQL reference
+
+*is, equals*                => column = ?
+*is\_not, does\_not\_equal_*            => column != ?
+
+
+
+
 ## Features
 
 ### 1. Flexible ways to perform searches
@@ -133,15 +141,15 @@ Let's assume a user has many orders:
     
 Or you can perform the same search this way:
 
-    searcher = UserSearcher.new(:first_name_contains => "Ben", :orders => {:total_greater_than => 0, :created_at_after => Time.now})
-    searcher.search
-    
-Or this way:
-
     searcher = UserSearcher.new
     searcher.first_name_contains = "Ben"
     searcher.orders.total_greater_than = 0
     searcher.orders.created_at_after = Time.now
+    searcher.search
+    
+All attributes and configurations can be called right upon instantiation, just like AcitveRecord:
+
+    searcher = UserSearcher.new(:first_name_contains => "Ben", :orders => {:total_greater_than => 0, :created_at_after => Time.now})
     searcher.search
 
 
@@ -173,7 +181,9 @@ Obviously this is something you want to try to avoid because the resulting query
 
 
 ### 4. Multiple values for a single condition
-Doing this is just as simple as setting any other condition. There is a trick though: Based on the condition it automatically determines if you want to match ALL or ANY. Our assumption is that you want to narrow your search whenever possible, as long as it's not an impossible search.
+Doing this is just as simple as setting any other condition. There is a trick though: Based on the condition it automatically determines if you want to match ALL or ANY.
+
+Just keep this rule in mind: Whenever possible narrow the search, without making it impossible.
 
 For example:
 
@@ -197,6 +207,13 @@ Let's assume: account => users. You are searching users and want to scope the se
 Or this way:
 
     searcher = @account.users.build_search(:first_name_contains => "Ben")
+    searcher.search
+    
+Or this way:
+
+    searcher = UserSearcher.new
+    searcher.scope = @account.users
+    searcher.first_name_contains = "ben"
     searcher.search
 
 
@@ -227,10 +244,18 @@ Note to self: show restful searching via index method with a data table that can
 
 
 
+## Features on the to do list
+
+1. Extend ActiveResource, or allow searchers to use resources. Want to think this through a little more.
+
+
+
 ## Disclaimer
 
-As selfish as it sounds, I made this plugin for my own personal needs. Obviously there is still some work to do, such as writing tests and better documentation. I am not an ActiveRecord expert and I don't know exactly how it's built, but I tried my best to mimic a lot of its features and the quality of it's code. I am always open to suggestions, if you have any please send them my way. You can get ahold of me through my website [www.binarylogic.com](http://www.binarylogic.com).
+As selfish as it sounds, I made this plugin for my own personal needs. Obviously there is still some work to do, such as writing tests and better documentation. I am not an ActiveRecord expert, but I tried my best to mimic a lot of its features and the quality of it's code. So that running a search would feel like ActiveRecord. I am always open to suggestions, if you have any please send them my way. You can get ahold of me through my website [www.binarylogic.com](http://www.binarylogic.com).
 
-The bottom line is that this plugin has cleaned up my code quite a bit and made my life much easier, especially around the tedious / repetitive tasks such as creating search forms or data tables. I hope it can do the same for you.
+This plugin was not created as an attempt to replace writing SQL. SQL is very powerful and you can't get any more flexible and powerful than pure SQL. This was created to help DRY up a lot of my code.
+
+The bottom line is that this plugin has cleaned up my code quite a bit and made my life much easier, especially around the tedious / repetitive tasks such as creating search forms, data tables, and searchable resources. I hope it can do the same for you.
 
 Copyright (c) 2007 Ben Johnson of [Binary Logic](http://www.binarylogic.com), released under the MIT license
