@@ -36,6 +36,10 @@ module BinaryLogic
           def primary_key
             @primary_key ||= searched_class.primary_key
           end
+          
+          def searched_class
+            @searched_class ||= name.scan(/(.*)Searcher/)[0][0].constantize
+          end
       
           def table_name
             @table_name ||= searched_class.table_name
@@ -165,6 +169,8 @@ module BinaryLogic
           #----------------------------------------------------------
           def configure
             yield self
+            virtual_searchers.each { |searcher| eval("class #{searcher.classify} < Searchgasm; end;") }
+            config
           end
           
           def config
@@ -202,10 +208,10 @@ module BinaryLogic
             config[:ignore_blanks] == true
           end
           
-          def searched_class(value = nil)
-            @searched_class ||= value || name.scan(/(.*)Searcher/)[0][0].constantize
+          def virtual_searchers(searchers = nil)
+            @virtual_searchers = searchers || @virtual_searchers || []
           end
-          alias_method :searching, :searched_class
+          alias_method :virtual_searchers=, :virtual_searchers
           
           # Hooks
           #----------------------------------------------------------

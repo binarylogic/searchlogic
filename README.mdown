@@ -60,36 +60,36 @@ There are 3 other ways to perform the exact same search. Use whatever tickles yo
 
 I highly recommend glancing at the wiki. This readme only covers the basics. The wiki goes over the features above, how to use them, and how they work.
 
-## Getting started
-
 ### 1. Install the plugin
 
     script/plugin install git://github.com/binarylogic/searchgasm.git
 
-### 2. Set up your configuration (optional)
+### 2. Set up your configuration
 
-You can just put your searcher files in your models folder, but I recommend putting them in app/searchers to keep things less cluttered. In environment.rb I add the following configuration:
-  
-    # config/environment.rb
-    
-    config.load_paths += %W( #{RAILS_ROOT}/app/searchers )
-
-Then setup your searcher configuration by adding a file in config/initializers called searchgasm.rb. The following is the default configuration, only add this file if you plan on changing this, or you want to enforce the defaults:
+Then setup your searcher configuration by adding a file in config/initializers called searchgasm.rb
 
     # config/initializer/searchgasm.rb
     
     Searcher::Base.configure do |config|
         # the following values are the defaults
-        config.per_page = 0             # can use "limit" instead
-        config.order_as = "DESC"        # the order_by configuration depends on the model, it defaults to the primary key,
-                                        # order_by is best suited in your searcher file (see below)
+        
+        config.virtual_searchers = [:user, :order]  # list out the names of the models you wish to search
+        config.per_page = 0                         # can use "limit" instead
+        config.order_as = "DESC"                    # the order_by configuration depends on the model, it defaults to the primary key,
+                                                    # order_by is best suited in your searcher file (see below)
         config.ignore_blanks = true
     end
 
 
-### 3. Set up your searchers
+### 3. Set up your searchers (optional)
 
-Create a searcher for each model you want to search. For example if you want to search the User model you would create app/searchers/user_searcher.rb with the following content:
+If you don't want to create virtual searchers, you can create them yourself. You can just put your searcher files in your models folder, but I like to put all of my searcher files in app/searchers and in my environment.rb I add the following configuration:
+  
+    # config/environment.rb
+    
+    config.load_paths += %W( #{RAILS_ROOT}/app/searchers )
+
+Now create app/searchers/user_searcher.rb with the following content:
   
     # app/searchers/user_searcher.rb
     
@@ -97,16 +97,11 @@ Create a searcher for each model you want to search. For example if you want to 
         # The following configuration values are the defaults. Therefore none of the below configurations are neccessary
         # They are only neccesssary if you want to override the defaults
         
-        searching User      # this is not neccessary, automatically inferred by the name of the class
         per_page 0          # can use "limit" if you prefer
         order_by "id"
         order_as "DESC"
         ignore_blanks true
     end
-    
-Most of your searchers will look like the following:
-
-    class UserSearcher < Searchgasm::Base; end
 
 
 ### 4. Test it out
@@ -121,7 +116,7 @@ Play around with it. Check out the features above to perform different searches 
 ## Credits
 
 Author: Ben Johnson of [Binary Logic](http://www.binarylogic.com)
----
+
 Credit to Zack Ham and Robert Malko in helping with feature suggestions, cleaning up the readme / wiki, and cleaning up my code.
 
 
