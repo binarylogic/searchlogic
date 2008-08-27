@@ -1,32 +1,57 @@
 module BinaryLogic
   module Searchgasm
     module Searcher
-      # Extend the AR Column class to get the type_casting functionality and other functionality
-      # no reason to reinvent the wheel      
-      class Attribute < ActiveRecord::ConnectionAdapters::Column
-        attr_reader :options
-
-        def initialize(*args)
-          options = args.first.dup
-          args = [options[:name], nil, options[:type] == :integer ? "int" : options[:type].to_s, true] # for calling super
-          super
-          @options = options
-        end
-      end
-      
       class Base
         include ClassInheritableAttributes
+        include ActiveSupport::Memoizable::Freezable
         
         attr_accessor :find_options
     
         class << self
-          # General
+          # Attributes
           #----------------------------------------------------------
-          def add_attribute(options = {})
+          def associations
+            @associations ||= add_associations!
+          end
+          
+          def columns
+            @columns ||= searched_class.columns
+          end
+          
+          def columns_hash
+            @columns_hash ||= searched_class.columns_hash
+          end
+          
+          def conditions
+            @conditions ||= add_conditions_for_columns!
+          end
+          
+          def conditions_hash
+            return @conditions_hash unless @conditions_hash.nil?
+            @conditions_hash = []
+            conditions.each { |condition| @conditions_hash[condition.name] = condition }
+            @conditions_hash
+          end
+          
+          def primary_key
+            @primary_key ||= searched_class.primary_key
+          end
+      
+          def searched_class
+            @searched_class ||= name.scan(/(.*)Searcher/)[0][0].constantize
+          end
+      
+          def table_name
+            @table_name ||= searched_class.table_name
+          end
+          
+          # Actions
+          #----------------------------------------------------------
+          def add_condition(options = {})
             options[:name] ||= "#{options[:column_name]}_#{options[:condition]}"
+            options.merge!(:searched_class => searched_class)
             
-            @attributes ||= []
-            @attributes << Attribute.new(options)
+            condition = Condition.new(options)
 
             if !options[:column_name].blank? && options[:type] == :datetime && !Time.zone.nil? && !searched_class.skip_time_zone_conversion_for_attributes.include?("#{searched_class.name.underscore}_#{options[:column_name]}".to_sym)
               class_eval <<-SRC
@@ -42,113 +67,63 @@ module BinaryLogic
                 end
               SRC
             end
-            
+
             class_eval <<-SRC
               def #{options[:name]}=(value)
                 write_attribute :#{options[:name]}, value
               end
             SRC
-            
-            alias_methods = []
+
+            alias_conditions = []
             case options[:condition]
             when :equals
-              alias_methods += ["", :is]
+              alias_conditions += ["", :is]
             when :does_not_equal
-              alias_methods << :is_not
+              alias_conditions << :is_not
             when :begins_with
-              alias_methods << :starts_with
+              alias_conditions << :starts_with
             when :contains
-              alias_methods << :keywords
+              alias_conditions << :keywords
             when :greater_than
-              alias_methods << :gt
-              alias_methods << :after if [:datetime, :timestamp, :time, :date].include?(options[:type])
+              alias_conditions << :gt
+              alias_conditions << :after if [:datetime, :timestamp, :time, :date].include?(options[:type])
             when :greater_than_or_equal_to
-              alias_methods + [:at_least, :gte]
+              alias_conditions + [:at_least, :gte]
             when :less_than
-              alias_methods << :lt
-              alias_methods << :before if [:datetime, :timestamp, :time, :date].include?(options[:type])
+              alias_conditions << :lt
+              alias_conditions << :before if [:datetime, :timestamp, :time, :date].include?(options[:type])
             when :less_than_or_equal_to
-              alias_methods += [:at_most, :lte]
+              alias_conditions += [:at_most, :lte]
             end
-            
-            unless alias_methods.blank?
-              alias_methods.each do |alias_method_name|
-                alias_method_full_name = "#{options[:column_name]}" + (alias_method_name.blank? ? "" : "_#{alias_method_name}")
-                @attributes << Attribute.new(options.merge(:name => alias_method_full_name))
+
+            unless alias_conditions.blank?
+              alias_conditions.each do |alias_condition_name|
+                alias_condition_full_name = "#{options[:column_name]}" + (alias_condition_name.blank? ? "" : "_#{alias_method_name}")
+                alias_condition = Condition.new(options.merge(:name => alias_condition_full_name))
                 class_eval <<-SRC
-                  alias_method :#{alias_method_full_name}=, :#{options[:name]}=
-                  alias_method :#{alias_method_full_name}, :#{options[:name]}
+                  alias_method :#{alias_condition_full_name}=, :#{options[:name]}=
+                  alias_method :#{alias_condition_full_name}, :#{options[:name]}
                 SRC
               end
             end
-            
-            @attributes.last
+
+            condition
           end
           
-          def add_column(name, type)
-            conditions = [:equals, :does_not_equal]
+          def add_conditions_for_column(name, type)
+            condition_names = [:equals, :does_not_equal]
             case type
             when :string, :text
-              conditions += [:begins_with, :contains, :ends_with]
+              condition_names += [:begins_with, :contains, :ends_with]
             when :integer, :float, :decimal, :datetime, :timestamp, :time, :date
-              conditions += [:greater_than, :greater_than_or_equal_to, :less_than, :less_than_or_equal_to]
+              condition_names += [:greater_than, :greater_than_or_equal_to, :less_than, :less_than_or_equal_to]
             end
             
-            conditions.each { |condition| add_attribute(:column_name => name, :condition => condition, :type => type) }
-            
-            true
+            condition_names.collect { |condition_name| add_condition(:column_name => name, :condition => condition_name, :type => type) }
           end
           
-          def add_associations!
-            unless @added_associations
-              @associations ||= []
-              
-              (searched_class.reflect_on_all_associations).each do |association|
-                next if association.options[:polymorphic]
-              
-                name = association.name
-                @associations << name
-              
-                class_eval <<-SRC
-                  def #{name}
-                    @#{name} ||= #{name.to_s.singularize.camelize}Searcher.new
-                  end
-                  
-                  def #{name}_used?
-                    !@#{name}.blank?
-                  end
-                SRC
-              end
-              
-              @added_associations = true
-            end
-          end
-          
-          def add_columns!
-            unless @added_columns
-              searched_class.columns.each { |column| add_column(column.name, column.type) }
-              add_attribute(:name => "descendent_of", :condition => :descendent_of, :type => :integer) if searched_class.respond_to?(:roots)
-              @added_columns = true
-            end
-          end
-          
-          def associations
-            add_associations!
-            @associations
-          end
-          
-          def attributes
-            add_columns!
-            @attributes
-          end
-          
-          def attributes_hash
-            hash = {}
-            attributes.each { |attribute| hash[attribute.name] = attribute }
-            hash
-          end
-          alias_method :columns_hash, :attributes_hash # to help the searcher act like a model, good example is when calendar_date_select tries to determine the type of an attribute
-          
+          # Utility
+          #----------------------------------------------------------
           def order_find_options(methods, order_as)
             return {} if methods.blank?
 
@@ -188,18 +163,6 @@ module BinaryLogic
             end
 
             {:order => order_strs.blank? ? nil : order_strs.join(", "), :include => includes.blank? ? nil : includes}
-          end
-          
-          def primary_key
-            searched_class.primary_key
-          end
-      
-          def searched_class
-            @searched_class ||= name.scan(/(.*)Searcher/)[0][0].constantize
-          end
-      
-          def table_name
-            @table_name ||= searched_class.table_name
           end
           
           # Config
@@ -270,11 +233,44 @@ module BinaryLogic
             @after_search.uniq!
             @after_search
           end
+          
+          private
+            # Actions
+            #----------------------------------------------------------
+            def add_associations!
+              associations = []
+
+              (searched_class.reflect_on_all_associations).each do |association|
+                next if association.options[:polymorphic]
+
+                name = association.name
+                associations << name
+
+                class_eval <<-SRC
+                  def #{name}
+                    @#{name} ||= #{name.to_s.singularize.camelize}Searcher.new
+                  end
+
+                  def #{name}_used?
+                    !@#{name}.blank?
+                  end
+                SRC
+              end
+              
+              associations
+            end
+
+            def add_conditions_for_columns!
+              conditions = []
+              columns.each { |column| conditions += add_conditions_for_column(column.name, column.type) }
+              conditions << add_condition(:name => "descendent_of", :condition => :descendent_of, :type => :integer) if searched_class.respond_to?(:roots)
+              conditions
+            end
         end
         
         def initialize(values = {})
-          self.class.add_columns!
-          self.class.add_associations!
+          self.class.conditions
+          self.class.associations
           self.attributes = values
         end
         
@@ -299,7 +295,7 @@ module BinaryLogic
         end
         
         def attributes
-          @attributes || {}
+          @attributes ||= {}
         end
         
         def build_find_options
@@ -312,75 +308,16 @@ module BinaryLogic
           end
 
           self.find_options = {:include => []}
-          conditions_strs = []
-          conditions_subs = []
           
           attributes.each do |attribute_name, uncasted_value|
-            attribute_object = self.class.attributes_hash[attribute_name]
-            next if attribute_object.nil?
+            condition = self.class.conditions_hash[attribute_name]
+            next if condition.nil?
             
             value = send(attribute_name)
             value = value.utc if value.respond_to?(:utc)
-            column_name = attribute_object.options[:column_name]
             
-            case attribute_object.options[:condition]
-            when :equals
-              if value == "nil" || value.nil?
-                conditions_strs << "#{table_name}.#{column_name} is NULL"
-              else
-                conditions_strs << "#{table_name}.#{column_name} = ?"
-                conditions_subs << value
-              end
-            when :does_not_equal
-              if value == "nil" || value.nil?
-                conditions_strs << "#{table_name}.#{column_name} is not NULL"
-              else
-                conditions_strs << "#{table_name}.#{column_name} != ?"
-                conditions_subs << value
-              end
-            when :begins_with
-              search_parts = value.split(/ /)
-              search_parts.each do |search_part|
-                conditions_strs << "#{table_name}.#{column_name} like ?"
-                conditions_subs << "#{search_part}%"
-              end
-            when :contains
-              search_parts = value.split(/ /)
-              search_parts.each do |search_part|
-                conditions_strs << "#{table_name}.#{column_name} like ?"
-                conditions_subs << "%#{search_part}%"
-              end
-            when :ends_with
-              search_parts = value.split(/ /)
-              search_parts.each do |search_part|
-                conditions_strs << "#{table_name}.#{column_name} like ?"
-                conditions_subs << "%#{search_part}"
-              end
-            when :greater_than
-              conditions_strs << "#{table_name}.#{column_name} > ?"
-              conditions_subs << value
-            when :greater_than_or_equal_to
-              conditions_strs << "#{table_name}.#{column_name} >= ?"
-              conditions_subs << value
-            when :less_than
-              conditions_strs << "#{table_name}.#{column_name} < ?"
-              conditions_subs << value
-            when :less_than_or_equal_to
-              conditions_strs << "#{table_name}.#{column_name} <= ?"
-              conditions_subs << value
-            when :descendent_of
-              root = searched_class.find(value)
-              condition_strs = ["#{table_name}.#{primary_key} = ?"]
-              conditions_subs << value
-              root.all_children.each do |child|
-                condition_strs << "#{table_name}.#{primary_key} = ?"
-                conditions_subs << child.send(primary_key)
-              end
-              conditions_strs << condition_strs.join(" or ")
-            end
+            find_options.merge_find_options!(:conditions => condition.to_condition(value))
           end
-
-          find_options[:conditions] = [conditions_strs.join(" and "), *conditions_subs] if conditions_strs.size > 0
                     
           self.class.associations.each do |association|
             next unless send("#{association}_used?")
@@ -541,8 +478,8 @@ module BinaryLogic
         private
           def write_attribute(attribute_name, value)
             attribute_name = attribute_name.to_s
-            attribute = self.class.attributes_hash[attribute_name]
-            value = attribute.type_cast(value) if !attribute.blank?
+            condition = self.class.conditions_hash[attribute_name]
+            value = condition.type_cast(value) if !condition.blank?
             @attributes ||= {}
             @attributes[attribute_name.to_s] = value
           end
@@ -550,8 +487,8 @@ module BinaryLogic
           def read_attribute(attribute_name)
             attribute_name = attribute_name.to_s
             if !(value = attributes[attribute_name]).nil?
-              if attribute = self.class.attributes_hash[attribute_name]
-                attribute.type_cast(value)
+              if condition = self.class.conditions_hash[attribute_name]
+                condition.type_cast(value)
               else
                 value
               end
