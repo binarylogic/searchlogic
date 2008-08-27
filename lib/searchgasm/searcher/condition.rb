@@ -4,13 +4,14 @@ module BinaryLogic
   module Searchgasm
     module Searcher
       class Condition < ::ActiveRecord::ConnectionAdapters::Column
-        attr_accessor :condition, :primary_key, :searched_class, :table_name
+        attr_accessor :column_name, :condition, :primary_key, :searched_class, :table_name
         attr_reader :options
 
         def initialize(*args)
           options = args.first.dup
           raise(ArgumentError, "You must provide the :searched_class option") if options[:searched_class].blank?
 
+          self.column_name = options[:column_name]
           self.condition = options[:condition]
           self.searched_class = options[:searched_class]
           self.primary_key = searched_class.primary_key
@@ -27,47 +28,47 @@ module BinaryLogic
           case condition
           when :equals
             if value == "nil" || value.nil?
-              conditions_strs << "#{table_name}.#{name} is NULL"
+              conditions_strs << "#{table_name}.#{column_name} is NULL"
             else
-              conditions_strs << "#{table_name}.#{name} = ?"
+              conditions_strs << "#{table_name}.#{column_name} = ?"
               conditions_subs << value
             end
           when :does_not_equal
             if value == "nil" || value.nil?
-              conditions_strs << "#{table_name}.#{name} is not NULL"
+              conditions_strs << "#{table_name}.#{column_name} is not NULL"
             else
-              conditions_strs << "#{table_name}.#{name} != ?"
+              conditions_strs << "#{table_name}.#{column_name} != ?"
               conditions_subs << value
             end
           when :begins_with
             search_parts = value.split(/ /)
             search_parts.each do |search_part|
-              conditions_strs << "#{table_name}.#{name} like ?"
+              conditions_strs << "#{table_name}.#{column_name} like ?"
               conditions_subs << "#{search_part}%"
             end
           when :contains
             search_parts = value.split(/ /)
             search_parts.each do |search_part|
-              conditions_strs << "#{table_name}.#{name} like ?"
+              conditions_strs << "#{table_name}.#{column_name} like ?"
               conditions_subs << "%#{search_part}%"
             end
           when :ends_with
             search_parts = value.split(/ /)
             search_parts.each do |search_part|
-              conditions_strs << "#{table_name}.#{name} like ?"
+              conditions_strs << "#{table_name}.#{column_name} like ?"
               conditions_subs << "%#{search_part}"
             end
           when :greater_than
-            conditions_strs << "#{table_name}.#{name} > ?"
+            conditions_strs << "#{table_name}.#{column_name} > ?"
             conditions_subs << value
           when :greater_than_or_equal_to
-            conditions_strs << "#{table_name}.#{name} >= ?"
+            conditions_strs << "#{table_name}.#{column_name} >= ?"
             conditions_subs << value
           when :less_than
-            conditions_strs << "#{table_name}.#{name} < ?"
+            conditions_strs << "#{table_name}.#{column_name} < ?"
             conditions_subs << value
           when :less_than_or_equal_to
-            conditions_strs << "#{table_name}.#{name} <= ?"
+            conditions_strs << "#{table_name}.#{column_name} <= ?"
             conditions_subs << value
           when :descendent_of
             root = searched_class.find(value)

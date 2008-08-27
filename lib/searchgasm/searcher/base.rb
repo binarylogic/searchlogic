@@ -28,7 +28,7 @@ module BinaryLogic
           
           def conditions_hash
             return @conditions_hash unless @conditions_hash.nil?
-            @conditions_hash = []
+            @conditions_hash = {}
             conditions.each { |condition| @conditions_hash[condition.name] = condition }
             @conditions_hash
           end
@@ -98,7 +98,7 @@ module BinaryLogic
 
             unless alias_conditions.blank?
               alias_conditions.each do |alias_condition_name|
-                alias_condition_full_name = "#{options[:column_name]}" + (alias_condition_name.blank? ? "" : "_#{alias_method_name}")
+                alias_condition_full_name = "#{options[:column_name]}" + (alias_condition_name.blank? ? "" : "_#{alias_condition_name}")
                 alias_condition = Condition.new(options.merge(:name => alias_condition_full_name))
                 class_eval <<-SRC
                   alias_method :#{alias_condition_full_name}=, :#{options[:name]}=
@@ -194,6 +194,8 @@ module BinaryLogic
             write_inheritable_hash(:config, config.merge(:per_page => value || config[:per_page]))
           end
           alias_method :per_page=, :per_page
+          alias_method :limit, :per_page
+          alias_method :limit=, :per_page
           
           def ignore_blanks(value = nil)
             write_inheritable_hash(:config, config.merge(:ignore_blanks => value || config[:ignore_blanks]))
@@ -316,7 +318,7 @@ module BinaryLogic
             value = send(attribute_name)
             value = value.utc if value.respond_to?(:utc)
             
-            find_options.merge_find_options!(:conditions => condition.to_condition(value))
+            find_options.merge_find_options!(:conditions => condition.to_conditions(value))
           end
                     
           self.class.associations.each do |association|
@@ -395,10 +397,12 @@ module BinaryLogic
           return 0 if value < 0
           value
         end
+        alias_method :limit, :per_page
         
         def per_page=(value)
           config[:per_page] = value
         end
+        alias_method :limit=, :per_page=
         
         def page
           value = config[:page].to_i
