@@ -28,7 +28,8 @@ Let's assume the following model relationships: users => orders => line items
     @searcher.age_greater_than = 18
     
     # Array conditions
-    @searcher.email_contains = ["ben", "johnson"] # combines the 2: email LIKE '%ben%' and email LIKE '%johnson%'. Arrays are applicable for any condition (see below for a detailed explanation)
+    @searcher.email_contains = ["ben", "johnson"]       # combines the 2: email LIKE '%ben%' and email LIKE '%johnson%'.
+                                                        # Arrays are applicable for any condition (see below for a detailed explanation)
     
     # Relationship conditions
     @searcher.orders.created_at_after = Time.now
@@ -36,14 +37,14 @@ Let's assume the following model relationships: users => orders => line items
     @searcher.orders.line_items.total_less_than = 20
     
     # Options on how to return the data
-    @searcher.per_page = 10 # set to 0 to return all, can also use "limit" instead
+    @searcher.per_page = 10             # set to 0 to return all, can also use "limit" instead
     @searcher.page = 2
-    @searcher.order_by = "last_name" # see below for "advanced" ordering
+    @searcher.order_by = "last_name"    # see below for "advanced" ordering
     @searcher.order_as = "ASC"
     
     # Search
-    @searcher.search # => returns users matching ALL of the conditions above
-    @searcher.all # => alias for search
+    @searcher.search    # => returns users matching ALL of the conditions above
+    @searcher.all       # => alias for search
     @searcher.count
     @searcher.first
 
