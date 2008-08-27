@@ -6,26 +6,18 @@ Searchgasm is orgasmic. Maybe not orgasmic, but you will get aroused. So go grab
 
 Have you ever wanted to search the database in the same manner that you use your models? This plugin does exactly that. If you know how to use ActiveRecord you already know how to use this. That's the beauty of this plugin, it brings the same power of ActiveRecord to searching without cluttering your models. Clean, simple, easy to use. Check it...
 
-## Do we really need another search plugin?
-
-The answer is YES, and here's why:
-
-1. None of the plugins I found solved the problem I was having: DRYing up my controllers and views. You can't get more DRY than 1 line of code in your controller: @users = UserSearcher.search(params[:search])
-
-2. This plugin won't clutter up your models. Just like observers, you have searchers. Their sole purpose is to search a model. Any configuration or code dealing with searching will be in this file. Keeping everything nice, clean, and organized.
-
-3. Because conditions can be called like ActiveRecord attributes, you can integrate easily with rails helpers. Such as form\_for and fields\_for. Wouldn't it be nice to use your form builder for your search forms and not just your model forms? What if you need to add a condition to a search form? Just add the field in the form and you're done.
-
-4. One plugin to do it all. I don't need a plugin for searching, a plugin for paginating, a plugin for data tables, etc. This plugin handles it all from searching, paginating, ordering, etc. And it's simple.
-
 ## Super Simple Example
+
+Let's assume the following relationships: user => orders => line items
 
     searcher = UserSearcher.new(:first_name_contains => "Ben")
     searcher.created_at_after = Time.now
+    searcher.orders.total_great_than = 100
+    searcher.orders.line_items.name_contains = "Awesome"
     @users = searcher.search
     # Any condition can be called upon instantiation or as an attribute, for a list of all conditions visit the wiki
 
-There are 3 other ways to perform the exact same search. Use whatever tickles your fancy:
+There are 3 other ways to perform searches. Use whatever tickles your fancy:
 
     # 1
     @users = UserSearcher.search(
@@ -46,6 +38,8 @@ There are 3 other ways to perform the exact same search. Use whatever tickles yo
 
 ## All features
 
+The above examples are just the tip of the ice berg. It can do much more:
+
 1. A plethora of conditions for ALL columns in a model. (See a all available conditions)
 2. Use the same conditions when setting up your relationships or named scopes.
 3. Scope searches with relationships and named scopes.
@@ -55,6 +49,19 @@ There are 3 other ways to perform the exact same search. Use whatever tickles yo
 7. Advanced ordering, order your results in complex ways easily. (Read more)
 8. Super simple pagination support, with helpers to make your views a breeze. (Read more)
 9. Hooks to create you own "special" conditions. (Read more)
+
+## Do we really need another search plugin?
+
+The answer is YES, and here's why:
+
+1. None of the plugins I found solved the problem I was having: DRYing up my controllers and views. You can't get more DRY than 1 line of code in your controller: @users = UserSearcher.search(params[:search])
+
+2. This plugin won't clutter up your models. Just like observers, you have searchers. Their sole purpose is to search a model. Any configuration or code dealing with searching will be in this file. Keeping everything nice, clean, and organized.
+
+3. Because conditions can be called like ActiveRecord attributes, you can integrate easily with rails helpers. Such as form\_for and fields\_for. Wouldn't it be nice to use your form builder for your search forms and not just your model forms? What if you need to add a condition to a search form? Just add the field in the form and you're done.
+
+4. One plugin to do it all. I don't need a plugin for searching, a plugin for paginating, a plugin for data tables, etc. This plugin handles it all from searching, paginating, ordering, etc. And it's simple.
+
 
 ## Ready to get started?
 
@@ -93,7 +100,7 @@ Now create app/searchers/user_searcher.rb with the following content:
   
     # app/searchers/user_searcher.rb
     
-    class UserSearcher < Searchgasm::Base
+    class UserSearcher \< Searchgasm::Base
         # The following configuration values are the defaults. Therefore none of the below configurations are neccessary
         # They are only neccesssary if you want to override the defaults
         
