@@ -4,8 +4,9 @@ module BinaryLogic
       def merge_find_options!(new_options)
         if new_options.has_key?(:conditions)
           new_options[:conditions] = new_options[:conditions].to_a
+          glue = new_options[:match_any] ? "or" : "and"
           self[:conditions] = self[:conditions].to_a
-          self[:conditions][0] = (self[:conditions].first.blank? ? "" : "(#{self[:conditions].first}) and ") + "(#{new_options[:conditions].shift})"
+          self[:conditions][0] = (self[:conditions].first.blank? ? "" : "(#{self[:conditions].first}) #{glue} ") + "(#{new_options[:conditions].shift})"
           self[:conditions] += new_options.delete(:conditions)
         end
 

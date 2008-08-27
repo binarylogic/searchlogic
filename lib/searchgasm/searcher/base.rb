@@ -37,10 +37,6 @@ module BinaryLogic
             @primary_key ||= searched_class.primary_key
           end
       
-          def searched_class
-            @searched_class ||= name.scan(/(.*)Searcher/)[0][0].constantize
-          end
-      
           def table_name
             @table_name ||= searched_class.table_name
           end
@@ -116,6 +112,10 @@ module BinaryLogic
             end
             
             condition_names.collect { |condition_name| add_condition(:column_name => name, :condition => condition_name, :type => type) }
+          end
+          
+          def search(attributes = {})
+            new(attributes = {}).search
           end
           
           # Utility
@@ -202,6 +202,11 @@ module BinaryLogic
             config[:ignore_blanks] == true
           end
           
+          def searched_class(value = nil)
+            @searched_class ||= value || name.scan(/(.*)Searcher/)[0][0].constantize
+          end
+          alias_method :searching, :searched_class
+          
           # Hooks
           #----------------------------------------------------------
           def before_build_find_options(*args)
@@ -269,17 +274,21 @@ module BinaryLogic
         def initialize(values = {})
           self.class.conditions
           self.class.associations
+          
+          # Set config
+          config.stringify_keys.each do |config_name, value|
+            send("#{config_name}=", values.delete(config_name)) if values.has_key?(config_name)
+          end
+          
+          # Set scope
+          self.scope = values.delete(:scope) if values.has_key?(:scope)
+          
           self.attributes = values
         end
         
         def attributes=(values)
           values ||= {}
           values = values.stringify_keys
-
-          # Set config
-          config.stringify_keys.each do |config_name, value|
-            send("#{config_name}=", values.delete(config_name)) if values.has_key?(config_name)
-          end
           
           # Set attributes
           values.each do |attribute, value|
@@ -290,6 +299,8 @@ module BinaryLogic
               searcher.attributes = value
             end
           end
+          
+          attributes
         end
         
         def attributes
