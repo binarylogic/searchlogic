@@ -48,34 +48,31 @@ module BinaryLogic
           # Actions
           #----------------------------------------------------------
           def add_condition(options = {})
-            options[:name] ||= "#{options[:column_name]}_#{options[:condition]}"
-            options.merge!(:searched_class => searched_class)
-            
-            condition = Condition.new(options)
+            condition = Condition.new(options[:column_name], options[:condition], options[:type], searched_class)
 
-            if !options[:column_name].blank? && options[:type] == :datetime && !Time.zone.nil? && !searched_class.skip_time_zone_conversion_for_attributes.include?("#{searched_class.name.underscore}_#{options[:column_name]}".to_sym)
+            if !condition.column_name.blank? && condition.type == :datetime && !Time.zone.nil? && !searched_class.skip_time_zone_conversion_for_attributes.include?("#{searched_class.name.underscore}_#{condition.column_name}".to_sym)
               class_eval <<-SRC
-                def #{options[:name]}
-                  time = read_attribute(:#{options[:name]})
+                def #{condition.name}
+                  time = read_attribute(:#{condition.name})
                   (time.blank? || time.zone != "UTC") ? time : time.in_time_zone
                 end
               SRC
             else
               class_eval <<-SRC
-                def #{options[:name]}
-                  read_attribute :#{options[:name]}
+                def #{condition.name}
+                  read_attribute :#{condition.name}
                 end
               SRC
             end
 
             class_eval <<-SRC
-              def #{options[:name]}=(value)
-                write_attribute :#{options[:name]}, value
+              def #{condition.name}=(value)
+                write_attribute :#{condition.name}, value
               end
             SRC
 
             alias_conditions = []
-            case options[:condition]
+            case condition.condition
             when :equals
               alias_conditions += ["", :is]
             when :does_not_equal
@@ -86,23 +83,22 @@ module BinaryLogic
               alias_conditions << :keywords
             when :greater_than
               alias_conditions << :gt
-              alias_conditions << :after if [:datetime, :timestamp, :time, :date].include?(options[:type])
+              alias_conditions << :after if [:datetime, :timestamp, :time, :date].include?(condition.type)
             when :greater_than_or_equal_to
               alias_conditions + [:at_least, :gte]
             when :less_than
               alias_conditions << :lt
-              alias_conditions << :before if [:datetime, :timestamp, :time, :date].include?(options[:type])
+              alias_conditions << :before if [:datetime, :timestamp, :time, :date].include?(condition.type)
             when :less_than_or_equal_to
               alias_conditions += [:at_most, :lte]
             end
 
             unless alias_conditions.blank?
               alias_conditions.each do |alias_condition_name|
-                alias_condition_full_name = "#{options[:column_name]}" + (alias_condition_name.blank? ? "" : "_#{alias_condition_name}")
-                alias_condition = Condition.new(options.merge(:name => alias_condition_full_name))
+                alias_condition = Condition.new(condition.column_name, alias_condition_name, condition.type, condition.searched_class)
                 class_eval <<-SRC
-                  alias_method :#{alias_condition_full_name}=, :#{options[:name]}=
-                  alias_method :#{alias_condition_full_name}, :#{options[:name]}
+                  alias_method :#{alias_condition.name}=, :#{condition.name}=
+                  alias_method :#{alias_condition.name}, :#{condition.name}
                 SRC
               end
             end
@@ -314,11 +310,7 @@ module BinaryLogic
           attributes.each do |attribute_name, uncasted_value|
             condition = self.class.conditions_hash[attribute_name]
             next if condition.nil?
-            
-            value = send(attribute_name)
-            value = value.utc if value.respond_to?(:utc)
-            
-            find_options.merge_find_options!(:conditions => condition.to_conditions(value))
+            find_options.merge_find_options!(:conditions => condition.to_conditions(send(attribute_name)))
           end
                     
           self.class.associations.each do |association|
