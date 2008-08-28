@@ -4,129 +4,144 @@
 
 Searchgasm is orgasmic. Maybe not orgasmic, but you will get aroused. So go grab a towel and let's dive in.
 
-Have you ever wanted to search the database in the same manner that you use your models? This plugin does exactly that. If you know how to use ActiveRecord you already know how to use this. That's the beauty of this plugin, it brings the same power of ActiveRecord to searching without cluttering your models. Clean, simple, easy to use. Check it...
+Searchgasm makes writing conditions, paginating, ordering, and integrating with search forms a breeze. The best way to understand what this can do is with a few examples...
 
-## Super Simple Example
+## Examples
 
-Let's assume the following relationships: user => orders => line items
+To prep our examples, let's assume we have the following relationship chain: account => user => orders => line items
 
-    # Set conditions
-    searcher = UserSearcher.new(:first_name_contains => "Ben")
-    searcher.created_at_after = Time.now
-    searcher.orders.total_great_than = 100
-    searcher.orders.line_items.name_contains = "Awesome"
-    # Any of these can be called upon instantiation, such as "first_name_contains"
-    # For a list of all conditions visit the wiki
-    
-    # Options on how to return the data
-    searcher.per_page = 10             # set to 0 to return all, can also use "limit" instead
-    searcher.page = 2
-    searcher.order_by = "last_name"    # see below for "advanced" ordering
-    searcher.order_as = "ASC"
-    # Any of the above can be called upon instantiation
-    
-    # Get results
-    searcher.search    # => returns users matching ALL of the conditions above
-    searcher.all       # => alias for search
-    searcher.count
-    searcher.first
+### Basic Searching
+    Account.all(:conditions => {:name => "Binary Logic", :website_contains => "binarylogic.com", :created_at_after => Time.now})
+    Account.first(:conditions => {:name => "Binary Logic", :website_contains => "binarylogic.com", :created_at_after => Time.now})
+    Account.count(:conditions => {:name => "Binary Logic", :website_contains => "binarylogic.com", :created_at_after => Time.now})
+    Account.maximum('id', :conditions => {:name => "Binary Logic", :website_contains => "binarylogic.com", :created_at_after => Time.now})
+    Account.minimum('id', :conditions => {:name => "Binary Logic", :website_contains => "binarylogic.com", :created_at_after => Time.now})
+    Account.sum('id', :conditions => {:name => "Binary Logic", :website_contains => "binarylogic.com", :created_at_after => Time.now})
+    Account.aveerage('id', :conditions => {:name => "Binary Logic", :website_contains => "binarylogic.com", :created_at_after => Time.now})
 
-There are 3 other ways to perform searches. Use whatever tickles your fancy:
-
-    # 1
-    @users = UserSearcher.search(
-        :first_name_contains => "Ben",
-        :created_at_after => Time.now
-    )
-    
-    # 2
-    searcher = User.new_search(:first_name_contains => "Ben")
-    searcher.created_at_after = Time.now
-    @users = searcher.search
-    
-    #3
-    @users = User.search(
-        :first_name_contains => "Ben",
-        :created_at_after => Time.now
+### Pagination and advanced ordering
+    Account.all(:conditions => {
+        :website_contains => "binarylogic.com"},
+        :page => 2,
+        :per_page => 20,
+        :order_by => {
+            :users => {
+                :orders => :total
+            }
+        },
+        :order_as => "ASC"
     )
 
-## All features
+No need to password the :include option for the relationships in the "order\_by" option, this is done automatically for you.
 
-Check out all of the other features on the wiki:
+### Traversing through relationships
+    Account.all(:conditions => {
+        :users => {
+            :order => {
+                :line_items => {
+                    :total_gt => 100,
+                    :description_keywords => "macbook intel core duo"
+                }
+            }
+        }
+    })
 
-1. Basics
-2. Conditions reference? reference
-3. Scoping your search
-4. Multiple values for a condition
-5. Order results
-6. Pagination
-7. Custom conditions & hooks
-8. Save searches
-9. Enhance relationships and named scopes
+As stated above, no need to pass the :include option for the relationships, this is done for you
 
+### Scoped searching
+    @current_users.orders.find(:all, :conditions => {:total_lte => 500})
+    @current_users.orders.count(:conditions => {:total_lte => 500})
+    @current_users.orders.sum('total', :conditions => {:total_lte => 500})
 
-## Ready to get started?
+These are only a few of the methods you can use. Any of the methods you can call on a non-scoped object, can be called on a scoped object as well.
 
-I highly recommend glancing at the [wiki](http://github.com/binarylogic/searchgasm/wikis). This readme only covers the basics. The [wiki](http://github.com/binarylogic/searchgasm/wikis) goes over the features above, how to use them, and how they work.
+### Searching with an object, great for using in form\_for or fields\_for
+    @searcher = Account.new_search
+    @searcher.name = "Binary Logic"
+    @searcher.website_contains = "binarylogic.com"
+    @searcher.created_at_after = Time.now
+    @searcher.users.orders.line_items.total_gt = 100
+    @searcher.all    # => returns all records
+    @searcher.search # => alias for "all"
+    @searcher.first  # => returns only first record
+    @searcher.count  # => performs count query with conditions
 
-### 1. Install the plugin
+All conditions called on an object can be call upon instantiation as well:
 
-    script/plugin install git://github.com/binarylogic/searchgasm.git
+    searcher = Account.new_search(:name => "Binary Logic", :website_contains => "binarylogic.com", :created_at_after => Time.now)
 
-### 2. Set up your configuration
+Check out the view:
 
-Then setup your searcher configuration by adding a file in config/initializers called searchgasm.rb
+    <%= form_for @searcher, :url => accounts_path do |f| %>
+        <%= f.text_field :name_contains %>
+        <%= f.calendar_date_select :create_at_after %>
+        # Insert any condition here with whatever form element you want
+        <%= f.submit "Search" %>
+    <% end %>
 
-    # config/initializer/searchgasm.rb
-    
-    Searcher::Base.configure do |config|
-        # the following values are the defaults
-        
-        config.virtual_searchers = [:user, :order]  # list out the names of the models you wish to search
-        config.per_page = 0                         # can use "limit" instead
-        config.order_as = "DESC"                    # the order_by configuration depends on the model, it defaults to the primary key,
-                                                    # order_by is best suited in your searcher file (see below)
-        config.ignore_blanks = true
+### Same as above, but with a block
+    searcher = Account.new_search do |s|
+        s.name = "Binary Logic"
+        s.website_contains = "binarylogic.com"
+        s.created_at_after = Time.now
+        s.users.orders.line_items.total_gt = 100
     end
 
+### Search via params
 
-### 3. Set up your searchers (optional)
+As I mentioned above the new\_search method is great for creating object and using them in form\_for or fields\_for. How about passing in the params from the form directly to run the search?
 
-If you don't want to create virtual searchers, you can create them yourself. You can just put your searcher files in your models folder, but I like to put all of my searcher files in app/searchers and in my environment.rb I add the following configuration:
-  
-    # config/environment.rb
+    accounts = Account.search(params[:search])
+
+"search" if a safe method for passing in params. I'm sure you know this, but I have to say it: *DO NOT* pass params into the "find", "all", or "first" method, you opening yourself up to SQL injections. "search" does various checks to ensure it is not possible to inject SQL.
+
+    # DO NOT DO THIS!
+    accounts = Account.all(params[:search])
     
-    config.load_paths += %W( #{RAILS_ROOT}/app/searchers )
+    # OR THIS!
+    accounts = Account.all(:conditions => params[:conditions])
 
-Now create app/searchers/user_searcher.rb with the following content:
-  
-    # app/searchers/user_searcher.rb
-    
-    class UserSearcher \*<\* Searchgasm::Base
-        # The following configuration values are the defaults. Therefore none of the below configurations are neccessary
-        # They are only neccesssary if you want to override the defaults
-        
-        per_page 0          # can use "limit" if you prefer
-        order_by "id"
-        order_as "DESC"
-        ignore_blanks true
+## Conditions Available Everywhere
+
+Not only can you use conditions when searching, but you can use them when setting up relationships or name scopes:
+
+    class User < ActiveRecord::Base
+        has_many :expensive_pending_orders, :conditions => {:total_greater_than => 1_000_000, :state => :pending}
+        named_scope :sexy, :conditions => {:first_name => "Ben", email_ends_with => "binarylogic.com"}
     end
 
+## Available Conditions
 
-### 4. Test it out
+Depending on the column type it comes preloaded with a bunch of nifty conditions:
 
-    # script/console
+    all columns
+    => :equals, :does_not_equal
     
-    UserSearcher.search(:first_name_contains => "Ben")
+    :string, :text
+    => :begins_with, :contains, :keywords, :ends_with
+    
+    :integer, :float, :decimal,:datetime, :timestamp, :time, :date
+    => :greater_than, :greater_than_or_equal_to, :less_than, :less_than_or_equal_to
 
-Play around with it. Check out the features above to perform different searches and discover all this plugin has to offer.
+Some of these conditions come with aliases, so you have your choice how to call the conditions. For example you can use "greater\_than" or "gt":
 
+    :equals;                    => :is
+    :does_not_equal             => :is_not
+    :begins_with                => :starts_with
+    :contains                   => :like
+    :greater_than               => :gt, :after (only for date and time columns)
+    :greater_than_or_equal_to   => :at_least, :gte
+    :less_than                  => :lt, :before (only for date and time columns)
+    :less_than_or_equal_to      => :at_most, :lte
+
+### Enhanced searching and blacklisted words
+You will notice above there is "contains" and "keywords". The difference is that "keywords" is an enhanced search. It acts like a real keyword search. It finds those keywords, in any order, and blacklists meaningless words such as "and", "the", etc. "contains" merely find that EXACT string in the column you are searching.
 
 ## Credits
 
 Author: Ben Johnson of [Binary Logic](http://www.binarylogic.com)
 
-Credit to Zack Ham and Robert Malko in helping with feature suggestions, cleaning up the readme / wiki, and cleaning up my code.
+Credit to Zack Ham and Robert Malko for helping with feature suggestions, cleaning up the readme / wiki, and cleaning up my code.
 
 
 Copyright (c) 2008 Ben Johnson of [Binary Logic](http://www.binarylogic.com), released under the MIT license
