@@ -11,13 +11,14 @@ Searchgasm makes writing conditions, paginating, ordering, and integrating with 
 To prep our examples, let's assume we have the following relationship chain: account => user => orders => line items
 
 ### Basic Searching
-    Account.all(:conditions => {:name => "Binary Logic", :website_contains => "binarylogic.com", :created_at_after => Time.now})
-    Account.first(:conditions => {:name => "Binary Logic", :website_contains => "binarylogic.com", :created_at_after => Time.now})
-    Account.count(:conditions => {:name => "Binary Logic", :website_contains => "binarylogic.com", :created_at_after => Time.now})
-    Account.maximum('id', :conditions => {:name => "Binary Logic", :website_contains => "binarylogic.com", :created_at_after => Time.now})
-    Account.minimum('id', :conditions => {:name => "Binary Logic", :website_contains => "binarylogic.com", :created_at_after => Time.now})
-    Account.sum('id', :conditions => {:name => "Binary Logic", :website_contains => "binarylogic.com", :created_at_after => Time.now})
-    Account.aveerage('id', :conditions => {:name => "Binary Logic", :website_contains => "binarylogic.com", :created_at_after => Time.now})
+    Account.all(:conditions => {:website_contains => "binarylogic.com", :created_at_after => Time.now})
+    Account.first(:conditions => {:website_contains => "binarylogic.com", :created_at_after => Time.now})
+    Account.count(:conditions => {:website_contains => "binarylogic.com", :created_at_after => Time.now})
+    Account.maximum('id', :conditions => {:website_contains => "binarylogic.com", :created_at_after => Time.now})
+    Account.minimum('id', :conditions => {:website_contains => "binarylogic.com", :created_at_after => Time.now})
+    Account.sum('id', :conditions => {:website_contains => "binarylogic.com", :created_at_after => Time.now})
+    Account.aveerage('id', :conditions => {:website_contains => "binarylogic.com", :created_at_after => Time.now})
+    # See available conditions below for a list of conditions
 
 ### Pagination and advanced ordering
     Account.all(:conditions => {
@@ -68,7 +69,7 @@ These are only a few of the methods you can use. Any of the methods you can call
 
 All conditions called on an object can be call upon instantiation as well:
 
-    searcher = Account.new_search(:name => "Binary Logic", :website_contains => "binarylogic.com", :created_at_after => Time.now)
+    searcher = Account.new_search(:website_contains => "binarylogic.com", :created_at_after => Time.now)
 
 Check out the view:
 
