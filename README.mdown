@@ -26,7 +26,7 @@ The purpose of this example is to show you everything searchgasm has to offer:
         :order_as => "DESC"
     )
     search.conditions.email_ends_with = "binarylogic.com"
-    search.conditions.oders.created_at_after = Time.now
+    search.conditions.oders.line_items.created_at_after = Time.now
     search.per_page = 50 # overrides the 20 set above
     
     # Call ANY of the ActiveRecord options
@@ -87,9 +87,9 @@ Again, if you want to be hardcore:
 
 ## Scoped searching
 
-    @current_users.orders.find(:all, :conditions => {:total_lte => 500})
-    @current_users.orders.count(:conditions => {:total_lte => 500})
-    @current_users.orders.sum('total', :conditions => {:total_lte => 500})
+    @current_user.orders.find(:all, :conditions => {:total_lte => 500})
+    @current_user.orders.count(:conditions => {:total_lte => 500})
+    @current_user.orders.sum('total', :conditions => {:total_lte => 500})
 
 ## Available anywhere (relationships & named scopes)
 
