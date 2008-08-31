@@ -3,6 +3,10 @@ module BinaryLogic
     module ActiveRecord
       module Associations
         module AssociationCollection
+          def self.included(klass)
+            klass.include Protection
+          end
+          
           def find_with_searchgasm(*args)
             options = args.extract_options!
             args << sanitize_options_with_searchgasm(options)

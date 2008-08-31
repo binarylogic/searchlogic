@@ -4,6 +4,7 @@ module BinaryLogic
       module Base
         def self.included(klass)
           klass.alias_method :new_search, :build_search
+          klass.include Protection
         end
         
         def calculate_with_searchgasm(*args)
@@ -17,7 +18,6 @@ module BinaryLogic
           options = args.extract_options!
           options = sanitize_options_with_searchgasm(options)
           args << options
-          
           find_every_without_searchgasm(options)
         end
         
@@ -31,10 +31,6 @@ module BinaryLogic
           searcher = searchgasm_searcher(options)
           yield searcher if block_given?
           searcher
-        end
-        
-        def search(options = {}, &block)
-          build_search(options.merge(:protect => true), &block).all
         end
         
         private

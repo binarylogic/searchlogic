@@ -1,19 +1,25 @@
 # Searchgasm
 
-## What is searchgasm?
-
 Searchgasm is orgasmic. Maybe not orgasmic, but you will get aroused. So go grab a towel and let's dive in.
 
-Searchgasm originated to satisfy a VERY simple need: so that I could use my form builder when making search forms. Sounds simple right? The goal was to use an object, that represents a search, just like a model object in form\_for and fields\_for. The design behind this plugin is pretty simple: the search object "santiizes" down into the options passed into ActiveRecord::Base.find(). It basically serves as a filter between you and ActiveRecord::Base.find(). This filter provides "enhancements" that get translated into options that ActiveRecord::Base.find() can understand. Here's where you get aroused....
+Searchgasm originated to satisfy a VERY simple need: so that I could use my form builder when making search forms. Sounds simple right? The goal was to use an object, that represents a search, just like an ActiveRecord object in form\_for and fields\_for. The design behind this plugin is pretty simple: the search object "santiizes" down into the options passed into ActiveRecord::Base.find(). It basically serves as a transparent filter between you and ActiveRecord::Base.find(). This filter provides "enhancements" that get translated into options that ActiveRecord::Base.find() can understand. Here's where you get aroused....
 
-An example is worth a thousand words:
+## Install and use
 
-For the following examples let's assume the following relationships: User => Orders => Line Items
+Since rails 2.1, gem support has been added, and it's great. Checkout how it works [http://railscasts.com/episodes/110-gem-dependencies](http://railscasts.com/episodes/110-gem-dependencies)
+
+    sudo gem install searchgasm
+
+    # environment.rb
+    config.gem "searchgasm"
 
 ## Inclusive Example
 
-The purpose of this example is to show you everything searchgasm has to offer:
+The purpose of this example is to show you everything searchgasm has to offer.
 
+For all of the examples let's assume the following relationships: User => Orders => Line Items
+
+    # new_search returns an object, you can call "find", "all", "first" also, see "a multitude of ways to search" below
     search = User.new_search(
         :conditions => {
             :first_name_contains => "Ben", 
@@ -45,13 +51,13 @@ The purpose of this example is to show you everything searchgasm has to offer:
     search.sum('id')
     search.calculate(:sum, 'id') # any of the above calculations
 
-## A multitude of ways to search
+## A multitude of ways to search, take your pick
 
 Any of the options used in the above example can be used in these, but for the sake of brevity I am only using a few:
 
     User.all(:conditions => {:age_gt => 18}, :per_page => 20)
 
-    User.first(:conditions => {:age_gt => 18, :per_page => 20})
+    User.first(:conditions => {:age_gt => 18}, :per_page => 20)
 
     User.find(:all, :conditions => {::age_gt => 18}, :per_page => 20)
 
@@ -59,12 +65,14 @@ Any of the options used in the above example can be used in these, but for the s
 
     search = User.new_search(:conditions => {:age_gt => 18})
     search.conditions.first_name_contains = "Ben"
+    search.per_page = 20
     search.all
 
 If you want to be hardcore:
 
     search = Searchgasm::Search.new(User, :conditions => {:age_gt => 18})
     search.conditions.first_name_contains = "Ben"
+    search.per_page = 20
     search.all
 
 ## Search with conditions only
@@ -90,6 +98,8 @@ Again, if you want to be hardcore:
     @current_user.orders.find(:all, :conditions => {:total_lte => 500})
     @current_user.orders.count(:conditions => {:total_lte => 500})
     @current_user.orders.sum('total', :conditions => {:total_lte => 500})
+    
+    search = @current_user.orders.build_search('total', :conditions => {:total_lte => 500})
 
 ## Available anywhere (relationships & named scopes)
 
@@ -100,9 +110,9 @@ Not only can you use searchgasm when searching, but you can use it when setting 
         named_scope :sexy, :conditions => {:first_name => "Ben", email_ends_with => "binarylogic.com"}, :per_page => 20
     end
 
-## Search via params
+## Always use protection (searching with params)
 
-As I mentioned above the purpose of this plugin was to create a search object and use it in form\_for or fields\_for. What about receiving the params in the controller and protecting against SQL injection?
+If there is one thing we in sex ed. it's to always use protection. As I mentioned above the purpose of this plugin was to create a search object and use it in form\_for or fields\_for. What about receiving the params in the controller and protecting against SQL injection?
 
     accounts = Account.find_with_protection(params[:search])
     accounts = Account.all_with_protection(params[:search])
@@ -114,7 +124,7 @@ For the lazy programmer:
     accounts = Account.allwp(params[:search])
     account = Account.firstwp(params[:search])
 
-This performs various checks to ensure SQL injection is impossible. I'm sure you know this, but I have to say it: *DO NOT* pass params into the "find", "all", or "first" method, otherwise you are opening yourself up to SQL injections.
+This performs various checks to ensure SQL injection is impossible. I'm sure you know this, but I have to say it: *DO NOT* pass params into the "find", "all", or "first" methods, otherwise you are opening yourself up to SQL injections.
 
     # DO NOT DO THIS!
     accounts = Account.all(params[:search])
@@ -124,7 +134,7 @@ This performs various checks to ensure SQL injection is impossible. I'm sure you
 
 ## Available Conditions
 
-Depending on the column type it comes preloaded with a bunch of nifty conditions:
+Depending on the type, each column comes preloaded with a bunch of nifty conditions:
 
     all columns
     => :equals, :does_not_equal
@@ -154,17 +164,21 @@ You will notice above there is "contains" and "keywords". The difference is that
 
 After all of that, here's why I love this plugin:
 
-    <% form_for :search, User.new_search, :url => users_path do |f| %>
+    <% form_for :search, User.new_conditions, :url => users_path do |f| %>
         <%= f.text_field :first_name_contains %>
         <%= f.calendar_date_select :created_at_after %>
         <%= f.select :age_gt, (1..100) %>
     <% end %>
 
+## Going beyond with smart relationships
+
+Have you ever seen iTunes smart playlists? Or what about mail filtering rules? If not, check them out. What's great about this plugin is that it makes bringing that functionality into ActiveRecord extremely easy. Checkout my other plugin: smartgasm
+
 ## Credits
 
 Author: Ben Johnson of [Binary Logic](http://www.binarylogic.com)
 
-Credit to Zack Ham and Robert Malko for helping with feature suggestions, cleaning up the readme / wiki, and cleaning up my code.
+Credit to [Zack Ham](http://github.com/zackham) and [Robert Malko](http://github.com/malkomalko/) for helping with feature suggestions, cleaning up the readme / wiki, and cleaning up my code.
 
 
 Copyright (c) 2008 Ben Johnson of [Binary Logic](http://www.binarylogic.com), released under the MIT license
