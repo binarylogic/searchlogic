@@ -12,6 +12,19 @@ class TestActiveRecordBase < Test::Unit::TestCase
     teardown_db
   end
   
+  def test_standard_searches
+    assert_nothing_raised { Account.all }
+    assert_nothing_raised { Account.first }
+    assert_nothing_raised { Account.find(:all) }
+    assert_nothing_raised { Account.find(:first) }
+    assert_nothing_raised { Account.find(:all, nil) }
+    assert_nothing_raised { Account.find(:all, {}) }
+    assert_nothing_raised { Account.count({}) }
+    assert_nothing_raised { Account.count(nil) }
+    assert_nothing_raised { Account.sum("id") }
+    assert_nothing_raised { Account.sum("id", {}) }
+  end
+  
   def test_valid_find_options
     assert_equal [ :conditions, :include, :joins, :limit, :offset, :order, :select, :readonly, :group, :from, :lock ], ActiveRecord::Base.valid_find_options
   end
@@ -23,6 +36,9 @@ class TestActiveRecordBase < Test::Unit::TestCase
     assert_equal "awesome", search.conditions.name_keywords
     assert_equal 2, search.page
     assert_equal 15, search.per_page
+    
+    search = Account.new_search(:conditions => {:name_keywords => "awesome"}, :page => 2, :per_page => 15)
+    assert_equal Account, search.klass
   end
   
   def test_searching
@@ -43,6 +59,6 @@ class TestActiveRecordBase < Test::Unit::TestCase
   end
   
   def test_scoping
-    assert_equal({}, Account.send(:scope, :find))
+    assert_equal nil, Account.send(:scope, :find)
   end
 end

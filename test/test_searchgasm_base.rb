@@ -113,4 +113,20 @@ class TestSearchgasmBase < Test::Unit::TestCase
     assert_equal search.first, Account.find(1)
     assert_equal search.find(:first), Account.find(1)
   end
+  
+  def test_protection
+    assert_raise(ArgumentError) { Account.build_search(:conditions => "(DELETE FROM users)", :page => 2, :per_page => 15) }
+    BinaryLogic::Searchgasm::Search::Base::VULNERABLE_OPTIONS.each { |option| assert_raise(ArgumentError) { Account.build_search(option => "(DELETE FROM users)") } }
+    
+    assert_nothing_raised { Account.build_search!(:conditions => "(DELETE FROM users)", :page => 2, :per_page => 15) }
+    BinaryLogic::Searchgasm::Search::Base::VULNERABLE_OPTIONS.each { |option| assert_nothing_raised { Account.build_search!(option => "(DELETE FROM users)") } }
+    
+    account = Account.first
+    
+    assert_raise(ArgumentError) { account.users.build_search(:conditions => "(DELETE FROM users)", :page => 2, :per_page => 15) }
+    BinaryLogic::Searchgasm::Search::Base::VULNERABLE_OPTIONS.each { |option| assert_raise(ArgumentError) { account.users.build_search(option => "(DELETE FROM users)") } }
+    
+    assert_nothing_raised { account.users.build_search!(:conditions => "(DELETE FROM users)", :page => 2, :per_page => 15) }
+    BinaryLogic::Searchgasm::Search::Base::VULNERABLE_OPTIONS.each { |option| assert_nothing_raised { account.users.build_search!(option => "(DELETE FROM users)") } }
+  end
 end

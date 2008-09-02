@@ -14,14 +14,14 @@ Here's where you get aroused...
 
     # app/controllers/users_controller.rb
     def index
-        @search = User.new_search(:conditions => params[:search])
+        @search = User.new_search(:conditions => params[:conditions])
         @users, @users_count = @search.all, @search.count
     end
 
 Now your view:
 
     # app/views/users/index.html.erb
-    <%= form_for :search, @search.conditions, :url => users_path do |f| %>
+    <%= form_for :conditions, @search.conditions, :url => users_path do |f| %>
         <%= f.text_field :first_name_contains %>
         <%= f.calendar_date_select :created_after %> # nice rails plugin for replacing date_select
         <% f.fields_for :orders, f.object.orders do |orders_f| %>
@@ -196,27 +196,24 @@ Not only can you use searchgasm when searching, but you can use it when setting 
         named_scope :sexy, :conditions => {:first_name => "Ben", email_ends_with => "binarylogic.com"}, :per_page => 20
     end
 
-## Always use protection (searching with params)
+## Always use protection...against SQL injections
 
-If there is one thing we in sex ed. it's to always use protection. As I mentioned above the purpose of this plugin was to create a search object and use it in form\_for or fields\_for. What about receiving the params in the controller and protecting against SQL injection?
+If there is one thing we all know, it's to always use protection. That's why searchgasm protects you by default. The new\_search and new\_conditions methods are protected by default. This means that various checks are done to ensure it is not possible to perform any type of SQL injection. But this also limits how you can search, meaning you can't write raw SQL. If you want to be daring and search without protection prepare to accept the consequences. All that you have to do is add ! to the end of the methods: new\_search! and new\_conditions!. That was an awkward paragraph. Let's move on.
 
-    accounts = Account.find_with_protection(params[:search])
-    accounts = Account.all_with_protection(params[:search])
-    account = Account.first_with_protection(params[:search])
+### Protected from SQL injections
 
-For the lazy programmer:
+    search = Account.new_search(params[:search])
+    conditions = Account.new_conditions(params[:conditions])
 
-    accounts = Account.findwp(params[:search])
-    accounts = Account.allwp(params[:search])
-    account = Account.firstwp(params[:search])
+### *NOT* protected from SQL injections
 
-This performs various checks to ensure SQL injection is impossible. I'm sure you know this, but I have to say it: *DO NOT* pass params into the "find", "all", or "first" methods, otherwise you are opening yourself up to SQL injections.
-
-    # DO NOT DO THIS!
+    accounts = Account.find(params[:search])
     accounts = Account.all(params[:search])
-    
-    # OR THIS!
-    accounts = Account.all(:conditions => params[:conditions])
+    account = Account.first(params[:search])
+    search = Account.new_search!(params[:search])
+    conditions = Account.new_conditions!(params[:conditions])
+
+Lesson learned: use new\_search and new\_conditions when passing in params as *ANY* of the options.
 
 ## Available Conditions
 

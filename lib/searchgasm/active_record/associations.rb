@@ -3,12 +3,6 @@ module BinaryLogic
     module ActiveRecord
       module Associations
         module AssociationCollection
-          def self.included(klass)
-            klass.class_eval do
-              include Protection
-            end
-          end
-          
           def find_with_searchgasm(*args)
             options = args.extract_options!
             args << sanitize_options_with_searchgasm(options)
@@ -16,11 +10,27 @@ module BinaryLogic
           end
           
           def build_conditions(options = {}, &block)
-            @reflection.klass.build_conditions(options.merge(:scope => scope(:find)[:conditions]), &block)
+            conditions = @reflection.klass.build_conditions(options, &block)
+            conditions.scope = scope(:find)[:conditions]
+            conditions
+          end
+          
+          def build_conditions!(options = {}, &block)
+            conditions = @reflection.klass.build_conditions!(options, &block)
+            conditions.scope = scope(:find)[:conditions]
+            conditions
           end
         
           def build_search(options = {}, &block)
-            @reflection.klass.build_search(options.merge(:scope => scope(:find)[:conditions]), &block)
+            conditions = @reflection.klass.build_search(options, &block)
+            conditions.scope = scope(:find)[:conditions]
+            conditions
+          end
+          
+          def build_search!(options = {}, &block)
+            conditions = @reflection.klass.build_search!(options, &block)
+            conditions.scope = scope(:find)[:conditions]
+            conditions
           end
         end
       

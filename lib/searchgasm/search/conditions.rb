@@ -4,7 +4,7 @@ module BinaryLogic
       class Conditions
         include Utilities
         
-        attr_accessor :klass, :relationship_name, :scope
+        attr_accessor :klass, :protect, :relationship_name, :scope
         
         class << self
           def condition_types_for_column_type(type)
@@ -55,15 +55,25 @@ module BinaryLogic
           end
         end
         
-        def initialize(klass, values = {})
+        def initialize(klass, init_values = {})
           self.klass = klass
           klass.columns.each { |column| add_conditions_for_column!(column) }
           klass.reflect_on_all_associations.each { |association| add_association!(association)  }
-          self.value = values
+          self.value = init_values
+        end
+        
+        def assert_valid_values(values)
+          keys = condition_names.collect { |condition_name| condition_name.to_sym }
+          keys += klass.reflect_on_all_associations.collect { |association| association.name }
+          values.symbolize_keys.assert_valid_keys(keys)
         end
         
         def associations
           objects.select { |object| object.is_a?(self.class) }
+        end
+        
+        def condition_names
+          @condition_names ||= []
         end
         
         def includes
@@ -77,6 +87,10 @@ module BinaryLogic
         
         def objects
           @objects ||= []
+        end
+        
+        def protect?
+          protect == true
         end
         
         def reset!
@@ -97,15 +111,17 @@ module BinaryLogic
           merge_conditions(sanitized_objects, scope)
         end
         
-        def value=(conditions)
+        def value=(values)
           reset!
           self.scope = nil
           
-          case conditions
+          case values
           when Hash
-            conditions.each { |condition, value| send("#{condition}=", value) }
+            assert_valid_values(values)
+            values.each { |condition, value| send("#{condition}=", value) }
           else
-            self.scope = conditions
+            raise(ArgumentError, "You can not set a scope or pass SQL while the search is being protected") if protect?
+            self.scope = values
           end
         end
         
@@ -143,7 +159,8 @@ module BinaryLogic
           
           def add_condition!(condition_type, column)
             name = Condition.generate_name(column, condition_type)
-
+            self.condition_names << name
+            
             # Define accessor methods
             self.class.class_eval <<-SRC
               def #{name}_object
@@ -161,6 +178,7 @@ module BinaryLogic
             
             # Define aliases
             self.class.aliases_for_condition(column, condition_type).each do |alias_name|
+              self.condition_names << alias_name
               self.class.class_eval do
                 alias_method alias_name, name
                 alias_method "#{alias_name}=", "#{name}="

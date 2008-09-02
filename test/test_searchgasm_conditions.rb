@@ -118,6 +118,16 @@ class TestSearchgasmConditions < Test::Unit::TestCase
     assert_equal conditions.scope, "id in (1,2,3,4)"
   end
   
+  def test_protection
+    assert_raise(ArgumentError) { Account.new_conditions("(DELETE FROM users)") }
+    assert_nothing_raised { Account.build_conditions!("(DELETE FROM users)") }
+    
+    account = Account.first
+    
+    assert_raise(ArgumentError) { account.users.build_conditions("(DELETE FROM users)") }
+    assert_nothing_raised { account.users.build_conditions!("(DELETE FROM users)") }
+  end
+  
   private
     def column_value(column)
       case column.type
