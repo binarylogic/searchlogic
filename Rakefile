@@ -3,7 +3,7 @@ require 'echoe'
 
 require File.dirname(__FILE__) << "/lib/searchgasm/version"
 
-Echoe.new 'fiveruns_manage' do |p|
+Echoe.new 'searchgasm' do |p|
   p.version = BinaryLogic::Searchgasm::Version::STRING
   p.author = "Ben Johnson of Binary Logic"
   p.email  = 'bjohnson@binarylogic.com'
