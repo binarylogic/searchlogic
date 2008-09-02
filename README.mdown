@@ -44,7 +44,7 @@ Now go into your console and try out any of these example with your own models.
 ## Detailed Example w/ object based searching
 
     # Instantiate
-    search = User.new_search(
+    @search = User.new_search(
         :conditions => {
             :first_name_contains => "Ben", 
             :age_gt => 18,
@@ -57,21 +57,31 @@ Now go into your console and try out any of these example with your own models.
     )
     
     # Set conditions on relationships
-    search.conditions.email_ends_with = "binarylogic.com"
-    search.conditions.oders.line_items.created_after = Time.now
+    @search.conditions.email_ends_with = "binarylogic.com"
+    @search.conditions.oders.line_items.created_after = Time.now
     
     # Set options
-    search.per_page = 50 # overrides the 20 set above
+    @search.per_page = 50 # overrides the 20 set above
     
     # Set ANY of the ActiveRecord options
-    search.group = "last_name"
-    search.readonly = true
+    @search.group = "last_name"
+    @search.readonly = true
     # ... see ActiveRecord documentation
     
     # Return results just like ActiveRecord
-    search.all
-    search.search # alias for all
-    search.first
+    @search.all
+    @search.search # alias for all
+    @search.first
+
+**As you can see, you could pass the search object right into form\_for:**
+
+    <%= form_for :search, @search.conditions, :url => users_path do |f| %>
+        <%= f.text_field :first_name_contains %>
+        <%= f.calendar_date_select :create_after %> # nice rails plugin for replacing date_select
+        <% f.fields_for :orders, f.object.orders do |orders_f| %>
+            <%= f.select :total_gt, (1..100) %>
+        <% end %>
+    <% end %>
 
 ## Calculations
 
@@ -222,16 +232,6 @@ Some of these conditions come with aliases, so you have your choice how to call 
 ### Enhanced searching and blacklisted words
 
 You will notice above there is "contains" and "keywords". The difference is that "keywords" is an enhanced search. It acts like a real keyword search. It finds those keywords, in any order, and blacklists meaningless words such as "and", "the", etc. "contains" finds the EXACT string in the column you are searching, spaces and all.
-
-## Creating your search form
-
-After all of that, here's why I love this plugin:
-
-    <% form_for :search, User.new_conditions, :url => users_path do |f| %>
-        <%= f.text_field :first_name_contains %>
-        <%= f.calendar_date_select :created_after %>
-        <%= f.select :age_gt, (1..100) %>
-    <% end %>
 
 ## Credits
 
