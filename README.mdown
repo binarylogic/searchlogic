@@ -34,17 +34,16 @@ Now go into your console and try out any of these example with your own models.
 
     User.all(
         :conditions => {
-            :first_name_contains => "Ben",
-            :email_ends_with => "binarylogic.com"
+            :first_name_contains => "Ben",          # first_name like '%Ben%'
+            :email_ends_with => "binarylogic.com"   # email like '%binarylogic.com'
         },
-        :page => 3,
-        :per_page => 20
+        :per_page => 20     # limit 20
+        :page => 3          # offset 60
     )
 
 ## Detailed Example w/ object based searching
 
-    # new_search returns an object, you can call "find", "all", "first" also, see "different ways to search" below
-    
+    # Instantiate
     search = User.new_search(
         :conditions => {
             :first_name_contains => "Ben", 
@@ -56,11 +55,15 @@ Now go into your console and try out any of these example with your own models.
         :order_by => {:orders => :total},
         :order_as => "DESC"
     )
+    
+    # Set conditions on relationships
     search.conditions.email_ends_with = "binarylogic.com"
-    search.conditions.oders.line_items.created_at_after = Time.now
+    search.conditions.oders.line_items.created_after = Time.now
+    
+    # Set options
     search.per_page = 50 # overrides the 20 set above
     
-    # Call ANY of the ActiveRecord options
+    # Set ANY of the ActiveRecord options
     search.group = "last_name"
     search.readonly = true
     # ... see ActiveRecord documentation
@@ -98,7 +101,7 @@ Any of the options used in the above example can be used in these, but for the s
 
     User.find(:first, :conditions => {::age_gt => 18}, :per_page => 20)
 
-    search = User.new_search(:conditions => {:age_gt => 18})
+    search = User.new_search(:conditions => {:age_gt => 18})    # build_search is an alias
     search.conditions.first_name_contains = "Ben"
     search.per_page = 20
     search.all
@@ -226,7 +229,7 @@ After all of that, here's why I love this plugin:
 
     <% form_for :search, User.new_conditions, :url => users_path do |f| %>
         <%= f.text_field :first_name_contains %>
-        <%= f.calendar_date_select :created_at_after %>
+        <%= f.calendar_date_select :created_after %>
         <%= f.select :age_gt, (1..100) %>
     <% end %>
 

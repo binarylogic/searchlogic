@@ -24,14 +24,13 @@ class TestSearchgasmConditions < Test::Unit::TestCase
       
       klass.columns.each do |column|
         value = column_value(column)
-        BinaryLogic::Searchgasm::Search::Conditions.conditions_for_column_type(column.type).each do |condition|
-          name = BinaryLogic::Searchgasm::Search::Condition.generate_name(column, condition)
+        BinaryLogic::Searchgasm::Search::Conditions.condition_types_for_column_type(column.type).each do |condition_type|
+          name = BinaryLogic::Searchgasm::Search::Condition.generate_name(column, condition_type)
           conditions.send("#{name}=", value)
           assert_equal conditions.send(name), value
-          BinaryLogic::Searchgasm::Search::Conditions.alias_conditions(condition).each do |alias_condition|
-            alias_name = BinaryLogic::Searchgasm::Search::Condition.generate_name(column, alias_condition)
-            conditions.send("#{alias_name}=", value)
-            assert_equal conditions.send(alias_name), value
+          BinaryLogic::Searchgasm::Search::Conditions.aliases_for_condition(column, condition_type).each do |alias_condition|
+            conditions.send("#{alias_condition}=", value)
+            assert_equal conditions.send(alias_condition), value
           end
         end
       end
@@ -98,7 +97,7 @@ class TestSearchgasmConditions < Test::Unit::TestCase
     conditions.name_contains = "Binary"
     conditions.id_gt = 5
     now = Time.now
-    conditions.created_at_after = now
+    conditions.created_after = now
     assert_equal conditions.sanitize, ["(\"accounts\".\"name\" LIKE ?) AND (\"accounts\".\"id\" > ?) AND (\"accounts\".\"created_at\" > ?)", "%Binary%", 5, now]
     
     # test out associations
