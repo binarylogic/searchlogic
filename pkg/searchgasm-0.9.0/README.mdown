@@ -1,0 +1,240 @@
+# Searchgasm
+
+Searchgasm is orgasmic. Maybe not orgasmic, but you will get aroused. So go grab a towel and let's dive in.
+
+Searchgasm originated to satisfy a VERY simple need: so that I could use my form builder when making search forms. Sounds simple right? The goal was to use an object, that represents a search, just like an ActiveRecord object in form\_for and fields\_for.
+
+I'm a big fan of understanding what I'm using, so here's a quick explanation: The design behind this plugin is pretty simple. The search object "santiizes" down into the options passed into ActiveRecord::Base.find(). It basically serves as a transparent filter between you and ActiveRecord::Base.find(). This filter provides "enhancements" that get translated into options that ActiveRecord::Base.find() can understand. This doesn't step on the toes or dig into he internals of ActiveRecord. It uses what ActiveRecord provides publicly. Letting ActiveRecord do all of the hard work and keeping this plugin solid and less brittle.
+
+Here's where you get aroused...
+
+## Install and use
+
+    sudo gem install searchgasm
+
+For rails > 2.1
+
+    # environment.rb
+    config.gem "searchgasm"
+
+For rails < 2.1
+
+    # environment.rb
+    require "searchgasm"
+
+Or as a plugin
+
+    script/plugin install git://github.com/binarylogic/searchgasm.git
+
+Now go into your console and try out any of these example with your own models.
+
+**For all examples, let's assume the following relationships: User => Orders => Line Items**
+
+## Super Simple Example
+
+    User.all(
+        :conditions => {
+            :first_name_contains => "Ben",
+            :email_ends_with => "binarylogic.com"
+        },
+        :page => 3,
+        :per_page => 20
+    )
+
+## Detailed Example w/ object based searching
+
+    # new_search returns an object, you can call "find", "all", "first" also, see "different ways to search" below
+    
+    search = User.new_search(
+        :conditions => {
+            :first_name_contains => "Ben", 
+            :age_gt => 18,
+            :orders => {:total_lt => 100}
+        },
+        :per_page => 20,
+        :page => 2,
+        :order_by => {:orders => :total},
+        :order_as => "DESC"
+    )
+    search.conditions.email_ends_with = "binarylogic.com"
+    search.conditions.oders.line_items.created_at_after = Time.now
+    search.per_page = 50 # overrides the 20 set above
+    
+    # Call ANY of the ActiveRecord options
+    search.group = "last_name"
+    search.readonly = true
+    # ... see ActiveRecord documentation
+    
+    # Return results just like ActiveRecord
+    search.all
+    search.search # alias for all
+    search.first
+
+## Calculations
+
+Using the object from above:
+
+    search.average('id')
+    search.count
+    search.maximum('id')
+    search.minimum('id')
+    search.sum('id')
+    search.calculate(:sum, 'id') # any of the above calculations
+
+Or do it from your model:
+
+    User.count(:conditions => {:first_name_contains => "Ben"})
+    # ... all other calcualtions, etc.
+
+## Different ways to search, take your pick
+
+Any of the options used in the above example can be used in these, but for the sake of brevity I am only using a few:
+
+    User.all(:conditions => {:age_gt => 18}, :per_page => 20)
+
+    User.first(:conditions => {:age_gt => 18}, :per_page => 20)
+
+    User.find(:all, :conditions => {::age_gt => 18}, :per_page => 20)
+
+    User.find(:first, :conditions => {::age_gt => 18}, :per_page => 20)
+
+    search = User.new_search(:conditions => {:age_gt => 18})
+    search.conditions.first_name_contains = "Ben"
+    search.per_page = 20
+    search.all
+
+If you want to be hardcore:
+
+    search = Searchgasm::Search.new(User, :conditions => {:age_gt => 18})
+    search.conditions.first_name_contains = "Ben"
+    search.per_page = 20
+    search.all
+
+## Search with conditions only (great for form\_for or fields\_for)
+
+    conditions = User.new_conditions(:age_gt => 18)
+    conditions.first_name_contains = "Ben"
+    conditions.search
+    conditions.all
+    # ... all operations above are available
+
+Pass a conditions object right into ActiveRecord:
+
+    User.all(:conditions => conditions) # same as conditions.search
+
+Again, if you want to be hardcore:
+
+    conditions = Searchgasm::Conditions.new(User, :age_gt => 18)
+    conditions.first_name_contains = "Ben"
+    conditions.search
+
+## Scoped searching
+
+    @current_user.orders.find(:all, :conditions => {:total_lte => 500})
+    @current_user.orders.count(:conditions => {:total_lte => 500})
+    @current_user.orders.sum('total', :conditions => {:total_lte => 500})
+    
+    search = @current_user.orders.build_search('total', :conditions => {:total_lte => 500})
+
+## Searching trees
+
+For tree data structures you get a few nifty methods. Let's assume Users is a tree data structure.
+
+    # Child of
+    User.all(:conditions => {:child_of => User.roots.first})
+    User.all(:conditions => {:child_of => User.roots.first.id})
+    
+    # Sibling of
+    User.all(:conditions => {:sibling_of => User.roots.first})
+    User.all(:conditions => {:sibling_of => User.roots.first.id})
+    
+    # Descendent of (includes all recursive children: children, grand children, great grand children, etc)
+    User.all(:conditions => {:descendent_of => User.roots.first})
+    User.all(:conditions => {:descendent_of => User.roots.first.id})
+    
+    # Inclusive descendent_of. Same as above but includes the root
+    User.all(:conditions => {:inclusive_descendent_of => User.roots.first})
+    User.all(:conditions => {:inclusive_descendent_of => User.roots.first.id})
+    
+
+
+## Available anywhere (relationships & named scopes)
+
+Not only can you use searchgasm when searching, but you can use it when setting up relationships or named scopes:
+
+    class User < ActiveRecord::Base
+        has_many :expensive_pending_orders, :conditions => {:total_greater_than => 1_000_000, :state => :pending}, :per_page => 20
+        named_scope :sexy, :conditions => {:first_name => "Ben", email_ends_with => "binarylogic.com"}, :per_page => 20
+    end
+
+## Always use protection (searching with params)
+
+If there is one thing we in sex ed. it's to always use protection. As I mentioned above the purpose of this plugin was to create a search object and use it in form\_for or fields\_for. What about receiving the params in the controller and protecting against SQL injection?
+
+    accounts = Account.find_with_protection(params[:search])
+    accounts = Account.all_with_protection(params[:search])
+    account = Account.first_with_protection(params[:search])
+
+For the lazy programmer:
+
+    accounts = Account.findwp(params[:search])
+    accounts = Account.allwp(params[:search])
+    account = Account.firstwp(params[:search])
+
+This performs various checks to ensure SQL injection is impossible. I'm sure you know this, but I have to say it: *DO NOT* pass params into the "find", "all", or "first" methods, otherwise you are opening yourself up to SQL injections.
+
+    # DO NOT DO THIS!
+    accounts = Account.all(params[:search])
+    
+    # OR THIS!
+    accounts = Account.all(:conditions => params[:conditions])
+
+## Available Conditions
+
+Depending on the type, each column comes preloaded with a bunch of nifty conditions:
+
+    all columns
+    => :equals, :does_not_equal
+
+    :string, :text
+    => :begins_with, :contains, :keywords, :ends_with
+
+    :integer, :float, :decimal,:datetime, :timestamp, :time, :date
+    => :greater_than, :greater_than_or_equal_to, :less_than, :less_than_or_equal_to
+
+    tree data structures (see above "searching trees")
+    => :child_of, :sibling_of, :descendent_of, :inclusive_descendent_of
+
+Some of these conditions come with aliases, so you have your choice how to call the conditions. For example you can use "greater\_than" or "gt":
+
+    :equals;                    => :is
+    :does_not_equal             => :is_not, :not
+    :begins_with                => :starts_with
+    :contains                   => :like
+    :greater_than               => :gt, :after
+    :greater_than_or_equal_to   => :at_least, :gte
+    :less_than                  => :lt, :before
+    :less_than_or_equal_to      => :at_most, :lte
+
+### Enhanced searching and blacklisted words
+
+You will notice above there is "contains" and "keywords". The difference is that "keywords" is an enhanced search. It acts like a real keyword search. It finds those keywords, in any order, and blacklists meaningless words such as "and", "the", etc. "contains" finds the EXACT string in the column you are searching, spaces and all.
+
+## Creating your search form
+
+After all of that, here's why I love this plugin:
+
+    <% form_for :search, User.new_conditions, :url => users_path do |f| %>
+        <%= f.text_field :first_name_contains %>
+        <%= f.calendar_date_select :created_at_after %>
+        <%= f.select :age_gt, (1..100) %>
+    <% end %>
+
+## Credits
+
+Author: [Ben Johnson](http://github.com/binarylogic) of [Binary Logic](http://www.binarylogic.com)
+
+Credit to [Zack Ham](http://github.com/zackham) and [Robert Malko](http://github.com/malkomalko/) for helping with feature suggestions, cleaning up the readme / wiki, and cleaning up my code.
+
+
+Copyright (c) 2008 [Ben Johnson](http://github.com/binarylogic) of [Binary Logic](http://www.binarylogic.com), released under the MIT license 
