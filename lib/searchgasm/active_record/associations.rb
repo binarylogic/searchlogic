@@ -4,7 +4,9 @@ module BinaryLogic
       module Associations
         module AssociationCollection
           def self.included(klass)
-            klass.include Protection
+            klass.class_eval do
+              include Protection
+            end
           end
           
           def find_with_searchgasm(*args)
@@ -12,14 +14,13 @@ module BinaryLogic
             args << sanitize_options_with_searchgasm(options)
             find_without_searchgasm(*args)
           end
+          
+          def build_conditions(options = {}, &block)
+            @reflection.klass.build_conditions(options.merge(:scope => scope(:find)[:conditions]), &block)
+          end
         
           def build_search(options = {}, &block)
-            @reflection.klass.build_search(scope(:find), &block)
-          end
-          
-          def search(options = {}, &block)
-            searcher = build_search(options, &block)
-            searcher.all
+            @reflection.klass.build_search(options.merge(:scope => scope(:find)[:conditions]), &block)
           end
         end
       

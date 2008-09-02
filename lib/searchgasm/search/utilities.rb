@@ -4,6 +4,9 @@ module BinaryLogic
       module Utilities
         private
           def merge_conditions(*conditions)
+            options = conditions.extract_options!
+            conditions.delete_if { |condition| condition.blank? }
+            return if conditions.blank?
             return conditions.first if conditions.size == 1
             
             conditions_strs = []
@@ -11,13 +14,19 @@ module BinaryLogic
             
             conditions.each do |condition|
               next if condition.blank?
-              conditions_strs << condition.first
-              conditions_subs += condition[1..-1]
+              arr_condition = [condition].flatten
+              conditions_strs << arr_condition.first
+              conditions_subs += arr_condition[1..-1]
             end
             
             return if conditions_strs.blank?
             
-            ["(#{conditions_strs.join(") and (")})", *conditions_subs]
+            join = options[:any] ? "OR" : "AND"
+            conditions_str = "(#{conditions_strs.join(") #{join} (")})"
+            
+            return conditions_str if conditions_subs.blank?
+            
+            [conditions_str, *conditions_subs]
           end
       end
     end

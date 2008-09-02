@@ -25,7 +25,6 @@ module BinaryLogic
         end
         
         alias_method :per_page, :limit
-        alias_method :per_page=, :limit=
         
         def all
           klass.all(sanitize)
@@ -56,7 +55,22 @@ module BinaryLogic
         def first
           klass.first(sanitize)
         end
-
+        
+        def include(sanitize = false)
+          includes = [self.options[:include], conditions.includes].flatten.compact
+          includes.blank? ? nil : (includes.size == 1 ? includes.first : includes)
+        end
+        
+        def limit=(value)
+          return options[:limit] = nil if value.nil? || value == 0
+          
+          old_limit = options[:limit]
+          options[:limit] = value
+          self.page = @page if !@page.blank? # retry page now that limit is set
+          value
+        end
+        alias_method :per_page=, :limit=
+        
         def options
           @options ||= {}
         end
@@ -89,7 +103,20 @@ module BinaryLogic
         end
         
         def page=(value)
-          self.offset = value * limit
+          return self.offset = nil if value.nil?
+          
+          if limit.blank?
+            @page = value
+          else
+            @page = nil
+            self.offset = value * limit
+          end
+          value
+        end
+        
+        def reset!
+          conditions.reset!
+          self.options = {}
         end
         
         def sanitize
@@ -100,6 +127,14 @@ module BinaryLogic
             find_options[find_option] = value
           end
           find_options
+        end
+        
+        def scope
+          conditions.scope
+        end
+        
+        def scope=(value)
+          conditions.scope = value
         end
       end
     end

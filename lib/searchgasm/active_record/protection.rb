@@ -3,10 +3,12 @@ module BinaryLogic
     module ActiveRecord
       module Protection
         def self.included(klass)
-          klass.alias_method :new_search, :build_search
-          klass.alias_method :findwp, :find_with_protection
-          klass.alias_method :allwp, :all_with_protection
-          klass.alias_method :firstwp, :first_with_protection
+          klass.class_eval do
+            alias_method :new_search, :build_search
+            alias_method :findwp, :find_with_protection
+            alias_method :allwp, :all_with_protection
+            alias_method :firstwp, :first_with_protection
+          end
         end
         
         def find_with_protection(*args)

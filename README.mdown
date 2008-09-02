@@ -2,22 +2,35 @@
 
 Searchgasm is orgasmic. Maybe not orgasmic, but you will get aroused. So go grab a towel and let's dive in.
 
-Searchgasm originated to satisfy a VERY simple need: so that I could use my form builder when making search forms. Sounds simple right? The goal was to use an object, that represents a search, just like an ActiveRecord object in form\_for and fields\_for. The design behind this plugin is pretty simple: the search object "santiizes" down into the options passed into ActiveRecord::Base.find(). It basically serves as a transparent filter between you and ActiveRecord::Base.find(). This filter provides "enhancements" that get translated into options that ActiveRecord::Base.find() can understand. Here's where you get aroused....
+Searchgasm originated to satisfy a VERY simple need: so that I could use my form builder when making search forms. Sounds simple right? The goal was to use an object, that represents a search, just like an ActiveRecord object in form\_for and fields\_for.
+
+I'm a big fan of understanding what I'm using, so here's a quick explanation: The design behind this plugin is pretty simple. The search object "santiizes" down into the options passed into ActiveRecord::Base.find(). It basically serves as a transparent filter between you and ActiveRecord::Base.find(). This filter provides "enhancements" that get translated into options that ActiveRecord::Base.find() can understand. This doesn't step on the toes or dig into he internals of ActiveRecord. It uses what ActiveRecord provides publicly. Letting ActiveRecord do all of the hard work and keeping this plugin solid and less brittle.
+
+Here's where you get aroused...
 
 ## Install and use
 
-Since rails 2.1, gem support has been added, and it's great. Checkout how it works [http://railscasts.com/episodes/110-gem-dependencies](http://railscasts.com/episodes/110-gem-dependencies)
-
     sudo gem install searchgasm
+
+For rails > 2.1
 
     # environment.rb
     config.gem "searchgasm"
 
-## Inclusive Example
+For rails < 2.1
 
-The purpose of this example is to show you everything searchgasm has to offer.
+    # environment.rb
+    require "searchgasm"
 
-For all of the examples let's assume the following relationships: User => Orders => Line Items
+Now go into your console and try out any of these example with your own models.
+
+**For all of the examples below, let's assume the following relationships: User => Orders => Line Items**
+
+## Super Simple Example
+
+    User.all(:conditions => {:first_name_contains => "Ben", :email_ends_with => "binarylogic.com"}, :page => 3, :per_page => 20)
+
+## Detailed Example w/ object based searching
 
     # new_search returns an object, you can call "find", "all", "first" also, see "a multitude of ways to search" below
     search = User.new_search(
@@ -44,12 +57,22 @@ For all of the examples let's assume the following relationships: User => Orders
     search.all
     search.search # alias for all
     search.first
+
+## Calculations
+
+Using the object from above:
+
     search.average('id')
     search.count
     search.maximum('id')
     search.minimum('id')
     search.sum('id')
     search.calculate(:sum, 'id') # any of the above calculations
+
+Or do it from your model:
+
+    User.count(:conditions => {:first_name_contains => "Ben"})
+    # ... all other calcualtions, etc.
 
 ## A multitude of ways to search, take your pick
 
@@ -75,7 +98,7 @@ If you want to be hardcore:
     search.per_page = 20
     search.all
 
-## Search with conditions only
+## Search with conditions only (great for using in form\_for or fields\_for)
 
     conditions = User.new_conditions(:age_gt => 18)
     conditions.first_name_contains = "Ben"
@@ -100,6 +123,28 @@ Again, if you want to be hardcore:
     @current_user.orders.sum('total', :conditions => {:total_lte => 500})
     
     search = @current_user.orders.build_search('total', :conditions => {:total_lte => 500})
+
+## Searching trees
+
+For tree data structures you get a few nifty methods. Let's assume Users is a tree data structure.
+
+    # Child of
+    User.all(:conditions => {:child_of => User.roots.first})
+    User.all(:conditions => {:child_of => User.roots.first.id})
+    
+    # Sibling of
+    User.all(:conditions => {:sibling_of => User.roots.first})
+    User.all(:conditions => {:sibling_of => User.roots.first.id})
+    
+    # Descendent of (includes all recursive children: children, grand children, great grand children, etc)
+    User.all(:conditions => {:descendent_of => User.roots.first})
+    User.all(:conditions => {:descendent_of => User.roots.first.id})
+    
+    # Inclusive descendent_of. Same as above but includes the root
+    User.all(:conditions => {:inclusive_descendent_of => User.roots.first})
+    User.all(:conditions => {:inclusive_descendent_of => User.roots.first.id})
+    
+
 
 ## Available anywhere (relationships & named scopes)
 
@@ -144,6 +189,9 @@ Depending on the type, each column comes preloaded with a bunch of nifty conditi
 
     :integer, :float, :decimal,:datetime, :timestamp, :time, :date
     => :greater_than, :greater_than_or_equal_to, :less_than, :less_than_or_equal_to
+
+    tree data structures (see above "searching trees")
+    => :child_of, :sibling_of, :descendent_of, :inclusive_descendent_of
 
 Some of these conditions come with aliases, so you have your choice how to call the conditions. For example you can use "greater\_than" or "gt":
 
