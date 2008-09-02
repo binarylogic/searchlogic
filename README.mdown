@@ -22,17 +22,29 @@ For rails < 2.1
     # environment.rb
     require "searchgasm"
 
+Or as a plugin
+
+    script/plugin install git://github.com/binarylogic/searchgasm.git
+
 Now go into your console and try out any of these example with your own models.
 
 **For all of the examples below, let's assume the following relationships: User => Orders => Line Items**
 
 ## Super Simple Example
 
-    User.all(:conditions => {:first_name_contains => "Ben", :email_ends_with => "binarylogic.com"}, :page => 3, :per_page => 20)
+    User.all(
+        :conditions => {
+            :first_name_contains => "Ben",
+            :email_ends_with => "binarylogic.com"
+        },
+        :page => 3,
+        :per_page => 20
+    )
 
 ## Detailed Example w/ object based searching
 
-    # new_search returns an object, you can call "find", "all", "first" also, see "a multitude of ways to search" below
+    # new_search returns an object, you can call "find", "all", "first" also, see "different ways to search" below
+    
     search = User.new_search(
         :conditions => {
             :first_name_contains => "Ben", 
@@ -74,7 +86,7 @@ Or do it from your model:
     User.count(:conditions => {:first_name_contains => "Ben"})
     # ... all other calcualtions, etc.
 
-## A multitude of ways to search, take your pick
+## Different ways to search, take your pick
 
 Any of the options used in the above example can be used in these, but for the sake of brevity I am only using a few:
 
@@ -98,7 +110,7 @@ If you want to be hardcore:
     search.per_page = 20
     search.all
 
-## Search with conditions only (great for using in form\_for or fields\_for)
+## Search with conditions only (great for form\_for or fields\_for)
 
     conditions = User.new_conditions(:age_gt => 18)
     conditions.first_name_contains = "Ben"
@@ -218,15 +230,11 @@ After all of that, here's why I love this plugin:
         <%= f.select :age_gt, (1..100) %>
     <% end %>
 
-## Going beyond with smart relationships
-
-Have you ever seen iTunes smart playlists? Or what about mail filtering rules? If not, check them out. What's great about this plugin is that it makes bringing that functionality into ActiveRecord extremely easy. Checkout my other plugin: smartgasm
-
 ## Credits
 
-Author: Ben Johnson of [Binary Logic](http://www.binarylogic.com)
+Author: [Ben Johnson](http://github.com/binarylogic) of [Binary Logic](http://www.binarylogic.com)
 
 Credit to [Zack Ham](http://github.com/zackham) and [Robert Malko](http://github.com/malkomalko/) for helping with feature suggestions, cleaning up the readme / wiki, and cleaning up my code.
 
 
-Copyright (c) 2008 Ben Johnson of [Binary Logic](http://www.binarylogic.com), released under the MIT license
+Copyright (c) 2008 [Ben Johnson](http://github.com/binarylogic) of [Binary Logic](http://www.binarylogic.com), released under the MIT license
