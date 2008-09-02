@@ -20,12 +20,10 @@ module BinaryLogic
         end
         
         (::ActiveRecord::Base.valid_find_options - [:conditions]).each do |option|
-          src = <<-SRC
+          class_eval <<-SRC
             def #{option}(sanitize = false); options[:#{option}]; end
             def #{option}=(value); self.options[:#{option}] = value; end
           SRC
-          
-          class_eval src
         end
         
         alias_method :per_page, :limit

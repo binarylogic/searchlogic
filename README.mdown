@@ -2,7 +2,7 @@
 
 Searchgasm is orgasmic. Maybe not orgasmic, but you will get aroused. So go grab a towel and let's dive in.
 
-Searchgasm was a super secret tool of mine until I decided to share with the world. It has saved me tons of time, allowed me to write less code, made searching painless, and kept my controllers DRY.
+Searchgasm was a super secret tool of mine until I decided to share with the world. It has saved me tons of time, allowed me to write less code, made searching painless, and kept my controllers DRY and simple.
 
 It originated to satisfy a VERY simple need: so that I could use my form builder when making search forms. Sounds simple right? The goal was to use an object, that represents a search, just like an ActiveRecord object in form\_for and fields\_for.
 
@@ -18,7 +18,7 @@ Here's where you get aroused...
         @users, @users_count = @search.all, @search.count
     end
 
-Now your view:
+Now your view, isn't it nice to use form builder again?
 
     # app/views/users/index.html.erb
     <%= form_for :conditions, @search.conditions, :url => users_path do |f| %>
@@ -63,7 +63,9 @@ Now go into your console and try out any of these example with your own models.
         :page => 3          # offset 60
     )
 
-## Detailed Example w/ object based searching
+Instead of using the "all" method you could use any search method: first, find(:all), find(:first), count, sum, average, etc
+
+## Detailed Example w/ object based searching (great for form\_for for fields\_for)
 
     # Instantiate
     @search = User.new_search(
@@ -137,7 +139,7 @@ If you want to be hardcore:
     search.per_page = 20
     search.all
 
-## Search with conditions only (great for form\_for or fields\_for)
+## Search with conditions only
 
     conditions = User.new_conditions(:age_gt => 18)
     conditions.first_name_contains = "Ben"
@@ -185,7 +187,6 @@ For tree data structures you get a few nifty methods. Let's assume Users is a tr
     User.all(:conditions => {:inclusive_descendent_of => User.roots.first})
     User.all(:conditions => {:inclusive_descendent_of => User.roots.first.id})
     
-
 
 ## Available anywhere (relationships & named scopes)
 
