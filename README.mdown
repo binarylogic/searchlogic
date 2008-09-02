@@ -2,7 +2,9 @@
 
 Searchgasm is orgasmic. Maybe not orgasmic, but you will get aroused. So go grab a towel and let's dive in.
 
-Searchgasm originated to satisfy a VERY simple need: so that I could use my form builder when making search forms. Sounds simple right? The goal was to use an object, that represents a search, just like an ActiveRecord object in form\_for and fields\_for.
+Searchgasm was a super secret tool of mine until I decided to share with the world. It has saved me tons of time, allowed me to write less code, made searching painless, and kept my controllers DRY.
+
+It originated to satisfy a VERY simple need: so that I could use my form builder when making search forms. Sounds simple right? The goal was to use an object, that represents a search, just like an ActiveRecord object in form\_for and fields\_for.
 
 I'm a big fan of understanding what I'm using, so here's a quick explanation: The design behind this plugin is pretty simple. The search object "santiizes" down into the options passed into ActiveRecord::Base.find(). It basically serves as a transparent filter between you and ActiveRecord::Base.find(). This filter provides "enhancements" that get translated into options that ActiveRecord::Base.find() can understand. This doesn't step on the toes or dig into he internals of ActiveRecord. It uses what ActiveRecord provides publicly. Letting ActiveRecord do all of the hard work and keeping this plugin solid and less brittle.
 
@@ -30,7 +32,27 @@ Now go into your console and try out any of these example with your own models.
 
 **For all examples, let's assume the following relationships: User => Orders => Line Items**
 
-## Super Simple Example
+## Why I love Searchgasm!
+
+    # app/controllers/users_controller.rb
+    def index
+        @search = User.new_search(:conditions => params[:search])
+        @users, @users_count = @search.all, @search.count
+    end
+
+Now your view:
+
+    # app/views/users/index.html.erb
+    <%= form_for :search, @search.conditions, :url => users_path do |f| %>
+        <%= f.text_field :first_name_contains %>
+        <%= f.calendar_date_select :created_after %> # nice rails plugin for replacing date_select
+        <% f.fields_for :orders, f.object.orders do |orders_f| %>
+            <%= f.select :total_gt, (1..100) %>
+        <% end %>
+        <%= f.submit %>
+    <% end %>
+
+## Simple Searching Example
 
     User.all(
         :conditions => {
@@ -73,15 +95,7 @@ Now go into your console and try out any of these example with your own models.
     @search.search # alias for all
     @search.first
 
-**As you can see, you could pass the search object right into form\_for:**
-
-    <%= form_for :search, @search.conditions, :url => users_path do |f| %>
-        <%= f.text_field :first_name_contains %>
-        <%= f.calendar_date_select :create_after %> # nice rails plugin for replacing date_select
-        <% f.fields_for :orders, f.object.orders do |orders_f| %>
-            <%= f.select :total_gt, (1..100) %>
-        <% end %>
-    <% end %>
+Take the @search object and pass it right into form\_for or fields\_for (see above).
 
 ## Calculations
 
