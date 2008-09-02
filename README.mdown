@@ -10,6 +10,26 @@ I'm a big fan of understanding what I'm using, so here's a quick explanation: Th
 
 Here's where you get aroused...
 
+## Why I love Searchgasm!
+
+    # app/controllers/users_controller.rb
+    def index
+        @search = User.new_search(:conditions => params[:search])
+        @users, @users_count = @search.all, @search.count
+    end
+
+Now your view:
+
+    # app/views/users/index.html.erb
+    <%= form_for :search, @search.conditions, :url => users_path do |f| %>
+        <%= f.text_field :first_name_contains %>
+        <%= f.calendar_date_select :created_after %> # nice rails plugin for replacing date_select
+        <% f.fields_for :orders, f.object.orders do |orders_f| %>
+            <%= f.select :total_gt, (1..100) %>
+        <% end %>
+        <%= f.submit %>
+    <% end %>
+
 ## Install and use
 
     sudo gem install searchgasm
@@ -31,26 +51,6 @@ Or as a plugin
 Now go into your console and try out any of these example with your own models.
 
 **For all examples, let's assume the following relationships: User => Orders => Line Items**
-
-## Why I love Searchgasm!
-
-    # app/controllers/users_controller.rb
-    def index
-        @search = User.new_search(:conditions => params[:search])
-        @users, @users_count = @search.all, @search.count
-    end
-
-Now your view:
-
-    # app/views/users/index.html.erb
-    <%= form_for :search, @search.conditions, :url => users_path do |f| %>
-        <%= f.text_field :first_name_contains %>
-        <%= f.calendar_date_select :created_after %> # nice rails plugin for replacing date_select
-        <% f.fields_for :orders, f.object.orders do |orders_f| %>
-            <%= f.select :total_gt, (1..100) %>
-        <% end %>
-        <%= f.submit %>
-    <% end %>
 
 ## Simple Searching Example
 
