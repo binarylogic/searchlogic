@@ -2,7 +2,6 @@ CHANGELOG
 init.rb
 lib/searchgasm/active_record/associations.rb
 lib/searchgasm/active_record/base.rb
-lib/searchgasm/active_record/protection.rb
 lib/searchgasm/helpers.rb
 lib/searchgasm/search/base.rb
 lib/searchgasm/search/condition.rb
