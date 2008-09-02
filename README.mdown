@@ -141,6 +141,8 @@ Again, if you want to be hardcore:
     conditions.first_name_contains = "Ben"
     conditions.search
 
+Now pass the conditions object right into form\_for or fields\_for (see above for example).
+
 ## Scoped searching
 
     @current_user.orders.find(:all, :conditions => {:total_lte => 500})
