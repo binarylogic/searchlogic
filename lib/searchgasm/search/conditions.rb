@@ -8,7 +8,7 @@ module BinaryLogic
         
         class << self
           def register_condition(klass)
-            #raise(ArgumentError, "You can only register condition that extend BinaryLogic::Searchgasm::Search::ConditionTypes::Condition") unless klass.is_a?(ConditionTypes::Condition)
+            raise(ArgumentError, "You can only register conditions that extend BinaryLogic::Searchgasm::Search::ConditionTypes::Condition") unless klass.ancestors.include?(ConditionTypes::Condition)
             conditions << klass
           end
           
