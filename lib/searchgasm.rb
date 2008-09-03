@@ -27,3 +27,5 @@ require "searchgasm/search/condition_types/child_of_condition"
 require "searchgasm/search/condition_types/descendant_of_condition"
 require "searchgasm/search/condition_types/inclusive_descendant_of_condition"
 require "searchgasm/search/condition_types/sibling_of_condition"
+
+Searchgasm = BinaryLogic::Searchgasm::Search

@@ -19,19 +19,26 @@ module BinaryLogic
           self.options = options
         end
         
+        # Setup methods for all options for finding
         (::ActiveRecord::Base.valid_find_options - [:conditions]).each do |option|
           class_eval <<-end_eval
             def #{option}(sanitize = false); options[:#{option}]; end
             def #{option}=(value); self.options[:#{option}] = value; end
           end_eval
         end
-        
+                
         alias_method :per_page, :limit
         
-        def all
-          klass.all(sanitize)
+        # Setup methods for searching
+        [:all, :average, :calculate, :count, :find, :first, :maximum, :minimum, :sum].each do |method|
+          class_eval <<-end_eval
+            def #{method}(*args)
+              self.options = args.extract_options!
+              args << sanitize
+              klass.#{method}(*args)
+            end
+          end_eval
         end
-        alias_method :search, :all
         
         def conditions=(value)
           case value
@@ -44,18 +51,6 @@ module BinaryLogic
         
         def conditions(sanitize = false)
           sanitize ? @conditions.sanitize : @conditions
-        end
-        
-        def find(target)
-          case target
-          when :all then all
-          when :first then first
-          else raise(ArgumentError, "The argument must be :all or :first")
-          end
-        end
-        
-        def first
-          klass.first(sanitize)
         end
         
         def include(sanitize = false)
@@ -131,11 +126,6 @@ module BinaryLogic
         
         def protect?
           protect == true
-        end
-        
-        def reset!
-          conditions.reset!
-          self.options = {}
         end
         
         def sanitize

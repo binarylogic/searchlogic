@@ -56,18 +56,6 @@ module BinaryLogic
           protect == true
         end
         
-        def reset!
-          dupped_objects = objects.dup
-          dupped_objects.each do |object|
-            if object.is_a?(self.class)
-              send("reset_#{object.relationship_name}!")
-            else
-              send("reset_#{object.name}!")
-            end
-          end
-          objects
-        end
-        
         def sanitize
           conditions = merge_conditions(*objects.collect { |object| object.sanitize })
           return scope if conditions.blank?
@@ -75,9 +63,6 @@ module BinaryLogic
         end
         
         def value=(values)
-          reset!
-          self.scope = nil
-          
           case values
           when Hash
             assert_valid_values(values)

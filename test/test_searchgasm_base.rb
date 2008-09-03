@@ -102,10 +102,6 @@ class TestSearchgasmBase < Test::Unit::TestCase
     
   end
   
-  def test_reset
-    
-  end
-  
   def test_sanitize
     search = BinaryLogic::Searchgasm::Search::Base.new(Account)
     search.per_page = 2
@@ -144,6 +140,18 @@ class TestSearchgasmBase < Test::Unit::TestCase
     assert_equal search.find(:all), [Account.find(1)]
     assert_equal search.first, Account.find(1)
     assert_equal search.find(:first), Account.find(1)
+  end
+  
+  def test_calculations
+    search = BinaryLogic::Searchgasm::Search::Base.new(Account)
+    search.conditions.name_like = "Binary"
+    assert_equal 2, search.average('id')
+    assert_equal 2, search.calculate(:avg, 'id')
+    assert_equal 3, search.calculate(:max, 'id')
+    assert_equal 2, search.count
+    assert_equal 3, search.maximum('id')
+    assert_equal 1, search.minimum('id')
+    assert_equal 4, search.sum('id')
   end
   
   def test_protection

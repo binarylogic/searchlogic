@@ -113,6 +113,7 @@ Using the object from above:
 Or do it from your model:
 
     User.count(:conditions => {:first_name_contains => "Ben"})
+    User.sum('id', :conditions => {:first_name_contains => "Ben"})
     # ... all other calcualtions, etc.
 
 ## Different ways to search, take your pick
