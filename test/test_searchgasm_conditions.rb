@@ -12,29 +12,37 @@ class TestSearchgasmConditions < Test::Unit::TestCase
     teardown_db
   end
   
+  def test_register_conditions
+    BinaryLogic::Searchgasm::Search::Conditions.register_condition(BinaryLogic::Searchgasm::Search::ConditionTypes::KeywordsCondition)
+    assert [BinaryLogic::Searchgasm::Search::ConditionTypes::KeywordsCondition], BinaryLogic::Searchgasm::Search::Conditions.conditions
+    
+    BinaryLogic::Searchgasm::Search::Conditions.register_condition(BinaryLogic::Searchgasm::Search::ConditionTypes::ContainsCondition)
+    assert [BinaryLogic::Searchgasm::Search::ConditionTypes::KeywordsCondition, BinaryLogic::Searchgasm::Search::ConditionTypes::ContainsCondition], BinaryLogic::Searchgasm::Search::Conditions.conditions
+    
+  end
+  
   def test_initialize
     conditions = BinaryLogic::Searchgasm::Search::Conditions.new(Account, :name_contains => "Binary")
     assert_equal conditions.klass, Account
     assert_equal conditions.name_contains, "Binary"
   end
   
+  def test_conditions_added
+    # test to make sure all of the proper methods were add, testing condition_names basically
+  end
+  
   def test_setting_conditions
     [Account, User, Order].each do |klass|
-      conditions = BinaryLogic::Searchgasm::Search::Conditions.new(klass)
-      
-      klass.columns.each do |column|
-        value = column_value(column)
-        BinaryLogic::Searchgasm::Search::Conditions.condition_types_for_column_type(column.type).each do |condition_type|
-          name = BinaryLogic::Searchgasm::Search::Condition.generate_name(column, condition_type)
-          conditions.send("#{name}=", value)
-          assert_equal conditions.send(name), value
-          BinaryLogic::Searchgasm::Search::Conditions.aliases_for_condition(column, condition_type).each do |alias_condition|
-            conditions.send("#{alias_condition}=", value)
-            assert_equal conditions.send(alias_condition), value
-          end
-        end
+      conditions = klass.new_conditions
+      conditions.condition_names.each do |condition_name|
+        conditions.send("#{condition_name}=", 1)
+        assert_equal 1, conditions.send(condition_name)
       end
     end
+  end
+  
+  def test_assert_valid_values
+    
   end
   
   def test_setting_associations
@@ -127,20 +135,4 @@ class TestSearchgasmConditions < Test::Unit::TestCase
     assert_raise(ArgumentError) { account.users.build_conditions("(DELETE FROM users)") }
     assert_nothing_raised { account.users.build_conditions!("(DELETE FROM users)") }
   end
-  
-  private
-    def column_value(column)
-      case column.type
-      when :string, :text, :binary
-        Array.new(50) { (rand(122-97) + 97).chr }.join
-      when :integer
-        rand(99999)
-      when :float, :decimal
-        rand * 100
-      when :datetime, :timestamp, :time
-        Time.now
-      when :date
-        Date.today
-      end
-    end
 end

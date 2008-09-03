@@ -78,6 +78,34 @@ class TestSearchgasmBase < Test::Unit::TestCase
     assert_kind_of BinaryLogic::Searchgasm::Search::Conditions, search.conditions
   end
   
+  def test_include
+    
+  end
+  
+  def test_limit
+    
+  end
+  
+  def test_options
+    
+  end
+  
+  def test_order_as
+    
+  end
+  
+  def test_order_by
+    
+  end
+  
+  def test_page
+    
+  end
+  
+  def test_reset
+    
+  end
+  
   def test_sanitize
     search = BinaryLogic::Searchgasm::Search::Base.new(Account)
     search.per_page = 2
@@ -86,6 +114,10 @@ class TestSearchgasmBase < Test::Unit::TestCase
     search.page = 3
     search.readonly = true
     assert_equal search.sanitize, {:include => :users, :offset => 6, :readonly => true, :conditions => ["(\"accounts\".\"name\" LIKE ?) AND (\"users\".\"id\" > ?)", "%Binary%", 2], :limit => 2 }
+  end
+  
+  def test_scope
+    
   end
   
   def test_searching

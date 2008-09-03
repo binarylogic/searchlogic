@@ -7,58 +7,21 @@ module BinaryLogic
         attr_accessor :klass, :protect, :relationship_name, :scope
         
         class << self
-          def condition_types_for_column_type(type)
-            condition_types = [:equals, :does_not_equal]
-            case type
-            when :string, :text
-              condition_types += [:begins_with, :contains, :keywords, :ends_with]
-            when :integer, :float, :decimal, :datetime, :timestamp, :time, :date
-              condition_types += [:greater_than, :greater_than_or_equal_to, :less_than, :less_than_or_equal_to]
-            end
-            condition_types
+          def register_condition(klass)
+            #raise(ArgumentError, "You can only register condition that extend BinaryLogic::Searchgasm::Search::ConditionTypes::Condition") unless klass.is_a?(ConditionTypes::Condition)
+            conditions << klass
           end
           
-          def aliases_for_condition_type(condition_type)
-            case condition_type
-            when :equals                    then  ["", :is]
-            when :does_not_equal            then  [:is_not, :not]
-            when :begins_with               then  [:starts_with]
-            when :contains                  then  [:like]
-            when :greater_than              then  [:gt, :after]
-            when :greater_than_or_equal_to  then  [:at_least, :gte]
-            when :less_than                 then  [:lt, :before]
-            when :less_than_or_equal_to     then  [:at_most, :lte]
-            else                                  []
-            end
-          end
-        
-          def aliases_for_condition(*args)
-            column, condition_type = nil, nil
-            
-            # Allow a condition object or the column and condition type to be passed
-            if args.size == 1
-              column, condition_type = condition.column, condition.condition
-            else
-              column, condition_type = args.first, args[1]
-            end
-            
-            name = Condition.generate_name(column, condition_type)
-            alias_condition_types = aliases_for_condition_type(condition_type)
-            column_names = [column.name]
-            column_names << column.name.gsub(/_at$/, "") if [:datetime, :timestamp, :time, :date].include?(column.type) && column.name =~ /_at$/
-            
-            aliases = []
-            column_names.each do |column_name|
-              alias_condition_types.each { |alias_condition_type| aliases << Condition.generate_name(column_name, alias_condition_type) }
-            end
-            aliases
+          def conditions
+            @@conditions ||= []
           end
         end
         
         def initialize(klass, init_values = {})
           self.klass = klass
-          klass.columns.each { |column| add_conditions_for_column!(column) }
-          klass.reflect_on_all_associations.each { |association| add_association!(association)  }
+          add_klass_conditions!
+          add_column_conditions!
+          add_associations!
           self.value = init_values
         end
         
@@ -106,9 +69,9 @@ module BinaryLogic
         end
         
         def sanitize
-          sanitized_objects = merge_conditions(*objects.collect { |object| object.sanitize })
-          return scope if sanitized_objects.blank?
-          merge_conditions(sanitized_objects, scope)
+          conditions = merge_conditions(*objects.collect { |object| object.sanitize })
+          return scope if conditions.blank?
+          merge_conditions(conditions, scope)
         end
         
         def value=(values)
@@ -135,57 +98,67 @@ module BinaryLogic
         end
         
         private
-          def add_association!(association)
-            self.class.class_eval <<-SRC
-              def #{association.name}
-                if @#{association.name}.nil?
-                  @#{association.name} = self.class.new(#{association.class_name})
-                  @#{association.name}.relationship_name = "#{association.name}"
-                  self.objects << @#{association.name}
+          def add_associations!
+            klass.reflect_on_all_associations.each do |association|
+              self.class.class_eval <<-end_eval
+                def #{association.name}
+                  if @#{association.name}.nil?
+                    @#{association.name} = self.class.new(#{association.class_name})
+                    @#{association.name}.relationship_name = "#{association.name}"
+                    self.objects << @#{association.name}
+                  end
+                  @#{association.name}
                 end
-                @#{association.name}
-              end
               
-              def #{association.name}=(value); #{association.name}.value = value; end
-              def reset_#{association.name}!; objects.delete(#{association.name}); @#{association.name} = nil; end
-            SRC
-            
-            association.name
+                def #{association.name}=(value); #{association.name}.value = value; end
+                def reset_#{association.name}!; objects.delete(#{association.name}); @#{association.name} = nil; end
+              end_eval
+            end
           end
           
-          def add_conditions_for_column!(column)
-            self.class.condition_types_for_column_type(column.type).collect { |condition_type| add_condition!(condition_type, column) }
+          def add_column_conditions!
+            klass.columns.each do |column|
+              self.class.conditions.each do |condition|
+                name = condition.name_for_column(column)
+                next if name.blank?
+                add_condition!(condition, name, column)
+                condition.aliases_for_column(column).each { |alias_name| add_condition_alias!(alias_name, name) }
+              end
+            end
           end
           
-          def add_condition!(condition_type, column)
-            name = Condition.generate_name(column, condition_type)
+          def add_condition!(condition, name, column = nil)
             self.condition_names << name
-            
-            # Define accessor methods
-            self.class.class_eval <<-SRC
+            self.class.class_eval <<-end_eval
               def #{name}_object
                 if @#{name}.nil?
-                  @#{name} = Condition.new(:#{condition_type}, klass, "#{column.name}")
+                  @#{name} = #{condition.name}.new(klass#{column.nil? ? "" : ", \"#{column.name}\""})
                   self.objects << @#{name}
                 end
                 @#{name}
               end
-              
+
               def #{name}; #{name}_object.value; end
               def #{name}=(value); #{name}_object.value = value; end
               def reset_#{name}!; objects.delete(#{name}_object); @#{name} = nil; end
-            SRC
-            
-            # Define aliases
-            self.class.aliases_for_condition(column, condition_type).each do |alias_name|
-              self.condition_names << alias_name
-              self.class.class_eval do
-                alias_method alias_name, name
-                alias_method "#{alias_name}=", "#{name}="
-              end
+            end_eval
+          end
+          
+          def add_condition_alias!(alias_name, name)
+            self.condition_names << alias_name
+            self.class.class_eval do
+              alias_method alias_name, name
+              alias_method "#{alias_name}=", "#{name}="
             end
-            
-            name
+          end
+          
+          def add_klass_conditions!
+            self.class.conditions.each do |condition|
+              name = condition.name_for_klass(klass)
+              next if name.blank?
+              add_condition!(condition, name)
+              condition.aliases_for_klass(klass).each { |alias_name| add_condition_alias!(alias_name, name) }
+            end
           end
       end
     end

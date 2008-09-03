@@ -179,13 +179,13 @@ For tree data structures you get a few nifty methods. Let's assume Users is a tr
     User.all(:conditions => {:sibling_of => User.roots.first})
     User.all(:conditions => {:sibling_of => User.roots.first.id})
     
-    # Descendent of (includes all recursive children: children, grand children, great grand children, etc)
-    User.all(:conditions => {:descendent_of => User.roots.first})
-    User.all(:conditions => {:descendent_of => User.roots.first.id})
+    # Descendant of (includes all recursive children: children, grand children, great grand children, etc)
+    User.all(:conditions => {:descendant_of => User.roots.first})
+    User.all(:conditions => {:descendant_of => User.roots.first.id})
     
-    # Inclusive descendent_of. Same as above but includes the root
-    User.all(:conditions => {:inclusive_descendent_of => User.roots.first})
-    User.all(:conditions => {:inclusive_descendent_of => User.roots.first.id})
+    # Inclusive descendant_of. Same as above but includes the root
+    User.all(:conditions => {:inclusive_descendant_of => User.roots.first})
+    User.all(:conditions => {:inclusive_descendant_of => User.roots.first.id})
     
 
 ## Available anywhere (relationships & named scopes)
@@ -230,16 +230,18 @@ Depending on the type, each column comes preloaded with a bunch of nifty conditi
     => :greater_than, :greater_than_or_equal_to, :less_than, :less_than_or_equal_to
 
     tree data structures (see above "searching trees")
-    => :child_of, :sibling_of, :descendent_of, :inclusive_descendent_of
+    => :child_of, :sibling_of, :descendant_of, :inclusive_descendant_of
 
 Some of these conditions come with aliases, so you have your choice how to call the conditions. For example you can use "greater\_than" or "gt":
 
     :equals;                    => :is
     :does_not_equal             => :is_not, :not
-    :begins_with                => :starts_with
-    :contains                   => :like
+    :begins_with                => :starts_with, :bw, :start
+    :contains                   => :like, :has
+    :ends_with                  => :ew, :ends, :end
     :greater_than               => :gt, :after
     :greater_than_or_equal_to   => :at_least, :gte
+    :keywords                   => :kwords, :kw
     :less_than                  => :lt, :before
     :less_than_or_equal_to      => :at_most, :lte
 

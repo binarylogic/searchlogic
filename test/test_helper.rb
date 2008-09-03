@@ -1,5 +1,6 @@
 require "test/unit"
 require "rubygems"
+require "ruby-debug"
 require "activerecord"
 require File.dirname(__FILE__) + '/libs/acts_as_tree'
 require File.dirname(__FILE__) + '/libs/rexml_fix'
