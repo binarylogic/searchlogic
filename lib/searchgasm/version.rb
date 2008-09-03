@@ -68,7 +68,7 @@ module BinaryLogic
 
       MAJOR = 0
       MINOR = 9
-      TINY  = 4
+      TINY  = 5
 
       # The current version as a Version instance
       CURRENT = new(MAJOR, MINOR, TINY)

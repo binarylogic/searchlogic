@@ -1,3 +1,5 @@
+v0.9.5. Enhanced searching with conditions only. Updated read me to include example on adding your own conditions.
+
 v0.9.4. Cleaned up search methods, removed reset! method for base and conditions.
 
 v0.9.3. Changed structure of conditions to have their own class. Making it easier to add your own conditions.
