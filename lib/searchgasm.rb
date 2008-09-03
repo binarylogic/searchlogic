@@ -5,11 +5,11 @@ require "searchgasm/active_record/associations"
 
 require "searchgasm/version"
 require "searchgasm/search/utilities"
+require "searchgasm/search/condition"
 require "searchgasm/search/conditions"
 require "searchgasm/search/base"
 
 # Regular conidtion types
-require "searchgasm/search/condition_types/condition"
 require "searchgasm/search/condition_types/begins_with_condition"
 require "searchgasm/search/condition_types/contains_condition"
 require "searchgasm/search/condition_types/does_not_equal_condition"

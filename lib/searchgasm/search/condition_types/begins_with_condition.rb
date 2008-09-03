@@ -24,5 +24,3 @@ module BinaryLogic
     end
   end
 end
-
-BinaryLogic::Searchgasm::Search::Conditions.register_condition(BinaryLogic::Searchgasm::Search::ConditionTypes::BeginsWithCondition)

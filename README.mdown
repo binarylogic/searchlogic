@@ -250,6 +250,44 @@ Some of these conditions come with aliases, so you have your choice how to call 
 
 You will notice above there is "contains" and "keywords". The difference is that "keywords" is an enhanced search. It acts like a real keyword search. It finds those keywords, in any order, and blacklists meaningless words such as "and", "the", etc. "contains" finds the EXACT string in the column you are searching, spaces and all.
 
+### Roll your own conditions
+
+I didn't include this function because its MySQL specific, and it's probably rarely used, but MySQL supports a "SOUNDS LIKE" function.
+
+I want to use it, so let's add it:
+
+    # config/initializers/searchgasm.rb
+    # Actual function for MySQL databases only
+    class SoundsLikeCondition < Searchgasm::Condition
+      class << self
+        # I pass you the column, you tell me what you want the method to be called.
+        # If you don't want to add this condition for that column, return nil
+        # It defaults to "#{column.name}_sounds_like". So if thats what you want you don't even need to do this.
+        def name_for_column(column)
+          super
+        end
+        
+        # Only do this if you want aliases for your condition
+        def aliases_for_column(column)
+          ["#{column.name}_sounds", "#{column.name}_similar_to"]
+        end
+      end
+      
+      def to_conditions(value)
+        ["#{quoted_table_name}.#{quoted_column_name} SOUNDS LIKE ?", value]
+      end
+    end
+    
+    Searchgasm::Condition.register_condition(SoundsLikeCondition)
+
+Now test it out:
+
+    search = User.new_search
+    search.first_name_sounds_like = "Ben"
+    search.all  # will return any user that has a first name that sounds like "Ben"
+
+Pretty nifty, huh? You can create any condition ultimately creating any SQL you want. The sky is the limit.
+
 ## Credits
 
 Author: [Ben Johnson](http://github.com/binarylogic) of [Binary Logic](http://www.binarylogic.com)
