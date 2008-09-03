@@ -23,7 +23,7 @@ module BinaryLogic
         end
       
         def build_conditions(values = {}, &block)
-          conditions = searchgasm_conditions({})
+          conditions = searchgasm_conditions
           conditions.protect = true
           conditions.value = values
           yield conditions if block_given?
@@ -37,8 +37,9 @@ module BinaryLogic
         end
       
         def build_search(options = {}, &block)
-          options[:protect] = true
-          search = searchgasm_searcher(options)
+          search = searchgasm_searcher
+          search.protect = true
+          search.options = options
           yield search if block_given?
           search
         end
@@ -50,16 +51,16 @@ module BinaryLogic
         end
       
         private
-          def sanitize_options_with_searchgasm(options)
+          def sanitize_options_with_searchgasm(options = {})
             return options unless BinaryLogic::Searchgasm::Search::Base.needed?(self, options)
             searchgasm_searcher(options).sanitize
           end
         
-          def searchgasm_conditions(options)
+          def searchgasm_conditions(options = {})
             BinaryLogic::Searchgasm::Search::Conditions.new(self, options)
           end
         
-          def searchgasm_searcher(options)
+          def searchgasm_searcher(options = {})
             BinaryLogic::Searchgasm::Search::Base.new(self, options)
           end
       end
