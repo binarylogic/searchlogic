@@ -273,6 +273,9 @@ I want to use it, so let's add it:
         end
       end
       
+      # You can return an array or a string. NOT a hash, because all of these conditions
+      # need to eventually get merged together. The array or string can be anything you would put in
+      # the :conditions option for ActiveRecord::Base.find()
       def to_conditions(value)
         ["#{quoted_table_name}.#{quoted_column_name} SOUNDS LIKE ?", value]
       end
