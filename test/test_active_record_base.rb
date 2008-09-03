@@ -16,6 +16,9 @@ class TestActiveRecordBase < Test::Unit::TestCase
     assert_nothing_raised { Account.all }
     assert_nothing_raised { Account.first }
     assert_nothing_raised { Account.find(:all) }
+    assert_nothing_raised { Account.find(:all, :conditions => {:name => "Ben"}) }
+    assert_nothing_raised { Account.find(:all, :conditions => ["name = ?", "Ben"]) }
+    assert_nothing_raised { Account.find(:all, :conditions => "name = 'Ben'") }
     assert_nothing_raised { Account.find(:first) }
     assert_nothing_raised { Account.find(:all, nil) }
     assert_nothing_raised { Account.find(:all, {}) }

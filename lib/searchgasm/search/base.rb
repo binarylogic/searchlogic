@@ -13,6 +13,14 @@ module BinaryLogic
         attr_reader :conditions, :protect
         attr_writer :options
         
+        def self.needed?(klass, options)
+          SPECIAL_FIND_OPTIONS.each do |option|
+            return true if options.symbolize_keys.keys.include?(option)
+          end
+          
+          Conditions.needed?(klass, options[:conditions])
+        end
+        
         def initialize(klass, options = {})
           self.klass = klass
           self.conditions = Conditions.new(klass)

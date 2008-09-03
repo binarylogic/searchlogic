@@ -51,6 +51,7 @@ module BinaryLogic
       
         private
           def sanitize_options_with_searchgasm(options)
+            return options unless BinaryLogic::Searchgasm::Search::Base.needed?(self, options)
             searchgasm_searcher(options).sanitize
           end
         

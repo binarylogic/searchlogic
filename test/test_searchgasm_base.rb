@@ -12,6 +12,14 @@ class TestSearchgasmBase < Test::Unit::TestCase
     teardown_db
   end
   
+  def test_needed
+    assert BinaryLogic::Searchgasm::Search::Base.needed?(Account, :page => 2, :conditions => {:name => "Ben"})
+    assert !BinaryLogic::Searchgasm::Search::Base.needed?(Account, :conditions => {:name => "Ben"})
+    assert BinaryLogic::Searchgasm::Search::Base.needed?(Account, :limit => 2, :conditions => {:name_contains => "Ben"})
+    assert !BinaryLogic::Searchgasm::Search::Base.needed?(Account, :limit => 2)
+    assert BinaryLogic::Searchgasm::Search::Base.needed?(Account, :per_page => 2)
+  end
+  
   def test_initialize
     search = BinaryLogic::Searchgasm::Search::Base.new(Account, :conditions => {:name_like => "binary"}, :page => 2, :limit => 10, :readonly => true)
     assert_equal Account, search.klass

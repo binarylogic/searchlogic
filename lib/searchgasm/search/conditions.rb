@@ -15,6 +15,16 @@ module BinaryLogic
           def conditions
             @@conditions ||= []
           end
+          
+          def needed?(klass, conditions)
+            if conditions.is_a?(Hash)
+              conditions.stringify_keys.keys.each do |condition|
+                return true unless klass.column_names.include?(condition)
+              end
+            end
+            
+            false
+          end
         end
         
         def initialize(klass, init_values = {})

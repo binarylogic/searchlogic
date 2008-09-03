@@ -21,12 +21,12 @@ module BinaryLogic
             subs = []
             
             search_parts = value.gsub(/,/, " ").split(/ /).collect { |word| word.downcase.gsub(/[^[:alnum:]]/, ''); }.uniq.select { |word| !BLACKLISTED_WORDS.include?(word.downcase) && !word.blank? }
+            return if search_parts.blank?
+            
             search_parts.each do |search_part|
               strs << "#{quoted_table_name}.#{quoted_column_name} LIKE ?"
               subs << "%#{search_part}%"
             end
-            
-            return if strs.blank?
             
             [strs.join(" AND "), *subs]
           end
