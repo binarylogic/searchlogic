@@ -76,6 +76,10 @@ class TestSearchgasmBase < Test::Unit::TestCase
     
     search.conditions = {:name_like => "Binary"}
     assert_kind_of BinaryLogic::Searchgasm::Search::Conditions, search.conditions
+    
+    conditions = BinaryLogic::Searchgasm::Search::Conditions.new(Account, :id_greater_than => 8)
+    search.conditions = conditions
+    assert_equal conditions, search.conditions
   end
   
   def test_include

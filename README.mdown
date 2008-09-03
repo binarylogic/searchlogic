@@ -65,7 +65,7 @@ Now go into your console and try out any of these example with your own models.
 
 Instead of using the "all" method you could use any search method: first, find(:all), find(:first), count, sum, average, etc
 
-## Detailed Example w/ object based searching (great for form\_for for fields\_for)
+## Detailed Example w/ object based searching (great for form\_for or fields\_for)
 
     # Instantiate
     @search = User.new_search(
@@ -103,12 +103,12 @@ Take the @search object and pass it right into form\_for or fields\_for (see abo
 
 Using the object from above:
 
-    search.average('id')
-    search.count
-    search.maximum('id')
-    search.minimum('id')
-    search.sum('id')
-    search.calculate(:sum, 'id') # any of the above calculations
+    @search.average('id')
+    @search.count
+    @search.maximum('id')
+    @search.minimum('id')
+    @search.sum('id')
+    @search.calculate(:sum, 'id') # any of the above calculations
 
 Or do it from your model:
 

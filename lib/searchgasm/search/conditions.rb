@@ -25,6 +25,17 @@ module BinaryLogic
           self.value = init_values
         end
         
+        # Setup methods for searching
+        [:all, :average, :calculate, :count, :find, :first, :maximum, :minimum, :sum].each do |method|
+          class_eval <<-end_eval
+            def #{method}(*args)
+              self.value = args.extract_options!
+              args << {:conditions => sanitize}
+              klass.#{method}(*args)
+            end
+          end_eval
+        end
+        
         def assert_valid_values(values)
           keys = condition_names.collect { |condition_name| condition_name.to_sym }
           keys += klass.reflect_on_all_associations.collect { |association| association.name }

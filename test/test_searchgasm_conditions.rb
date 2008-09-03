@@ -140,6 +140,22 @@ class TestSearchgasmConditions < Test::Unit::TestCase
     assert_equal scope2, conditions.scope
   end
   
+  def test_searching
+    conditions = BinaryLogic::Searchgasm::Search::Conditions.new(Account)
+    conditions.name_contains = "Binary"
+    assert_equal Account.find(1, 3), conditions.all
+    assert_equal Account.find(1, 3), conditions.find(:all)
+    assert_equal Account.find(1), conditions.first
+    assert_equal Account.find(1), conditions.find(:first)
+    assert_equal 2, conditions.average('id')
+    assert_equal 2, conditions.calculate(:avg, 'id')
+    assert_equal 3, conditions.calculate(:max, 'id')
+    assert_equal 2, conditions.count
+    assert_equal 3, conditions.maximum('id')
+    assert_equal 1, conditions.minimum('id')
+    assert_equal 4, conditions.sum('id')
+  end
+  
   def test_protection
     assert_raise(ArgumentError) { Account.new_conditions("(DELETE FROM users)") }
     assert_nothing_raised { Account.build_conditions!("(DELETE FROM users)") }
