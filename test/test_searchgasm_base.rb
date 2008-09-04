@@ -21,6 +21,7 @@ class TestSearchgasmBase < Test::Unit::TestCase
   end
   
   def test_initialize
+    assert_nothing_raised { BinaryLogic::Searchgasm::Search::Base.new(Account) }
     search = BinaryLogic::Searchgasm::Search::Base.new(Account, :conditions => {:name_like => "binary"}, :page => 2, :limit => 10, :readonly => true)
     assert_equal Account, search.klass
     assert_equal "binary", search.conditions.name_like
@@ -46,7 +47,7 @@ class TestSearchgasmBase < Test::Unit::TestCase
     assert_equal search.limit, 20
     assert_equal search.per_page, 20
     assert_equal search.page, 5
-    assert_equal search.offset, 100
+    assert_equal search.offset, 80
     
     search.offset = 50
     assert_equal search.offset, 50
@@ -55,7 +56,7 @@ class TestSearchgasmBase < Test::Unit::TestCase
     search.per_page = 2
     assert_equal search.per_page, 2
     assert_equal search.limit, 2
-    assert_equal search.page, 25
+    assert_equal search.page, 26
     assert_equal search.offset, 50
     
     search.order = "name ASC"
@@ -91,26 +92,136 @@ class TestSearchgasmBase < Test::Unit::TestCase
   end
   
   def test_include
-    
+    search = BinaryLogic::Searchgasm::Search::Base.new(Account)
+    assert_equal nil, search.include
+    search.conditions.name_contains = "Binary"
+    assert_equal nil, search.include
+    search.conditions.users.first_name_contains = "Ben"
+    assert_equal(:users, search.include)
+    search.conditions.users.orders.id_gt = 2
+    assert_equal({:users => :orders}, search.include)
+    search.conditions.users.reset_orders!
+    assert_equal(:users, search.include)
+    search.conditions.users.orders.id_gt = 2
+    search.conditions.reset_users!
+    assert_equal nil, search.include
   end
   
   def test_limit
-    
+    search = BinaryLogic::Searchgasm::Search::Base.new(Account)
+    search.limit = 10
+    assert_equal 10, search.limit
+    search.page = 2
+    assert_equal 10, search.offset
+    search.limit = 25
+    assert_equal 25, search.offset
+    assert_equal 2, search.page
+    search.page = 5
+    assert_equal 5, search.page
+    assert_equal 25, search.limit
+    search.limit = 3
+    assert_equal 12, search.offset
   end
   
   def test_options
-    
   end
   
   def test_order_as
+    search = BinaryLogic::Searchgasm::Search::Base.new(Account)
+    assert_equal nil, search.order
+    assert_equal "DESC", search.order_as
+    assert search.desc?
     
+    search.order_as = "ASC"
+    assert_equal "ASC", search.order_as
+    assert search.asc?
+    assert_equal "id ASC", search.order
+    
+    search.order = "id ASC"
+    assert_equal "ASC", search.order_as
+    assert search.asc?
+    assert_equal "id ASC", search.order
+    
+    search.order = "id DESC"
+    assert_equal "DESC", search.order_as
+    assert search.desc?
+    assert_equal "id DESC", search.order
+    
+    search.order_by = "name"
+    assert_equal "DESC", search.order_as
+    assert search.desc?
+    assert_equal "name DESC", search.order
   end
   
   def test_order_by
+    search = BinaryLogic::Searchgasm::Search::Base.new(Account)
+    assert_equal nil, search.order
+    assert_equal "id", search.order_by
     
+    search.order_by = "first_name"
+    assert_equal "first_name", search.order_by
+    assert_equal "first_name DESC", search.order
+    
+    search.order_by = "last_name"
+    assert_equal "last_name", search.order_by
+    assert_equal "last_name DESC", search.order
+    
+    search.order = "created_at DESC"
+    assert_equal "created_at", search.order_by
+    assert_equal "created_at DESC", search.order
+    
+    search.order = "\"users\".updated_at ASC"
+    assert_equal({"users" => "updated_at"}, search.order_by)
+    assert_equal "\"users\".updated_at ASC", search.order
+    
+    search.order = "`users`.first_name DESC"
+    assert_equal({"users" => "first_name"}, search.order_by)
+    assert_equal "`users`.first_name DESC", search.order
+    
+    search.order = "`accounts`.name DESC"
+    assert_equal "name", search.order_by
+    assert_equal "`accounts`.name DESC", search.order
+    
+    search.order = "accounts.name DESC"
+    assert_equal "name", search.order_by
+    assert_equal "accounts.name DESC", search.order
+    
+    search.order = "`users`.first_name DESC, name DESC, `accounts`.id DESC"
+    assert_equal [{"users" => "first_name"}, "name", "id"], search.order_by
+    assert_equal "`users`.first_name DESC, name DESC, `accounts`.id DESC", search.order
+    
+    search.order = "`users`.first_name DESC, `line_items`.id DESC, `accounts`.id DESC"
+    assert_equal [{"users" => "first_name"}, "id"], search.order_by
+    assert_equal "`users`.first_name DESC, `line_items`.id DESC, `accounts`.id DESC", search.order
+    
+    search.order = "`line_items`.id DESC"
+    assert_equal nil, search.order_by
+    assert_equal "`line_items`.id DESC", search.order
   end
   
   def test_page
+    search = BinaryLogic::Searchgasm::Search::Base.new(Account)
+    search.page = 2
+    assert_equal 1, search.page
+    search.per_page = 20
+    assert_equal 2, search.page
+    search.limit = 0
+    assert_equal 1, search.page
+    search.per_page = 20
+    assert_equal 2, search.page
+    search.limit = nil
+    assert_equal 1, search.page
+  end
+  
+  def test_next_page
+    
+  end
+  
+  def test_prev_page
+    
+  end
+  
+  def test_page_count
     
   end
   
@@ -121,11 +232,19 @@ class TestSearchgasmBase < Test::Unit::TestCase
     search.conditions.users.id_greater_than = 2
     search.page = 3
     search.readonly = true
-    assert_equal search.sanitize, {:include => :users, :offset => 6, :readonly => true, :conditions => ["(\"accounts\".\"name\" LIKE ?) AND (\"users\".\"id\" > ?)", "%Binary%", 2], :limit => 2 }
+    assert_equal({:include => :users, :offset => 4, :readonly => true, :conditions => ["(\"accounts\".\"name\" LIKE ?) AND (\"users\".\"id\" > ?)", "%Binary%", 2], :limit => 2 }, search.sanitize)
   end
   
   def test_scope
-    
+    search = BinaryLogic::Searchgasm::Search::Base.new(Account)
+    search.conditions = "some scope"
+    assert_equal "some scope", search.conditions.scope
+    search.conditions = nil
+    assert_equal nil, search.conditions.scope
+    search.conditions = "some scope"
+    assert_equal "some scope", search.conditions.scope
+    search.conditions = "some scope2"
+    assert_equal "some scope2", search.conditions.scope
   end
   
   def test_searching
@@ -139,19 +258,19 @@ class TestSearchgasmBase < Test::Unit::TestCase
     search.per_page = 20
     search.page = 2
     
-    assert_equal search.all, []
-    assert_equal search.find(:all), []
-    assert_equal search.first, nil
-    assert_equal search.find(:first), nil
+    assert_equal [], search.all
+    assert_equal [], search.find(:all)
+    assert_equal nil, search.first
+    assert_equal nil, search.find(:first)
         
     search.per_page = 0
     search.page = nil
     search.conditions.users.first_name_contains = "Ben"
     search.conditions.users.orders.description_keywords = "products, &*ap#ple $%^&*"
-    assert_equal search.all, [Account.find(1)]
-    assert_equal search.find(:all), [Account.find(1)]
-    assert_equal search.first, Account.find(1)
-    assert_equal search.find(:first), Account.find(1)
+    assert_equal [Account.find(1)], search.all
+    assert_equal [Account.find(1)], search.find(:all)
+    assert_equal Account.find(1), search.first
+    assert_equal Account.find(1), search.find(:first)
   end
   
   def test_calculations
@@ -180,5 +299,10 @@ class TestSearchgasmBase < Test::Unit::TestCase
     
     assert_nothing_raised { account.users.build_search!(:conditions => "(DELETE FROM users)", :page => 2, :per_page => 15) }
     BinaryLogic::Searchgasm::Search::Base::VULNERABLE_OPTIONS.each { |option| assert_nothing_raised { account.users.build_search!(option => "(DELETE FROM users)") } }
+    
+    assert_raise(ArgumentError) { Account.build_search(:order_by => "unknown_column") }
+    assert_nothing_raised { Account.build_search!(:order_by => "unknown_column") }
+    assert_raise(ArgumentError) { Account.build_search(:order_by => ["name", "unknown_column"]) }
+    assert_nothing_raised { Account.build_search!(:order_by => ["name", "unknown_column"]) }
   end
 end

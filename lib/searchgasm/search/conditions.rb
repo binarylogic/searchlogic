@@ -89,7 +89,10 @@ module BinaryLogic
             assert_valid_values(values)
             values.each { |condition, value| send("#{condition}=", value) }
           else
-            raise(ArgumentError, "You can not set a scope or pass SQL while the search is being protected") if protect?
+            if protect?
+              return if values.blank?
+              raise(ArgumentError, "You can not set a scope or pass SQL while the search is being protected")
+            end
             self.scope = values
           end
         end

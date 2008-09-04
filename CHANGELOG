@@ -1,3 +1,5 @@
+v0.9.6. Fix bug when instantiating with nil options
+
 v0.9.5. Enhanced searching with conditions only. Updated read me to include example on adding your own conditions.
 
 v0.9.4. Cleaned up search methods, removed reset! method for base and conditions.

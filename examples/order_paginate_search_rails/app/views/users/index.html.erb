@@ -1,0 +1,37 @@
+<fieldset>
+    <legend>Search Users</legend>
+    
+    <% form_for @search do |f| %>
+        <% f.fields_for :conditions, @search.conditions do |conditions| %>
+            <label>First name:</label><br />
+            <%= conditions.text_field :first_name_keywords %><br />
+            <br />
+        
+            <label>Last name:</label><br />
+            <%= conditions.text_field :last_name_keywords %><br />
+            <br />
+        
+            <label>Last name:</label><br />
+            <%= conditions.text_field :email_keywords %><br />
+            <br />
+        
+            <label>Created after:</label><br />
+            <%= conditions.calendar_date_select :created_after %><br />
+            <br />
+            
+            <% conditions.fields_for conditions.object.orders do |orders| %>
+                <label>Has orders with a total great than:</label><br />
+                <%= orders.text_field :total_greater_than %><br />
+                <br />
+            <% end %>
+        <% end %>
+        
+        <%= f.submit "Search" %>
+    <% end %>
+</fieldset>
+
+<br /><br />
+
+<div id="users">
+    <%= render :partial => "users" %>
+</div>

@@ -42,7 +42,10 @@ class TestSearchgasmConditions < Test::Unit::TestCase
   end
   
   def test_assert_valid_values
-    
+    conditions = User.new_conditions
+    assert_raise(ArgumentError) { conditions.value = {:unknown => "blah"} }
+    assert_nothing_raised { conditions.value = {:first_name => "blah"} }
+    assert_nothing_raised { conditions.value = {:first_name_contains => "blah"} }
   end
   
   def test_setting_associations

@@ -3,6 +3,13 @@ require "active_record"
 require "searchgasm/active_record/base"
 require "searchgasm/active_record/associations"
 
+# Helpers
+require "searchgasm/helpers/utilities_helper"
+require "searchgasm/helpers/form_helper"
+require "searchgasm/helpers/order_helper"
+require "searchgasm/helpers/pagination_helper"
+
+# Core
 require "searchgasm/version"
 require "searchgasm/search/utilities"
 require "searchgasm/search/condition"
