@@ -18,7 +18,7 @@ I'm a big fan of understanding what I'm using, so here's a quick explanation: Th
 
 Now your view. Notice you can use your search object *just like* an ActiveRecord object. You also get some nifty helpers: page, per\_page, order\_by. All of these methods come with a list of options (see Searchgasm::Search::Helpers)
 
-<pre> <!-- Github doesn't escape properly -->
+<code>
 # app/views/users/index.html.erb
 <%= form_for @search do |f| %>
     <% f.fields_for @search.conditions do |f| %>
@@ -45,7 +45,7 @@ Now your view. Notice you can use your search object *just like* an ActiveRecord
         </tr>
     <% end %>
 </table>
-</pre>
+</code>
 
 Per page: <%= per_page %>
 Page: <%= page %>
