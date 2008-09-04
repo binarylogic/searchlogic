@@ -8,22 +8,17 @@ The best part is that rails already has all kinds of nifty methods to make deali
 
 I'm a big fan of understanding what I'm using, so here's a quick explanation: The design behind this plugin is pretty simple. The search object "santiizes" down into the options passed into ActiveRecord::Base.find(). It basically serves as a transparent filter between you and ActiveRecord::Base.find(). This filter provides "enhancements" that get translated into options that ActiveRecord::Base.find() can understand. It doesn't dig into the ActiveRecord internals, it only uses what is publicly available. It jumps in and helps out *only* when needed, otherwise it sits back and lets ActiveRecord do all of the work. Between that and the extensive tests this is a solid and fast plugin.
 
-h1. What Searchgasm is all about
+## What Searchgasm is all about
 
-<pre>
-<code>
     # app/controllers/users_controller.rb
     def index
         @search = User.new_search(params[:search])
         @users, @users_count = @search.all, @search.count
     end
-</code>
-</pre>
 
 Now your view. Notice you can use your search object *just like* an ActiveRecord object. You also get some nifty helpers: page, per\_page, order\_by. All of these methods come with a list of options (see Searchgasm::Search::Helpers)
 
-<pre>
-<code>
+
     # app/views/users/index.html.erb
     <%= form_for @search do |f| %>
         <% f.fields_for @search.conditions do |f| %>
@@ -35,8 +30,8 @@ Now your view. Notice you can use your search object *just like* an ActiveRecord
         <% end %>
         <%= f.submit %>
     <% end %>
-
-    <table>
+    
+    &lt;table>
         <tr>
             <th><%= order_by :first_name %></th>
             <th><%= order_by :last_name %></th>
@@ -50,11 +45,9 @@ Now your view. Notice you can use your search object *just like* an ActiveRecord
             </tr>
         <% end %>
     </table>
-
+    
     Per page: <%= per_page %>
     Page: <%= page %>
-</code>
-</pre>
 
 Obviously this is somewhat of an "old school" and inefficient way of doing things. You can do everything above via AJAX as well. Just prefix all of the helpers with "remote\_": remote\_per\_page, etc. Or set up the configuration (see below) to default to remote calls so you can use "per\_page".
 
