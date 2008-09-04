@@ -18,35 +18,37 @@ I'm a big fan of understanding what I'm using, so here's a quick explanation: Th
 
 Now your view. Notice you can use your search object *just like* an ActiveRecord object. You also get some nifty helpers: page, per\_page, order\_by. All of these methods come with a list of options (see Searchgasm::Search::Helpers)
 
-    # app/views/users/index.html.erb
-    <%= form_for @search do |f| %>
-        <% f.fields_for @search.conditions do |f| %>
-            <%= f.text_field :first_name_contains %>
-            <%= f.calendar_date_select :created_after %> # nice rails plugin for replacing date_select
-            <% f.fields_for :orders, f.object.orders do |orders_f| %>
-                <%= f.select :total_gt, (1..100) %>
-            <% end %>
+<pre> <!-- Github doesn't escape properly -->
+# app/views/users/index.html.erb
+<%= form_for @search do |f| %>
+    <% f.fields_for @search.conditions do |f| %>
+        <%= f.text_field :first_name_contains %>
+        <%= f.calendar_date_select :created_after %> # nice rails plugin for replacing date_select
+        <% f.fields_for :orders, f.object.orders do |orders_f| %>
+            <%= f.select :total_gt, (1..100) %>
         <% end %>
-        <%= f.submit %>
     <% end %>
-    
-    <table>
+    <%= f.submit %>
+<% end %>
+
+<table>
+    <tr>
+        <th><%= order_by :first_name %></th>
+        <th><%= order_by :last_name %></th>
+        <th><%= order_by :email %></th>
+    </tr>
+    <% @users.each do |user| %>
         <tr>
-            <th><%= order_by :first_name %></th>
-            <th><%= order_by :last_name %></th>
-            <th><%= order_by :email %></th>
+            <td><%= user.first_name %></td>
+            <td><%= user.last_name %></td>
+            <td><%= user.email %></td>
         </tr>
-        <% @users.each do |user| %>
-            <tr>
-                <td><%= user.first_name %></td>
-                <td><%= user.last_name %></td>
-                <td><%= user.email %></td>
-            </tr>
-        <% end %>
-    </table>
-    
-    Per page: <%= per_page %>
-    Page: <%= page %>
+    <% end %>
+</table>
+</pre>
+
+Per page: <%= per_page %>
+Page: <%= page %>
 
 Obviously this is somewhat of an "old school" and inefficient way of doing things. You can do everything above via AJAX as well. Just prefix all of the helpers with "remote\_": remote\_per\_page, etc. Or set up the configuration (see below) to default to remote calls so you can use "per\_page".
 
