@@ -10,11 +10,15 @@ I'm a big fan of understanding what I'm using, so here's a quick explanation: Th
 
 h1. What Searchgasm is all about
 
+<pre>
+<code>
     # app/controllers/users_controller.rb
     def index
         @search = User.new_search(params[:search])
         @users, @users_count = @search.all, @search.count
     end
+</code>
+</pre>
 
 Now your view. Notice you can use your search object *just like* an ActiveRecord object. You also get some nifty helpers: page, per\_page, order\_by. All of these methods come with a list of options (see Searchgasm::Search::Helpers)
 
