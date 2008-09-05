@@ -1,4 +1,3 @@
-module BinaryLogic
   module Searchgasm
     module Search
       module ConditionTypes
@@ -14,4 +13,3 @@ module BinaryLogic
       Conditions.register_condition(ConditionTypes::ChildOfCondition)
     end
   end
-end

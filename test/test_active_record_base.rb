@@ -34,10 +34,10 @@ class TestActiveRecordBase < Test::Unit::TestCase
   
   def test_build_search
     search = Account.new_search
-    assert_kind_of BinaryLogic::Searchgasm::Search::Base, search
+    assert_kind_of Searchgasm::Search::Base, search
     
     search = Account.build_search(:conditions => {:name_keywords => "awesome"}, :page => 2, :per_page => 15)
-    assert_kind_of BinaryLogic::Searchgasm::Search::Base, search
+    assert_kind_of Searchgasm::Search::Base, search
     assert_equal Account, search.klass
     assert_equal "awesome", search.conditions.name_keywords
     assert_equal 2, search.page
@@ -49,10 +49,10 @@ class TestActiveRecordBase < Test::Unit::TestCase
   
   def test_build_conditions
     search = Account.new_conditions
-    assert_kind_of BinaryLogic::Searchgasm::Search::Conditions, search
+    assert_kind_of Searchgasm::Search::Conditions, search
     
     search = Account.build_conditions(:name_keywords => "awesome")
-    assert_kind_of BinaryLogic::Searchgasm::Search::Conditions, search
+    assert_kind_of Searchgasm::Search::Conditions, search
     assert_equal Account, search.klass
     assert_equal "awesome", search.name_keywords
 

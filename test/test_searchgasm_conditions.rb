@@ -13,16 +13,16 @@ class TestSearchgasmConditions < Test::Unit::TestCase
   end
   
   def test_register_conditions
-    BinaryLogic::Searchgasm::Search::Conditions.register_condition(BinaryLogic::Searchgasm::Search::ConditionTypes::KeywordsCondition)
-    assert [BinaryLogic::Searchgasm::Search::ConditionTypes::KeywordsCondition], BinaryLogic::Searchgasm::Search::Conditions.conditions
+    Searchgasm::Search::Conditions.register_condition(Searchgasm::Search::ConditionTypes::KeywordsCondition)
+    assert [Searchgasm::Search::ConditionTypes::KeywordsCondition], Searchgasm::Search::Conditions.conditions
     
-    BinaryLogic::Searchgasm::Search::Conditions.register_condition(BinaryLogic::Searchgasm::Search::ConditionTypes::ContainsCondition)
-    assert [BinaryLogic::Searchgasm::Search::ConditionTypes::KeywordsCondition, BinaryLogic::Searchgasm::Search::ConditionTypes::ContainsCondition], BinaryLogic::Searchgasm::Search::Conditions.conditions
+    Searchgasm::Search::Conditions.register_condition(Searchgasm::Search::ConditionTypes::ContainsCondition)
+    assert [Searchgasm::Search::ConditionTypes::KeywordsCondition, Searchgasm::Search::ConditionTypes::ContainsCondition], Searchgasm::Search::Conditions.conditions
     
   end
   
   def test_initialize
-    conditions = BinaryLogic::Searchgasm::Search::Conditions.new(Account, :name_contains => "Binary")
+    conditions = Searchgasm::Search::Conditions.new(Account, :name_contains => "Binary")
     assert_equal conditions.klass, Account
     assert_equal conditions.name_contains, "Binary"
   end
@@ -41,6 +41,13 @@ class TestSearchgasmConditions < Test::Unit::TestCase
     end
   end
   
+  def test_accessible_protected_conditions
+    #Account.conditions_accessible << :name_contains
+    #conditions = Searchgasm::Search::Conditions.new(Account)
+    #conditions.value = {:created_after => Time.now, :name_contains => "Binary"}
+    #assert({:name_contains => "Binary"}, conditions.value)
+  end
+  
   def test_assert_valid_values
     conditions = User.new_conditions
     assert_raise(ArgumentError) { conditions.value = {:unknown => "blah"} }
@@ -49,7 +56,7 @@ class TestSearchgasmConditions < Test::Unit::TestCase
   end
   
   def test_setting_associations
-    conditions = BinaryLogic::Searchgasm::Search::Conditions.new(Account, :users => {:first_name_like => "Ben"})
+    conditions = Searchgasm::Search::Conditions.new(Account, :users => {:first_name_like => "Ben"})
     assert_equal conditions.users.first_name_like, "Ben"
     
     conditions.users.last_name_begins_with = "Ben"
@@ -57,7 +64,7 @@ class TestSearchgasmConditions < Test::Unit::TestCase
   end
   
   def test_includes
-    conditions = BinaryLogic::Searchgasm::Search::Conditions.new(Account)
+    conditions = Searchgasm::Search::Conditions.new(Account)
     assert_equal conditions.includes, nil
     
     conditions.name_like = "Binary"
@@ -71,7 +78,7 @@ class TestSearchgasmConditions < Test::Unit::TestCase
   end
   
   def test_objects
-    conditions = BinaryLogic::Searchgasm::Search::Conditions.new(Account)
+    conditions = Searchgasm::Search::Conditions.new(Account)
     assert_equal conditions.objects, []
     
     conditions.name_contains = "Binary"
@@ -82,7 +89,7 @@ class TestSearchgasmConditions < Test::Unit::TestCase
   end
   
   def test_reset
-    conditions = BinaryLogic::Searchgasm::Search::Conditions.new(Account)
+    conditions = Searchgasm::Search::Conditions.new(Account)
     
     conditions.name_contains = "Binary"
     assert_equal 1, conditions.objects.size
@@ -108,7 +115,7 @@ class TestSearchgasmConditions < Test::Unit::TestCase
   end
   
   def test_sanitize
-    conditions = BinaryLogic::Searchgasm::Search::Conditions.new(Account)
+    conditions = Searchgasm::Search::Conditions.new(Account)
     conditions.name_contains = "Binary"
     conditions.id_gt = 5
     now = Time.now
@@ -123,7 +130,7 @@ class TestSearchgasmConditions < Test::Unit::TestCase
   end
   
   def test_value
-    conditions = BinaryLogic::Searchgasm::Search::Conditions.new(Account)
+    conditions = Searchgasm::Search::Conditions.new(Account)
     now = Time.now
     v = {:name_contains => "Binary", :created_at_greater_than => now}
     conditions.value = v
@@ -144,7 +151,7 @@ class TestSearchgasmConditions < Test::Unit::TestCase
   end
   
   def test_searching
-    conditions = BinaryLogic::Searchgasm::Search::Conditions.new(Account)
+    conditions = Searchgasm::Search::Conditions.new(Account)
     conditions.name_contains = "Binary"
     assert_equal Account.find(1, 3), conditions.all
     assert_equal Account.find(1, 3), conditions.find(:all)

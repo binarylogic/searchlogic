@@ -2,4 +2,4 @@
 *.log
 pkg/*
 coverage/*
-examples/*
+doc/*

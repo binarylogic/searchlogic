@@ -13,16 +13,16 @@ class TestSearchgasmBase < Test::Unit::TestCase
   end
   
   def test_needed
-    assert BinaryLogic::Searchgasm::Search::Base.needed?(Account, :page => 2, :conditions => {:name => "Ben"})
-    assert !BinaryLogic::Searchgasm::Search::Base.needed?(Account, :conditions => {:name => "Ben"})
-    assert BinaryLogic::Searchgasm::Search::Base.needed?(Account, :limit => 2, :conditions => {:name_contains => "Ben"})
-    assert !BinaryLogic::Searchgasm::Search::Base.needed?(Account, :limit => 2)
-    assert BinaryLogic::Searchgasm::Search::Base.needed?(Account, :per_page => 2)
+    assert Searchgasm::Search::Base.needed?(Account, :page => 2, :conditions => {:name => "Ben"})
+    assert !Searchgasm::Search::Base.needed?(Account, :conditions => {:name => "Ben"})
+    assert Searchgasm::Search::Base.needed?(Account, :limit => 2, :conditions => {:name_contains => "Ben"})
+    assert !Searchgasm::Search::Base.needed?(Account, :limit => 2)
+    assert Searchgasm::Search::Base.needed?(Account, :per_page => 2)
   end
   
   def test_initialize
-    assert_nothing_raised { BinaryLogic::Searchgasm::Search::Base.new(Account) }
-    search = BinaryLogic::Searchgasm::Search::Base.new(Account, :conditions => {:name_like => "binary"}, :page => 2, :limit => 10, :readonly => true)
+    assert_nothing_raised { Searchgasm::Search::Base.new(Account) }
+    search = Searchgasm::Search::Base.new(Account, :conditions => {:name_like => "binary"}, :page => 2, :limit => 10, :readonly => true)
     assert_equal Account, search.klass
     assert_equal "binary", search.conditions.name_like
     assert_equal 2, search.page
@@ -31,7 +31,7 @@ class TestSearchgasmBase < Test::Unit::TestCase
   end
   
   def test_setting_first_level_options
-    search = BinaryLogic::Searchgasm::Search::Base.new(Account)
+    search = Searchgasm::Search::Base.new(Account)
     
     search.include = :users
     assert_equal :users, search.include
@@ -79,20 +79,20 @@ class TestSearchgasmBase < Test::Unit::TestCase
   end
   
   def test_conditions
-    search = BinaryLogic::Searchgasm::Search::Base.new(Account)
-    assert_kind_of BinaryLogic::Searchgasm::Search::Conditions, search.conditions
+    search = Searchgasm::Search::Base.new(Account)
+    assert_kind_of Searchgasm::Search::Conditions, search.conditions
     assert_equal search.conditions.klass, Account
     
     search.conditions = {:name_like => "Binary"}
-    assert_kind_of BinaryLogic::Searchgasm::Search::Conditions, search.conditions
+    assert_kind_of Searchgasm::Search::Conditions, search.conditions
     
-    conditions = BinaryLogic::Searchgasm::Search::Conditions.new(Account, :id_greater_than => 8)
+    conditions = Searchgasm::Search::Conditions.new(Account, :id_greater_than => 8)
     search.conditions = conditions
     assert_equal conditions, search.conditions
   end
   
   def test_include
-    search = BinaryLogic::Searchgasm::Search::Base.new(Account)
+    search = Searchgasm::Search::Base.new(Account)
     assert_equal nil, search.include
     search.conditions.name_contains = "Binary"
     assert_equal nil, search.include
@@ -108,7 +108,7 @@ class TestSearchgasmBase < Test::Unit::TestCase
   end
   
   def test_limit
-    search = BinaryLogic::Searchgasm::Search::Base.new(Account)
+    search = Searchgasm::Search::Base.new(Account)
     search.limit = 10
     assert_equal 10, search.limit
     search.page = 2
@@ -127,15 +127,15 @@ class TestSearchgasmBase < Test::Unit::TestCase
   end
   
   def test_order_as
-    search = BinaryLogic::Searchgasm::Search::Base.new(Account)
+    search = Searchgasm::Search::Base.new(Account)
     assert_equal nil, search.order
-    assert_equal "DESC", search.order_as
-    assert search.desc?
-    
-    search.order_as = "ASC"
     assert_equal "ASC", search.order_as
     assert search.asc?
-    assert_equal "id ASC", search.order
+    
+    search.order_as = "DESC"
+    assert_equal "DESC", search.order_as
+    assert search.desc?
+    assert_equal "\"accounts\".\"id\" DESC", search.order
     
     search.order = "id ASC"
     assert_equal "ASC", search.order_as
@@ -150,21 +150,25 @@ class TestSearchgasmBase < Test::Unit::TestCase
     search.order_by = "name"
     assert_equal "DESC", search.order_as
     assert search.desc?
-    assert_equal "name DESC", search.order
+    assert_equal "\"accounts\".\"name\" DESC", search.order
   end
   
   def test_order_by
-    search = BinaryLogic::Searchgasm::Search::Base.new(Account)
+    search = Searchgasm::Search::Base.new(Account)
     assert_equal nil, search.order
     assert_equal "id", search.order_by
     
     search.order_by = "first_name"
     assert_equal "first_name", search.order_by
-    assert_equal "first_name DESC", search.order
+    assert_equal "\"accounts\".\"first_name\" ASC", search.order
     
     search.order_by = "last_name"
     assert_equal "last_name", search.order_by
-    assert_equal "last_name DESC", search.order
+    assert_equal "\"accounts\".\"last_name\" ASC", search.order
+    
+    search.order_by = ["first_name", "last_name"]
+    assert_equal ["first_name", "last_name"], search.order_by
+    assert_equal "\"accounts\".\"first_name\" ASC, \"accounts\".\"last_name\" ASC", search.order
     
     search.order = "created_at DESC"
     assert_equal "created_at", search.order_by
@@ -200,7 +204,7 @@ class TestSearchgasmBase < Test::Unit::TestCase
   end
   
   def test_page
-    search = BinaryLogic::Searchgasm::Search::Base.new(Account)
+    search = Searchgasm::Search::Base.new(Account)
     search.page = 2
     assert_equal 1, search.page
     search.per_page = 20
@@ -226,7 +230,7 @@ class TestSearchgasmBase < Test::Unit::TestCase
   end
   
   def test_sanitize
-    search = BinaryLogic::Searchgasm::Search::Base.new(Account)
+    search = Searchgasm::Search::Base.new(Account)
     search.per_page = 2
     search.conditions.name_like = "Binary"
     search.conditions.users.id_greater_than = 2
@@ -236,7 +240,7 @@ class TestSearchgasmBase < Test::Unit::TestCase
   end
   
   def test_scope
-    search = BinaryLogic::Searchgasm::Search::Base.new(Account)
+    search = Searchgasm::Search::Base.new(Account)
     search.conditions = "some scope"
     assert_equal "some scope", search.conditions.scope
     search.conditions = nil
@@ -248,7 +252,7 @@ class TestSearchgasmBase < Test::Unit::TestCase
   end
   
   def test_searching
-    search = BinaryLogic::Searchgasm::Search::Base.new(Account)
+    search = Searchgasm::Search::Base.new(Account)
     search.conditions.name_like = "Binary"
     assert_equal search.all, [Account.find(1), Account.find(3)]
     assert_equal search.find(:all), [Account.find(1), Account.find(3)]
@@ -274,7 +278,7 @@ class TestSearchgasmBase < Test::Unit::TestCase
   end
   
   def test_calculations
-    search = BinaryLogic::Searchgasm::Search::Base.new(Account)
+    search = Searchgasm::Search::Base.new(Account)
     search.conditions.name_like = "Binary"
     assert_equal 2, search.average('id')
     assert_equal 2, search.calculate(:avg, 'id')
@@ -287,18 +291,18 @@ class TestSearchgasmBase < Test::Unit::TestCase
   
   def test_protection
     assert_raise(ArgumentError) { Account.build_search(:conditions => "(DELETE FROM users)", :page => 2, :per_page => 15) }
-    BinaryLogic::Searchgasm::Search::Base::VULNERABLE_OPTIONS.each { |option| assert_raise(ArgumentError) { Account.build_search(option => "(DELETE FROM users)") } }
+    Searchgasm::Search::Base::VULNERABLE_OPTIONS.each { |option| assert_raise(ArgumentError) { Account.build_search(option => "(DELETE FROM users)") } }
     
     assert_nothing_raised { Account.build_search!(:conditions => "(DELETE FROM users)", :page => 2, :per_page => 15) }
-    BinaryLogic::Searchgasm::Search::Base::VULNERABLE_OPTIONS.each { |option| assert_nothing_raised { Account.build_search!(option => "(DELETE FROM users)") } }
+    Searchgasm::Search::Base::VULNERABLE_OPTIONS.each { |option| assert_nothing_raised { Account.build_search!(option => "(DELETE FROM users)") } }
     
     account = Account.first
     
     assert_raise(ArgumentError) { account.users.build_search(:conditions => "(DELETE FROM users)", :page => 2, :per_page => 15) }
-    BinaryLogic::Searchgasm::Search::Base::VULNERABLE_OPTIONS.each { |option| assert_raise(ArgumentError) { account.users.build_search(option => "(DELETE FROM users)") } }
+    Searchgasm::Search::Base::VULNERABLE_OPTIONS.each { |option| assert_raise(ArgumentError) { account.users.build_search(option => "(DELETE FROM users)") } }
     
     assert_nothing_raised { account.users.build_search!(:conditions => "(DELETE FROM users)", :page => 2, :per_page => 15) }
-    BinaryLogic::Searchgasm::Search::Base::VULNERABLE_OPTIONS.each { |option| assert_nothing_raised { account.users.build_search!(option => "(DELETE FROM users)") } }
+    Searchgasm::Search::Base::VULNERABLE_OPTIONS.each { |option| assert_nothing_raised { account.users.build_search!(option => "(DELETE FROM users)") } }
     
     assert_raise(ArgumentError) { Account.build_search(:order_by => "unknown_column") }
     assert_nothing_raised { Account.build_search!(:order_by => "unknown_column") }

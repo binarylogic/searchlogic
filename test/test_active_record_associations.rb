@@ -14,7 +14,7 @@ class TestActiveRecordAssociations < Test::Unit::TestCase
   
   def test_build_search
     search = Account.find(1).users.build_search
-    assert_kind_of BinaryLogic::Searchgasm::Search::Base, search
+    assert_kind_of Searchgasm::Search::Base, search
     assert_equal User, search.klass
     assert_equal "\"users\".account_id = 1", search.conditions.scope
     
