@@ -8,7 +8,7 @@ module Searchgasm
         end
         
         def aliases_for_column(column)
-          ["#{column.name}_bw", "#{column.name}_starts_with", "#{column.name}_start"]
+          ["#{column.name}_bw", "#{column.name}_sw", "#{column.name}_starts_with", "#{column.name}_start"]
         end
       end
       

@@ -84,7 +84,7 @@ module Searchgasm
             return unless search_object.is_a?(Search::Base)
             name = args.first
             options = args.extract_options!
-            (options.delete(:hidden_fields) || Config.hidden_fields).each do |option|
+            [(options.delete(:hidden_fields) || Config.hidden_fields)].flatten.each do |option|
               concat(hidden_field(name, option, :object => search_object, :value => (option == :order_by ? searchgasm_order_by_value(search_object.order_by) : search_object.send(option))))
             end
             args << options

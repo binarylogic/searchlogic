@@ -41,7 +41,13 @@ Using Searchgasm in rails is the best part, because rails has all kinds of nifty
         @users, @users_count = @search.all, @search.count
     end
 
-Now your view. Notice you can use your search object <b>just like</b> an ActiveRecord object.
+Now your view. Things to note in this view:
+
+1.  Passing a search object right into form\_for and fields\_for
+2.  The built in conditions for each column and how you can traverse the relationships and set conditions on them
+3.  The order_by helper
+4.  The page and per_page helpers
+5.  All of your search logic is in 1 spot: your view. Nice and DRY.
 
     # app/views/users/index.html.haml
     - form_for @search do |f|
