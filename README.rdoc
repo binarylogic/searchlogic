@@ -76,9 +76,11 @@ Your view:
     Page:
     = pages
 
-Nice and simple. 2 lines in your controller, no "cruft" in your models, pagination as simple as calling the "page" and "per_page" helpers, ordering as simple as calling "order_by", and all searching conditions in 1 spot: your form. For documentation on helpers see Searchgasm::Helpers::FormHelper and Searchgasm::Helpers::SearchHelper.
-
 <b>See this example live: http://searchgasm_example.binarylogic.com</b>
+
+You're probably saying, this is great, but I want to do all of this via AJAX. No problem. Check out the {live tutorial}(http://searchgasm_example.binarylogic.com/orders) based on this example, there is a link for an {AJAX example}(http://searchgasm_example.binarylogic.com/orders).
+
+This is really just the tip of the iceberg. See below for more examples or {check out the documentation}[http://searchgasm.rubyforge.org] for options and explanations.
 
 == Simple Searching Example
 
