@@ -72,7 +72,7 @@ Now your view. Things to note in this view:
     Per page:
     = per_page
     Page:
-    = page
+    = pages
 
 Nice and simple. 2 lines in your controller, no "cruft" in your models, pagination as simple as calling the "page" and "per_page" helpers, ordering as simple as calling "order_by", and all searching conditions in 1 spot: your form. For documentation on helpers see Searchgasm::Helpers::FormHelper and Searchgasm::Helpers::SearchHelper.
 
