@@ -10,8 +10,8 @@ I'm a big fan of understanding what I'm using, so here's a quick explanation: Th
 
 == Quicklinks
 
-*	<b>Documentation:</b> {http://searchgasm.rubyforge.org}[http://searchgasm.rubyforge.org]
-*	<b>Live rails example:</b> {http://searchgasm_example.binarylogic.com}[http://searchgasm_example.binarylogic.com]
+*	<b>Documentation:</b> http://searchgasm.rubyforge.org
+*	<b>Live rails example:</b> http://searchgasm_example.binarylogic.com
 
 == Install and use
 
@@ -74,7 +74,7 @@ Now your view. Notice you can use your search object <b>just like</b> an ActiveR
 
 Nice and simple. 2 lines in your controller, no "cruft" in your models, pagination as simple as calling the "page" and "per_page" helpers, ordering as simple as calling "order_by", and all searching conditions in 1 spot: your form. For documentation on helpers see Searchgasm::Helpers::FormHelper and Searchgasm::Helpers::SearchHelper.
 
-<b>See this example live: {http://searchgasm_example.binarylogic.com}[http://searchgasm_example.binarylogic.com]</b>
+<b>See this example live: http://searchgasm_example.binarylogic.com</b>
 
 == Simple Searching Example
 
