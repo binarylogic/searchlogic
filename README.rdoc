@@ -107,7 +107,7 @@ Instead of using the "all" method you could use any search method: first, find(:
     @search.conditions.oders.line_items.created_after = Time.now	# can traverse through all relationships
     
     # Set options
-    @search.per_page = 50										# overrides the 20 set above
+    @search.per_page = 50                                       # overrides the 20 set above
 	@search.order_by = [:first_name, {:user_group => :name}] 	# order by first name and then by the user group's name it belongs to
 	@search.order_as = "ASC"
     
@@ -132,7 +132,7 @@ Using the object from above:
     @search.minimum('id')
     @search.sum('id')
     @search.calculate(:sum, 'id')
-	# ...any of the above calculations, see ActiveRecord documentation on calculations
+    # ...any of the above calculations, see ActiveRecord documentation on calculations
 
 Or do it from your model:
 
@@ -258,7 +258,7 @@ Depending on the type, each column comes preloaded with a bunch of nifty conditi
 
 Some of these conditions come with aliases, so you have your choice how to call the conditions. For example you can use "greater\_than" or "gt":
 
-    :equals;                    => :is
+    :equals                     => :is
     :does_not_equal             => :is_not, :not
     :begins_with                => :starts_with, :bw, :start
     :contains                   => :like, :has
