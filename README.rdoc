@@ -10,9 +10,9 @@ I'm a big fan of understanding what I'm using, so here's a quick explanation: Th
 
 == Quicklinks
 
-*	<tt>Documentation:</tt> http://searchgasm.rubyforge.org
-*	<tt>Easy pagination, ordering, and searching tutorial:</tt> http://www.binarylogic.com/2008/9/7/tutorial-pagination-ordering-and-searching-with-searchgasm
-*	<tt>The tutorial above, live:</tt> http://searchgasm_example.binarylogic.com
+*	<b>Documentation:</b> <tt>http://searchgasm.rubyforge.org</tt>
+*	<b>Easy pagination, ordering, and searching tutorial:</b> <tt>http://www.binarylogic.com/2008/9/7/tutorial-pagination-ordering-and-searching-with-searchgasm</tt>
+*	<b>The tutorial above, live:</b> <tt>http://searchgasm_example.binarylogic.com</tt>
 
 == Install and use
 
