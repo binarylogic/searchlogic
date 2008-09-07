@@ -21,7 +21,7 @@ I'm a big fan of understanding what I'm using, so here's a quick explanation: Th
 For rails
 
     $ cd vendor/plugins
-	$ sudo gem unpack searchgasm
+    $ sudo gem unpack searchgasm
 
 Or as a plugin
 
