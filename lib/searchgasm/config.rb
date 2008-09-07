@@ -55,6 +55,18 @@ module Searchgasm
         @pages_type = value.to_sym
       end
       
+      def per_page # :nodoc:
+        @per_page
+      end
+      
+      # The default for per page.
+      #
+      # * <tt>Default:</tt> nil, nil means "show all"
+      # * <tt>Accepts:</tt> Any value in your per_page choices
+      def per_page=(value)
+        @per_page = value
+      end
+      
       def per_page_choices # :nodoc:
         @per_page_choices ||= [10, 25, 50, 100, 150, 200, nil]
       end
