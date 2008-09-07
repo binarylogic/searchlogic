@@ -164,7 +164,7 @@ module Searchgasm
           when String, Symbol
             relationship_name.blank? ? column_name.titleize : "#{relationship_name.titleize} #{column_name.titleize}"
           when Array
-            determine_order_by_text(column_name.last)
+            determine_order_by_text(column_name.first)
           when Hash
             k = column_name.keys.first
             v = column_name.values.first
