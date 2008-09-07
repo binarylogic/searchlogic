@@ -49,6 +49,7 @@ Now your view. Things to note in this view:
 4.  The page and per_page helpers
 5.  All of your search logic is in 1 spot: your view. Nice and DRY.
 
+Your view:
 
     # app/views/users/index.html.haml
     - form_for @search do |f|
