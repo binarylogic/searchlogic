@@ -18,15 +18,10 @@ I'm a big fan of understanding what I'm using, so here's a quick explanation: Th
 
     sudo gem install searchgasm
 
-For rails > 2.1
+For rails
 
-    # environment.rb
-    config.gem "searchgasm"
-
-For rails < 2.1
-
-    # environment.rb
-    require "searchgasm"
+    $ cd vendor/plugins
+	$ sudo gem unpack searchgasm
 
 Or as a plugin
 
