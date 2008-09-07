@@ -1,3 +1,5 @@
+v0.9.8. Fixed order_by helper bug when determing the text with arrays. Should use the first value instead of last. Added in per_page config option.
+
 v0.9.7. Complete class restructure, much more organized, added in documentation, added in helpers for using searchgasm in a rails app, updated readme with link to documentation as well as a live example, some bug fixes, more tests
 
 v0.9.6. Fix bug when instantiating with nil options
