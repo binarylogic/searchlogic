@@ -103,13 +103,13 @@ Instead of using the "all" method you could use any search method: first, find(:
     # Set local conditions
     @search.conditions.email_ends_with = "binarylogic.com"
 
-	# Set conditions on relationships
-    @search.conditions.oders.line_items.created_after = Time.now	# can traverse through all relationships
+    # Set conditions on relationships
+    @search.conditions.oders.line_items.created_after = Time.now    # can traverse through all relationships
     
     # Set options
     @search.per_page = 50                                       # overrides the 20 set above
-	@search.order_by = [:first_name, {:user_group => :name}] 	# order by first name and then by the user group's name it belongs to
-	@search.order_as = "ASC"
+    @search.order_by = [:first_name, {:user_group => :name}]    # order by first name and then by the user group's name it belongs to
+    @search.order_as = "ASC"
     
     # Set ANY of the ActiveRecord options
     @search.group = "last_name"
