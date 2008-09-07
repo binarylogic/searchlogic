@@ -45,7 +45,7 @@ end
 
 ActiveRecord::Associations::AssociationCollection.send(:include, Searchgasm::ActiveRecord::Associations::AssociationCollection)
 
-module ::ActiveRecord
+module ActiveRecord
   module Associations
     class AssociationCollection
       alias_method_chain :find, :searchgasm
@@ -55,7 +55,7 @@ end
 
 ActiveRecord::Associations::HasManyAssociation.send(:include, Searchgasm::ActiveRecord::Associations::HasManyAssociation)
 
-module ::ActiveRecord
+module ActiveRecord
   module Associations
     class HasManyAssociation
       alias_method_chain :count, :searchgasm

@@ -49,10 +49,10 @@ class TestActiveRecordBase < Test::Unit::TestCase
   
   def test_build_conditions
     search = Account.new_conditions
-    assert_kind_of Searchgasm::Search::Conditions, search
+    assert_kind_of Searchgasm::Conditions::Base, search
     
     search = Account.build_conditions(:name_keywords => "awesome")
-    assert_kind_of Searchgasm::Search::Conditions, search
+    assert_kind_of Searchgasm::Conditions::Base, search
     assert_equal Account, search.klass
     assert_equal "awesome", search.name_keywords
 

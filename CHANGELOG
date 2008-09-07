@@ -1,3 +1,5 @@
+v0.9.7. Complete class restructure, much more organized, added in documentation, added in helpers for using searchgasm in a rails app, updated readme with link to documentation as well as a live example, some bug fixes, more tests
+
 v0.9.6. Fix bug when instantiating with nil options
 
 v0.9.5. Enhanced searching with conditions only. Updated read me to include example on adding your own conditions.

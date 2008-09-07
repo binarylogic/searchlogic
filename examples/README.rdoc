@@ -1,0 +1,4 @@
+=== Live example
+
+*	Please see the live example: http://searchgasm_example.binarylogic.com
+*	Source / Github project for the example: http://github.com/binarylogic/searchgasm_example.binarylogic.com

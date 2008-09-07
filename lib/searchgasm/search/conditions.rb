@@ -1,182 +1,48 @@
 module Searchgasm
   module Search
-    class Conditions
-      include Utilities
-      
-      attr_accessor :klass, :protect, :relationship_name, :scope
-      
-      class << self
-        def register_condition(klass)
-          raise(ArgumentError, "You can only register conditions that extend Searchgasm::Search::ConditionTypes::Condition") unless klass.ancestors.include?(Condition)
-          conditions << klass unless conditions.include?(klass)
-        end
-        
-        def conditions
-          @@conditions ||= []
-        end
-        
-        def needed?(klass, conditions)
-          if conditions.is_a?(Hash)
-            conditions.stringify_keys.keys.each do |condition|
-              return true unless klass.column_names.include?(condition)
-            end
-          end
-          
-          false
+    module Conditions
+      def self.included(klass)
+        klass.class_eval do
+          alias_method_chain :initialize, :conditions
+          alias_method_chain :conditions=, :conditions
+          alias_method_chain :include, :conditions
+          alias_method_chain :sanitize, :conditions
         end
       end
       
-      def initialize(klass, init_values = {})
-        self.klass = klass
-        add_klass_conditions!
-        add_column_conditions!
-        add_associations!
-        self.value = init_values
+      def initialize_with_conditions(klass, init_options = {})
+        self.conditions = Searchgasm::Conditions::Base.new(klass)
+        initialize_without_conditions(klass, init_options)
       end
       
-      # Setup methods for searching
-      [:all, :average, :calculate, :count, :find, :first, :maximum, :minimum, :sum].each do |method|
-        class_eval <<-end_eval
-          def #{method}(*args)
-            self.value = args.extract_options!
-            args << {:conditions => sanitize}
-            klass.#{method}(*args)
-          end
-        end_eval
-      end
-      
-      def assert_valid_values(values)
-        keys = condition_names.collect { |condition_name| condition_name.to_sym }
-        keys += klass.reflect_on_all_associations.collect { |association| association.name }
-        values.symbolize_keys.assert_valid_keys(keys)
-      end
-      
-      def associations
-        objects.select { |object| object.is_a?(self.class) }
-      end
-      
-      def condition_names
-        @condition_names ||= []
-      end
-      
-      def includes
-        i = []
-        associations.each do |association|
-          association_includes = association.includes
-          i << (association_includes.blank? ? association.relationship_name.to_sym : {association.relationship_name.to_sym => association_includes})
-        end
-        i.blank? ? nil : (i.size == 1 ? i.first : i)
-      end
-      
-      def objects
-        @objects ||= []
-      end
-      
-      def protect?
-        protect == true
-      end
-      
-      def sanitize
-        conditions = merge_conditions(*objects.collect { |object| object.sanitize })
-        return scope if conditions.blank?
-        merge_conditions(conditions, scope)
-      end
-      
-      def value=(values)
+      # Sets conditions on the search. Accepts a hash or a Searchgasm::Conditions::Base object.
+      def conditions_with_conditions=(values)
         case values
-        when Hash
-          assert_valid_values(values)
-          remove_values_from_protected_assignement(values).each { |condition, value| send("#{condition}=", value) }
+        when Searchgasm::Conditions::Base
+          @conditions = values
         else
-          if protect?
-            return if values.blank?
-            raise(ArgumentError, "You can not set a scope or pass SQL while the search is being protected")
-          end
-          self.scope = values
+          @conditions.conditions = values
         end
       end
       
-      def value
-        values_hash = {}
-        objects.each do |object|
-          next unless object.explicitly_set_value?
-          values_hash[object.name.to_sym] = object.value
-        end
-        values_hash
+      def include_with_conditions
+        includes = [include_without_conditions, conditions.includes].flatten.compact.uniq
+        includes.blank? ? nil : (includes.size == 1 ? includes.first : includes)
       end
       
-      private
-        def add_associations!
-          klass.reflect_on_all_associations.each do |association|
-            self.class.class_eval <<-end_eval
-              def #{association.name}
-                if @#{association.name}.nil?
-                  @#{association.name} = self.class.new(#{association.class_name})
-                  @#{association.name}.relationship_name = "#{association.name}"
-                  self.objects << @#{association.name}
-                end
-                @#{association.name}
-              end
-            
-              def #{association.name}=(value); #{association.name}.value = value; end
-              def reset_#{association.name}!; objects.delete(#{association.name}); @#{association.name} = nil; end
-            end_eval
-          end
-        end
-        
-        def add_column_conditions!
-          klass.columns.each do |column|
-            self.class.conditions.each do |condition|
-              name = condition.name_for_column(column)
-              next if name.blank?
-              add_condition!(condition, name, column)
-              condition.aliases_for_column(column).each { |alias_name| add_condition_alias!(alias_name, name) }
-            end
-          end
-        end
-        
-        def add_condition!(condition, name, column = nil)
-          self.condition_names << name
-          self.class.class_eval <<-end_eval
-            def #{name}_object
-              if @#{name}.nil?
-                @#{name} = #{condition.name}.new(klass#{column.nil? ? "" : ", \"#{column.name}\""})
-                self.objects << @#{name}
-              end
-              @#{name}
-            end
-
-            def #{name}; #{name}_object.value; end
-            def #{name}=(value); #{name}_object.value = value; end
-            def reset_#{name}!; objects.delete(#{name}_object); @#{name} = nil; end
-          end_eval
-        end
-        
-        def add_condition_alias!(alias_name, name)
-          self.condition_names << alias_name
-          self.class.class_eval do
-            alias_method alias_name, name
-            alias_method "#{alias_name}=", "#{name}="
-          end
-        end
-        
-        def add_klass_conditions!
-          self.class.conditions.each do |condition|
-            name = condition.name_for_klass(klass)
-            next if name.blank?
-            add_condition!(condition, name)
-            condition.aliases_for_klass(klass).each { |alias_name| add_condition_alias!(alias_name, name) }
-          end
-        end
-        
-        def remove_values_from_protected_assignement(values)
-          return values if klass.accessible_conditions.nil? && klass.protected_conditions.nil?
-          if klass.accessible_conditions
-            values.reject { |key, value| !klass.accessible_conditions.include?(key.to_s) }
-          elsif klass.protected_conditions
-            values.reject { |key, value| klass.protected_conditions.include?(key.to_s) }
-          end
-        end
+      def sanitize_with_conditions(for_method = nil)
+        find_options = sanitize_without_conditions(for_method)
+        find_options[:conditions] = find_options[:conditions].sanitize if find_options[:conditions]
+        find_options
+      end
+      
+      def scope
+        conditions.scope
+      end
+      
+      def scope=(value)
+        conditions.scope = value
+      end
     end
   end
 end

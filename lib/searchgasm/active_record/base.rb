@@ -1,5 +1,5 @@
 module Searchgasm
-  module ActiveRecord
+  module ActiveRecord #:nodoc: all
     module Base
       def calculate_with_searchgasm(*args)
         options = args.extract_options!
@@ -24,7 +24,7 @@ module Searchgasm
       def build_conditions(values = {}, &block)
         conditions = searchgasm_conditions
         conditions.protect = true
-        conditions.value = values
+        conditions.conditions = values
         yield conditions if block_given?
         conditions
       end
@@ -72,7 +72,7 @@ module Searchgasm
         end
       
         def searchgasm_conditions(options = {})
-          Searchgasm::Search::Conditions.new(self, options)
+          Searchgasm::Conditions::Base.new(self, options)
         end
       
         def searchgasm_searcher(options = {})
@@ -84,7 +84,7 @@ end
 
 ActiveRecord::Base.send(:extend, Searchgasm::ActiveRecord::Base)
 
-module ::ActiveRecord
+module ActiveRecord #:nodoc: all
   class Base
     class << self
       alias_method_chain :calculate, :searchgasm

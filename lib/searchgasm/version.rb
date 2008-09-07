@@ -22,7 +22,8 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 module Searchgasm
-  
+  # = Version
+  #
   # A class for describing the current version of a library. The version
   # consists of three parts: the +major+ number, the +minor+ number, and the
   # +tiny+ (or +patch+) number.
@@ -66,7 +67,7 @@ module Searchgasm
 
     MAJOR = 0
     MINOR = 9
-    TINY  = 6
+    TINY  = 7
 
     # The current version as a Version instance
     CURRENT = new(MAJOR, MINOR, TINY)
