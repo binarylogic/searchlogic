@@ -11,7 +11,8 @@ I'm a big fan of understanding what I'm using, so here's a quick explanation: Th
 == Quicklinks
 
 *	<b>Documentation:</b> http://searchgasm.rubyforge.org
-*	<b>Live rails example:</b> http://searchgasm_example.binarylogic.com
+*	<b>Easy pagination, ordering, and searching tutorial:</b> http://www.binarylogic.com/2008/9/7/tutorial-pagination-ordering-and-searching-with-searchgasm
+*	<b>The tutorial above, live:</b> http://searchgasm_example.binarylogic.com
 
 == Install and use
 
