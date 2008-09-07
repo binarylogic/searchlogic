@@ -48,16 +48,27 @@ class TestSearchBase < Test::Unit::TestCase
     assert_equal search.per_page, 20
     assert_equal search.page, 5
     assert_equal search.offset, 80
+    search.limit = nil
+    assert_equal nil, search.limit
+    assert_equal nil, search.per_page
+    assert_equal 1, search.page
+    assert_equal nil, search.offset
   
     search.offset = 50
-    assert_equal search.offset, 50
-    assert_equal search.page, 3
+    assert_equal 50, search.offset
+    assert_equal 1, search.page
+    search.limit = 50
+    assert_equal 2, search.page
+    search.offset = nil
+    assert_equal 0, search.offset
+    assert_equal 1, search.page
   
     search.per_page = 2
-    assert_equal search.per_page, 2
-    assert_equal search.limit, 2
-    assert_equal search.page, 26
-    assert_equal search.offset, 50
+    assert_equal 2, search.per_page
+    assert_equal 2, search.limit
+    search.offset = 50
+    assert_equal 26, search.page
+    assert_equal 50, search.offset
   
     search.order = "name ASC"
     assert_equal search.order, "name ASC"

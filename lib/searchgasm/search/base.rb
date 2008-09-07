@@ -50,10 +50,11 @@ module Searchgasm #:nodoc:
       end
       
       def limit
-        @limit ||= Config.per_page
+        @set_limit ? @limit : Config.per_page
       end
       
       def limit=(value)
+        @set_limit = true
         @limit = value.blank? || value == 0 ? nil : value.to_i
       end
       

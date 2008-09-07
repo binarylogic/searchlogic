@@ -2,7 +2,7 @@
 
 Searchgasm is orgasmic. Maybe not orgasmic, but you will get aroused. So go grab a towel and let's dive in.
 
-<b>Searchgasm's inspiration comes right from ActiveRecord. ActiveRecord lets you create objects that represent a record in the database, so why can't you create objects that represent searching the database? Now you can!</b>
+<b>Searchgasm's inspiration comes right from ActiveRecord. ActiveRecord lets you create objects that represent a record in the database, so why can't you create objects that represent searching the database? Now you can! It's searching, ordering, and pagination all in one.</b>
 
 == Under the hood
 
@@ -16,16 +16,16 @@ I'm a big fan of understanding what I'm using, so here's a quick explanation: Th
 
 == Install and use
 
-    sudo gem install searchgasm
+  sudo gem install searchgasm
 
 For rails
 
-    $ cd vendor/plugins
-    $ sudo gem unpack searchgasm
+  $ cd vendor/plugins
+  $ sudo gem unpack searchgasm
 
 Or as a plugin
 
-    script/plugin install git://github.com/binarylogic/searchgasm.git
+  script/plugin install git://github.com/binarylogic/searchgasm.git
 
 Now try out some of the examples below:
 
@@ -35,11 +35,11 @@ Now try out some of the examples below:
 
 Using Searchgasm in rails is the best part, because rails has all kinds of nifty methods to make dealing with ActiveRecord objects quick and easy, especially with forms. So let's take advantage of them! That's the idea behind this plugin. Searchgasm is searching, ordering, and pagination all rolled into one simple plugin. Take all of that pagination and searching cruft out of your models and let Searchgasm handle it. Check it out:
 
-    # app/controllers/users_controller.rb
-    def index
-        @search = User.new_search(params[:search])
-        @users, @users_count = @search.all, @search.count
-    end
+  # app/controllers/users_controller.rb
+  def index
+    @search = User.new_search(params[:search])
+    @users, @users_count = @search.all, @search.count
+  end
 
 Now your view. Things to note in this view:
 
@@ -51,30 +51,30 @@ Now your view. Things to note in this view:
 
 Your view:
 
-    # app/views/users/index.html.haml
-    - form_for @search do |f|
-     - f.fields_for @search.conditions do |users|
-        = users.text_field :first_name_contains
-        = users.calendar_date_select :created_after # nice rails plugin for replacing date_select
-        - users.fields_for users.object.orders do |orders|
-            = orders.select :total_gt, (1..100)
-        = f.submit "Search"
-    
-    %table
-        %tr
-            %th= order_by :first_name
-            %th= order_by :last_name
-            %th= order_by :email
-        - @users.each do |user|
-            %tr
-                %td= user.first_name
-                %td= user.last_name
-                %td= user.email
-    
-    Per page:
-    = per_page
-    Page:
-    = pages
+  # app/views/users/index.html.haml
+  - form_for @search do |f|
+    - f.fields_for @search.conditions do |users|
+      = users.text_field :first_name_contains
+      = users.calendar_date_select :created_after # nice rails plugin for replacing date_select
+      - users.fields_for users.object.orders do |orders|
+        = orders.select :total_gt, (1..100)
+    = f.submit "Search"
+  
+  %table
+    %tr
+      %th= order_by :first_name
+      %th= order_by :last_name
+      %th= order_by :email
+    - @users.each do |user|
+      %tr
+        %td= user.first_name
+        %td= user.last_name
+        %td= user.email
+  
+  Per page:
+  = per_page
+  Page:
+  = pages
 
 <b>See this example live: http://searchgasm_example.binarylogic.com</b>
 
@@ -84,51 +84,51 @@ This is really just the tip of the iceberg. See below for more examples or {chec
 
 == Simple Searching Example
 
-    User.all(
-        :conditions => {
-            :first_name_contains => "Ben",          # first_name like '%Ben%'
-            :email_ends_with => "binarylogic.com"   # email like '%binarylogic.com'
-        },
-        :per_page => 20     # limit 20
-        :page => 3          # offset 40, which starts us on page 3
-    )
+  User.all(
+    :conditions => {
+      :first_name_contains => "Ben",      # first_name like '%Ben%'
+      :email_ends_with => "binarylogic.com"   # email like '%binarylogic.com'
+    },
+    :per_page => 20   # limit 20
+    :page => 3      # offset 40, which starts us on page 3
+  )
 
 Instead of using the "all" method you could use any search method: first, find(:all), find(:first), count, sum, average, etc, just like ActiveRecord
 
 == Exhaustive Example w/ Object Based Searching (great for form_for or fields_for)
 
-    # Instantiate
-    @search = User.new_search(
-        :conditions => {
-            :first_name_contains => "Ben", 
-            :age_gt => 18,
-            :orders => {:total_lt => 100}
-        },
-        :per_page => 20,
-        :page => 2,
-        :order_by => {:orders => :total},
-        :order_as => "DESC"
-    )
-    
-    # Set local conditions
-    @search.conditions.email_ends_with = "binarylogic.com"
+  # Instantiate
+  @search = User.new_search(
+    :conditions => {
+      :first_name_contains => "Ben", 
+      :age_gt => 18,
+      :orders => {:total_lt => 100}
+    },
+    :per_page => 20,
+    :page => 2,
+    :order_by => {:orders => :total},
+    :order_as => "DESC"
+  )
+  
+  # Set local conditions
+  @search.conditions.email_ends_with = "binarylogic.com"
 
-    # Set conditions on relationships
-    @search.conditions.oders.line_items.created_after = Time.now    # can traverse through all relationships
-    
-    # Set options
-    @search.per_page = 50                                       # overrides the 20 set above
-    @search.order_by = [:first_name, {:user_group => :name}]    # order by first name and then by the user group's name it belongs to
-    @search.order_as = "ASC"
-    
-    # Set ANY of the ActiveRecord options
-    @search.group = "last_name"
-    @search.readonly = true
-    # ... see ActiveRecord documentation
-    
-    # Return results just like ActiveRecord
-    @search.all
-    @search.first
+  # Set conditions on relationships
+  @search.conditions.oders.line_items.created_after = Time.now  # can traverse through all relationships
+  
+  # Set options
+  @search.per_page = 50                     # overrides the 20 set above
+  @search.order_by = [:first_name, {:user_group => :name}]  # order by first name and then by the user group's name it belongs to
+  @search.order_as = "ASC"
+  
+  # Set ANY of the ActiveRecord options
+  @search.group = "last_name"
+  @search.readonly = true
+  # ... see ActiveRecord documentation
+  
+  # Return results just like ActiveRecord
+  @search.all
+  @search.first
 
 Take the @search object and pass it right into form\_for or fields\_for (see above).
 
@@ -136,100 +136,100 @@ Take the @search object and pass it right into form\_for or fields\_for (see abo
 
 Using the object from above:
 
-    @search.average('id')
-    @search.count
-    @search.maximum('id')
-    @search.minimum('id')
-    @search.sum('id')
-    @search.calculate(:sum, 'id')
-    # ...any of the above calculations, see ActiveRecord documentation on calculations
+  @search.average('id')
+  @search.count
+  @search.maximum('id')
+  @search.minimum('id')
+  @search.sum('id')
+  @search.calculate(:sum, 'id')
+  # ...any of the above calculations, see ActiveRecord documentation on calculations
 
 Or do it from your model:
 
-    User.count(:conditions => {:first_name_contains => "Ben"})
-    User.sum('id', :conditions => {:first_name_contains => "Ben"})
-    # ... all other calcualtions, etc.
+  User.count(:conditions => {:first_name_contains => "Ben"})
+  User.sum('id', :conditions => {:first_name_contains => "Ben"})
+  # ... all other calcualtions, etc.
 
 == Different ways to search, take your pick
 
 Any of the options used in the above example can be used in these, but for the sake of brevity I am only using a few:
 
-    User.all(:conditions => {:age_gt => 18}, :per_page => 20)
+  User.all(:conditions => {:age_gt => 18}, :per_page => 20)
 
-    User.first(:conditions => {:age_gt => 18}, :per_page => 20)
+  User.first(:conditions => {:age_gt => 18}, :per_page => 20)
 
-    User.find(:all, :conditions => {::age_gt => 18}, :per_page => 20)
+  User.find(:all, :conditions => {::age_gt => 18}, :per_page => 20)
 
-    User.find(:first, :conditions => {::age_gt => 18}, :per_page => 20)
+  User.find(:first, :conditions => {::age_gt => 18}, :per_page => 20)
 
-    search = User.new_search(:conditions => {:age_gt => 18})    # build_search is an alias
-    search.conditions.first_name_contains = "Ben"
-    search.per_page = 20
-    search.all
+  search = User.new_search(:conditions => {:age_gt => 18})  # build_search is an alias
+  search.conditions.first_name_contains = "Ben"
+  search.per_page = 20
+  search.all
 
 If you want to use Searchgasm directly:
 
-    search = Searchgasm::Search::Base.new(User, :conditions => {:age_gt => 18})
-    search.conditions.first_name_contains = "Ben"
-    search.per_page = 20
-    search.all
+  search = Searchgasm::Search::Base.new(User, :conditions => {:age_gt => 18})
+  search.conditions.first_name_contains = "Ben"
+  search.per_page = 20
+  search.all
 
 == Search with conditions only
 
-    conditions = User.new_conditions(:age_gt => 18)
-    conditions.first_name_contains = "Ben"
-    conditions.all
-    # ... all operations above are available
+  conditions = User.new_conditions(:age_gt => 18)
+  conditions.first_name_contains = "Ben"
+  conditions.all
+  # ... all operations above are available
 
 Pass a conditions object right into ActiveRecord:
 
-    User.all(:conditions => conditions)
+  User.all(:conditions => conditions)
 
 Again, if you want to use Searchgasm directly:
 
-    conditions = Searchgasm::Conditions::Base.new(User, :age_gt => 18)
-    conditions.first_name_contains = "Ben"
-    conditions.all
+  conditions = Searchgasm::Conditions::Base.new(User, :age_gt => 18)
+  conditions.first_name_contains = "Ben"
+  conditions.all
 
 Now pass the conditions object right into form\_for or fields\_for (see above for example).
 
 == Scoped searching
 
-    @current_user.orders.find(:all, :conditions => {:total_lte => 500})
-    @current_user.orders.count(:conditions => {:total_lte => 500})
-    @current_user.orders.sum('total', :conditions => {:total_lte => 500})
-    
-    search = @current_user.orders.build_search('total', :conditions => {:total_lte => 500})
+  @current_user.orders.find(:all, :conditions => {:total_lte => 500})
+  @current_user.orders.count(:conditions => {:total_lte => 500})
+  @current_user.orders.sum('total', :conditions => {:total_lte => 500})
+  
+  search = @current_user.orders.build_search('total', :conditions => {:total_lte => 500})
 
 == Searching trees
 
 For tree data structures you get a few nifty methods. Let's assume Users is a tree data structure.
 
-    # Child of
-    User.all(:conditions => {:child_of => User.roots.first})
-    User.all(:conditions => {:child_of => User.roots.first.id})
-    
-    # Sibling of
-    User.all(:conditions => {:sibling_of => User.roots.first})
-    User.all(:conditions => {:sibling_of => User.roots.first.id})
-    
-    # Descendant of (includes all recursive children: children, grand children, great grand children, etc)
-    User.all(:conditions => {:descendant_of => User.roots.first})
-    User.all(:conditions => {:descendant_of => User.roots.first.id})
-    
-    # Inclusive descendant_of. Same as above but includes the root
-    User.all(:conditions => {:inclusive_descendant_of => User.roots.first})
-    User.all(:conditions => {:inclusive_descendant_of => User.roots.first.id})
-    
+  # Child of
+  User.all(:conditions => {:child_of => User.roots.first})
+  User.all(:conditions => {:child_of => User.roots.first.id})
+  
+  # Sibling of
+  User.all(:conditions => {:sibling_of => User.roots.first})
+  User.all(:conditions => {:sibling_of => User.roots.first.id})
+  
+  # Descendant of (includes all recursive children: children, grand children, great grand children, etc)
+  User.all(:conditions => {:descendant_of => User.roots.first})
+  User.all(:conditions => {:descendant_of => User.roots.first.id})
+  
+  # Inclusive descendant_of. Same as above but includes the root
+  User.all(:conditions => {:inclusive_descendant_of => User.roots.first})
+  User.all(:conditions => {:inclusive_descendant_of => User.roots.first.id})
+  
 
 == Available anywhere (relationships & scopes)
 
 Not only can you use searchgasm when searching, but you can use it when setting up relationships or scopes. Anywhere you specify conditions in ActiveRecord.
 
-    class User < ActiveRecord::Base
-        has_many :expensive_pending_orders, :conditions => {:total_greater_than => 1_000_000, :state => :pending}, :per_page => 20
-        named_scope :sexy, :conditions => {:first_name => "Ben", email_ends_with => "binarylogic.com"}, :per_page => 20
-    end
+  class User < ActiveRecord::Base
+    has_many :expensive_pending_orders, :conditions => {:total_greater_than => 1_000_000, :state => :pending}, :per_page => 20
+    named_scope :sexy, :conditions => {:first_name => "Ben", email_ends_with => "binarylogic.com"}, :per_page => 20
+  end
 
 == Always use protection...against SQL injections
 
@@ -237,16 +237,16 @@ If there is one thing we all know, it's to always use protection against SQL inj
 
 === Protected from SQL injections
 
-    search = Account.new_search(params[:search])
-    conditions = Account.new_conditions(params[:conditions])
+  search = Account.new_search(params[:search])
+  conditions = Account.new_conditions(params[:conditions])
 
 === *NOT* protected from SQL injections
 
-    accounts = Account.find(params[:search])
-    accounts = Account.all(params[:search])
-    account = Account.first(params[:search])
-    search = Account.new_search!(params[:search])
-    conditions = Account.new_conditions!(params[:conditions])
+  accounts = Account.find(params[:search])
+  accounts = Account.all(params[:search])
+  account = Account.first(params[:search])
+  search = Account.new_search!(params[:search])
+  conditions = Account.new_conditions!(params[:conditions])
 
 Lesson learned: use new\_search and new\_conditions when passing in params as *ANY* of the options.
 
@@ -254,30 +254,30 @@ Lesson learned: use new\_search and new\_conditions when passing in params as *A
 
 Depending on the type, each column comes preloaded with a bunch of nifty conditions:
 
-    all columns
-    => :equals, :does_not_equal
+  all columns
+  => :equals, :does_not_equal
 
-    :string, :text
-    => :begins_with, :contains, :keywords, :ends_with
+  :string, :text
+  => :begins_with, :contains, :keywords, :ends_with
 
-    :integer, :float, :decimal,:datetime, :timestamp, :time, :date
-    => :greater_than, :greater_than_or_equal_to, :less_than, :less_than_or_equal_to
+  :integer, :float, :decimal,:datetime, :timestamp, :time, :date
+  => :greater_than, :greater_than_or_equal_to, :less_than, :less_than_or_equal_to
 
-    tree data structures (see above "searching trees")
-    => :child_of, :sibling_of, :descendant_of, :inclusive_descendant_of
+  tree data structures (see above "searching trees")
+  => :child_of, :sibling_of, :descendant_of, :inclusive_descendant_of
 
 Some of these conditions come with aliases, so you have your choice how to call the conditions. For example you can use "greater\_than" or "gt":
 
-    :equals                     => :is
-    :does_not_equal             => :is_not, :not
-    :begins_with                => :starts_with, :bw, :start
-    :contains                   => :like, :has
-    :ends_with                  => :ew, :ends, :end
-    :greater_than               => :gt, :after
-    :greater_than_or_equal_to   => :at_least, :gte
-    :keywords                   => :kwords, :kw
-    :less_than                  => :lt, :before
-    :less_than_or_equal_to      => :at_most, :lte
+  :equals           => :is
+  :does_not_equal       => :is_not, :not
+  :begins_with        => :starts_with, :bw, :start
+  :contains           => :like, :has
+  :ends_with          => :ew, :ends, :end
+  :greater_than         => :gt, :after
+  :greater_than_or_equal_to   => :at_least, :gte
+  :keywords           => :kwords, :kw
+  :less_than          => :lt, :before
+  :less_than_or_equal_to    => :at_most, :lte
 
 For more information on each condition see Searchgasm::Condition. Each condition has it's own class and the source is pretty simple and self explanatory.
 
@@ -291,38 +291,38 @@ I didn't include this function because its MySQL specific, and it's probably rar
 
 I want to use it, so let's add it:
 
-    # config/initializers/searchgasm.rb
-    # Actual function for MySQL databases only
-    class SoundsLike < Searchgasm::Condition::Base
-      class << self
-        # I pass you the column, you tell me what you want the method to be called.
-        # If you don't want to add this condition for that column, return nil
-        # It defaults to "#{column.name}_sounds_like". So if thats what you want you don't even need to do this.
-        def name_for_column(column)
-          super
-        end
-        
-        # Only do this if you want aliases for your condition
-        def aliases_for_column(column)
-          ["#{column.name}_sounds", "#{column.name}_similar_to"]
-        end
-      end
-      
-      # You can return an array or a string. NOT a hash, because all of these conditions
-      # need to eventually get merged together. The array or string can be anything you would put in
-      # the :conditions option for ActiveRecord::Base.find()
-      def to_conditions(value)
-        ["#{quoted_table_name}.#{quoted_column_name} SOUNDS LIKE ?", value]
-      end
+  # config/initializers/searchgasm.rb
+  # Actual function for MySQL databases only
+  class SoundsLike < Searchgasm::Condition::Base
+    class << self
+    # I pass you the column, you tell me what you want the method to be called.
+    # If you don't want to add this condition for that column, return nil
+    # It defaults to "#{column.name}_sounds_like". So if thats what you want you don't even need to do this.
+    def name_for_column(column)
+      super
     end
     
-    Searchgasm::Conditions::Base.register_condition(SoundsLike)
+    # Only do this if you want aliases for your condition
+    def aliases_for_column(column)
+      ["#{column.name}_sounds", "#{column.name}_similar_to"]
+    end
+    end
+    
+    # You can return an array or a string. NOT a hash, because all of these conditions
+    # need to eventually get merged together. The array or string can be anything you would put in
+    # the :conditions option for ActiveRecord::Base.find()
+    def to_conditions(value)
+    ["#{quoted_table_name}.#{quoted_column_name} SOUNDS LIKE ?", value]
+    end
+  end
+  
+  Searchgasm::Conditions::Base.register_condition(SoundsLike)
 
 Now test it out:
 
-    search = User.new_search
-    search.conditions.first_name_sounds_like = "Ben"
-    search.all  # will return any user that has a first name that sounds like "Ben"
+  search = User.new_search
+  search.conditions.first_name_sounds_like = "Ben"
+  search.all  # will return any user that has a first name that sounds like "Ben"
 
 Pretty nifty, huh? You can create any condition ultimately creating any SQL you want. The sky is the limit. For more information see Searchgasm::Condition::Base
 
