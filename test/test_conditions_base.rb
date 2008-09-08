@@ -165,14 +165,4 @@ class TestConditionsBase < Test::Unit::TestCase
     assert_equal 1, conditions.minimum('id')
     assert_equal 4, conditions.sum('id')
   end
-  
-  def test_protection
-    assert_raise(ArgumentError) { Account.new_conditions("(DELETE FROM users)") }
-    assert_nothing_raised { Account.build_conditions!("(DELETE FROM users)") }
-    
-    account = Account.first
-    
-    assert_raise(ArgumentError) { account.users.build_conditions("(DELETE FROM users)") }
-    assert_nothing_raised { account.users.build_conditions!("(DELETE FROM users)") }
-  end
 end

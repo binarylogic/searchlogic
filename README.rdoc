@@ -4,11 +4,7 @@ Searchgasm is orgasmic. Maybe not orgasmic, but you will get aroused. So go grab
 
 <b>Searchgasm's inspiration comes right from ActiveRecord. ActiveRecord lets you create objects that represent a record in the database, so why can't you create objects that represent searching the database? Now you can! It's searching, ordering, and pagination all in one.</b>
 
-== Under the hood
-
-I'm a big fan of understanding what I'm using, so here's a quick explanation: The design behind this plugin is pretty simple. The search object "sanitizes" down into the options passed into ActiveRecord::Base.find(). It serves as a transparent filter between you and ActiveRecord::Base.find(). This filter provides "enhancements" that get translated into options that ActiveRecord::Base.find() can understand. It doesn't dig into the ActiveRecord internals, it only uses what is publicly available. It jumps in and helps out <em>only</em> when needed, otherwise it sits back and lets ActiveRecord do all of the work. Between that and the extensive tests, this is a solid and fast plugin.
-
-== Quicklinks
+== Helpful links
 
 *	<b>Documentation:</b> http://searchgasm.rubyforge.org
 *	<b>Easy pagination, ordering, and searching tutorial:</b> http://www.binarylogic.com/2008/9/7/tutorial-pagination-ordering-and-searching-with-searchgasm
@@ -31,7 +27,33 @@ Now try out some of the examples below:
 
 <b>For all examples, let's assume the following relationships: User => Orders => Line Items</b>
 
-== The beauty of searchgasm
+== Simple Searching Example
+
+  User.all(
+    :conditions => {
+      :first_name_contains => "Ben",          # first_name like '%Ben%'
+      :email_ends_with => "binarylogic.com"   # email like '%binarylogic.com'
+    },
+    :per_page => 20,                        # limit 20
+    :page => 3,                             # offset 40, which starts us on page 3
+    :order_as => "ASC",
+    :order_by => {:user_group => :name}     # order user_groups.name ASC
+  )
+  
+same as above, but object based
+
+  search = User.new_search
+  search.conditions.first_name_contains = "Ben"
+  search.conditions.email_ends_with = "binarylogic.com"
+  search.per_page = 20
+  search.page = 3
+  search.order_as = "ASC"
+  search.order_by = {:user_group => :name}
+  search.all
+
+In both examples, instead of using the "all" method you could use any search method: first, find(:all), find(:first), count, sum, average, etc, just like ActiveRecord.
+
+== The beauty of searchgasm, integration into rails
 
 Using Searchgasm in rails is the best part, because rails has all kinds of nifty methods to make dealing with ActiveRecord objects quick and easy, especially with forms. So let's take advantage of them! That's the idea behind this plugin. Searchgasm is searching, ordering, and pagination all rolled into one simple plugin. Take all of that pagination and searching cruft out of your models and let Searchgasm handle it. Check it out:
 
@@ -76,28 +98,11 @@ Your view:
   Page:
   = pages
 
-<b>See this example live: http://searchgasm_example.binarylogic.com</b>
-
-You're probably saying, this is great, but I want to do all of this via AJAX. No problem. Check out the {live tutorial}(http://searchgasm_example.binarylogic.com/orders) based on this example, there is a link for an {AJAX example}(http://searchgasm_example.binarylogic.com/orders).
-
-This is really just the tip of the iceberg. See below for more examples or {check out the documentation}[http://searchgasm.rubyforge.org] for options and explanations.
-
-== Simple Searching Example
-
-  User.all(
-    :conditions => {
-      :first_name_contains => "Ben",      # first_name like '%Ben%'
-      :email_ends_with => "binarylogic.com"   # email like '%binarylogic.com'
-    },
-    :per_page => 20   # limit 20
-    :page => 3      # offset 40, which starts us on page 3
-  )
-
-Instead of using the "all" method you could use any search method: first, find(:all), find(:first), count, sum, average, etc, just like ActiveRecord
+<b>{See my tutorial on this example}(http://www.binarylogic.com/2008/9/7/tutorial-pagination-ordering-and-searching-with-searchgasm)</b>
 
 == Exhaustive Example w/ Object Based Searching (great for form_for or fields_for)
 
-  # Instantiate
+  # Start a new search
   @search = User.new_search(
     :conditions => {
       :first_name_contains => "Ben", 
@@ -268,16 +273,16 @@ Depending on the type, each column comes preloaded with a bunch of nifty conditi
 
 Some of these conditions come with aliases, so you have your choice how to call the conditions. For example you can use "greater\_than" or "gt":
 
-  :equals           => :is
-  :does_not_equal       => :is_not, :not
-  :begins_with        => :starts_with, :bw, :start
-  :contains           => :like, :has
-  :ends_with          => :ew, :ends, :end
-  :greater_than         => :gt, :after
+  :equals                     => :is
+  :does_not_equal             => :is_not, :not
+  :begins_with                => :starts_with, :sw, :bw, :start
+  :contains                   => :like, :has
+  :ends_with                  => :ew, :ends, :end
+  :greater_than               => :gt, :after
   :greater_than_or_equal_to   => :at_least, :gte
-  :keywords           => :kwords, :kw
-  :less_than          => :lt, :before
-  :less_than_or_equal_to    => :at_most, :lte
+  :keywords                   => :kwords, :kw
+  :less_than                  => :lt, :before
+  :less_than_or_equal_to      => :at_most, :lte
 
 For more information on each condition see Searchgasm::Condition. Each condition has it's own class and the source is pretty simple and self explanatory.
 
@@ -325,6 +330,10 @@ Now test it out:
   search.all  # will return any user that has a first name that sounds like "Ben"
 
 Pretty nifty, huh? You can create any condition ultimately creating any SQL you want. The sky is the limit. For more information see Searchgasm::Condition::Base
+
+== Under the hood
+
+I'm a big fan of understanding what I'm using, so here's a quick explanation: The design behind this plugin is pretty simple. The search object "sanitizes" down into the options passed into ActiveRecord::Base.find(). It serves as a transparent filter between you and ActiveRecord::Base.find(). This filter provides "enhancements" that get translated into options that ActiveRecord::Base.find() can understand. It doesn't dig into the ActiveRecord internals, it only uses what is publicly available. It jumps in and helps out <em>only</em> when needed, otherwise it sits back and lets ActiveRecord do all of the work. Between that and the extensive tests, this is a solid and fast plugin.
 
 == Reporting problems / bugs
 
