@@ -35,7 +35,7 @@ class TestActiveRecordBase < Test::Unit::TestCase
   def test_build_search
     search = Account.new_search
     assert_kind_of Searchgasm::Search::Base, search
-    
+        
     search = Account.build_search(:conditions => {:name_keywords => "awesome"}, :page => 2, :per_page => 15)
     assert_kind_of Searchgasm::Search::Base, search
     assert_equal Account, search.klass

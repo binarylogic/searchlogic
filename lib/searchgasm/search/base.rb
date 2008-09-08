@@ -49,12 +49,7 @@ module Searchgasm #:nodoc:
         "#<#{klass} #{options_as_nice_string}>"
       end
       
-      def limit
-        @set_limit ? @limit : Config.per_page
-      end
-      
       def limit=(value)
-        @set_limit = true
         @limit = value.blank? || value == 0 ? nil : value.to_i
       end
       

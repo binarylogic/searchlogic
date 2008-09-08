@@ -40,7 +40,7 @@ class TestSearchBase < Test::Unit::TestCase
     assert_equal "test", search.joins
   
     search.page = 5
-    assert_equal 1, search.page # haven't set a limit yet
+    assert_equal 1, search.page
     assert_equal nil, search.offset
   
     search.limit = 20

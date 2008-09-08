@@ -11,15 +11,15 @@ module Searchgasm
       end
       
       def limit_with_pagination=(value)
-        self.limit_without_pagination = value
+        r_value = self.limit_without_pagination = value
         self.page = @page unless @page.nil? # retry page now that the limit has changed
-        limit
+        r_value
       end
       
       def offset_with_pagination=(value)
-        self.offset_without_pagination = value
+        r_value = self.offset_without_pagination = value
         @page = nil
-        offset
+        r_value
       end
       
       def page

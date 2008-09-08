@@ -163,9 +163,9 @@ Any of the options used in the above example can be used in these, but for the s
 
   User.first(:conditions => {:age_gt => 18}, :per_page => 20)
 
-  User.find(:all, :conditions => {::age_gt => 18}, :per_page => 20)
+  User.find(:all, :conditions => {:age_gt => 18}, :per_page => 20)
 
-  User.find(:first, :conditions => {::age_gt => 18}, :per_page => 20)
+  User.find(:first, :conditions => {:age_gt => 18}, :per_page => 20)
 
   search = User.new_search(:conditions => {:age_gt => 18})  # build_search is an alias
   search.conditions.first_name_contains = "Ben"
@@ -181,6 +181,8 @@ If you want to use Searchgasm directly:
 
 == Search with conditions only
 
+Don't need pagination, ordering, or any of the other options? Search with conditions only.
+
   conditions = User.new_conditions(:age_gt => 18)
   conditions.first_name_contains = "Ben"
   conditions.all
@@ -195,8 +197,6 @@ Again, if you want to use Searchgasm directly:
   conditions = Searchgasm::Conditions::Base.new(User, :age_gt => 18)
   conditions.first_name_contains = "Ben"
   conditions.all
-
-Now pass the conditions object right into form\_for or fields\_for (see above for example).
 
 == Scoped searching
 

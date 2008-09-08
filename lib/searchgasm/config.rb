@@ -43,6 +43,19 @@ module Searchgasm
         @desc_indicator = value
       end
       
+      def pages_text # :nodoc:
+        @set_pages_text ? @pages_text : "Page %p"
+      end
+      
+      # The default value for the :text options in the pages helper.
+      #
+      # * <tt>Default:</tt> "Page %p"
+      # * <tt>Accepts:</tt> "Your string %p": where %p is replaced by the page number, or a block: Proc.new { |p| "Page #{p}" }
+      def pages_text=(value)
+        @set_pages_text = true
+        @pages_text
+      end
+      
       def pages_type # :nodoc:
         @pages_type ||= :select
       end
@@ -59,7 +72,8 @@ module Searchgasm
         @per_page
       end
       
-      # The default for per page.
+      # The default for per page. This is only applicaple for protected searches. Meaning you start the search with new_search or new_conditions.
+      # The reason for this not to disturb regular queries such as Whatever.find(:all). You would not expect that to be limited.
       #
       # * <tt>Default:</tt> nil, nil means "show all"
       # * <tt>Accepts:</tt> Any value in your per_page choices

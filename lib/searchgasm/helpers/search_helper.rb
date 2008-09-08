@@ -73,6 +73,7 @@ module Searchgasm
       # === Options
       # * <tt>:type</tt> -- default: :select, pass :links as an alternative to have flickr like pagination
       # * <tt>:remote</tt> -- default: false, if true requests will be AJAX
+      # * <tt>:text</tt> -- default: "1", "2", etc, if you want to change the text to say "Page 1", "Page 2", etc. Set this to: "Page %p". I will replace %p with the page #. Or pass a block and I will pass you the page number: Proc.new { |p| "Page #{p}" }
       #
       # === Advanced Options
       # * <tt>:action</tt> -- this is automatically determined for you based on the type. For a :select type, its :onchange. For a :links type, its :onclick. You shouldn't have to use this option unless you are doing something out of the norm. The point of this option is to return a URL that will include this.value or not
@@ -85,6 +86,19 @@ module Searchgasm
         add_searchgasm_helper_defaults!(options, :page)
         return "" if options[:search_obj].page_count <= 1
         
+        page_range = (1..options[:search_obj].page_count)
+        options[:text] = Config.pages_text unless options.has_key?(:text)
+        
+        choices = nil
+        case options[:text]
+        when String
+          choices = page_range.collect { |p| options[:text].gsub(/%p/, p.to_s) }
+        when Proc
+          choices = page_range.collect { |p| yield p }
+        else
+          choices = page_range
+        end
+        
         if block_given?
           yield options
         else
@@ -94,7 +108,7 @@ module Searchgasm
             options[:html][options[:action]] ||= ""
             options[:html][options[:action]] += ";"
             options[:html][options[:action]] += options[:url]
-            select(:search, :page, (1..options[:search_obj].page_count), {}, options[:html])
+            select(options[:params_scope], :page, choices, {:selected => options[:search_obj].page}, options[:html])
           else
             # HTML for links
           end
@@ -153,7 +167,7 @@ module Searchgasm
             options[:html][options[:action]] ||= ""
             options[:html][options[:action]] += ";"
             options[:html][options[:action]] += options[:url]
-            select(:search, :per_page, options[:choices], {}, options[:html])
+            select(options[:params_scope], :per_page, options[:choices], {:selected => options[:search_obj].per_page}, options[:html])
           end
         end
       end

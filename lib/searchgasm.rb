@@ -50,8 +50,8 @@ module Searchgasm
     class Base
       include Conditions
       include Ordering
-      include Pagination
       include Protection
+      include Pagination
     end
   end
   

@@ -10,8 +10,20 @@ module Searchgasm
       def self.included(klass)
         klass.class_eval do
           attr_reader :protect
+          alias_method_chain :limit, :protection
+          alias_method_chain :limit=, :protection
           alias_method_chain :options=, :protection
         end
+      end
+      
+      def limit_with_protection
+        return Config.per_page if protected? && !@set_limit
+        limit_without_protection
+      end
+      
+      def limit_with_protection=(value)
+        @set_limit = true
+        self.limit_without_protection = value
       end
       
       def options_with_protection=(values)
@@ -29,6 +41,7 @@ module Searchgasm
       def protect?
         protect == true
       end
+      alias_method :protected?, :protect?
       
       private
         def order_by_safe?(order_by, alt_klass = nil)

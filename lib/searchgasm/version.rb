@@ -67,7 +67,7 @@ module Searchgasm
 
     MAJOR = 0
     MINOR = 9
-    TINY  = 9
+    TINY  = 10
 
     # The current version as a Version instance
     CURRENT = new(MAJOR, MINOR, TINY)
