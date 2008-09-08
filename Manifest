@@ -44,10 +44,14 @@ test/libs/acts_as_tree.rb
 test/libs/rexml_fix.rb
 test/test_active_record_associations.rb
 test/test_active_record_base.rb
-test/test_condition.rb
+test/test_condition_base.rb
+test/test_condition_types.rb
 test/test_conditions_base.rb
+test/test_conditions_protection.rb
 test/test_helper.rb
 test/test_search_base.rb
+test/test_search_conditions.rb
 test/test_search_ordering.rb
 test/test_search_pagination.rb
 test/test_search_protection.rb
+test/text_config.rb

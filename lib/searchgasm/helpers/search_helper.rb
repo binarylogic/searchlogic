@@ -92,9 +92,9 @@ module Searchgasm
         choices = nil
         case options[:text]
         when String
-          choices = page_range.collect { |p| options[:text].gsub(/%p/, p.to_s) }
+          choices = page_range.collect { |p| [options[:text].gsub(/%p/, p.to_s), p] }
         when Proc
-          choices = page_range.collect { |p| yield p }
+          choices = page_range.collect { |p| [yield(p), p] }
         else
           choices = page_range
         end
