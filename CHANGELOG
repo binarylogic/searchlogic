@@ -1,3 +1,5 @@
+v1.0.0. Major changes in the helpers, they were completely re-engineered. Much nicer and cleaner now. I established a pattern between all helpers giving you complete flexibility as to how they are used. All helpers are called differently now (see documentation).
+
 v0.9.10. Hardened more tests, fixed bug with setting the per_page configuration to only take effect on protected searches, thus staying out of the way of normal searching.
 
 v0.9.9. Fixed setting per_page to nil, false, or ''. This is done to "show all" results.

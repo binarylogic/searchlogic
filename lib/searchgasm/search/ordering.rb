@@ -3,7 +3,7 @@ module Searchgasm
     # = Search Ordering
     #
     # The purpose of this module is to provide easy ordering for your searches. All that these options do is
-    # build :order for you. This plays a huge part in ordering your data on the interface. See Searchgasm::Helpers::SearchHelper for more information.
+    # build :order for you. This plays a huge part in ordering your data on the interface. See Searchgasm::Helpers::Search for more information.
     module Ordering
       def self.included(klass)
         klass.class_eval do

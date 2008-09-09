@@ -40,9 +40,14 @@ require "searchgasm/condition/inclusive_descendant_of"
 require "searchgasm/condition/sibling_of"
 
 # Helpers
-require "searchgasm/helpers/utilities_helper"
-require "searchgasm/helpers/form_helper"
-require "searchgasm/helpers/search_helper"
+require "searchgasm/helpers/utilities"
+require "searchgasm/helpers/form"
+require "searchgasm/helpers/control_types/link"
+require "searchgasm/helpers/control_types/links"
+require "searchgasm/helpers/control_types/select"
+require "searchgasm/helpers/control_types/remote_link"
+require "searchgasm/helpers/control_types/remote_links"
+require "searchgasm/helpers/control_types/remote_select"
 
 # Lets do it!
 module Searchgasm

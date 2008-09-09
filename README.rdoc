@@ -84,19 +84,21 @@ Your view:
   
   %table
     %tr
-      %th= order_by :first_name
-      %th= order_by :last_name
-      %th= order_by :email
+      %th= order_by_link :account => :name
+      %th= order_by_link :first_name
+      %th= order_by_link :last_name
+      %th= order_by_link :email
     - @users.each do |user|
-      %tr
-        %td= user.first_name
-        %td= user.last_name
-        %td= user.email
+        %tr
+          %td= user.account? ? user.account.name : "-"
+          %td= user.first_name
+          %td= user.last_name
+          %td= user.email
   
   Per page:
-  = per_page
+  = per_page_select
   Page:
-  = pages
+  = page_select
 
 <b>{See my tutorial on this example}(http://www.binarylogic.com/2008/9/7/tutorial-pagination-ordering-and-searching-with-searchgasm)</b>
 
@@ -252,6 +254,8 @@ If there is one thing we all know, it's to always use protection against SQL inj
   account = Account.first(params[:search])
   search = Account.new_search!(params[:search])
   conditions = Account.new_conditions!(params[:conditions])
+
+I'm sure you already knew this, but it's tempting to do this when you can pass the params hash right into these methods.
 
 Lesson learned: use new\_search and new\_conditions when passing in params as *ANY* of the options.
 
