@@ -1,6 +1,9 @@
 require "active_record"
 require "active_support"
 
+# Core Ext
+require "searchgasm/core_ext/hash"
+
 # Utilties
 require "searchgasm/version"
 require "searchgasm/config"

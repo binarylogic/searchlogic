@@ -7,9 +7,11 @@ module Searchgasm
     class Base
       include Utilities
       
-      attr_accessor :klass, :relationship_name, :scope
+      attr_accessor :relationship_name, :scope
       
       class << self
+        attr_accessor :added_klass_conditions, :added_column_conditions, :added_associations
+        
         # Registers a condition as an available condition for a column or a class.
         #
         # === Example
@@ -40,9 +42,9 @@ module Searchgasm
         #   end
         #
         #   Searchgasm::Seearch::Conditions.register_condition(SoundsLikeCondition)
-        def register_condition(klass)
-          raise(ArgumentError, "You can only register conditions that extend Searchgasm::Condition::Base") unless klass.ancestors.include?(Searchgasm::Condition::Base)
-          conditions << klass unless conditions.include?(klass)
+        def register_condition(condition_class)
+          raise(ArgumentError, "You can only register conditions that extend Searchgasm::Condition::Base") unless condition_class.ancestors.include?(Searchgasm::Condition::Base)
+          conditions << condition_class unless conditions.include?(condition_class)
         end
         
         # A list of available condition type classes
@@ -50,19 +52,50 @@ module Searchgasm
           @@conditions ||= []
         end
         
-        def needed?(klass, conditions) # :nodoc:
+        # A list of all associations created, used for caching and performance
+        def association_names
+          @association_names ||= []
+        end
+        
+        # A list of all conditions available, users for caching and performance
+        def condition_names
+          @condition_names ||= []
+        end
+        
+        def needed?(model_class, conditions) # :nodoc:
           if conditions.is_a?(Hash)
             conditions.stringify_keys.keys.each do |condition|
-              return true unless klass.column_names.include?(condition)
+              return true unless model_class.column_names.include?(condition)
             end
           end
           
           false
         end
+        
+        # Creates virtual classes for the class passed to it. This is a neccesity for keeping dynamically created method
+        # names specific to models. It provides caching and helps a lot with performance.
+        def create_virtual_class(model_class)
+          class_search_name = "::#{model_class.name}Conditions"
+          
+          begin
+            class_search_name.constantize
+          rescue NameError
+            eval <<-end_eval
+              class #{class_search_name} < ::Searchgasm::Conditions::Base; end;
+            end_eval
+                        
+            class_search_name.constantize
+          end
+        end
+        
+        # The class / model we are searching
+        def klass
+          # Can't cache this because thin and mongrel don't play nice with caching constants
+          name.split("::").last.gsub(/Conditions$/, "").constantize
+        end
       end
       
-      def initialize(klass, init_conditions = {})
-        self.klass = klass
+      def initialize(init_conditions = {})
         add_klass_conditions!
         add_column_conditions!
         add_associations!
@@ -88,6 +121,10 @@ module Searchgasm
           i << (association_includes.blank? ? association.relationship_name.to_sym : {association.relationship_name.to_sym => association_includes})
         end
         i.blank? ? nil : (i.size == 1 ? i.first : i)
+      end
+      
+      def klass
+        self.class.klass
       end
       
       # Sanitizes the conditions down into conditions that ActiveRecord::Base.find can understand.
@@ -128,11 +165,15 @@ module Searchgasm
       
       private
         def add_associations!
+          return true if self.class.added_associations
+          
           klass.reflect_on_all_associations.each do |association|
+            self.class.association_names << association.name.to_s
+            
             self.class.class_eval <<-"end_eval", __FILE__, __LINE__
               def #{association.name}
                 if @#{association.name}.nil?
-                  @#{association.name} = self.class.new(#{association.class_name})
+                  @#{association.name} = #{association.class_name}.new_conditions
                   @#{association.name}.relationship_name = "#{association.name}"
                   objects << @#{association.name}
                 end
@@ -143,9 +184,13 @@ module Searchgasm
               def reset_#{association.name}!; objects.delete(#{association.name}); @#{association.name} = nil; end
             end_eval
           end
+          
+          self.class.added_associations = true
         end
         
         def add_column_conditions!
+          return true if self.class.added_column_conditions
+          
           klass.columns.each do |column|
             self.class.conditions.each do |condition_klass|
               name = condition_klass.name_for_column(column)
@@ -154,10 +199,13 @@ module Searchgasm
               condition_klass.aliases_for_column(column).each { |alias_name| add_condition_alias!(alias_name, name) }
             end
           end
+          
+          self.class.added_column_conditions = true
         end
         
         def add_condition!(condition, name, column = nil)
-          condition_names << name
+          self.class.condition_names << name
+          
           self.class.class_eval <<-"end_eval", __FILE__, __LINE__
             def #{name}_object
               if @#{name}.nil?
@@ -174,7 +222,8 @@ module Searchgasm
         end
         
         def add_condition_alias!(alias_name, name)
-          condition_names << alias_name
+          self.class.condition_names << alias_name
+          
           self.class.class_eval do
             alias_method alias_name, name
             alias_method "#{alias_name}=", "#{name}="
@@ -182,26 +231,24 @@ module Searchgasm
         end
         
         def add_klass_conditions!
+          return true if self.class.added_klass_conditions
+          
           self.class.conditions.each do |condition|
             name = condition.name_for_klass(klass)
             next if name.blank?
             add_condition!(condition, name)
             condition.aliases_for_klass(klass).each { |alias_name| add_condition_alias!(alias_name, name) }
           end
+          
+          self.class.added_klass_conditions = true
         end
         
         def assert_valid_conditions(conditions)
-          keys = condition_names.collect { |condition_name| condition_name.to_sym }
-          keys += klass.reflect_on_all_associations.collect { |association| association.name }
-          conditions.symbolize_keys.assert_valid_keys(keys)
+          conditions.stringify_keys.assert_valid_keys(self.class.condition_names + self.class.association_names)
         end
         
         def associations
-          objects.select { |object| object.is_a?(self.class) }
-        end
-        
-        def condition_names
-          @condition_names ||= []
+          objects.select { |object| object.class < ::Searchgasm::Conditions::Base }
         end
         
         def objects

@@ -3,7 +3,18 @@ module Searchgasm
     # = Search Ordering
     #
     # The purpose of this module is to provide easy ordering for your searches. All that these options do is
-    # build :order for you. This plays a huge part in ordering your data on the interface. See Searchgasm::Helpers::Search for more information.
+    # build :order for you. This plays a huge part in ordering your data on the interface. See the options and examples below. The readme also touches on ordering. It's pretty simple thought:
+    #
+    # === Examples
+    #
+    #   search.order_by = :id
+    #   search.order_by = [:id, :first_name]
+    #   search.order_by = {:user_group => :name}
+    #   search.order_by = [:id, {:user_group => :name}]
+    #   search.order_by = {:user_group => {:account => :name}} # you can traverse through all of your relationships
+    #
+    #   search.order_as = "DESC"
+    #   search.order_as = "ASC"
     module Ordering
       def self.included(klass)
         klass.class_eval do
@@ -12,12 +23,12 @@ module Searchgasm
         end
       end
       
-      def include_with_ordering
+      def include_with_ordering # :nodoc:
         includes = [include_without_ordering, order_by_includes].flatten.compact.uniq
         includes.blank? ? nil : (includes.size == 1 ? includes.first : includes)
       end
       
-      def order_with_ordering=(value)
+      def order_with_ordering=(value) # :nodoc
         @order_by = nil
         self.order_without_ordering = value
       end

@@ -1,8 +1,9 @@
-CHANGELOG
+CHANGELOG.rdoc
 examples/README.rdoc
 init.rb
 lib/searchgasm/active_record/associations.rb
 lib/searchgasm/active_record/base.rb
+lib/searchgasm/active_record.rb
 lib/searchgasm/condition/base.rb
 lib/searchgasm/condition/begins_with.rb
 lib/searchgasm/condition/child_of.rb
@@ -22,6 +23,7 @@ lib/searchgasm/condition/tree.rb
 lib/searchgasm/conditions/base.rb
 lib/searchgasm/conditions/protection.rb
 lib/searchgasm/config.rb
+lib/searchgasm/core_ext/hash.rb
 lib/searchgasm/helpers/control_types/link.rb
 lib/searchgasm/helpers/control_types/links.rb
 lib/searchgasm/helpers/control_types/remote_link.rb

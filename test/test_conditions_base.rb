@@ -22,7 +22,7 @@ class TestConditionsBase < Test::Unit::TestCase
   end
   
   def test_initialize
-    conditions = Searchgasm::Conditions::Base.new(Account, :name_contains => "Binary")
+    conditions = Account.new_conditions(:name_contains => "Binary")
     assert_equal conditions.klass, Account
     assert_equal conditions.name_contains, "Binary"
   end
@@ -34,7 +34,7 @@ class TestConditionsBase < Test::Unit::TestCase
   def test_setting_conditions
     [Account, User, Order].each do |klass|
       conditions = klass.new_conditions
-      conditions.send(:condition_names).each do |condition_name|
+      conditions.class.condition_names.each do |condition_name|
         conditions.send("#{condition_name}=", 1)
         assert_equal 1, conditions.send(condition_name)
       end
@@ -43,7 +43,7 @@ class TestConditionsBase < Test::Unit::TestCase
   
   def test_accessible_protected_conditions
     #Account.conditions_accessible << :name_contains
-    #conditions = Searchgasm::Conditions::Base.new(Account)
+    #conditions = Account.new_conditions
     #conditions.conditions = {:created_after => Time.now, :name_contains => "Binary"}
     #assert({:name_contains => "Binary"}, conditions.value)
   end
@@ -56,7 +56,7 @@ class TestConditionsBase < Test::Unit::TestCase
   end
   
   def test_setting_associations
-    conditions = Searchgasm::Conditions::Base.new(Account, :users => {:first_name_like => "Ben"})
+    conditions = Account.new_conditions(:users => {:first_name_like => "Ben"})
     assert_equal conditions.users.first_name_like, "Ben"
     
     conditions.users.last_name_begins_with = "Ben"
@@ -64,7 +64,7 @@ class TestConditionsBase < Test::Unit::TestCase
   end
   
   def test_includes
-    conditions = Searchgasm::Conditions::Base.new(Account)
+    conditions = Account.new_conditions
     assert_equal conditions.includes, nil
     
     conditions.name_like = "Binary"
@@ -78,7 +78,7 @@ class TestConditionsBase < Test::Unit::TestCase
   end
   
   def test_objects
-    conditions = Searchgasm::Conditions::Base.new(Account)
+    conditions = Account.new_conditions
     assert_equal conditions.send(:objects), []
     
     conditions.name_contains = "Binary"
@@ -89,7 +89,7 @@ class TestConditionsBase < Test::Unit::TestCase
   end
   
   def test_reset
-    conditions = Searchgasm::Conditions::Base.new(Account)
+    conditions = Account.new_conditions
     
     conditions.name_contains = "Binary"
     assert_equal 1, conditions.send(:objects).size
@@ -115,7 +115,7 @@ class TestConditionsBase < Test::Unit::TestCase
   end
   
   def test_sanitize
-    conditions = Searchgasm::Conditions::Base.new(Account)
+    conditions = Account.new_conditions
     conditions.name_contains = "Binary"
     conditions.id_gt = 5
     now = Time.now
@@ -130,7 +130,7 @@ class TestConditionsBase < Test::Unit::TestCase
   end
   
   def test_conditions
-    conditions = Searchgasm::Conditions::Base.new(Account)
+    conditions = Account.new_conditions!
     now = Time.now
     v = {:name_contains => "Binary", :created_at_greater_than => now}
     conditions.conditions = v
@@ -151,7 +151,7 @@ class TestConditionsBase < Test::Unit::TestCase
   end
   
   def test_searching
-    conditions = Searchgasm::Conditions::Base.new(Account)
+    conditions = Account.new_conditions
     conditions.name_contains = "Binary"
     assert_equal Account.find(1, 3), conditions.all
     assert_equal Account.find(1, 3), conditions.find(:all)

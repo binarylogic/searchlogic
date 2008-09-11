@@ -13,7 +13,7 @@ class TestSearchOrdering < Test::Unit::TestCase
   end
   
   def test_order_as
-    search = Searchgasm::Search::Base.new(Account)
+    search = Account.new_search
     assert_equal nil, search.order
     assert_equal "ASC", search.order_as
     assert search.asc?
@@ -40,7 +40,7 @@ class TestSearchOrdering < Test::Unit::TestCase
   end
   
   def test_order_by
-    search = Searchgasm::Search::Base.new(Account)
+    search = Account.new_search
     assert_equal nil, search.order
     assert_equal "id", search.order_by
     

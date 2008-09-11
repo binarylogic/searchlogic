@@ -8,7 +8,7 @@ Searchgasm is orgasmic. Maybe not orgasmic, but you will get aroused. So go grab
 
 *	<b>Documentation:</b> http://searchgasm.rubyforge.org
 *	<b>Easy pagination, ordering, and searching tutorial:</b> http://www.binarylogic.com/2008/9/7/tutorial-pagination-ordering-and-searching-with-searchgasm
-*	<b>The tutorial above, live:</b> http://searchgasm_example.binarylogic.com
+*	<b>Live example of the tutorial above (with source):</b> http://searchgasm_example.binarylogic.com
 
 == Install and use
 
@@ -67,8 +67,8 @@ Now your view. Things to note in this view:
 
 1.  Passing a search object right into form\_for and fields\_for
 2.  The built in conditions for each column and how you can traverse the relationships and set conditions on them
-3.  The order_by helper
-4.  The page and per_page helpers
+3.  The order_by_link helper
+4.  The page_select and per_page_select helpers
 5.  All of your search logic is in 1 spot: your view. Nice and DRY.
 
 Your view:
@@ -82,25 +82,28 @@ Your view:
         = orders.select :total_gt, (1..100)
     = f.submit "Search"
   
-  %table
-    %tr
-      %th= order_by_link :account => :name
-      %th= order_by_link :first_name
-      %th= order_by_link :last_name
-      %th= order_by_link :email
-    - @users.each do |user|
+  - if @users_count > 0
+    %table
+      %tr
+        %th= order_by_link :account => :name
+        %th= order_by_link :first_name
+        %th= order_by_link :last_name
+        %th= order_by_link :email
+      - @users.each do |user|
         %tr
           %td= user.account? ? user.account.name : "-"
           %td= user.first_name
           %td= user.last_name
           %td= user.email
   
-  Per page:
-  = per_page_select
-  Page:
-  = page_select
+    Per page:
+    = per_page_select
+    Page:
+    = page_select
+  - else
+    No users were found.
 
-<b>{See my tutorial on this example}(http://www.binarylogic.com/2008/9/7/tutorial-pagination-ordering-and-searching-with-searchgasm)</b>
+<b>See my tutorial on this example: http://www.binarylogic.com/2008/9/7/tutorial-pagination-ordering-and-searching-with-searchgasm</b>
 
 == Exhaustive Example w/ Object Based Searching (great for form_for or fields_for)
 
@@ -174,13 +177,6 @@ Any of the options used in the above example can be used in these, but for the s
   search.per_page = 20
   search.all
 
-If you want to use Searchgasm directly:
-
-  search = Searchgasm::Search::Base.new(User, :conditions => {:age_gt => 18})
-  search.conditions.first_name_contains = "Ben"
-  search.per_page = 20
-  search.all
-
 == Search with conditions only
 
 Don't need pagination, ordering, or any of the other options? Search with conditions only.
@@ -194,19 +190,13 @@ Pass a conditions object right into ActiveRecord:
 
   User.all(:conditions => conditions)
 
-Again, if you want to use Searchgasm directly:
-
-  conditions = Searchgasm::Conditions::Base.new(User, :age_gt => 18)
-  conditions.first_name_contains = "Ben"
-  conditions.all
-
 == Scoped searching
 
   @current_user.orders.find(:all, :conditions => {:total_lte => 500})
   @current_user.orders.count(:conditions => {:total_lte => 500})
   @current_user.orders.sum('total', :conditions => {:total_lte => 500})
   
-  search = @current_user.orders.build_search('total', :conditions => {:total_lte => 500})
+  search = @current_user.orders.build_search(:conditions => {:total_lte => 500})
 
 == Searching trees
 

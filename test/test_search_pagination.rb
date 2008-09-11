@@ -13,7 +13,7 @@ class TestSearchPagination < Test::Unit::TestCase
   end
   
   def test_limit
-    search = Searchgasm::Search::Base.new(Account)
+    search = Account.new_search
     search.limit = 10
     assert_equal 10, search.limit
     search.page = 2
@@ -29,7 +29,7 @@ class TestSearchPagination < Test::Unit::TestCase
   end
   
   def test_page
-    search = Searchgasm::Search::Base.new(Account)
+    search = Account.new_search
     search.page = 2
     assert_equal 1, search.page
     search.per_page = 20
@@ -43,7 +43,7 @@ class TestSearchPagination < Test::Unit::TestCase
   end
   
   def test_per_page
-    search = Searchgasm::Search::Base.new(Account)
+    search = Account.new_search
     search.per_page = 10
     assert_equal 10, search.per_page
     search.per_page = ""

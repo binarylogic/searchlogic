@@ -19,13 +19,14 @@ module Searchgasm
     #
     # If you pass a Searchgasm::Search::Base object it automatically adds the :order_by, :order_as, and :per_page hidden fields. This is done so that when someone
     # creates a new search, their options are remembered. It keeps the search consisten and is much more user friendly. If you want to override this you can pass the
-    # following options. Or you can set this up in your configuration, see Searchgasm::Config for more details.
+    # following options or you can set this up in your configuration, see Searchgasm::Config for more details.
+    #
+    # Lastly some light javascript is added to the "onsubmit" action. You will notice the order_by, per_page, and page helpers also add in a single hidden tag in the page. The form
+    # finds these elements, gets their values and updates its hidden fields so that the correct values will be submitted during the search. The end result is having the "ordering" and "per page" options remembered.
     #
     # === Options
     #
     # * <tt>:hidden_fields</tt> --- Array, a list of hidden fields to include. Defaults to [:order_by, :order_as, :per_page]. Pass false, nil, or a blank array to not include any.
-    # * <tt>:js_lib</tt> --- Accepts :prototype, :jquery, or nil. Javascript is written to keep the :hidden_fields in sync with the other fields on the page. nil will turn javascript off, you will be on your own.
-    #  Keeping these fields in sync allows search to remember their values when they are changed, making search much more user friendly.
     module Form
       module Shared # :nodoc:
         private
@@ -34,9 +35,14 @@ module Searchgasm
           end
         
           def find_searchgasm_object(args)
+            search_object = nil
+            
             case args.first
             when String, Symbol
-              search_object = searchgasm_object?(args[1]) ? args[1] : instance_variable_get("@#{args.first}")
+              begin
+                search_object = searchgasm_object?(args[1]) ? args[1] : instance_variable_get("@#{args.first}")
+              rescue Exception
+              end
             when Array
               search_object = args.first.last
             else

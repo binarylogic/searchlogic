@@ -16,10 +16,10 @@ module Searchgasm
         # * <tt>:choices</tt> -- default: the models column names, the choices to loop through when calling order_by_link
         def order_by_links(options = {})
           add_order_by_links_defaults!(options)
-          link_options = options.dup
+          link_options = options.deep_dup
           link_options.delete(:choices)
           html = ""
-          options[:choices].each { |choice| html += order_by_link(choice, link_options.dup) }
+          options[:choices].each { |choice| html += order_by_link(choice, link_options.deep_dup) }
           html
         end
         
@@ -37,10 +37,10 @@ module Searchgasm
         # * <tt>:choices</tt> -- default: ["asc", "desc"], the choices to loop through when calling order_as_link
         def order_as_links(options = {})
           add_order_as_links_defaults!(options)
-          link_options = options.dup
+          link_options = options.deep_dup
           link_options.delete(:choices)
           html = ""
-          options[:choices].each { |choice| html += order_as_link(choice, link_options.dup) }
+          options[:choices].each { |choice| html += order_as_link(choice, link_options.deep_dup) }
           html
         end
         
@@ -58,10 +58,10 @@ module Searchgasm
         # * <tt>:choices</tt> -- default: [10, 25, 50, 100, 150, 200, nil], the choices to loop through when calling per_page_link.
         def per_page_links(options = {})
           add_per_page_links_defaults!(options)
-          link_options = options.dup
+          link_options = options.deep_dup
           link_options.delete(:choices)
           html = ""
-          options[:choices].each { |choice| html += per_page_link(choice, link_options.dup) }
+          options[:choices].each { |choice| html += per_page_link(choice, link_options.deep_dup) }
           html
         end
         
@@ -70,38 +70,53 @@ module Searchgasm
         # === Examples
         #
         #   page_links
-        #   page_links(:choices => [25, 50, nil])
+        #   page_links(:first => "<< First", :last => "Last >>")
+        #
+        # === Classes and tag
+        #
+        # If the user is on the current page they will get a <span> tag, not an <a> tag. If they are on the first page the "first" and "prev" options will be a <span> also. The same goes
+        # for "next" and "last" if the user is on the last page. Other than that each element will come with a CSS class so you can style it to your liking. Somtimes the easiest way to understand this
+        # Is to either look at the example (linked in the README) or try it out and view the HTML source. It's pretty simple, but here are the explanations:
+        #
+        # * <tt>page</tt> - This is in *every* element, span or a.
+        # * <tt>first_page</tt> - This is for the "first page" element only.
+        # * <tt>preve_page</tt> - This is for the "prev page" element only.
+        # * <tt>current_page</tt> - This is for the current page element
+        # * <tt>next_page</tt> - This is for the "next page" element only.
+        # * <tt>last_page</tt> - This is for the "last page" element only.
+        # * <tt>disabled_page</tt> - Any element that is a span instead of an a tag.
         #
         # === Options
         #
         # Please look at per_page_link. All options there are applicable here and are passed onto each option.
         #
-        # * <tt>:spread</tt> -- default: 3, how many choices available on each side of the current page
-        # * <tt>:prev</tt> -- default: <, set to nil to omit. This is an extra link on the left side of the page links that will go to the previous page
-        # * <tt>:next</tt> -- default: >, set to nil to omit. This is an extra link on the right side of the page links that will go to the next page
-        # * <tt>:first</tt> -- default: <<, set to nil to omit. This is an extra link on thefar left side of the page links that will go to the first page
-        # * <tt>:last</tt> -- default: >>, set to nil to omit. This is an extra link on the far right side of the page links that will go to the last page
+        # * <tt>:spread</tt> -- default: 3, set to nil to show all page, this represents how many choices available on each side of the current page
+        # * <tt>:prev</tt> -- default: < Prev, set to nil to omit. This is an extra link on the left side of the page links that will go to the previous page
+        # * <tt>:next</tt> -- default: Next >, set to nil to omit. This is an extra link on the right side of the page links that will go to the next page
+        # * <tt>:first</tt> -- default: nil, set to nil to omit. This is an extra link on thefar left side of the page links that will go to the first page
+        # * <tt>:last</tt> -- default: nil, set to nil to omit. This is an extra link on the far right side of the page links that will go to the last page
         def page_links(options = {})
           add_page_links_defaults!(options)
+          return if options[:last_page] <= 1
           
-          current_page = options[:search_obj].page
-          page_start = 0
-          page_end = 0
+          first_page = 0
+          last_page = 0
           if !options[:spread].blank?
-            page_start = current_page - options[:spread]
-            page_start = options[:choices].first unless options[:choices].include?(page_start)
-            page_end = current_page + options[:spread]
-            page_end = options[:choices].last unless options[:choices].include?(page_end)
+            first_page = options[:current_page] - options[:spread]
+            first_page = options[:first_page] if first_page < options[:first_page]
+            last_page = options[:current_page] + options[:spread]
+            last_page = options[:last_page] if last_page > options[:last_page]
           else
-            page_start = options[:choices].first
-            page_end = options[:choices].last
+            first_page = options[:first_page]
+            last_page = options[:last_page]
           end
           
-          
-          link_options = options.dup
-          [:choices, :spread, :prev, :next, :first, :last].each { |option| link_options.delete(option) }
           html = ""
-          (page_start..page_end).each { |choice| html += page_link(choice, link_options.dup) }
+          html += span_or_page_link(:first, options.deep_dup, options[:current_page] == options[:first_page]) if options[:first]
+          html += span_or_page_link(:prev, options.deep_dup, options[:current_page] == options[:first_page]) if options[:prev]
+          (first_page..last_page).each { |page| html += span_or_page_link(page, options.deep_dup, page == options[:current_page]) }
+          html += span_or_page_link(:next, options.deep_dup, options[:current_page] == options[:last_page]) if options[:next]
+          html += span_or_page_link(:last, options.deep_dup, options[:current_page] == options[:last_page]) if options[:last]
           html
         end
         
@@ -133,13 +148,32 @@ module Searchgasm
           
           def add_page_links_defaults!(options)
             add_searchgasm_helper_defaults!(:page, options)
-            options[:choices] ||= (1..options[:search_obj].page_count)
-            options[:spead] ||= 3
-            options[:prev] ||= "<"
-            options[:next] ||= ">"
-            options[:first] ||= "<<"
-            options[:last] ||= ">>"
+            options[:first_page] ||= 1
+            options[:last_page] ||= options[:search_obj].page_count
+            options[:current_page] ||= options[:search_obj].page
+            options[:spread] = 3 unless options.has_key?(:spread)
+            options[:prev] = "< Prev" unless options.has_key?(:prev)
+            options[:next] = "Next >" unless options.has_key?(:next)
             options
+          end
+          
+          def span_or_page_link(name, options, span)
+            text = ""
+            page = 0
+            case name
+            when Fixnum
+              text = name
+              page = name
+              searchgasm_add_class!(options[:html], "current_page") if span
+            else
+              text = options[name]
+              page = options[:search_obj].send("#{name}_page")
+              searchgasm_add_class!(options[:html], "#{name}_page")
+            end
+            
+            searchgasm_add_class!(options[:html], "disabled_page") if span
+            options[:text] = text
+            span ? content_tag(:span, text, options[:html]) : page_link(page, options)
           end
       end
     end

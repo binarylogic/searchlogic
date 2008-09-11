@@ -21,8 +21,8 @@ class TestSearchBase < Test::Unit::TestCase
   end
 
   def test_initialize
-    assert_nothing_raised { Searchgasm::Search::Base.new(Account) }
-    search = Searchgasm::Search::Base.new(Account, :conditions => {:name_like => "binary"}, :page => 2, :limit => 10, :readonly => true)
+    assert_nothing_raised { Account.new_search }
+    search = Account.new_search!(:conditions => {:name_like => "binary"}, :page => 2, :limit => 10, :readonly => true)
     assert_equal Account, search.klass
     assert_equal "binary", search.conditions.name_like
     assert_equal 2, search.page
@@ -31,7 +31,7 @@ class TestSearchBase < Test::Unit::TestCase
   end
 
   def test_setting_first_level_options
-    search = Searchgasm::Search::Base.new(Account)
+    search = Account.new_search
   
     search.include = :users
     assert_equal :users, search.include
@@ -90,7 +90,7 @@ class TestSearchBase < Test::Unit::TestCase
   end
 
   def test_include
-    search = Searchgasm::Search::Base.new(Account)
+    search = Account.new_search
     assert_equal nil, search.include
     search.conditions.name_contains = "Binary"
     assert_equal nil, search.include
@@ -106,7 +106,7 @@ class TestSearchBase < Test::Unit::TestCase
   end
 
   def test_limit
-    search = Searchgasm::Search::Base.new(Account)
+    search = Account.new_search
     search.limit = 10
     assert_equal 10, search.limit
     search.page = 2
@@ -125,7 +125,7 @@ class TestSearchBase < Test::Unit::TestCase
   end
 
   def test_sanitize
-    search = Searchgasm::Search::Base.new(Account)
+    search = Account.new_search
     search.per_page = 2
     search.conditions.name_like = "Binary"
     search.conditions.users.id_greater_than = 2
@@ -136,7 +136,7 @@ class TestSearchBase < Test::Unit::TestCase
   end
 
   def test_scope
-    search = Searchgasm::Search::Base.new(Account)
+    search = Account.new_search!
     search.conditions = "some scope"
     assert_equal "some scope", search.conditions.scope
     search.conditions = nil
@@ -148,7 +148,7 @@ class TestSearchBase < Test::Unit::TestCase
   end
 
   def test_searching
-    search = Searchgasm::Search::Base.new(Account)
+    search = Account.new_search
     search.conditions.name_like = "Binary"
     assert_equal search.all, [Account.find(1), Account.find(3)]
     assert_equal search.find(:all), [Account.find(1), Account.find(3)]
@@ -174,7 +174,7 @@ class TestSearchBase < Test::Unit::TestCase
   end
 
   def test_calculations
-    search = Searchgasm::Search::Base.new(Account)
+    search = Account.new_search
     search.conditions.name_like = "Binary"
     assert_equal 2, search.average('id')
     assert_equal 2, search.calculate(:avg, 'id')
@@ -183,5 +183,9 @@ class TestSearchBase < Test::Unit::TestCase
     assert_equal 3, search.maximum('id')
     assert_equal 1, search.minimum('id')
     assert_equal 4, search.sum('id')
+  end
+  
+  def test_method_creation_in_scope
+    # test ot make sure methods are not created across the board for all models
   end
 end

@@ -1,0 +1,64 @@
+== 1.0.1 released 2008-09-08
+
+* Cached "searchers" so when a new search object is instantiated it doesn't go through all of the meta programming and method creation. Helps a lot with performance. You will see the speed benefits after the first instantiation.
+* Added in new options for page_links.
+* Fixed minor bugs when doing page_links.
+* Updated documentation to be more detailed and inclusive.
+
+== 1.0.0 released 2008-09-08
+
+* Major changes in the helpers, they were completely re-engineered. Hence the new version. I established a pattern between all helpers giving you complete flexibility as to how they are used. All helpers are called differently now (see documentation).
+
+== 0.9.10 released 2008-09-08
+
+* Fixed bug with setting the per_page configuration to only take effect on protected searches, thus staying out of the way of normal searching.
+* Hardened more tests
+
+== 0.9.9 released 2008-09-07
+
+* Fixed setting per_page to nil, false, or ''. This is done to "show all" results.
+
+== 0.9.8 released 2008-09-06
+
+* Fixed order_by helper bug when guessing the text with arrays. Should use the first value instead of last.
+* Added in per_page config option.
+
+== 0.9.7 released 2008-09-06
+
+* Complete class restructure. Moved the 3 main components into their own base level class: Search, Conditions, Condition
+* Split logic and functionality into their own modules, implemented via alias_chain_method
+* Added in helpers for using in a rails app
+* Added link to documentation and live example in README
+* Various small bug fixes
+* Hardened tests
+
+== 0.9.6 released 2008-09-04
+
+* Fixed bug when instantiating with nil options
+
+== 0.9.5 released 2008-09-03
+
+* Enhanced searching with conditions only, added in search methods and calculations
+* Updated README to include examples
+
+== 0.9.4 released 2008-09-03
+
+* Cleaned up search methods
+* Removed reset!method for both searching and searching by conditions
+
+== 0.9.3 released 2008-09-02
+
+* Changed structure of conditions to have their own class
+* Added API for adding your own conditions.
+
+== 0.9.2 released 2008-09-02
+
+* Enhanced protection from SQL injections (made more efficient)
+
+== 0.9.1 released 2008-09-02
+
+* Added aliases for datetime, date, time, and timestamp attrs. You could call created_at_after, now you can also call created_after. Just removed the "at" requirement.
+
+== 0.9.0 released 2008-09-01
+
+* First release

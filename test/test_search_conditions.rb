@@ -13,14 +13,14 @@ class TestSearchConditions < Test::Unit::TestCase
   end
 
   def test_conditions
-    search = Searchgasm::Search::Base.new(Account)
+    search = Account.new_search
     assert_kind_of Searchgasm::Conditions::Base, search.conditions
     assert_equal search.conditions.klass, Account
   
     search.conditions = {:name_like => "Binary"}
     assert_kind_of Searchgasm::Conditions::Base, search.conditions
   
-    conditions = Searchgasm::Conditions::Base.new(Account, :id_greater_than => 8)
+    conditions = Account.new_conditions(:id_greater_than => 8)
     search.conditions = conditions
     assert_equal conditions, search.conditions
   end

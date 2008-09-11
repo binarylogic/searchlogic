@@ -1,5 +1,25 @@
 module Searchgasm
   module Search
+    # = Searchgasm Protection
+    #
+    # This adds protection during mass asignments *only*. This allows you to pass a params object when doing mass assignments and not have to worry about Billy 13 year old adding in SQL injections.
+    # There is a section in the readme that covers protection but to reiterate:
+    #
+    # === Protected
+    #
+    #   User.new_search(params[:search])
+    #   User.new_conditions(params[:search])
+    #
+    #   search.options = params[:search]
+    #   conditions.conditions = params[:conditions]
+    #
+    # === NOT Protected
+    #
+    #   User.new_search!(params[:search])
+    #   User.new_conditions!(params[:search])
+    #   User.find(:all, params[:search])
+    #   User.first(params[:search])
+    #   User.all(params[:search])
     module Protection
       # Options that are allowed when protecting against SQL injections (still checked though)
       SAFE_OPTIONS = Base::SPECIAL_FIND_OPTIONS + [:conditions, :limit, :offset]
@@ -16,28 +36,30 @@ module Searchgasm
         end
       end
       
-      def limit_with_protection
+      def limit_with_protection # :nodoc:
         return Config.per_page if protected? && !@set_limit
         limit_without_protection
       end
       
-      def limit_with_protection=(value)
+      def limit_with_protection=(value) # :nodoc:
         @set_limit = true
         self.limit_without_protection = value
       end
       
-      def options_with_protection=(values)
+      def options_with_protection=(values) # :nodoc:
         return unless values.is_a?(Hash)
         self.protect = values.delete(:protect) if values.has_key?(:protect) # make sure we do this first
         frisk!(values) if protect?
         self.options_without_protection = values
       end
       
+      # Accepts a boolean. Will protect mass assignemnts if set to true, and unprotect mass assignments if set to false
       def protect=(value)
         conditions.protect = value
         @protect = value
       end
       
+      # Convenience methof for determing if the search is protected or not.
       def protect?
         protect == true
       end

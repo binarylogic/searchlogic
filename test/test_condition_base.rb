@@ -58,4 +58,8 @@ class TestConditionBase < Test::Unit::TestCase
   def test_value
     
   end
+  
+  def test_method_creation_in_scope
+    # test ot make sure methods are not created across the board for all models
+  end
 end

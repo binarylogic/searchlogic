@@ -16,20 +16,43 @@ module Searchgasm #:nodoc:
       # Use these methods just like you would in ActiveRecord
       SEARCH_METHODS = [:all, :average, :calculate, :count, :find, :first, :maximum, :minimum, :sum]
       
-      attr_accessor :klass, *::ActiveRecord::Base.valid_find_options
+      attr_accessor *::ActiveRecord::Base.valid_find_options
       
-      # Used in the ActiveRecord methods to determine if Searchgasm should get involved or not.
-      # This keeps Searchgasm out of the way unless it is needed.
-      def self.needed?(klass, options)
-        SPECIAL_FIND_OPTIONS.each do |option|
-          return true if options.symbolize_keys.keys.include?(option)
+      class << self
+        # Used in the ActiveRecord methods to determine if Searchgasm should get involved or not.
+        # This keeps Searchgasm out of the way unless it is needed.
+        def needed?(model_class, options)
+          SPECIAL_FIND_OPTIONS.each do |option|
+            return true if options.symbolize_keys.keys.include?(option)
+          end
+        
+          Searchgasm::Conditions::Base.needed?(model_class, options[:conditions])
         end
         
-        Searchgasm::Conditions::Base.needed?(klass, options[:conditions])
+        # Creates virtual classes for the class passed to it. This is a neccesity for keeping dynamically created method
+        # names specific to models. It provides caching and helps a lot with performance.
+        def create_virtual_class(model_class)
+          class_search_name = "::#{model_class.name}Search"
+          
+          begin
+            class_search_name.constantize
+          rescue NameError
+            eval <<-end_eval
+              class #{class_search_name} < ::Searchgasm::Search::Base; end;
+            end_eval
+          
+            class_search_name.constantize
+          end
+        end
+        
+        # The class / model we are searching
+        def klass
+          # Can't cache this because thin and mongrel don't play nice with caching constants
+          name.split("::").last.gsub(/Search$/, "").constantize
+        end
       end
       
-      def initialize(klass, init_options = {})
-        self.klass = klass
+      def initialize(init_options = {})
         self.options = init_options
       end
       
@@ -44,9 +67,15 @@ module Searchgasm #:nodoc:
         end_eval
       end
       
+      # Makes using searchgasm in the console less annoying and keeps the output meaningful and useful
       def inspect
         options_as_nice_string = ::ActiveRecord::Base.valid_find_options.collect { |name| "#{name}: #{send(name)}" }.join(", ")
         "#<#{klass} #{options_as_nice_string}>"
+      end
+      
+      # Convenience method for self.class.klass
+      def klass
+        self.class.klass
       end
       
       def limit=(value)
