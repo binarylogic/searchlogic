@@ -99,7 +99,7 @@ module Searchgasm
       #   order_by = :id # => users.id ASC
       #   order_by = [:id, name] # => users.id ASC, user.name ASC
       #   order_by = [:id, {:user_group => :name}] # => users.id ASC, user_groups.name ASC
-      def order_by=(value)
+      def order_by=(value)        
         @order_by = get_order_by_value(value)
         @order = order_by_to_order(@order_by, order_as) # use @order so @order_by doesnt get reset
         @order_by
@@ -126,7 +126,7 @@ module Searchgasm
             k = order_by.keys.first
             v = order_by.values.first
             new_includes << k.to_sym
-            sql_parts << order_by_to_order(v, order_as, k.to_s.classify.constantize, new_includes)
+            sql_parts << order_by_to_order(v, order_as, eval(k.to_s.classify), new_includes) # using eval, better performance, protection makes sure nothing fishy goes on here
           when Symbol, String
             new_include = build_order_by_includes(new_includes)
             self.order_by_includes << new_include if new_include
@@ -149,11 +149,15 @@ module Searchgasm
         end
         
         def quote_column_name(column_name)
-          klass.connection.quote_column_name(column_name)
+          klass_connection.quote_column_name(column_name)
         end
 
         def quote_table_name(table_name)
-          klass.connection.quote_table_name(table_name)
+          klass_connection.quote_table_name(table_name)
+        end
+        
+        def klass_connection
+          @connection ||= klass.connection
         end
     end
   end

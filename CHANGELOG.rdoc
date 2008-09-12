@@ -1,4 +1,10 @@
-== 1.0.1 released 2008-09-08
+== 1.0.2 released 2008-09-12
+
+* Moved cached searchers out of the global namespace and into the Searchgasm::Cache namespce.
+* Various changes to improve performance. Added in benchmark reports in readme as well as a benchmarks directory.
+* Config.per_page works with new_search & new_search! only. Where as before it was only working if the search was protected.
+
+== 1.0.1 released 2008-09-11
 
 * Cached "searchers" so when a new search object is instantiated it doesn't go through all of the meta programming and method creation. Helps a lot with performance. You will see the speed benefits after the first instantiation.
 * Added in new options for page_links.

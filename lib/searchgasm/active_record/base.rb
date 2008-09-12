@@ -118,7 +118,9 @@ module Searchgasm
       private
         def sanitize_options_with_searchgasm(options = {})
           return options unless Searchgasm::Search::Base.needed?(self, options)
-          searchgasm_searcher(options).sanitize
+          search = searchgasm_searcher(options)
+          search.acting_as_filter = true
+          search.sanitize
         end
       
         def searchgasm_conditions(options = {})

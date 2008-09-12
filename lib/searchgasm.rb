@@ -1,3 +1,5 @@
+$:.unshift(File.dirname(__FILE__)) unless $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
+  
 require "active_record"
 require "active_support"
 
@@ -71,5 +73,9 @@ module Searchgasm
     [:begins_with, :child_of, :contains, :descendant_of, :does_not_equal, :ends_with, :equals, :greater_than, :greater_than_or_equal_to, :inclusive_descendant_of, :keywords, :less_than, :less_than_or_equal_to, :sibling_of].each do |condition|
       Base.register_condition("Searchgasm::Condition::#{condition.to_s.camelize}".constantize)
     end
+  end
+  
+  # The namespace I put all cached search classes.
+  module Cache
   end
 end

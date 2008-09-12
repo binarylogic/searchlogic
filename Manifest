@@ -1,3 +1,6 @@
+benchmarks/benchmark.rb
+benchmarks/benchmark_helper.rb
+benchmarks/profile.rb
 CHANGELOG.rdoc
 examples/README.rdoc
 init.rb
@@ -57,6 +60,7 @@ test/test_condition_base.rb
 test/test_condition_types.rb
 test/test_conditions_base.rb
 test/test_conditions_protection.rb
+test/test_config.rb
 test/test_helper.rb
 test/test_search_base.rb
 test/test_search_conditions.rb

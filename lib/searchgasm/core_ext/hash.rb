@@ -15,6 +15,12 @@ module Searchgasm
         
         new_hash
       end
+      
+      # assert_valid_keys was killing performance. Array.flatten was the culprit, so I rewrote this method, got a 35% performance increase
+      def fast_assert_valid_keys(valid_keys)
+        unknown_keys = keys - valid_keys
+        raise(ArgumentError, "Unknown key(s): #{unknown_keys.join(", ")}") unless unknown_keys.empty?
+      end
     end
   end
 end

@@ -33,6 +33,7 @@ module Searchgasm
       # now you can create the rest of your search and your "scope" will get merged into your final SQL.
       # What this does is determine if the value a hash or a conditions object, if not it sets it up as a scope.
       def conditions_with_conditions=(values)
+        
         case values
         when Searchgasm::Conditions::Base
           @conditions = values

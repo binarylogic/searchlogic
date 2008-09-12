@@ -22,7 +22,7 @@ module Searchgasm
         #     class << self
         #       # I pass you the column, you tell me what you want the method to be called.
         #       # If you don't want to add this condition for that column, return nil
-        #       # It defaults to "#{column.name}_sounds_like". So if thats what you want you don't even need to do this.
+        #       # It defaults to "#{column.name}_sounds_like" (using the class name). So if thats what you want you don't even need to do this.
         #       def name_for_column(column)
         #         super
         #       end
@@ -35,7 +35,7 @@ module Searchgasm
         #
         #     # You can return an array or a string. NOT a hash, because all of these conditions
         #     # need to eventually get merged together. The array or string can be anything you would put in
-        #     # the :conditions option for ActiveRecord::Base.find()
+        #     # the :conditions option for ActiveRecord::Base.find(). Also, for a list of methods / variables you can use check out earchgasm::Condition::Base
         #     def to_conditions(value)
         #       ["#{quoted_table_name}.#{quoted_column_name} SOUNDS LIKE ?", value]
         #     end
@@ -75,23 +75,25 @@ module Searchgasm
         # Creates virtual classes for the class passed to it. This is a neccesity for keeping dynamically created method
         # names specific to models. It provides caching and helps a lot with performance.
         def create_virtual_class(model_class)
-          class_search_name = "::#{model_class.name}Conditions"
+          class_search_name = "::Searchgasm::Cache::#{model_class.name}Conditions"
           
           begin
-            class_search_name.constantize
+            eval(class_search_name)
           rescue NameError
             eval <<-end_eval
-              class #{class_search_name} < ::Searchgasm::Conditions::Base; end;
+              class #{class_search_name} < ::Searchgasm::Conditions::Base
+                def self.klass
+                  #{model_class.name}
+                end
+                
+                def klass
+                  #{model_class.name}
+                end
+              end
+              
+              #{class_search_name}
             end_eval
-                        
-            class_search_name.constantize
           end
-        end
-        
-        # The class / model we are searching
-        def klass
-          # Can't cache this because thin and mongrel don't play nice with caching constants
-          name.split("::").last.gsub(/Conditions$/, "").constantize
         end
       end
       
@@ -121,10 +123,6 @@ module Searchgasm
           i << (association_includes.blank? ? association.relationship_name.to_sym : {association.relationship_name.to_sym => association_includes})
         end
         i.blank? ? nil : (i.size == 1 ? i.first : i)
-      end
-      
-      def klass
-        self.class.klass
       end
       
       # Sanitizes the conditions down into conditions that ActiveRecord::Base.find can understand.
@@ -244,7 +242,7 @@ module Searchgasm
         end
         
         def assert_valid_conditions(conditions)
-          conditions.stringify_keys.assert_valid_keys(self.class.condition_names + self.class.association_names)
+          conditions.stringify_keys.fast_assert_valid_keys(self.class.condition_names + self.class.association_names)
         end
         
         def associations

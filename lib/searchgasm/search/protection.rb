@@ -30,20 +30,8 @@ module Searchgasm
       def self.included(klass)
         klass.class_eval do
           attr_reader :protect
-          alias_method_chain :limit, :protection
-          alias_method_chain :limit=, :protection
           alias_method_chain :options=, :protection
         end
-      end
-      
-      def limit_with_protection # :nodoc:
-        return Config.per_page if protected? && !@set_limit
-        limit_without_protection
-      end
-      
-      def limit_with_protection=(value) # :nodoc:
-        @set_limit = true
-        self.limit_without_protection = value
       end
       
       def options_with_protection=(values) # :nodoc:
@@ -88,7 +76,7 @@ module Searchgasm
         end
         
         def frisk!(options)
-          options.symbolize_keys.assert_valid_keys(SAFE_OPTIONS)
+          options.symbolize_keys.fast_assert_valid_keys(SAFE_OPTIONS)
           raise(ArgumentError, ":order_by can only contain colum names in the string, hash, or array format") unless order_by_safe?(get_order_by_value(options[:order_by]))
         end
     end    

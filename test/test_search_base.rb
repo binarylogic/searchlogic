@@ -150,10 +150,10 @@ class TestSearchBase < Test::Unit::TestCase
   def test_searching
     search = Account.new_search
     search.conditions.name_like = "Binary"
-    assert_equal search.all, [Account.find(1), Account.find(3)]
-    assert_equal search.find(:all), [Account.find(1), Account.find(3)]
-    assert_equal search.first, Account.find(1)
-    assert_equal search.find(:first), Account.find(1)
+    assert_equal [Account.find(1), Account.find(3)], search.all
+    assert_equal [Account.find(1), Account.find(3)], search.find(:all)
+    assert_equal Account.find(1), search.first
+    assert_equal Account.find(1), search.find(:first)
   
     search.per_page = 20
     search.page = 2

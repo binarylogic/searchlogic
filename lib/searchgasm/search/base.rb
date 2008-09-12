@@ -32,23 +32,26 @@ module Searchgasm #:nodoc:
         # Creates virtual classes for the class passed to it. This is a neccesity for keeping dynamically created method
         # names specific to models. It provides caching and helps a lot with performance.
         def create_virtual_class(model_class)
-          class_search_name = "::#{model_class.name}Search"
+          class_search_name = "::Searchgasm::Cache::#{model_class.name}Search"
           
           begin
-            class_search_name.constantize
+            eval(class_search_name)
           rescue NameError
+            # The method definitions are for performance, bottlenecks found with ruby-prof
             eval <<-end_eval
-              class #{class_search_name} < ::Searchgasm::Search::Base; end;
+              class #{class_search_name} < ::Searchgasm::Search::Base
+                def self.klass
+                  #{model_class.name}
+                end
+                
+                def klass
+                  #{model_class.name}
+                end
+              end
+              
+              #{class_search_name}
             end_eval
-          
-            class_search_name.constantize
           end
-        end
-        
-        # The class / model we are searching
-        def klass
-          # Can't cache this because thin and mongrel don't play nice with caching constants
-          name.split("::").last.gsub(/Search$/, "").constantize
         end
       end
       
@@ -67,19 +70,31 @@ module Searchgasm #:nodoc:
         end_eval
       end
       
+      # Flag to determine if searchgasm is acting as a filter for the ActiveRecord search methods.
+      # The purpose of this is to determine if Config.per_page should be implemented.
+      def acting_as_filter=(value)
+        @acting_as_filter == true
+      end
+      
+      # See acting_as_filter=
+      def acting_as_filter?
+        @acting_as_filter == true
+      end
+      
       # Makes using searchgasm in the console less annoying and keeps the output meaningful and useful
       def inspect
         options_as_nice_string = ::ActiveRecord::Base.valid_find_options.collect { |name| "#{name}: #{send(name)}" }.join(", ")
         "#<#{klass} #{options_as_nice_string}>"
       end
       
-      # Convenience method for self.class.klass
-      def klass
-        self.class.klass
+      def limit=(value)
+        @set_limit = true
+        @limit = value.blank? || value == 0 ? nil : value.to_i
       end
       
-      def limit=(value)
-        @limit = value.blank? || value == 0 ? nil : value.to_i
+      def limit
+        @limit ||= Config.per_page if !acting_as_filter? && !@set_limit
+        @limit
       end
       
       def offset=(value)
@@ -88,7 +103,7 @@ module Searchgasm #:nodoc:
       
       def options=(values)
         return unless values.is_a?(Hash)
-        values.symbolize_keys.assert_valid_keys(VALID_FIND_OPTIONS)
+        values.symbolize_keys.fast_assert_valid_keys(VALID_FIND_OPTIONS)
         values.each { |option, value| send("#{option}=", value) }
       end
       
