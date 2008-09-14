@@ -1,7 +1,12 @@
+== 1.0.3 released 2008-09-14
+
+* Updated inspect to show the current options for your search. Plays nicer in the console.
+* Made sure protection state is persistent among relationship conditions.
+
 == 1.0.2 released 2008-09-12
 
 * Moved cached searchers out of the global namespace and into the Searchgasm::Cache namespce.
-* Various changes to improve performance. Added in benchmark reports in readme as well as a benchmarks directory.
+* Various changes to improve performance through profiling / benchmarking. http://pastie.org/271936
 * Config.per_page works with new_search & new_search! only. Where as before it was only working if the search was protected.
 
 == 1.0.1 released 2008-09-11
@@ -50,7 +55,7 @@
 == 0.9.4 released 2008-09-03
 
 * Cleaned up search methods
-* Removed reset!method for both searching and searching by conditions
+* Removed reset! method for both searching and searching by conditions
 
 == 0.9.3 released 2008-09-02
 

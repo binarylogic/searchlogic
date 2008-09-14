@@ -125,6 +125,12 @@ module Searchgasm
         i.blank? ? nil : (i.size == 1 ? i.first : i)
       end
       
+      def inspect
+        conditions_hash = conditions
+        conditions_hash[:protected] = true if protected?
+        conditions_hash.inspect
+      end
+      
       # Sanitizes the conditions down into conditions that ActiveRecord::Base.find can understand.
       def sanitize
         conditions = merge_conditions(*objects.collect { |object| object.sanitize })
@@ -171,8 +177,9 @@ module Searchgasm
             self.class.class_eval <<-"end_eval", __FILE__, __LINE__
               def #{association.name}
                 if @#{association.name}.nil?
-                  @#{association.name} = #{association.class_name}.new_conditions
+                  @#{association.name} = Searchgasm::Conditions::Base.create_virtual_class(#{association.class_name}).new
                   @#{association.name}.relationship_name = "#{association.name}"
+                  @#{association.name}.protect = protect
                   objects << @#{association.name}
                 end
                 @#{association.name}

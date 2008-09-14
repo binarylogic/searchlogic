@@ -1,6 +1,9 @@
 module Searchgasm
   module Helpers
     module ControlTypes
+      # = Remote Links Control Types
+      #
+      # These helpers use rails built in remote_function as links. They are the same thing as the Links control type, but just use rails built in remote helpers.
       module RemoteLinks
         # Same as order_by_links, but uses link_to_remote instead of remote.
         #

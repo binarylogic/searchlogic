@@ -1,6 +1,9 @@
 module Searchgasm
   module Helpers
     module ControlTypes
+      # = Select Control Types
+      #
+      # These create <select> tags to help navigate through search data. This is here as an alternative to the Links control types.
       module Select
         # Please see order_by_links. All options are the same and applicable here. The only difference is that instead of a group of links, this gets returned as a select form element that will perform the same function when the value is changed.
         def order_by_select(options = {})

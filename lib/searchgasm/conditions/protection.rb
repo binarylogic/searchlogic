@@ -6,7 +6,7 @@ module Searchgasm
     module Protection
       def self.included(klass)
         klass.class_eval do
-          attr_accessor :protect
+          attr_reader :protect
           alias_method_chain :conditions=, :protection
         end
       end
@@ -20,6 +20,11 @@ module Searchgasm
         end
         
         self.conditions_without_protection = conditions
+      end
+      
+      def protect=(value)
+        associations.each { |association| association.protect = value }
+        @protect = value
       end
       
       def protect?

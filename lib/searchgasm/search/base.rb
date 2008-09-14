@@ -83,8 +83,13 @@ module Searchgasm #:nodoc:
       
       # Makes using searchgasm in the console less annoying and keeps the output meaningful and useful
       def inspect
-        options_as_nice_string = ::ActiveRecord::Base.valid_find_options.collect { |name| "#{name}: #{send(name)}" }.join(", ")
-        "#<#{klass} #{options_as_nice_string}>"
+        current_find_options = {}
+        ::ActiveRecord::Base.valid_find_options.each do |option|
+          value = send(option)
+          next if value.nil?
+          current_find_options[option] = value
+        end
+        "#<#{klass}Search #{current_find_options.inspect}>"
       end
       
       def limit=(value)

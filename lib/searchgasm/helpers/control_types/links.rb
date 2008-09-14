@@ -1,6 +1,9 @@
 module Searchgasm
   module Helpers
     module ControlTypes
+      # = Links Control Types
+      #
+      # These helpers create a group of links to help navigate through search data.
       module Links
         # Creates a group of links that order the data by a column or columns. All that this does is loop through the :choices option and call order_by_link and then glue it all together.
         #
@@ -11,7 +14,7 @@ module Searchgasm
         #
         # === Options
         #
-        # Please look at order_by_link. All options there are applicable here and are passed onto each option.
+        # Please look at order_by_link. All options there are applicable here and are passed onto each option. Here are the options specific to this method:
         #
         # * <tt>:choices</tt> -- default: the models column names, the choices to loop through when calling order_by_link
         def order_by_links(options = {})
@@ -32,7 +35,7 @@ module Searchgasm
         #
         # === Options
         #
-        # Please look at order_as_link. All options there are applicable here and are passed onto each option.
+        # Please look at order_as_link. All options there are applicable here and are passed onto each option. Here are the options specific to this method:
         #
         # * <tt>:choices</tt> -- default: ["asc", "desc"], the choices to loop through when calling order_as_link
         def order_as_links(options = {})
@@ -53,7 +56,7 @@ module Searchgasm
         #
         # === Options
         #
-        # Please look at per_page_link. All options there are applicable here and are passed onto each option.
+        # Please look at per_page_link. All options there are applicable here and are passed onto each option. Here are the options specific to this method:
         #
         # * <tt>:choices</tt> -- default: [10, 25, 50, 100, 150, 200, nil], the choices to loop through when calling per_page_link.
         def per_page_links(options = {})
@@ -88,11 +91,11 @@ module Searchgasm
         #
         # === Options
         #
-        # Please look at per_page_link. All options there are applicable here and are passed onto each option.
+        # Please look at per_page_link. All options there are applicable here and are passed onto each option. Here are the options specific to this method:
         #
         # * <tt>:spread</tt> -- default: 3, set to nil to show all page, this represents how many choices available on each side of the current page
-        # * <tt>:prev</tt> -- default: < Prev, set to nil to omit. This is an extra link on the left side of the page links that will go to the previous page
-        # * <tt>:next</tt> -- default: Next >, set to nil to omit. This is an extra link on the right side of the page links that will go to the next page
+        # * <tt>:prev</tt> -- default: "< Prev", set to nil to omit. This is an extra link on the left side of the page links that will go to the previous page
+        # * <tt>:next</tt> -- default: "Next >", set to nil to omit. This is an extra link on the right side of the page links that will go to the next page
         # * <tt>:first</tt> -- default: nil, set to nil to omit. This is an extra link on thefar left side of the page links that will go to the first page
         # * <tt>:last</tt> -- default: nil, set to nil to omit. This is an extra link on the far right side of the page links that will go to the last page
         def page_links(options = {})
