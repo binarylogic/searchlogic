@@ -8,8 +8,7 @@ Echoe.new 'searchgasm' do |p|
   p.author = "Ben Johnson of Binary Logic"
   p.email  = 'bjohnson@binarylogic.com'
   p.project = 'searchgasm'
-  p.summary = "Orgasmic ActiveRecord searching"
-  p.description = "Object based ActiveRecord searching, ordering, pagination, and more!"
+  p.summary = "Object based ActiveRecord searching, ordering, pagination, and more!"
   p.url = "http://github.com/binarylogic/searchgasm"
   p.dependencies = %w(activerecord activesupport)
   p.include_rakefile = true

@@ -116,13 +116,20 @@ module Searchgasm
             args
           end
         
-          def insert_searchgasm_fields(args, search_object, search_options)
+          def insert_searchgasm_fields(args, search_object, search_options, &block)
             return unless search_object.is_a?(Search::Base)
             name = args.first
             options = args.extract_options!
             options
             search_options[:hidden_fields].each do |field|
-              concat(hidden_field(name, field, :object => search_object, :id => "#{name}_#{field}_hidden", :value => (field == :order_by ? searchgasm_order_by_value(search_object.order_by) : search_object.send(field))))
+              html = hidden_field(name, field, :object => search_object, :id => "#{name}_#{field}_hidden", :value => (field == :order_by ? searchgasm_order_by_value(search_object.order_by) : search_object.send(field)))
+              
+              # For edge rails and older version compatibility, passing a binding to concat was deprecated
+              begin
+                concat(html)
+              rescue ArgumentError
+                concat(html, block.binding)
+              end
             end
             args << options
           end
@@ -136,7 +143,7 @@ module Searchgasm
           if search_object
             searchgasm_options = extract_searchgasm_options!(args)
             new_args = searchgasm_args(args, search_object, searchgasm_options, :fields_for)
-            insert_searchgasm_fields(new_args, search_object, searchgasm_options)
+            insert_searchgasm_fields(new_args, search_object, searchgasm_options, &block)
             fields_for_without_searchgasm(*new_args, &block)
           else
             fields_for_without_searchgasm(*args, &block)
@@ -172,7 +179,7 @@ module Searchgasm
           if search_object
             searchgasm_options = extract_searchgasm_options!(args)
             new_args = searchgasm_args(args, search_object, searchgasm_options, :fields_for)
-            insert_searchgasm_fields(new_args, search_object, searchgasm_options)
+            insert_searchgasm_fields(new_args, search_object, searchgasm_options, &block)
             fields_for_without_searchgasm(*new_args, &block)
           else
             fields_for_without_searchgasm(*args, &block)
