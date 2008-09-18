@@ -28,6 +28,10 @@ class TestActiveRecordAssociations < Test::Unit::TestCase
     assert_equal User.find(1), Account.find(1).users.first(:conditions => {:first_name_begins_with => "Ben"})
     assert_equal User.find(1), Account.find(1).users.find(:first, :conditions => {:first_name_begins_with => "Ben"})
     assert_equal [], Account.find(1).users.all(:conditions => {:first_name_begins_with => "Ben"}, :per_page => 20, :page => 5)
+    
+    search = Account.find(1).users.new_search
+    assert_equal User.find(1, 3), search.all
+    assert_equal User.find(1), search.first
   end
   
   def test_calculations
@@ -43,6 +47,10 @@ class TestActiveRecordAssociations < Test::Unit::TestCase
     assert_equal 1, Account.find(1).orders.sum("id", :conditions => {:total_gt => 100})
     assert_equal 0, Account.find(1).orders.sum("id", :conditions => {:total_gt => 1000})
     assert_equal 1, Account.find(1).orders.average("id", :conditions => {:total_gt => 100})
+    
+    search = Account.find(1).orders.new_search
+    assert_equal [Order.find(1)], search.all
+    assert_equal Order.find(1), search.first
   end
   
   def test_habtm

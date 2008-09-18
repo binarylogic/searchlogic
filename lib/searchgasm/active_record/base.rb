@@ -147,12 +147,13 @@ module Searchgasm
           # The goal here is to mimic how scope work. Merge what scopes would and don't what they wouldn't.
           scope = scope(:find) || {}
           scope_options = {}
-          [:group, :include, :select, :readonly].each { |option| scope_options[option] = scope[option] if !options.has_key?(option) && scope.has_key?(option) }
+          [:group, :include, :select, :readonly, :from].each { |option| scope_options[option] = scope[option] if !options.has_key?(option) && scope.has_key?(option) }
           
           if scope[:joins] || options[:joins]
             scope_options[:joins] = []
             scope_options[:joins] += scope[:joins].is_a?(Array) ? scope[:joins] : [scope[:joins]] unless scope[:joins].blank?
             scope_options[:joins] += options[:joins].is_a?(Array) ? options[:joins] : [options[:joins]] unless options[:joins].blank?
+            scope_options[:joins] = scope_options[:joins].first if scope_options[:joins].size == 1
           end
           
           scope_options[:limit] = scope[:limit] if !options.has_key?(:per_page) && !options.has_key?(:limit) && scope.has_key?(:per_page)
