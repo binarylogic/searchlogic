@@ -5,9 +5,11 @@ module Searchgasm
     # Represents a collection of conditions and performs various tasks on that collection. For information on each condition see Searchgasm::Condition.
     # Each condition has its own file and class and the source for each condition is pretty self explanatory.
     class Base
-      include Utilities
+      include Searchgasm::Shared::Utilities
+      include Searchgasm::Shared::Searching
+      include Searchgasm::Shared::VirtualClasses
       
-      attr_accessor :relationship_name, :scope
+      attr_accessor :relationship_name, :sql
       
       class << self
         attr_accessor :added_klass_conditions, :added_column_conditions, :added_associations
@@ -64,36 +66,13 @@ module Searchgasm
         
         def needed?(model_class, conditions) # :nodoc:
           if conditions.is_a?(Hash)
+            column_names = model_class.column_names
             conditions.stringify_keys.keys.each do |condition|
-              return true unless model_class.column_names.include?(condition)
+              return true unless column_names.include?(condition)
             end
           end
           
           false
-        end
-        
-        # Creates virtual classes for the class passed to it. This is a neccesity for keeping dynamically created method
-        # names specific to models. It provides caching and helps a lot with performance.
-        def create_virtual_class(model_class)
-          class_search_name = "::Searchgasm::Cache::#{model_class.name}Conditions"
-          
-          begin
-            eval(class_search_name)
-          rescue NameError
-            eval <<-end_eval
-              class #{class_search_name} < ::Searchgasm::Conditions::Base
-                def self.klass
-                  #{model_class.name}
-                end
-                
-                def klass
-                  #{model_class.name}
-                end
-              end
-              
-              #{class_search_name}
-            end_eval
-          end
         end
       end
       
@@ -127,26 +106,27 @@ module Searchgasm
       
       def inspect
         conditions_hash = conditions
+        conditions_hash[:sql] = sql if sql
         conditions_hash[:protected] = true if protected?
         conditions_hash.inspect
       end
       
       # Sanitizes the conditions down into conditions that ActiveRecord::Base.find can understand.
-      def sanitize
+      def sanitize(for_method = nil)
         conditions = merge_conditions(*objects.collect { |object| object.sanitize })
-        return scope if conditions.blank?
-        merge_conditions(conditions, scope)
+        return sql if conditions.blank?
+        merged_conditions = merge_conditions(conditions, sql)
+        for_method.blank? ? merged_conditions : {:conditions => merged_conditions}
       end
       
-      # Allows you to set the conditions via a hash. If you do not pass a hash it will set scope instead, so that you can continue to add conditions and ultimately
-      # merge it all together at the end.
+      # Allows you to set the conditions via a hash.
       def conditions=(conditions)
         case conditions
         when Hash
           assert_valid_conditions(conditions)
           remove_conditions_from_protected_assignement(conditions).each { |condition, value| send("#{condition}=", value) }
         else
-          self.scope = conditions
+          self.sql = conditions
         end
       end
       

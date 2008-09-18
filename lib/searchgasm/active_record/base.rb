@@ -18,21 +18,29 @@ module Searchgasm
         args << options
         find_without_searchgasm(*args)
       end
-    
+      
       # This is an alias method chain. It hooks into ActiveRecord's scopes and checks to see if Searchgasm should get involved. Allowing you to use all of Searchgasms conditions and tools
       # in scopes as well.
       #
       # === Examples
       #
+      # Named scopes:
+      #
       #   named_scope :top_expensive, :conditions => {:total_gt => 1_000_000}, :per_page => 10
+      #   named_scope :top_expensive_ordered, :conditions => {:total_gt => 1_000_000}, :per_page => 10, :order_by => {:user => :first_name}
+      #
+      # Good ole' regular scopes:
       #
       #   with_scope(:find => {:conditions => {:total_gt => 1_000_000}, :per_page => 10}) do
       #     find(:all)
       #   end
-      def scope_with_searchgasm(method, key = nil)
-        scope = scope_without_searchgasm(method, key)
-        return sanitize_options_with_searchgasm(scope) if key.nil? && method == :find && !scope.blank?
-        scope
+      #
+      #   with_scope(:find => {:conditions => {:total_gt => 1_000_000}, :per_page => 10}) do
+      #     build_search
+      #   end
+      def with_scope_with_searchgasm(method_scoping = {}, action = :merge, &block)
+        method_scoping[:find] = sanitize_options_with_searchgasm(method_scoping[:find]) if method_scoping[:find]
+        with_scope_without_searchgasm(method_scoping, action, &block)
       end
       
       # This is a special method that Searchgasm adds in. It returns a new conditions object on the model. So you can search by conditions *only*.
@@ -118,17 +126,40 @@ module Searchgasm
       private
         def sanitize_options_with_searchgasm(options = {})
           return options unless Searchgasm::Search::Base.needed?(self, options)
-          search = searchgasm_searcher(options)
+          search = Searchgasm::Search::Base.create_virtual_class(self).new(options) # call explicitly to avoid merging the scopes into the searcher
           search.acting_as_filter = true
           search.sanitize
         end
       
         def searchgasm_conditions(options = {})
-          Searchgasm::Conditions::Base.create_virtual_class(self).new(options)
+          conditions = Searchgasm::Conditions::Base.create_virtual_class(self).new(options)
+          conditions.conditions = (scope(:find) || {})[:conditions]
+          conditions
         end
       
         def searchgasm_searcher(options = {})
-          Searchgasm::Search::Base.create_virtual_class(self).new(options)
+          search = Searchgasm::Search::Base.create_virtual_class(self).new(options)
+          options_from_scope_for_searchgasm(options).each { |option, value| search.send("#{option}=", value) }
+          search
+        end
+        
+        def options_from_scope_for_searchgasm(options)
+          # The goal here is to mimic how scope work. Merge what scopes would and don't what they wouldn't.
+          scope = scope(:find) || {}
+          scope_options = {}
+          [:group, :include, :select, :readonly].each { |option| scope_options[option] = scope[option] if !options.has_key?(option) && scope.has_key?(option) }
+          
+          if scope[:joins] || options[:joins]
+            scope_options[:joins] = []
+            scope_options[:joins] += scope[:joins].is_a?(Array) ? scope[:joins] : [scope[:joins]] unless scope[:joins].blank?
+            scope_options[:joins] += options[:joins].is_a?(Array) ? options[:joins] : [options[:joins]] unless options[:joins].blank?
+          end
+          
+          scope_options[:limit] = scope[:limit] if !options.has_key?(:per_page) && !options.has_key?(:limit) && scope.has_key?(:per_page)
+          scope_options[:offset] = scope[:offset] if !options.has_key?(:page) && !options.has_key?(:offset) && scope.has_key?(:offset)
+          scope_options[:order] = scope[:order] if !options.has_key?(:order_by) && !options.has_key?(:order) && scope.has_key?(:order)
+          scope_options[:conditions] = scope[:conditions] if scope.has_key?(:conditions)
+          scope_options
         end
     end
   end
@@ -141,7 +172,7 @@ module ActiveRecord #:nodoc: all
     class << self
       alias_method_chain :calculate, :searchgasm
       alias_method_chain :find, :searchgasm
-      alias_method_chain :scope, :searchgasm
+      alias_method_chain :with_scope, :searchgasm
       alias_method :new_conditions, :build_conditions
       alias_method :new_conditions!, :build_conditions!
       alias_method :new_search, :build_search

@@ -6,10 +6,14 @@ require "active_support"
 # Core Ext
 require "searchgasm/core_ext/hash"
 
-# Utilties
+# Shared
+require "searchgasm/shared/utilities"
+require "searchgasm/shared/searching"
+require "searchgasm/shared/virtual_classes"
+
+# Base classes
 require "searchgasm/version"
 require "searchgasm/config"
-require "searchgasm/utilities"
 
 # ActiveRecord
 require "searchgasm/active_record/base"

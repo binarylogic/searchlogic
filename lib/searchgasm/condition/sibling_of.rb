@@ -1,8 +1,6 @@
 module Searchgasm
   module Condition
     class SiblingOf < Tree
-      include Searchgasm::Utilities
-      
       def to_conditions(value)
         parent_association = klass.reflect_on_association(:parent)
         foreign_key_name = (parent_association && parent_association.options[:foreign_key]) || "parent_id"

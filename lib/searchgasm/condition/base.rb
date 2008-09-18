@@ -5,7 +5,7 @@ module Searchgasm
     # The base class for creating a condition. Your custom conditions should extend this class.
     # See Searchgasm::Conditions::Base.register_condition on how to write your own condition.
     class Base
-      include Utilities
+      include Shared::Utilities
       
       attr_accessor :column, :klass
       attr_reader :value

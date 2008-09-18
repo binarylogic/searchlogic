@@ -5,16 +5,15 @@ module Searchgasm #:nodoc:
     # Please refer the README.rdoc for usage, examples, and installation.
     
     class Base
-      include Searchgasm::Utilities
+      include Searchgasm::Shared::Utilities
+      include Searchgasm::Shared::Searching
+      include Searchgasm::Shared::VirtualClasses
       
       # Options that ActiveRecord doesn't suppport, but Searchgasm does
       SPECIAL_FIND_OPTIONS = [:order_by, :order_as, :page, :per_page]
       
       # Valid options you can use when searching
-      VALID_FIND_OPTIONS = ::ActiveRecord::Base.valid_find_options + SPECIAL_FIND_OPTIONS
-      
-      # Use these methods just like you would in ActiveRecord
-      SEARCH_METHODS = [:all, :average, :calculate, :count, :find, :first, :maximum, :minimum, :sum]
+      VALID_FIND_OPTIONS = SPECIAL_FIND_OPTIONS + ::ActiveRecord::Base.valid_find_options # the order is very important, these options get set in this order
       
       attr_accessor *::ActiveRecord::Base.valid_find_options
       
@@ -25,49 +24,13 @@ module Searchgasm #:nodoc:
           SPECIAL_FIND_OPTIONS.each do |option|
             return true if options.symbolize_keys.keys.include?(option)
           end
-        
+                    
           Searchgasm::Conditions::Base.needed?(model_class, options[:conditions])
-        end
-        
-        # Creates virtual classes for the class passed to it. This is a neccesity for keeping dynamically created method
-        # names specific to models. It provides caching and helps a lot with performance.
-        def create_virtual_class(model_class)
-          class_search_name = "::Searchgasm::Cache::#{model_class.name}Search"
-          
-          begin
-            eval(class_search_name)
-          rescue NameError
-            # The method definitions are for performance, bottlenecks found with ruby-prof
-            eval <<-end_eval
-              class #{class_search_name} < ::Searchgasm::Search::Base
-                def self.klass
-                  #{model_class.name}
-                end
-                
-                def klass
-                  #{model_class.name}
-                end
-              end
-              
-              #{class_search_name}
-            end_eval
-          end
         end
       end
       
       def initialize(init_options = {})
         self.options = init_options
-      end
-      
-      # Setup methods for searching
-      SEARCH_METHODS.each do |method|
-        class_eval <<-"end_eval", __FILE__, __LINE__
-          def #{method}(*args)
-            self.options = args.extract_options!
-            args << sanitize(:#{method})
-            klass.#{method}(*args)
-          end
-        end_eval
       end
       
       # Flag to determine if searchgasm is acting as a filter for the ActiveRecord search methods.
@@ -89,6 +52,7 @@ module Searchgasm #:nodoc:
           next if value.nil?
           current_find_options[option] = value
         end
+        current_find_options[:scope] = scope unless scope.blank?
         "#<#{klass}Search #{current_find_options.inspect}>"
       end
       
@@ -103,13 +67,20 @@ module Searchgasm #:nodoc:
       end
       
       def offset=(value)
-        @offset = value.to_i
+        @offset = value.blank? ? nil : value.to_i
       end
       
       def options=(values)
         return unless values.is_a?(Hash)
         values.symbolize_keys.fast_assert_valid_keys(VALID_FIND_OPTIONS)
-        values.each { |option, value| send("#{option}=", value) }
+        
+        # Do the special options first, and then the core options last, since the core options take precendence
+        VALID_FIND_OPTIONS.each do |option|
+          next unless values.has_key?(option)
+          send("#{option}=", values[option])
+        end
+        
+        values
       end
       
       # Sanitizes everything down into options ActiveRecord::Base.find can understand
@@ -121,6 +92,10 @@ module Searchgasm #:nodoc:
           find_options[find_option] = value
         end
         find_options
+      end
+      
+      def scope
+        @scope ||= {}
       end
     end
   end

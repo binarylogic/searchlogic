@@ -1,6 +1,3 @@
-benchmarks/benchmark.rb
-benchmarks/benchmark_helper.rb
-benchmarks/profile.rb
 CHANGELOG.rdoc
 examples/README.rdoc
 init.rb
@@ -42,7 +39,11 @@ lib/searchgasm/search/conditions.rb
 lib/searchgasm/search/ordering.rb
 lib/searchgasm/search/pagination.rb
 lib/searchgasm/search/protection.rb
-lib/searchgasm/utilities.rb
+lib/searchgasm/search/scoping.rb
+lib/searchgasm/search.rb
+lib/searchgasm/shared/searching.rb
+lib/searchgasm/shared/utilities.rb
+lib/searchgasm/shared/virtual_classes.rb
 lib/searchgasm/version.rb
 lib/searchgasm.rb
 Manifest

@@ -53,7 +53,10 @@ module Searchgasm
       
       def sanitize_with_conditions(for_method = nil) # :nodoc:
         find_options = sanitize_without_conditions(for_method)
-        find_options[:conditions] = find_options[:conditions].sanitize if find_options[:conditions]
+        if conditions_obj = find_options.delete(:conditions)
+          new_conditions = conditions_obj.sanitize
+          find_options[:conditions] = new_conditions unless new_conditions.blank?
+        end
         find_options
       end
       

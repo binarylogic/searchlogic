@@ -15,7 +15,7 @@ module Searchgasm
         unless conditions.is_a?(Hash)
           if protect?
             return if conditions.blank?
-            raise(ArgumentError, "You can not set a scope or pass SQL while the search is being protected")
+            raise(ArgumentError, "You can not pass SQL as conditions while the search is being protected, you can only pass a hash")
           end
         end
         
@@ -30,6 +30,7 @@ module Searchgasm
       def protect?
         protect == true
       end
+      alias_method :protected?, :protect?
     end
   end
 end

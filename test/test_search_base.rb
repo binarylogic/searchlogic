@@ -60,7 +60,7 @@ class TestSearchBase < Test::Unit::TestCase
     search.limit = 50
     assert_equal 2, search.page
     search.offset = nil
-    assert_equal 0, search.offset
+    assert_equal nil, search.offset
     assert_equal 1, search.page
   
     search.per_page = 2
@@ -137,14 +137,14 @@ class TestSearchBase < Test::Unit::TestCase
 
   def test_scope
     search = Account.new_search!
-    search.conditions = "some scope"
-    assert_equal "some scope", search.conditions.scope
+    search.conditions = "some sql"
+    assert_equal "some sql", search.conditions.sql
     search.conditions = nil
-    assert_equal nil, search.conditions.scope
-    search.conditions = "some scope"
-    assert_equal "some scope", search.conditions.scope
-    search.conditions = "some scope2"
-    assert_equal "some scope2", search.conditions.scope
+    assert_equal nil, search.conditions.sql
+    search.conditions = "some sql"
+    assert_equal "some sql", search.conditions.sql
+    search.conditions = "some sql"
+    assert_equal "some sql", search.conditions.sql
   end
 
   def test_searching
