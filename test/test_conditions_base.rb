@@ -173,4 +173,16 @@ class TestConditionsBase < Test::Unit::TestCase
     assert_equal 1, conditions.minimum('id')
     assert_equal 4, conditions.sum('id')
   end
+  
+  def test_any
+    conditions = Account.new_conditions
+    conditions.name_contains = "Binary"
+    assert_equal Account.find(1, 3), conditions.all
+    conditions.id = 1
+    assert_equal [Account.find(1)], conditions.all
+    conditions.any = true
+    assert_equal Account.find(1, 3), conditions.all
+    conditions.any = false
+    assert_equal [Account.find(1)], conditions.all
+  end
 end

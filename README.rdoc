@@ -189,6 +189,16 @@ Don't need pagination, ordering, or any of the other options? Search with condit
 Pass a conditions object right into ActiveRecord:
 
   User.all(:conditions => conditions)
+  
+== Match ANY or ALL of the conditions
+
+As you saw above, the nice thing about Searchgasm is it's integration with forms. I designed the "any" option so that forms can set this as well, just like a condition.
+
+  search = User.new_search(:conditions => {:age_gt => 18})
+  search.conditions.first_name_contains = "Ben"
+  search.conditions.any = true # can set this to "true" or "1" or "yes"
+  search.all # will join all conditions with "or" instead of "and"
+  # ... all operations above are available
 
 == Scoped searching
 

@@ -1,3 +1,9 @@
+== 1.1.0 released 2008-09-18
+
+* Added the options :inner_spread and :outer_spread to the page_links helper. Also added various config options for setting page_links defaults.
+* Updated calculation methods to ignore :limit and :offset. AR returns 0 or nil on calculations that provide an offset.
+* Added support to allow for "any" of the conditions, instead of all of them. Joins conditions with "or" instead of "and". See Searchgasm::Conditions::Base or the readme
+
 == 1.0.4 released 2008-09-18
 
 * Fixed bugs when performing calculations and searches on has_many through relationships.

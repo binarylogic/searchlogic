@@ -84,6 +84,11 @@ class TestActiveRecordBase < Test::Unit::TestCase
   def test_count
     assert_equal 3, Account.count
     assert_equal 3, Account.count(:limit => 1)
-    assert_equal 3, Account.count(:limit => 1, :offset => 1)
+    assert_equal 0, Account.count(:limit => 1, :offset => 1) # not sure why AR doesn't ignore offset like it does for limit
+    search = Account.new_search
+    assert_equal 3, search.count
+    search.per_page = 10
+    search.page = 10
+    assert_equal 3, search.count
   end
 end

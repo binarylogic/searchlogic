@@ -66,6 +66,7 @@ module Searchgasm
         
         def needed?(model_class, conditions) # :nodoc:
           if conditions.is_a?(Hash)
+            return true if conditions[:any]
             column_names = model_class.column_names
             conditions.stringify_keys.keys.each do |condition|
               return true unless column_names.include?(condition)
@@ -83,8 +84,24 @@ module Searchgasm
         self.conditions = init_conditions
       end
       
+      # Determines if we should join the conditions with "AND" or "OR".
+      #
+      # === Examples
+      #
+      #   search.conditions.any = true # will join all conditions with "or", you can also set this to "true", "1", or "yes"
+      #   search.conditions.any = false # will join all conditions with "and"
+      def any=(value)
+        associations.each { |association| association.any = value }
+        @any = value
+      end
+      
+      def any # :nodoc:
+        any?
+      end
+      
+      # Convenience method for determining if we should join the conditions with "AND" or "OR".
       def any?
-        any == true
+        @any == true || @any == "true" || @any == "1" || @any == "yes"
       end
       
       # A list of includes to use when searching, includes relationships
@@ -222,7 +239,7 @@ module Searchgasm
         end
         
         def assert_valid_conditions(conditions)
-          conditions.stringify_keys.fast_assert_valid_keys(self.class.condition_names + self.class.association_names)
+          conditions.stringify_keys.fast_assert_valid_keys(self.class.condition_names + self.class.association_names + ["any"])
         end
         
         def associations
