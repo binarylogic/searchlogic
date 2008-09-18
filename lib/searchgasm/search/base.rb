@@ -36,7 +36,7 @@ module Searchgasm #:nodoc:
       # Flag to determine if searchgasm is acting as a filter for the ActiveRecord search methods.
       # The purpose of this is to determine if Config.per_page should be implemented.
       def acting_as_filter=(value)
-        @acting_as_filter == true
+        @acting_as_filter = value
       end
       
       # See acting_as_filter=
@@ -84,11 +84,11 @@ module Searchgasm #:nodoc:
       end
       
       # Sanitizes everything down into options ActiveRecord::Base.find can understand
-      def sanitize(for_method = nil)
+      def sanitize
         find_options = {}
         ::ActiveRecord::Base.valid_find_options.each do |find_option|
           value = send(find_option)
-          next if value.blank? || (for_method == :count && [:limit, :offset].include?(find_option))
+          next if value.blank?
           find_options[find_option] = value
         end
         find_options

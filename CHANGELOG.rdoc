@@ -1,3 +1,8 @@
+== 1.0.4 released 2008-09-18
+
+* Fixed bugs when performing calculations and searches on has_many through relationships.
+* Instead of merging the find_options myself, I delegated that to AR's with_scope function, which already does this. Much more solid, less intrusive.
+
 == 1.0.3 released 2008-09-18
 
 * Updated inspect to show the current options for your search. Plays nicer in the console.

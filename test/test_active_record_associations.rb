@@ -51,13 +51,11 @@ class TestActiveRecordAssociations < Test::Unit::TestCase
     search = Account.find(1).orders.new_search
     assert_equal [Order.find(1)], search.all
     assert_equal Order.find(1), search.first
+    assert_equal 1, search.average("id")
+    assert_equal 1, search.count
   end
   
   def test_habtm
     
-  end
-  
-  def test_special_options
-    #order, see AR doc, etc
   end
 end

@@ -80,4 +80,9 @@ class TestActiveRecordBase < Test::Unit::TestCase
   def test_scoping
     assert_equal nil, Account.send(:scope, :find)
   end
+  
+  def test_count
+    assert_equal 3, Account.count
+    assert_equal 3, Account.count(:limit => 1)
+  end
 end

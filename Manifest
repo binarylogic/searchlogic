@@ -39,7 +39,6 @@ lib/searchgasm/search/conditions.rb
 lib/searchgasm/search/ordering.rb
 lib/searchgasm/search/pagination.rb
 lib/searchgasm/search/protection.rb
-lib/searchgasm/search/scoping.rb
 lib/searchgasm/search.rb
 lib/searchgasm/shared/searching.rb
 lib/searchgasm/shared/utilities.rb

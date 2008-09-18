@@ -83,17 +83,6 @@ module Searchgasm
         self.conditions = init_conditions
       end
       
-      # Setup methods for searching
-      [:all, :average, :calculate, :count, :find, :first, :maximum, :minimum, :sum].each do |method|
-        class_eval <<-"end_eval", __FILE__, __LINE__
-          def #{method}(*args)
-            self.conditions = args.extract_options!
-            args << {:conditions => sanitize}
-            klass.#{method}(*args)
-          end
-        end_eval
-      end
-      
       # A list of includes to use when searching, includes relationships
       def includes
         i = []
@@ -112,11 +101,11 @@ module Searchgasm
       end
       
       # Sanitizes the conditions down into conditions that ActiveRecord::Base.find can understand.
-      def sanitize(for_method = nil)
+      def sanitize(any = false)
         conditions = merge_conditions(*objects.collect { |object| object.sanitize })
         return sql if conditions.blank?
         merged_conditions = merge_conditions(conditions, sql)
-        for_method.blank? ? merged_conditions : {:conditions => merged_conditions}
+        merged_conditions
       end
       
       # Allows you to set the conditions via a hash.

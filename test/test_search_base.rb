@@ -29,6 +29,14 @@ class TestSearchBase < Test::Unit::TestCase
     assert_equal 10, search.limit
     assert_equal true, search.readonly
   end
+  
+  def test_acting_as_filter
+    search = Account.new_search
+    search.acting_as_filter = true
+    assert search.acting_as_filter?
+    search.acting_as_filter = false
+    assert !search.acting_as_filter?
+  end
 
   def test_setting_first_level_options
     search = Account.new_search
@@ -131,8 +139,7 @@ class TestSearchBase < Test::Unit::TestCase
     search.conditions.users.id_greater_than = 2
     search.page = 3
     search.readonly = true
-    assert_equal({:include => :users, :offset => 4, :readonly => true, :conditions => ["(\"accounts\".\"name\" LIKE ?) AND (\"users\".\"id\" > ?)", "%Binary%", 2], :limit => 2 }, search.sanitize(:all))
-    assert_equal({:include => :users, :readonly => true, :conditions => ["(\"accounts\".\"name\" LIKE ?) AND (\"users\".\"id\" > ?)", "%Binary%", 2] }, search.sanitize(:count))
+    assert_equal({:include => :users, :offset => 4, :readonly => true, :conditions => ["(\"accounts\".\"name\" LIKE ?) AND (\"users\".\"id\" > ?)", "%Binary%", 2], :limit => 2 }, search.sanitize)
   end
 
   def test_scope

@@ -147,7 +147,7 @@ Take the @search object and pass it right into form\_for or fields\_for (see abo
 Using the object from above:
 
   @search.average('id')
-  @search.count
+  @search.count # ignores limit and offset
   @search.maximum('id')
   @search.minimum('id')
   @search.sum('id')

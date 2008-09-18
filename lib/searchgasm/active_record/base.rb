@@ -11,6 +11,12 @@ module Searchgasm
         calculate_without_searchgasm(*args)
       end
       
+      def total(*args)
+        options = args.extract_options!
+        searcher = searchgasm_searcher(options)
+        searcher.total
+      end
+      
       # This is an alias method chain. It hooks into ActiveRecord's "find" method and checks to see if Searchgasm should get involved.
       def find_with_searchgasm(*args)
         options = args.extract_options!
@@ -126,41 +132,36 @@ module Searchgasm
       private
         def sanitize_options_with_searchgasm(options = {})
           return options unless Searchgasm::Search::Base.needed?(self, options)
-          search = Searchgasm::Search::Base.create_virtual_class(self).new(options) # call explicitly to avoid merging the scopes into the searcher
+          search = Searchgasm::Search::Base.create_virtual_class(self).new # call explicitly to avoid merging the scopes into the searcher
           search.acting_as_filter = true
+          search.options = options
           search.sanitize
         end
       
         def searchgasm_conditions(options = {})
-          conditions = Searchgasm::Conditions::Base.create_virtual_class(self).new(options)
-          conditions.conditions = (scope(:find) || {})[:conditions]
-          conditions
+          searcher = nil
+          conditions = nil
+          conditions = options.delete(:conditions) if options[:conditions].is_a?(Hash)
+          
+          with_scope(:find => {:conditions => options[:conditions]}) do
+            searcher = Searchgasm::Conditions::Base.create_virtual_class(self).new(scope(:find)[:conditions])
+            searcher.conditions = conditions unless conditions.nil?
+          end
+          
+          searcher
         end
       
         def searchgasm_searcher(options = {})
-          search = Searchgasm::Search::Base.create_virtual_class(self).new(options)
-          options_from_scope_for_searchgasm(options).each { |option, value| search.send("#{option}=", value) }
-          search
-        end
-        
-        def options_from_scope_for_searchgasm(options)
-          # The goal here is to mimic how scope work. Merge what scopes would and don't what they wouldn't.
-          scope = scope(:find) || {}
-          scope_options = {}
-          [:group, :include, :select, :readonly, :from].each { |option| scope_options[option] = scope[option] if !options.has_key?(option) && scope.has_key?(option) }
+          searcher = nil
+          conditions = nil
+          conditions = options.delete(:conditions) if options[:conditions].is_a?(Hash)
           
-          if scope[:joins] || options[:joins]
-            scope_options[:joins] = []
-            scope_options[:joins] += scope[:joins].is_a?(Array) ? scope[:joins] : [scope[:joins]] unless scope[:joins].blank?
-            scope_options[:joins] += options[:joins].is_a?(Array) ? options[:joins] : [options[:joins]] unless options[:joins].blank?
-            scope_options[:joins] = scope_options[:joins].first if scope_options[:joins].size == 1
+          with_scope(:find => options) do
+            searcher = Searchgasm::Search::Base.create_virtual_class(self).new(scope(:find))
+            searcher.conditions = conditions unless conditions.nil?
           end
           
-          scope_options[:limit] = scope[:limit] if !options.has_key?(:per_page) && !options.has_key?(:limit) && scope.has_key?(:per_page)
-          scope_options[:offset] = scope[:offset] if !options.has_key?(:page) && !options.has_key?(:offset) && scope.has_key?(:offset)
-          scope_options[:order] = scope[:order] if !options.has_key?(:order_by) && !options.has_key?(:order) && scope.has_key?(:order)
-          scope_options[:conditions] = scope[:conditions] if scope.has_key?(:conditions)
-          scope_options
+          searcher
         end
     end
   end

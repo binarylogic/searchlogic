@@ -51,8 +51,8 @@ module Searchgasm
         includes.blank? ? nil : (includes.size == 1 ? includes.first : includes)
       end
       
-      def sanitize_with_conditions(for_method = nil) # :nodoc:
-        find_options = sanitize_without_conditions(for_method)
+      def sanitize_with_conditions # :nodoc:
+        find_options = sanitize_without_conditions
         if conditions_obj = find_options.delete(:conditions)
           new_conditions = conditions_obj.sanitize
           find_options[:conditions] = new_conditions unless new_conditions.blank?
