@@ -1,9 +1,6 @@
 module Searchgasm
   module Helpers
     module ControlTypes
-      # = Links Control Types
-      #
-      # These helpers create a group of links to help navigate through search data.
       module Links
         # Creates a group of links that order the data by a column or columns. All that this does is loop through the :choices option and call order_by_link and then glue it all together.
         #
@@ -14,7 +11,7 @@ module Searchgasm
         #
         # === Options
         #
-        # Please look at order_by_link. All options there are applicable here and are passed onto each option. Here are the options specific to this method:
+        # Please look at order_by_link. All options there are applicable here and are passed onto each option.
         #
         # * <tt>:choices</tt> -- default: the models column names, the choices to loop through when calling order_by_link
         def order_by_links(options = {})
@@ -35,7 +32,7 @@ module Searchgasm
         #
         # === Options
         #
-        # Please look at order_as_link. All options there are applicable here and are passed onto each option. Here are the options specific to this method:
+        # Please look at order_as_link. All options there are applicable here and are passed onto each option.
         #
         # * <tt>:choices</tt> -- default: ["asc", "desc"], the choices to loop through when calling order_as_link
         def order_as_links(options = {})
@@ -56,7 +53,7 @@ module Searchgasm
         #
         # === Options
         #
-        # Please look at per_page_link. All options there are applicable here and are passed onto each option. Here are the options specific to this method:
+        # Please look at per_page_link. All options there are applicable here and are passed onto each option.
         #
         # * <tt>:choices</tt> -- default: [10, 25, 50, 100, 150, 200, nil], the choices to loop through when calling per_page_link.
         def per_page_links(options = {})
@@ -83,7 +80,7 @@ module Searchgasm
         #
         # * <tt>page</tt> - This is in *every* element, span or a.
         # * <tt>first_page</tt> - This is for the "first page" element only.
-        # * <tt>preve_page</tt> - This is for the "prev page" element only.
+        # * <tt>prev_page</tt> - This is for the "prev page" element only.
         # * <tt>current_page</tt> - This is for the current page element
         # * <tt>next_page</tt> - This is for the "next page" element only.
         # * <tt>last_page</tt> - This is for the "last page" element only.
@@ -91,11 +88,17 @@ module Searchgasm
         #
         # === Options
         #
-        # Please look at per_page_link. All options there are applicable here and are passed onto each option. Here are the options specific to this method:
+        # Please look at per_page_link. All options there are applicable here and are passed onto each option.
         #
         # * <tt>:spread</tt> -- default: 3, set to nil to show all page, this represents how many choices available on each side of the current page
-        # * <tt>:prev</tt> -- default: "< Prev", set to nil to omit. This is an extra link on the left side of the page links that will go to the previous page
-        # * <tt>:next</tt> -- default: "Next >", set to nil to omit. This is an extra link on the right side of the page links that will go to the next page
+        # * <tt>:gap</tt> -- default: nil, set to a number (x) from 0 and one less than spread.  This option changes the links from 
+        # *                  "< Prev 2 3 4 [5] 6 7 8 Next >" with 10 total pages to:
+        # *                  "< Prev ... 3 4 [5] 6 7 ... Next >" for :gap = 0 and :spread = 3
+        # *                  "< Prev 1 ... 4 [5] 6 ... 10 Next >" for :gap = 1 and :spread = 3
+        # *                  "< Prev 1 2 ... [5] ... 9 10 Next >" for :gap = 2 and :spread = 3 (gap = number of absolute pages on each side)
+        # *                  Gaps will not be visible unless the current_page is more than :spread away from the first or last page.
+        # * <tt>:prev</tt> -- default: < Prev, set to nil to omit. This is an extra link on the left side of the page links that will go to the previous page
+        # * <tt>:next</tt> -- default: Next >, set to nil to omit. This is an extra link on the right side of the page links that will go to the next page
         # * <tt>:first</tt> -- default: nil, set to nil to omit. This is an extra link on thefar left side of the page links that will go to the first page
         # * <tt>:last</tt> -- default: nil, set to nil to omit. This is an extra link on the far right side of the page links that will go to the last page
         def page_links(options = {})
@@ -114,10 +117,43 @@ module Searchgasm
             last_page = options[:last_page]
           end
           
+          lower_gap = upper_gap = nil
+          unless options[:gap].nil? or options[:spread].blank?
+            lower_gap = upper_gap = ( options[:gap] >= options[:spread] ? options[:spread] - 1 : options[:gap] )
+            
+            if options[:current_page] - options[:first_page] > options[:spread]
+              first_page += lower_gap + 1
+              lower_start = options[:first_page]
+              lower_end = lower_start + lower_gap - 1
+            else
+              lower_gap = nil
+            end
+            
+            if options[:last_page] - options[:current_page] > options[:spread]
+              last_page -= upper_gap + 1
+              upper_end = options[:last_page]
+              upper_start = upper_end - upper_gap + 1
+            else
+              upper_gap = nil
+            end
+          end
+          
           html = ""
           html += span_or_page_link(:first, options.deep_dup, options[:current_page] == options[:first_page]) if options[:first]
           html += span_or_page_link(:prev, options.deep_dup, options[:current_page] == options[:first_page]) if options[:prev]
+          
+          unless lower_gap.nil?
+            (lower_start..lower_end).each { |page| html += span_or_page_link(page, options.deep_dup, false) }
+            html += content_tag(:span, "&hellip;", options[:html])
+          end
+          
           (first_page..last_page).each { |page| html += span_or_page_link(page, options.deep_dup, page == options[:current_page]) }
+          
+          unless upper_gap.nil?
+            html += content_tag(:span, "&hellip;", options[:html])
+            (upper_start..upper_end).each { |page| html += span_or_page_link(page, options.deep_dup, false) }
+          end
+          
           html += span_or_page_link(:next, options.deep_dup, options[:current_page] == options[:last_page]) if options[:next]
           html += span_or_page_link(:last, options.deep_dup, options[:current_page] == options[:last_page]) if options[:last]
           html
@@ -155,6 +191,7 @@ module Searchgasm
             options[:last_page] ||= options[:search_obj].page_count
             options[:current_page] ||= options[:search_obj].page
             options[:spread] = 3 unless options.has_key?(:spread)
+            options[:gap] = nil unless options.has_key?(:gap)
             options[:prev] = "< Prev" unless options.has_key?(:prev)
             options[:next] = "Next >" unless options.has_key?(:next)
             options
