@@ -43,6 +43,78 @@ module Searchgasm
         @desc_indicator = value
       end
       
+      def page_links_first # :nodoc:
+        @page_links_first
+      end
+      
+      # The default for the :first option for the page_links helper.
+      #
+      # * <tt>Default:</tt> nil
+      # * <tt>Accepts:</tt> Anything you want, text, html, etc. nil to disable
+      def page_links_first=(value)
+        @page_links_first = value
+      end
+      
+      def page_links_last # :nodoc:
+        @page_links_last
+      end
+      
+      # The default for the :last option for the page_links helper.
+      #
+      # * <tt>Default:</tt> nil
+      # * <tt>Accepts:</tt> Anything you want, text, html, etc. nil to disable
+      def page_links_last=(value)
+        @page_links_last = value
+      end
+      
+      def page_links_inner_spread # :nodoc:
+        @page_links_inner_spread ||= 3
+      end
+      
+      # The default for the :inner_spread option for the page_links helper.
+      #
+      # * <tt>Default:</tt> 3
+      # * <tt>Accepts:</tt> Any integer >= 1, set to nil to show all pages
+      def page_links_inner_spread=(value)
+        @page_links_inner_spread = value
+      end
+      
+      def page_links_outer_spread # :nodoc:
+        @page_links_outer_spread ||= 2
+      end
+      
+      # The default for the :outer_spread option for the page_links helper.
+      #
+      # * <tt>Default:</tt> 2
+      # * <tt>Accepts:</tt> Any integer >= 1, set to nil to display, 0 to only show the "..." separator
+      def page_links_outer_spread=(value)
+        @page_links_outer_spread = value
+      end
+      
+      def page_links_next # :nodoc:
+        @page_links_next ||= "< Next"
+      end
+      
+      # The default for the :next option for the page_links helper.
+      #
+      # * <tt>Default:</tt> "< Next"
+      # * <tt>Accepts:</tt> Anything you want, text, html, etc. nil to disable
+      def page_links_next=(value)
+        @page_links_next = value
+      end
+      
+      def page_links_prev # :nodoc:
+        @page_links_prev ||= "< Prev"
+      end
+      
+      # The default for the :prev option for the page_links helper.
+      #
+      # * <tt>Default:</tt> "< Prev"
+      # * <tt>Accepts:</tt> Anything you want, text, html, etc. nil to disable
+      def page_links_prev=(value)
+        @page_links_prev = value
+      end
+      
       def per_page # :nodoc:
         @per_page
       end

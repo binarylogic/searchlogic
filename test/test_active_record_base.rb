@@ -84,5 +84,6 @@ class TestActiveRecordBase < Test::Unit::TestCase
   def test_count
     assert_equal 3, Account.count
     assert_equal 3, Account.count(:limit => 1)
+    assert_equal 3, Account.count(:limit => 1, :offset => 1)
   end
 end

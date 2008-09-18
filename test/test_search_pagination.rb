@@ -67,6 +67,17 @@ class TestSearchPagination < Test::Unit::TestCase
   end
   
   def test_page_count
+    search = Account.new_search
+    assert_equal 1, search.page_count
+    search.per_page = 1
+    assert_equal 3, search.page_count
+    search.per_page = 100
+    assert_equal 1, search.page_count
     
+    Searchgasm::Config.per_page = 1
+    search = Account.new_search
+    assert_equal 3, search.page_count    
+    search.conditions.users.first_name_contains
+    assert_equal 3, search.page_count
   end
 end

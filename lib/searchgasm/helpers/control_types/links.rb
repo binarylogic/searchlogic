@@ -72,7 +72,7 @@ module Searchgasm
         #   page_links
         #   page_links(:first => "<< First", :last => "Last >>")
         #
-        # === Classes and tag
+        # === Classes and tags
         #
         # If the user is on the current page they will get a <span> tag, not an <a> tag. If they are on the first page the "first" and "prev" options will be a <span> also. The same goes
         # for "next" and "last" if the user is on the last page. Other than that each element will come with a CSS class so you can style it to your liking. Somtimes the easiest way to understand this
@@ -90,13 +90,13 @@ module Searchgasm
         #
         # Please look at per_page_link. All options there are applicable here and are passed onto each option.
         #
-        # * <tt>:spread</tt> -- default: 3, set to nil to show all page, this represents how many choices available on each side of the current page
-        # * <tt>:gap</tt> -- default: nil, set to a number (x) from 0 and one less than spread.  This option changes the links from 
+        # * <tt>:inner_spread</tt> -- default: 3, set to nil to show all pages, this represents how many choices available on each side of the current page
+        # * <tt>:outer_spread</tt> -- default: 1, set to nil to disable, this represents how many choices are in the "outer" spread. If set to 0, the separator will be present with no page links. This option changes the links from 
         # *                  "< Prev 2 3 4 [5] 6 7 8 Next >" with 10 total pages to:
-        # *                  "< Prev ... 3 4 [5] 6 7 ... Next >" for :gap = 0 and :spread = 3
-        # *                  "< Prev 1 ... 4 [5] 6 ... 10 Next >" for :gap = 1 and :spread = 3
-        # *                  "< Prev 1 2 ... [5] ... 9 10 Next >" for :gap = 2 and :spread = 3 (gap = number of absolute pages on each side)
-        # *                  Gaps will not be visible unless the current_page is more than :spread away from the first or last page.
+        # *                  "< Prev ... 3 4 [5] 6 7 ... Next >" for :outer_spread = 0 and :inner_spread = 3
+        # *                  "< Prev 1 ... 3 4 [5] 6 7 ... 10 Next >" for :outer_spread = 1 and :inner_spread = 3
+        # *                  "< Prev 1 2 ... 3 4 [5] 6 7 ... 9 10 Next >" for :outer_spread = 2 and :inner_spread = 3 (outer_spread = number of absolute pages on each side)
+        # *                  Outer spread pages will not be visible unless the current_page is more than :inner_spread away from the first or last page.
         # * <tt>:prev</tt> -- default: < Prev, set to nil to omit. This is an extra link on the left side of the page links that will go to the previous page
         # * <tt>:next</tt> -- default: Next >, set to nil to omit. This is an extra link on the right side of the page links that will go to the next page
         # * <tt>:first</tt> -- default: nil, set to nil to omit. This is an extra link on thefar left side of the page links that will go to the first page
@@ -105,53 +105,45 @@ module Searchgasm
           add_page_links_defaults!(options)
           return if options[:last_page] <= 1
           
-          first_page = 0
-          last_page = 0
-          if !options[:spread].blank?
-            first_page = options[:current_page] - options[:spread]
-            first_page = options[:first_page] if first_page < options[:first_page]
-            last_page = options[:current_page] + options[:spread]
-            last_page = options[:last_page] if last_page > options[:last_page]
+          inner_spread_start = inner_spread_end = lower_gap = lower_outer_spread_start = lower_outer_spread_end = upper_gap = upper_outer_spread_start = upper_outer_spread_end = 0
+          if !options[:inner_spread].blank?
+            inner_spread_start = options[:current_page] - options[:inner_spread]
+            inner_spread_start = options[:first_page] if inner_spread_start < options[:first_page]
+            inner_spread_end = options[:current_page] + options[:inner_spread]
+            inner_spread_end = options[:last_page] if inner_spread_end > options[:last_page]
+            
+            if !options[:outer_spread].blank?
+              lower_gap = inner_spread_start - options[:first_page]
+              if lower_gap > 0
+                lower_outer_spread_start = options[:first_page]
+                lower_outer_spread_end = options[:outer_spread] > lower_gap ? lower_gap : options[:outer_spread]
+              end
+              
+              upper_gap = options[:last_page] - inner_spread_end
+              if upper_gap > 0
+                upper_outer_spread_start = options[:last_page] - (options[:outer_spread] > upper_gap ? upper_gap : options[:outer_spread]) + 1
+                upper_outer_spread_end = options[:last_page]
+              end
+            end
           else
-            first_page = options[:first_page]
-            last_page = options[:last_page]
-          end
-          
-          lower_gap = upper_gap = nil
-          unless options[:gap].nil? or options[:spread].blank?
-            lower_gap = upper_gap = ( options[:gap] >= options[:spread] ? options[:spread] - 1 : options[:gap] )
-            
-            if options[:current_page] - options[:first_page] > options[:spread]
-              first_page += lower_gap + 1
-              lower_start = options[:first_page]
-              lower_end = lower_start + lower_gap - 1
-            else
-              lower_gap = nil
-            end
-            
-            if options[:last_page] - options[:current_page] > options[:spread]
-              last_page -= upper_gap + 1
-              upper_end = options[:last_page]
-              upper_start = upper_end - upper_gap + 1
-            else
-              upper_gap = nil
-            end
+            inner_spread_start = options[:first_page]
+            inner_spread_end = options[:last_page]
           end
           
           html = ""
           html += span_or_page_link(:first, options.deep_dup, options[:current_page] == options[:first_page]) if options[:first]
           html += span_or_page_link(:prev, options.deep_dup, options[:current_page] == options[:first_page]) if options[:prev]
           
-          unless lower_gap.nil?
-            (lower_start..lower_end).each { |page| html += span_or_page_link(page, options.deep_dup, false) }
-            html += content_tag(:span, "&hellip;", options[:html])
+          if lower_gap > 0
+            (lower_outer_spread_start..lower_outer_spread_end).each { |page| html += span_or_page_link(page, options.deep_dup, false) }
+            html += content_tag(:span, "&hellip;", options[:html]) if (inner_spread_start - lower_outer_spread_end) > 1
           end
           
-          (first_page..last_page).each { |page| html += span_or_page_link(page, options.deep_dup, page == options[:current_page]) }
+          (inner_spread_start..inner_spread_end).each { |page| html += span_or_page_link(page, options.deep_dup, page == options[:current_page]) }
           
-          unless upper_gap.nil?
-            html += content_tag(:span, "&hellip;", options[:html])
-            (upper_start..upper_end).each { |page| html += span_or_page_link(page, options.deep_dup, false) }
+          if upper_gap > 0
+            html += content_tag(:span, "&hellip;", options[:html]) if (upper_outer_spread_start - inner_spread_end) > 1
+            (upper_outer_spread_start..upper_outer_spread_end).each { |page| html += span_or_page_link(page, options.deep_dup, false) }
           end
           
           html += span_or_page_link(:next, options.deep_dup, options[:current_page] == options[:last_page]) if options[:next]
@@ -190,10 +182,12 @@ module Searchgasm
             options[:first_page] ||= 1
             options[:last_page] ||= options[:search_obj].page_count
             options[:current_page] ||= options[:search_obj].page
-            options[:spread] = 3 unless options.has_key?(:spread)
-            options[:gap] = nil unless options.has_key?(:gap)
-            options[:prev] = "< Prev" unless options.has_key?(:prev)
-            options[:next] = "Next >" unless options.has_key?(:next)
+            options[:inner_spread] = Config.page_links_inner_spread unless options.has_key?(:inner_spread)
+            options[:outer_spread] = Config.page_links_outer_spread unless options.has_key?(:outer_spread)
+            options[:prev] = Config.page_links_prev unless options.has_key?(:prev)
+            options[:next] = Config.page_links_next unless options.has_key?(:next)
+            options[:first] = Config.page_links_first unless options.has_key?(:first)
+            options[:last] = Config.page_links_last unless options.has_key?(:last)
             options
           end
           

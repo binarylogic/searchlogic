@@ -9,7 +9,7 @@ module Searchgasm
       include Searchgasm::Shared::Searching
       include Searchgasm::Shared::VirtualClasses
       
-      attr_accessor :relationship_name, :sql
+      attr_accessor :any, :relationship_name, :sql
       
       class << self
         attr_accessor :added_klass_conditions, :added_column_conditions, :added_associations
@@ -83,10 +83,15 @@ module Searchgasm
         self.conditions = init_conditions
       end
       
+      def any?
+        any == true
+      end
+      
       # A list of includes to use when searching, includes relationships
       def includes
         i = []
         associations.each do |association|
+          next if association.conditions.blank?
           association_includes = association.includes
           i << (association_includes.blank? ? association.relationship_name.to_sym : {association.relationship_name.to_sym => association_includes})
         end
@@ -101,10 +106,10 @@ module Searchgasm
       end
       
       # Sanitizes the conditions down into conditions that ActiveRecord::Base.find can understand.
-      def sanitize(any = false)
-        conditions = merge_conditions(*objects.collect { |object| object.sanitize })
+      def sanitize
+        conditions = merge_conditions(*(objects.collect { |object| object.sanitize } << {:any => any}))
         return sql if conditions.blank?
-        merged_conditions = merge_conditions(conditions, sql)
+        merged_conditions = merge_conditions(conditions, sql, :any => any)
         merged_conditions
       end
       
@@ -123,8 +128,7 @@ module Searchgasm
       def conditions
         conditions_hash = {}
         objects.each do |object|
-          case object
-          when self.class
+          if object.class < Searchgasm::Conditions::Base
             relationship_conditions = object.conditions
             next if relationship_conditions.blank?
             conditions_hash[object.relationship_name.to_sym] = relationship_conditions

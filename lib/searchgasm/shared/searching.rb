@@ -30,6 +30,8 @@ module Searchgasm
             klass.send(:with_scope, :find => options) do
               find_options = (self.class < Searchgasm::Conditions::Base ? {:conditions => sanitize} : sanitize)
               find_options.delete(:select)
+              find_options.delete(:limit)
+              find_options.delete(:offset)
               args << find_options
               klass.#{method}(*args)
             end
