@@ -1,7 +1,12 @@
-== 1.0.3 released 2008-09-14
+== 1.0.3 released 2008-09-18
 
 * Updated inspect to show the current options for your search. Plays nicer in the console.
 * Made sure protection state is persistent among relationship conditions.
+* Fixed bug with backwards compatibility of rails. concat requires a proc in older version.
+* Defaulted remote control types to use GET requests instead of POST.
+* Completely reengineered integration with ActiveRecord. Searchgasm is properly using scopes letting you do use serachgasm where scope are implemented. @current_users.orders.new_search, etc. If your search is scoped and you want a search object, that search object will represent a new search in the context of those scopes, meaning the scopes get merged into Searchgasm as options.
+* Dropped support for Searchgasm functionality when defining relationships: has_many :order, :conditions => {:total_gt => 100}, will not work anymore. It's a chicken and the egg thing. Searchgasm needs AR constants, some models get loaded before others, therefore the Order model may not have been loaded yet, causing an unknown constant error.
+* Clean up redundant code and moved it into the Searchgasm::Shared namespace.
 
 == 1.0.2 released 2008-09-12
 

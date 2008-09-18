@@ -42,10 +42,18 @@ class TestConditionsBase < Test::Unit::TestCase
   end
   
   def test_accessible_protected_conditions
-    #Account.conditions_accessible << :name_contains
-    #conditions = Account.new_conditions
-    #conditions.conditions = {:created_after => Time.now, :name_contains => "Binary"}
-    #assert({:name_contains => "Binary"}, conditions.value)
+    Account.conditions_accessible << :name_contains
+    conditions = Account.new_conditions
+    conditions.conditions = {:created_after => Time.now, :name_contains => "Binary"}
+    assert({:name_contains => "Binary"}, conditions.conditions)
+    Account.send(:write_inheritable_attribute, :conditions_accessible, nil)
+    
+    Account.conditions_protected << :name_contains
+    conditions = Account.new_conditions
+    now = Time.now
+    conditions.conditions = {:created_after => now, :name_contains => "Binary"}
+    assert({:created_after => now}, conditions.conditions)
+    Account.send(:write_inheritable_attribute, :conditions_protected, nil)
   end
   
   def test_assert_valid_values
@@ -136,18 +144,18 @@ class TestConditionsBase < Test::Unit::TestCase
     conditions.conditions = v
     assert_equal v, conditions.conditions
     
-    scope = "id in (1,2,3,4)"
-    conditions.conditions = scope
-    assert_equal v, conditions.conditions, v
-    assert_equal scope, conditions.scope
+    sql = "id in (1,2,3,4)"
+    conditions.conditions = sql
+    assert_equal v, conditions.conditions
+    assert_equal sql, conditions.sql
     
     v2 = {:id_less_than => 5, :name_begins_with => "Beginning of string"}
     conditions.conditions = v2
     assert_equal v.merge(v2), conditions.conditions
     
-    scope2 = "id > 5 and name = 'Test'"
-    conditions.conditions = scope2
-    assert_equal scope2, conditions.scope
+    sql2 = "id > 5 and name = 'Test'"
+    conditions.conditions = sql2
+    assert_equal sql2, conditions.sql
   end
   
   def test_searching

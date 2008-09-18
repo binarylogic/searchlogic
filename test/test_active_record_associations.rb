@@ -16,7 +16,7 @@ class TestActiveRecordAssociations < Test::Unit::TestCase
     search = Account.find(1).users.build_search
     assert_kind_of Searchgasm::Search::Base, search
     assert_equal User, search.klass
-    assert_equal "\"users\".account_id = 1", search.conditions.scope
+    assert_equal "\"users\".account_id = 1", search.conditions.sql
     
     search.conditions.first_name_contains = "Ben"
     assert_equal({:conditions => ["(\"users\".\"first_name\" LIKE ?) AND (\"users\".account_id = 1)", "%Ben%"]}, search.sanitize)
@@ -34,5 +34,22 @@ class TestActiveRecordAssociations < Test::Unit::TestCase
     assert_equal 1, Account.find(1).users.count(:conditions => {:first_name_begins_with => "Ben"})
     assert_equal 1, Account.find(1).users.sum("id", :conditions => {:first_name_begins_with => "Ben"})
     assert_equal 1, Account.find(1).users.average("id", :conditions => {:first_name_begins_with => "Ben"})
+  end
+  
+  def test_has_many_through
+    assert_equal 1, Account.find(1).orders.count
+    assert_equal 1, Account.find(1).orders.all(:conditions => {:total_gt => 100}).size
+    assert_equal 0, Account.find(1).orders.all(:conditions => {:total_gt => 1000}).size
+    assert_equal 1, Account.find(1).orders.sum("id", :conditions => {:total_gt => 100})
+    assert_equal 0, Account.find(1).orders.sum("id", :conditions => {:total_gt => 1000})
+    assert_equal 1, Account.find(1).orders.average("id", :conditions => {:total_gt => 100})
+  end
+  
+  def test_habtm
+    
+  end
+  
+  def test_special_options
+    #order, see AR doc, etc
   end
 end

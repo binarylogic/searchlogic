@@ -76,6 +76,7 @@ module Searchgasm
         private
           def add_remote_defaults!(options)
             options[:remote] ||= {}
+            options[:remote][:method] ||= :get
             options[:is_remote] = true
           end
       end

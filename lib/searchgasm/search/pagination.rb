@@ -35,7 +35,8 @@ module Searchgasm
       # Lets you change the page for the next search
       def page=(value)
         # Have to use @offset, since self.offset= resets @page
-        if value.nil?
+        if value.blank?
+          value = nil
           @page = value
           return @offset = value
         end
