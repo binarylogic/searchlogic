@@ -26,7 +26,7 @@ module Searchgasm
       
       VULNERABLE_FIND_OPTIONS = Base::AR_FIND_OPTIONS - SAFE_OPTIONS
       
-      VULERNABLE_CALCULATIONS_OPTIONS = Base::AR_CALCULATIONS_OPTIONS - SAFE_OPTIONS
+      VULNERABLE_CALCULATIONS_OPTIONS = Base::AR_CALCULATIONS_OPTIONS - SAFE_OPTIONS
       
       # Options that are not allowed, at all, when protecting against SQL injections
       VULNERABLE_OPTIONS = Base::OPTIONS - SAFE_OPTIONS
@@ -63,12 +63,13 @@ module Searchgasm
           
           k = alt_klass || klass
           column_names = k.column_names
-          
+                    
           [order_by].flatten.each do |column|
             case column
             when Hash
-              return false unless k.reflect_on_association(column.keys.first.to_sym)
-              return false unless order_by_safe?(column.values.first, column.keys.first.to_s.classify.constantize)
+              reflection = k.reflect_on_association(column.keys.first.to_sym)
+              return false unless reflection
+              return false unless order_by_safe?(column.values.first, reflection.klass)
             when Array
               return false unless order_by_safe?(column)
             else

@@ -9,6 +9,7 @@ require File.dirname(__FILE__) + '/../lib/searchgasm'
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :dbfile => ":memory:")
 
 class Account < ActiveRecord::Base
+  has_one :admin, :class_name => "User", :conditions => {:first_name => "Ben"}
   has_many :users, :dependent => :destroy
   has_many :orders, :through => :users
 end
@@ -17,6 +18,7 @@ class User < ActiveRecord::Base
   acts_as_tree
   belongs_to :account
   has_many :orders, :dependent => :destroy
+  has_one :cool_order, :class_name => "Order", :conditions => {:total => 100}
 end
 
 class Order < ActiveRecord::Base

@@ -115,7 +115,8 @@ module Searchgasm
       
       private
         def order_by_to_order(order_by, order_as, alt_klass = nil, new_includes = [])
-          table_name = (alt_klass || klass).table_name
+          k = alt_klass || klass
+          table_name = k.table_name
           sql_parts = []
           
           case order_by
@@ -123,10 +124,11 @@ module Searchgasm
             order_by.each { |part| sql_parts << order_by_to_order(part, order_as) }
           when Hash
             raise(ArgumentError, "when passing a hash to order_by you must only have 1 key: {:user_group => :name} not {:user_group => :name, :user_group => :id}. The latter should be [{:user_group => :name}, {:user_group => :id}]") if order_by.keys.size != 1
-            k = order_by.keys.first
-            v = order_by.values.first
-            new_includes << k.to_sym
-            sql_parts << order_by_to_order(v, order_as, eval(k.to_s.classify), new_includes) # using eval, better performance, protection makes sure nothing fishy goes on here
+            key = order_by.keys.first
+            reflection = k.reflect_on_association(key.to_sym)
+            value = order_by.values.first
+            new_includes << key.to_sym
+            sql_parts << order_by_to_order(value, order_as, reflection.klass, new_includes) # using eval, better performance, protection makes sure nothing fishy goes on here
           when Symbol, String
             new_include = build_order_by_includes(new_includes)
             self.order_by_includes << new_include if new_include
