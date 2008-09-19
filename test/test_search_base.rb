@@ -39,6 +39,18 @@ class TestSearchBase < Test::Unit::TestCase
   end
 
   def test_setting_first_level_options
+    search = Account.new_search!(:include => :users, :joins => :test, :offset => 5, :limit => 20, :order => "name ASC", :select => "name", :readonly => true, :group => "name", :from => "accounts", :lock => true)
+    assert_equal :users, search.include
+    assert_equal :test, search.joins
+    assert_equal 5, search.offset
+    assert_equal 20, search.limit
+    assert_equal "name ASC", search.order
+    assert_equal "name", search.select
+    assert_equal true, search.readonly
+    assert_equal "name", search.group
+    assert_equal "accounts", search.from
+    assert_equal true, search.lock
+    
     search = Account.new_search
   
     search.include = :users
@@ -189,6 +201,9 @@ class TestSearchBase < Test::Unit::TestCase
     assert_equal 2, search.count
     assert_equal 3, search.maximum('id')
     assert_equal 1, search.minimum('id')
+    assert_equal 4, search.sum('id')
+    
+    search.readonly = true
     assert_equal 4, search.sum('id')
   end
   

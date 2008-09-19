@@ -21,17 +21,15 @@ module Searchgasm
           end
         end_eval
       end
-      
+
       # Setup methods for calculating
       CALCULATION_METHODS.each do |method|
         class_eval <<-"end_eval", __FILE__, __LINE__
           def #{method}(*args)
             options = args.extract_options!
             klass.send(:with_scope, :find => options) do
-              find_options = (self.class < Searchgasm::Conditions::Base ? {:conditions => sanitize} : sanitize)
-              find_options.delete(:select)
-              find_options.delete(:limit)
-              find_options.delete(:offset)
+              find_options = (self.class < Searchgasm::Conditions::Base ? {:conditions => sanitize} : sanitize(false))
+              [:select, :limit, :offset].each { |option| find_options.delete(option) }
               args << find_options
               klass.#{method}(*args)
             end

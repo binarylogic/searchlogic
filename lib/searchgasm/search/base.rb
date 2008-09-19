@@ -9,13 +9,21 @@ module Searchgasm #:nodoc:
       include Searchgasm::Shared::Searching
       include Searchgasm::Shared::VirtualClasses
       
+      # Options ActiveRecord allows when searching
+      AR_FIND_OPTIONS = ::ActiveRecord::Base.valid_find_options
+      
+      # Options ActiveRecord allows when performing calculations
+      AR_CALCULATIONS_OPTIONS = ::ActiveRecord::Base.valid_calculations_options
+      
+      AR_OPTIONS = (AR_FIND_OPTIONS + AR_CALCULATIONS_OPTIONS).uniq
+      
       # Options that ActiveRecord doesn't suppport, but Searchgasm does
       SPECIAL_FIND_OPTIONS = [:order_by, :order_as, :page, :per_page]
       
       # Valid options you can use when searching
-      VALID_FIND_OPTIONS = SPECIAL_FIND_OPTIONS + ::ActiveRecord::Base.valid_find_options # the order is very important, these options get set in this order
+      OPTIONS = SPECIAL_FIND_OPTIONS + AR_OPTIONS # the order is very important, these options get set in this order
       
-      attr_accessor *::ActiveRecord::Base.valid_find_options
+      attr_accessor *AR_OPTIONS
       
       class << self
         # Used in the ActiveRecord methods to determine if Searchgasm should get involved or not.
@@ -47,7 +55,7 @@ module Searchgasm #:nodoc:
       # Makes using searchgasm in the console less annoying and keeps the output meaningful and useful
       def inspect
         current_find_options = {}
-        ::ActiveRecord::Base.valid_find_options.each do |option|
+        AR_OPTIONS.each do |option|
           value = send(option)
           next if value.nil?
           current_find_options[option] = value
@@ -72,10 +80,9 @@ module Searchgasm #:nodoc:
       
       def options=(values)
         return unless values.is_a?(Hash)
-        values.symbolize_keys.fast_assert_valid_keys(VALID_FIND_OPTIONS)
+        values.symbolize_keys.fast_assert_valid_keys(OPTIONS)
         
-        # Do the special options first, and then the core options last, since the core options take precendence
-        VALID_FIND_OPTIONS.each do |option|
+        OPTIONS.each do |option|
           next unless values.has_key?(option)
           send("#{option}=", values[option])
         end
@@ -84,9 +91,9 @@ module Searchgasm #:nodoc:
       end
       
       # Sanitizes everything down into options ActiveRecord::Base.find can understand
-      def sanitize
+      def sanitize(searching = true)
         find_options = {}
-        ::ActiveRecord::Base.valid_find_options.each do |find_option|
+        (searching ? AR_FIND_OPTIONS : AR_CALCULATIONS_OPTIONS).each do |find_option|
           value = send(find_option)
           next if value.blank?
           find_options[find_option] = value

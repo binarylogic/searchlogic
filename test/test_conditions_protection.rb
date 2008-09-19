@@ -20,5 +20,8 @@ class TestConditionsProtection < Test::Unit::TestCase
     
     assert_raise(ArgumentError) { account.users.build_conditions("(DELETE FROM users)") }
     assert_nothing_raised { account.users.build_conditions!("(DELETE FROM users)") }
+    
+    #search = Account.new_search
+    #assert_nothing_raised { search.conditions = "(DELETE FROM users)" }
   end
 end

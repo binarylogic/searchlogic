@@ -24,8 +24,12 @@ module Searchgasm
       # Options that are allowed when protecting against SQL injections (still checked though)
       SAFE_OPTIONS = Base::SPECIAL_FIND_OPTIONS + [:conditions, :limit, :offset]
       
+      VULNERABLE_FIND_OPTIONS = Base::AR_FIND_OPTIONS - SAFE_OPTIONS
+      
+      VULERNABLE_CALCULATIONS_OPTIONS = Base::AR_CALCULATIONS_OPTIONS - SAFE_OPTIONS
+      
       # Options that are not allowed, at all, when protecting against SQL injections
-      VULNERABLE_OPTIONS = Base::VALID_FIND_OPTIONS - SAFE_OPTIONS
+      VULNERABLE_OPTIONS = Base::OPTIONS - SAFE_OPTIONS
       
       def self.included(klass)
         klass.class_eval do

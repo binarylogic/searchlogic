@@ -1,3 +1,8 @@
+== 1.1.1 released 2008-09-19
+
+* Fixed type in "next page" button.
+* Updated valid options for searching and performing calculations, fixed some bugs when searching and performing calculations with advanced options.
+
 == 1.1.0 released 2008-09-18
 
 * Added the options :inner_spread and :outer_spread to the page_links helper. Also added various config options for setting page_links defaults.

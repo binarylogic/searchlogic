@@ -28,8 +28,9 @@ class TestActiveRecordBase < Test::Unit::TestCase
     assert_nothing_raised { Account.sum("id", {}) }
   end
   
-  def test_valid_find_options
+  def test_ar_options
     assert_equal [ :conditions, :include, :joins, :limit, :offset, :order, :select, :readonly, :group, :from, :lock ], ActiveRecord::Base.valid_find_options
+    assert_equal [:conditions, :joins, :order, :select, :group, :having, :distinct, :limit, :offset, :include, :from], ActiveRecord::Base.valid_calculations_options
   end
   
   def test_build_search

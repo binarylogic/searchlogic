@@ -181,8 +181,12 @@ module ActiveRecord #:nodoc: all
       alias_method :new_search!, :build_search!
       
       def valid_find_options
-         VALID_FIND_OPTIONS
-       end
+        VALID_FIND_OPTIONS
+      end
+      
+      def valid_calculations_options
+        Calculations::CALCULATIONS_OPTIONS
+      end
     end
   end
 end
