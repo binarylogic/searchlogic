@@ -92,12 +92,12 @@ module Searchgasm
       end
       
       def page_links_next # :nodoc:
-        @page_links_next ||= "< Next"
+        @page_links_next ||= "Next >"
       end
       
       # The default for the :next option for the page_links helper.
       #
-      # * <tt>Default:</tt> "< Next"
+      # * <tt>Default:</tt> "Next >"
       # * <tt>Accepts:</tt> Anything you want, text, html, etc. nil to disable
       def page_links_next=(value)
         @page_links_next = value
