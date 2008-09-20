@@ -6,21 +6,15 @@ module Searchgasm
       # This is an alias method chain. It hook into ActiveRecord's "calculate" method and checks to see if Searchgasm should get involved.
       def calculate_with_searchgasm(*args)
         options = args.extract_options!
-        options = sanitize_options_with_searchgasm(options)
+        options = filter_options_with_searchgasm(options)
         args << options
         calculate_without_searchgasm(*args)
-      end
-      
-      def total(*args)
-        options = args.extract_options!
-        searcher = searchgasm_searcher(options)
-        searcher.total
       end
       
       # This is an alias method chain. It hooks into ActiveRecord's "find" method and checks to see if Searchgasm should get involved.
       def find_with_searchgasm(*args)
         options = args.extract_options!
-        options = sanitize_options_with_searchgasm(options)
+        options = filter_options_with_searchgasm(options)
         args << options
         find_without_searchgasm(*args)
       end
@@ -45,7 +39,7 @@ module Searchgasm
       #     build_search
       #   end
       def with_scope_with_searchgasm(method_scoping = {}, action = :merge, &block)
-        method_scoping[:find] = sanitize_options_with_searchgasm(method_scoping[:find]) if method_scoping[:find]
+        method_scoping[:find] = filter_options_with_searchgasm(method_scoping[:find]) if method_scoping[:find]
         with_scope_without_searchgasm(method_scoping, action, &block)
       end
       
@@ -130,10 +124,19 @@ module Searchgasm
       end
     
       private
-        def sanitize_options_with_searchgasm(options = {})
+        def filter_options_with_searchgasm(options = {})
           return options unless Searchgasm::Search::Base.needed?(self, options)
           search = Searchgasm::Search::Base.create_virtual_class(self).new # call explicitly to avoid merging the scopes into the searcher
           search.acting_as_filter = true
+          conditions = options.delete(:conditions) || options.delete("conditions") || {}
+          if conditions
+            case conditions
+            when Hash
+              conditions.each { |condition, value| search.conditions.send("#{condition}=", value) } # explicitly call to enforce blanks
+            else
+              search.conditions = conditions
+            end
+          end
           search.options = options
           search.sanitize
         end

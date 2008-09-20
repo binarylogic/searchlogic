@@ -185,4 +185,13 @@ class TestConditionsBase < Test::Unit::TestCase
     conditions.any = false
     assert_equal [Account.find(1)], conditions.all
   end
+  
+  def test_ignoring_blanks
+    conditions = Account.new_conditions(:name => "", :created_after => nil)
+    assert_equal({}, conditions.conditions)
+    conditions.name = ""
+    assert_equal({:name_equals => ""}, conditions.conditions)
+    conditions.created_after = ""
+    assert_equal({:name_equals => ""}, conditions.conditions)
+  end
 end

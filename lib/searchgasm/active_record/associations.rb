@@ -8,7 +8,7 @@ module Searchgasm
         # This needs to be implemented because AR doesn't leverage scopes with this method like it probably should
         def find_with_searchgasm(*args)
           options = args.extract_options!
-          args << sanitize_options_with_searchgasm(options)
+          args << filter_options_with_searchgasm(options)
           find_without_searchgasm(*args)
         end
       
@@ -36,7 +36,7 @@ module Searchgasm
       module Shared
         def count_with_searchgasm(*args)
           options = args.extract_options!
-          args << sanitize_options_with_searchgasm(options)
+          args << filter_options_with_searchgasm(options)
           count_without_searchgasm(*args)
         end
       end

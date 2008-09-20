@@ -116,14 +116,14 @@ module Searchgasm
       end
       
       def per_page # :nodoc:
-        @per_page
+        @per_page ||= per_page_choices[2]
       end
       
       # The default for per page. This is only applicaple for protected searches. Meaning you start the search with new_search or new_conditions.
       # The reason for this not to disturb regular queries such as Whatever.find(:all). You would not expect that to be limited.
       #
-      # * <tt>Default:</tt> nil, nil means "show all"
-      # * <tt>Accepts:</tt> Any value in your per_page choices
+      # * <tt>Default:</tt> The 3rd option in your per_page_choices, default of 50
+      # * <tt>Accepts:</tt> Any value in your per_page choices, nil means "show all"
       def per_page=(value)
         @per_page = value
       end

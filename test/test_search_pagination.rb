@@ -29,7 +29,7 @@ class TestSearchPagination < Test::Unit::TestCase
   end
   
   def test_page
-    search = Account.new_search
+    search = Account.new_search(:per_page => nil)
     search.page = 2
     assert_equal 1, search.page
     search.per_page = 20

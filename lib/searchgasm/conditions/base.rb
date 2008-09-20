@@ -135,7 +135,10 @@ module Searchgasm
         case conditions
         when Hash
           assert_valid_conditions(conditions)
-          remove_conditions_from_protected_assignement(conditions).each { |condition, value| send("#{condition}=", value) }
+          remove_conditions_from_protected_assignement(conditions).each do |condition, value|
+            next if value.blank? # ignore blanks on mass assignments
+            send("#{condition}=", value)
+          end
         else
           self.sql = conditions
         end

@@ -51,7 +51,7 @@ class TestSearchBase < Test::Unit::TestCase
     assert_equal "accounts", search.from
     assert_equal true, search.lock
     
-    search = Account.new_search
+    search = Account.new_search(:per_page => nil)
   
     search.include = :users
     assert_equal :users, search.include

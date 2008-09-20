@@ -1,7 +1,10 @@
 == 1.1.1 released 2008-09-19
 
-* Fixed type in "next page" button.
+* Fixed typo in "next page" button.
 * Updated valid options for searching and performing calculations, fixed some bugs when searching and performing calculations with advanced options.
+* Fixed bug in ordering where table name was assumed by the hash. Now assumed by the reflection.
+* Added default for per_page, so pagination comes implemented by default
+* On mass assignments blank strings for *any* conditions are ignored. Sometimes blank strings are meaningful for "equals" and "does not equal", those only takes effect if you explicitly call these conditions: search.conditions.name = "". User.new_search(:conditions => {:name => ""}) will be ignored. Also, Searchgasm should never change how ActiveRecord behaves by default. So User.all(:conditions => {:name => ""}) will NOT be ignored.
 
 == 1.1.0 released 2008-09-18
 

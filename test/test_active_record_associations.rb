@@ -58,9 +58,4 @@ class TestActiveRecordAssociations < Test::Unit::TestCase
   def test_habtm
     
   end
-  
-  def test_alternate_class_name
-    search = Account.find(1).admin.new_search
-    assert_equal User, search.klass
-  end
 end
