@@ -43,6 +43,18 @@ module Searchgasm
         @desc_indicator = value
       end
       
+      def hidden_fields # :nodoc:
+        @hidden_fields ||= (Search::Base::SPECIAL_FIND_OPTIONS - [:page])
+      end
+      
+      # Which hidden fields to automatically include when creating a form with a Searchgasm object. See Searchgasm::Helpers::Form for more info.
+      #
+      # * <tt>Default:</tt> [:order_by, :order_as, :per_page]
+      # * <tt>Accepts:</tt> Array, nil, false
+      def hidden_fields=(value)
+        @hidden_fields = value
+      end
+      
       def page_links_first # :nodoc:
         @page_links_first
       end
@@ -80,7 +92,7 @@ module Searchgasm
       end
       
       def page_links_outer_spread # :nodoc:
-        @page_links_outer_spread ||= 2
+        @page_links_outer_spread ||= 1
       end
       
       # The default for the :outer_spread option for the page_links helper.
@@ -142,16 +154,16 @@ module Searchgasm
         @per_page_choices = value
       end
       
-      def hidden_fields # :nodoc:
-        @hidden_fields ||= (Search::Base::SPECIAL_FIND_OPTIONS - [:page])
+      def remote_helpers # :nodoc:
+        @remote_helpers
       end
       
-      # Which hidden fields to automatically include when creating a form with a Searchgasm object. See Searchgasm::Helpers::Form for more info.
+      # Sets the default for the :is_remote option for helpers.
       #
-      # * <tt>Default:</tt> [:order_by, :order_as, :per_page]
-      # * <tt>Accepts:</tt> Array, nil, false
-      def hidden_fields=(value)
-        @hidden_fields = value
+      # * <tt>Default:</tt> false
+      # * <tt>Accepts:</tt> Boolean
+      def remote_helpers=(value)
+        @remote_helpers = value
       end
     end
   end

@@ -90,15 +90,10 @@ module Searchgasm
         #
         # Please look at per_page_link. All options there are applicable here and are passed onto each option.
         #
-        # * <tt>:inner_spread</tt> -- default: 3, set to nil to show all pages, this represents how many choices available on each side of the current page
-        # * <tt>:outer_spread</tt> -- default: 1, set to nil to disable, this represents how many choices are in the "outer" spread. If set to 0, the separator will be present with no page links. This option changes the links from 
-        # *                  "< Prev 2 3 4 [5] 6 7 8 Next >" with 10 total pages to:
-        # *                  "< Prev ... 3 4 [5] 6 7 ... Next >" for :outer_spread = 0 and :inner_spread = 3
-        # *                  "< Prev 1 ... 3 4 [5] 6 7 ... 10 Next >" for :outer_spread = 1 and :inner_spread = 3
-        # *                  "< Prev 1 2 ... 3 4 [5] 6 7 ... 9 10 Next >" for :outer_spread = 2 and :inner_spread = 3 (outer_spread = number of absolute pages on each side)
-        # *                  Outer spread pages will not be visible unless the current_page is more than :inner_spread away from the first or last page.
-        # * <tt>:prev</tt> -- default: < Prev, set to nil to omit. This is an extra link on the left side of the page links that will go to the previous page
-        # * <tt>:next</tt> -- default: Next >, set to nil to omit. This is an extra link on the right side of the page links that will go to the next page
+        # * <tt>:inner_spread</tt> -- default: 3, set to nil to show all pages, set 0 to show no page links. This represents how many choices available on each side of the current page
+        # * <tt>:outer_spread</tt> -- default: 1, set to nil to disable, set to 0 show no outer spread but the separator will still be present. This represents how many choices are in the "outer" spread.
+        # * <tt>:prev</tt> -- default: "< Prev", set to nil to omit. This is an extra link on the left side of the page links that will go to the previous page
+        # * <tt>:next</tt> -- default: "Next >", set to nil to omit. This is an extra link on the right side of the page links that will go to the next page
         # * <tt>:first</tt> -- default: nil, set to nil to omit. This is an extra link on thefar left side of the page links that will go to the first page
         # * <tt>:last</tt> -- default: nil, set to nil to omit. This is an extra link on the far right side of the page links that will go to the last page
         def page_links(options = {})

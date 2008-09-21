@@ -9,6 +9,7 @@ Searchgasm is orgasmic. Maybe not orgasmic, but you will get aroused. So go grab
 *	<b>Documentation:</b> http://searchgasm.rubyforge.org
 *	<b>Easy pagination, ordering, and searching tutorial:</b> http://www.binarylogic.com/2008/9/7/tutorial-pagination-ordering-and-searching-with-searchgasm
 *	<b>Live example of the tutorial above (with source):</b> http://searchgasm_example.binarylogic.com
+* <b>Bugs / feature suggestions:</b> http://binarylogic.lighthouseapp.com/projects/16601-searchgasm
 
 == Install and use
 
@@ -352,10 +353,6 @@ I'm a big fan of understanding what I'm using, so here's a quick explanation: Th
 ActiveRecord should never know about Searchgasm
 
 What that rule means is that any options you pass when searching get "sanitized" down into options ActiveRecord can understand. Searchgasm serves as a transparent filter between you and ActiveRecord. It doesn't dig into the ActiveRecord internals, it only uses what is publicly available. It jumps in and helps out <em>only</em> when needed, otherwise it sits back and stays completely out of the way. Between that and the extensive tests, this is a solid and fast plugin.
-
-== Reporting problems / bugs
-
-http://binarylogic.lighthouseapp.com/projects/16601-searchgasm
 
 == Credits
 

@@ -7,6 +7,7 @@ module Searchgasm
           options[:params_scope] = :search unless options.has_key?(:params_scope)
           options[:search_obj] ||= instance_variable_get("@#{options[:params_scope]}")
           raise(ArgumentError, "@search object could not be inferred, please specify: :search_obj => @search") unless options[:search_obj].is_a?(Searchgasm::Search::Base)
+          options[:is_remote] = Config.remote_helpers
           options[:html] ||= {}
           options[:html][:class] ||= ""
           searchgasm_add_class!(options[:html], option)
