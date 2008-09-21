@@ -92,9 +92,9 @@ module Searchgasm
                 options[:html][:onsubmit] += ";"
               
                 javascript = "if(typeof(Prototype) != 'undefined') {"
-                search_options[:hidden_fields].each { |field| javascript += "$('#{name}_#{field}_hidden').value = $('#{name}_#{field}').value;" }
+                search_options[:hidden_fields].each { |field| javascript += "field = $('#{name}_#{field}'); if(field) { $('#{name}_#{field}_hidden').value = field.value; }" }
                 javascript += "} else if(jQuery) {"
-                search_options[:hidden_fields].each { |field| javascript += "$('##{name}_#{field}_hidden').val($('##{name}_#{field}').val());" }
+                search_options[:hidden_fields].each { |field| javascript += "field = $('##{name}_#{field}'); if(field) { $('##{name}_#{field}_hidden').val(field.val()); }" }
                 javascript += "}"
               
                 options[:html][:onsubmit] += javascript

@@ -153,18 +153,6 @@ module Searchgasm
       def per_page_choices=(value)
         @per_page_choices = value
       end
-      
-      def remote_helpers # :nodoc:
-        @remote_helpers
-      end
-      
-      # Sets the default for the :is_remote option for helpers.
-      #
-      # * <tt>Default:</tt> false
-      # * <tt>Accepts:</tt> Boolean
-      def remote_helpers=(value)
-        @remote_helpers = value
-      end
     end
   end
 end
