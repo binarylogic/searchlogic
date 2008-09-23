@@ -146,16 +146,22 @@ class TestConditionsBase < Test::Unit::TestCase
     
     sql = "id in (1,2,3,4)"
     conditions.conditions = sql
-    assert_equal v, conditions.conditions
-    assert_equal sql, conditions.sql
+    assert_equal sql, conditions.conditions
     
     v2 = {:id_less_than => 5, :name_begins_with => "Beginning of string"}
     conditions.conditions = v2
-    assert_equal v.merge(v2), conditions.conditions
+    assert_equal v2, conditions.conditions
+    
+    v = {:name_contains => "Binary", :created_at_greater_than => now}
+    conditions.conditions = v
+    assert_equal v2.merge(v), conditions.conditions
     
     sql2 = "id > 5 and name = 'Test'"
     conditions.conditions = sql2
-    assert_equal sql2, conditions.sql
+    assert_equal sql2, conditions.conditions
+    
+    conditions.name_contains = "awesome"
+    assert_equal({:name_contains => "awesome"}, conditions.conditions)
   end
   
   def test_searching
@@ -188,7 +194,7 @@ class TestConditionsBase < Test::Unit::TestCase
   
   def test_ignoring_blanks
     conditions = Account.new_conditions(:name => "", :created_after => nil)
-    assert_equal({}, conditions.conditions)
+    assert_equal(nil, conditions.conditions)
     conditions.name = ""
     assert_equal({:name_equals => ""}, conditions.conditions)
     conditions.created_after = ""

@@ -35,18 +35,6 @@ class TestConditionBase < Test::Unit::TestCase
     assert_equal condition.column, Account.columns_hash["id"]
   end
   
-  def test_explicitly_set_value
-    condition = Searchgasm::Condition::Equals.new(Account, Account.columns_hash["name"])
-    assert !condition.explicitly_set_value?
-    condition.value = nil
-    assert condition.explicitly_set_value?
-    
-    condition = Searchgasm::Condition::Keywords.new(Account, Account.columns_hash["name"])
-    assert !condition.explicitly_set_value?
-    condition.value = nil
-    assert !condition.explicitly_set_value?
-  end
-  
   def test_ignore_blanks?
     condition = Searchgasm::Condition::Equals.new(Account, Account.columns_hash["id"])
     assert !condition.class.ignore_blanks?

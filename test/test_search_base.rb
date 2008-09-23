@@ -157,13 +157,14 @@ class TestSearchBase < Test::Unit::TestCase
   def test_scope
     search = Account.new_search!
     search.conditions = "some sql"
-    assert_equal "some sql", search.conditions.sql
+    conditions = search.conditions
+    assert_equal "some sql", search.conditions.conditions
     search.conditions = nil
-    assert_equal nil, search.conditions.sql
+    assert_equal nil, search.conditions.conditions
     search.conditions = "some sql"
-    assert_equal "some sql", search.conditions.sql
+    assert_equal "some sql", search.conditions.conditions
     search.conditions = "some sql"
-    assert_equal "some sql", search.conditions.sql
+    assert_equal "some sql", search.conditions.conditions
   end
 
   def test_searching

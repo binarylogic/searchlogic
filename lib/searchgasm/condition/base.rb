@@ -8,7 +8,6 @@ module Searchgasm
       include Shared::Utilities
       
       attr_accessor :column, :klass
-      attr_reader :value
       class_inheritable_accessor :ignore_blanks, :type_cast_value
       self.ignore_blanks = true
       self.type_cast_value = true
@@ -64,16 +63,6 @@ module Searchgasm
         self.klass = klass
         self.column = column.is_a?(String) ? klass.columns_hash[column] : column
       end
-    
-      # Allows nils to be meaninful values
-      def explicitly_set_value=(value)
-        @explicitly_set_value = value
-      end
-    
-      # Need this if someone wants to actually use nil in a meaningful way
-      def explicitly_set_value?
-        @explicitly_set_value == true
-      end
       
       # A convenience method for the name of the method for that specific column or klass
       def name
@@ -107,7 +96,6 @@ module Searchgasm
       
       # You should refrain from overwriting this method, it performs various tasks before callign your to_conditions method, allowing you to keep to_conditions simple.
       def sanitize(alt_value = nil) # :nodoc:
-        return unless explicitly_set_value?
         v = alt_value || value
         if v.is_a?(Array) && !["equals", "does_not_equal"].include?(condition_name)
           merge_conditions(*v.collect { |i| sanitize(i) })
@@ -116,21 +104,14 @@ module Searchgasm
           to_conditions(v)
         end
       end
-      
-      # Should the value be automatically type casted
-      def type_cast_value?
-        true
-      end
     
       # The value for the condition
       def value
         self.class.type_cast_value? && @value.is_a?(String) ? column.type_cast(@value) : @value
       end
     
-      # Sets the value for the condition, will ignore place if ignore_blanks?
+      # Sets the value for the condition
       def value=(v)
-        return if self.class.ignore_blanks? && v.blank?
-        self.explicitly_set_value = true
         @value = v
       end
     end

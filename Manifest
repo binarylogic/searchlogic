@@ -3,7 +3,6 @@ examples/README.rdoc
 init.rb
 lib/searchgasm/active_record/associations.rb
 lib/searchgasm/active_record/base.rb
-lib/searchgasm/active_record.rb
 lib/searchgasm/condition/base.rb
 lib/searchgasm/condition/begins_with.rb
 lib/searchgasm/condition/child_of.rb
@@ -15,6 +14,8 @@ lib/searchgasm/condition/equals.rb
 lib/searchgasm/condition/greater_than.rb
 lib/searchgasm/condition/greater_than_or_equal_to.rb
 lib/searchgasm/condition/inclusive_descendant_of.rb
+lib/searchgasm/condition/is_blank.rb
+lib/searchgasm/condition/is_nil.rb
 lib/searchgasm/condition/keywords.rb
 lib/searchgasm/condition/less_than.rb
 lib/searchgasm/condition/less_than_or_equal_to.rb
@@ -30,16 +31,13 @@ lib/searchgasm/helpers/control_types/remote_link.rb
 lib/searchgasm/helpers/control_types/remote_links.rb
 lib/searchgasm/helpers/control_types/remote_select.rb
 lib/searchgasm/helpers/control_types/select.rb
-lib/searchgasm/helpers/control_types.rb
 lib/searchgasm/helpers/form.rb
 lib/searchgasm/helpers/utilities.rb
-lib/searchgasm/helpers.rb
 lib/searchgasm/search/base.rb
 lib/searchgasm/search/conditions.rb
 lib/searchgasm/search/ordering.rb
 lib/searchgasm/search/pagination.rb
 lib/searchgasm/search/protection.rb
-lib/searchgasm/search.rb
 lib/searchgasm/shared/searching.rb
 lib/searchgasm/shared/utilities.rb
 lib/searchgasm/shared/virtual_classes.rb

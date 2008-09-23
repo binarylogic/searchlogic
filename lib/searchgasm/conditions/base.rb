@@ -9,7 +9,7 @@ module Searchgasm
       include Shared::Searching
       include Shared::VirtualClasses
       
-      attr_accessor :any, :relationship_name, :sql
+      attr_accessor :any, :relationship_name
       
       class << self
         attr_accessor :added_klass_conditions, :added_column_conditions, :added_associations
@@ -117,35 +117,36 @@ module Searchgasm
       
       def inspect
         conditions_hash = conditions
-        conditions_hash[:sql] = sql if sql
         conditions_hash[:protected] = true if protected?
         conditions_hash.inspect
       end
       
       # Sanitizes the conditions down into conditions that ActiveRecord::Base.find can understand.
       def sanitize
-        conditions = merge_conditions(*(objects.collect { |object| object.sanitize } << {:any => any}))
-        return sql if conditions.blank?
-        merged_conditions = merge_conditions(conditions, sql, :any => any)
-        merged_conditions
+        return @conditions if @conditions
+        merge_conditions(*(objects.collect { |object| object.sanitize } << {:any => any}))
       end
       
       # Allows you to set the conditions via a hash.
-      def conditions=(conditions)
-        case conditions
-        when Hash
-          assert_valid_conditions(conditions)
-          remove_conditions_from_protected_assignement(conditions).each do |condition, value|
-            next if value.blank? # ignore blanks on mass assignments
-            send("#{condition}=", value)
+      def conditions=(value)
+        case value
+        when Hash          
+          assert_valid_conditions(value)
+          remove_conditions_from_protected_assignement(value).each do |condition, condition_value|
+            next if condition_value.blank? # ignore blanks on mass assignments
+            send("#{condition}=", condition_value)
           end
         else
-          self.sql = conditions
+          reset_objects!
+          @conditions = value
         end
       end
       
       # All of the active conditions (conditions that have been set)
       def conditions
+        return @conditions if @conditions
+        return if objects.blank?
+        
         conditions_hash = {}
         objects.each do |object|
           if object.class < Searchgasm::Conditions::Base
@@ -153,7 +154,6 @@ module Searchgasm
             next if relationship_conditions.blank?
             conditions_hash[object.relationship_name.to_sym] = relationship_conditions
           else
-            next unless object.explicitly_set_value?
             conditions_hash[object.name.to_sym] = object.value
           end
         end
@@ -178,7 +178,7 @@ module Searchgasm
                 @#{association.name}
               end
             
-              def #{association.name}=(conditions); #{association.name}.conditions = conditions; end
+              def #{association.name}=(conditions); @conditions = nil; #{association.name}.conditions = conditions; end
               def reset_#{association.name}!; objects.delete(#{association.name}); @#{association.name} = nil; end
             end_eval
           end
@@ -214,7 +214,16 @@ module Searchgasm
             end
 
             def #{name}; #{name}_object.value; end
-            def #{name}=(value); #{name}_object.value = value; end
+            
+            def #{name}=(value)
+              if value.blank? && #{name}_object.class.ignore_blanks?
+                reset_#{name}!
+              else
+                @conditions = nil
+                #{name}_object.value = value
+              end
+            end
+            
             def reset_#{name}!; objects.delete(#{name}_object); @#{name} = nil; end
           end_eval
         end
@@ -251,6 +260,11 @@ module Searchgasm
         
         def objects
           @objects ||= []
+        end
+        
+        def reset_objects!
+          objects.each { |object| eval("@#{object.name} = nil") }
+          objects.clear
         end
         
         def remove_conditions_from_protected_assignement(conditions)
