@@ -148,19 +148,19 @@ module Searchgasm
         
         private
           def add_order_by_links_defaults!(options)
-            add_searchgasm_helper_defaults!(:order_by, options)
+            add_searchgasm_control_defaults!(:order_by, options)
             options[:choices] ||= options[:search_obj].klass.column_names.map(&:humanize)
             options
           end
           
           def add_order_as_links_defaults!(options)
-            add_searchgasm_helper_defaults!(:order_as, options)
+            add_searchgasm_control_defaults!(:order_as, options)
             options[:choices] = [:asc, :desc]
             options
           end
           
           def add_per_page_links_defaults!(options)
-            add_searchgasm_helper_defaults!(:per_page, options)
+            add_searchgasm_control_defaults!(:per_page, options)
             options[:choices] ||= Config.per_page_choices.dup
             if !options[:search_obj].per_page.blank? && !options[:choices].include?(options[:search_obj].per_page)
               options[:choices] << options[:search_obj].per_page
@@ -173,7 +173,7 @@ module Searchgasm
           end
           
           def add_page_links_defaults!(options)
-            add_searchgasm_helper_defaults!(:page, options)
+            add_searchgasm_control_defaults!(:page, options)
             options[:first_page] ||= 1
             options[:last_page] ||= options[:search_obj].page_count
             options[:current_page] ||= options[:search_obj].page

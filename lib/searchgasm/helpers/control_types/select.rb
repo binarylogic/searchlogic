@@ -59,10 +59,7 @@ module Searchgasm
             options[:tag] ||= {}
             options[:tag][:object] = options[:search_obj]
             
-            url = searchgasm_url_hash(option, nil, options)
-            url.delete(option)
-            url = searchgasm_url(url, options)
-            url = url_for(url)
+            url = url_for(searchgasm_params(option, options))
             url_option = CGI.escape((options[:params_scope].blank? ? "#{option}" : "#{options[:params_scope]}[#{option}]")) + "='+this.value"
             url += (url.last == "?" ? "" : (url.include?("?") ? "&amp;" : "?")) + url_option
             

@@ -1,39 +1,58 @@
 module Searchgasm
   module Helpers #:nodoc:
     module Utilities # :nodoc:
+      # Builds a hash of params for creating a url.
+      def searchgasm_params(option, options = {})
+        add_searchgasm_defaults!(options)
+        params_copy = params.deep_dup.with_indifferent_access
+        params_copy.delete(:commit)
+        
+        # Extract search params from params
+        search_params = options[:params_scope].blank? ? params_copy : params_copy[options[:params_scope]]
+        search_params ||= {}
+        search_params = search_params.with_indifferent_access
+        
+        # Never want to keep page
+        search_params.delete(:page)
+        
+        option_params = search_params
+        
+        if option.is_a?(Array)
+          option_levels = option.up
+          option = option_levels.pop
+          option_levels.each { |option_level| options_params = options_params[option_level] }
+        end
+        
+        if options[:value]
+          option_params[option] = option == :order_by ? searchgasm_order_by_value(options[:value]) : options[:value]
+          
+          case option
+          when :order_by
+            option_params[:order_as] = (options[:search_obj].order_by == options[:value] && options[:search_obj].asc?) ? "DESC" : "ASC"
+          end
+        else
+          option_params.delete(option)
+        end
+        
+        options[:params_scope].blank? ? search_params : {options[:params_scope] => search_params}
+      end
+      
       private
         # Adds default options for all helper methods.
-        def add_searchgasm_helper_defaults!(option, options)
+        def add_searchgasm_defaults!(options)
           options[:params_scope] = :search unless options.has_key?(:params_scope)
           options[:search_obj] ||= instance_variable_get("@#{options[:params_scope]}")
           raise(ArgumentError, "@search object could not be inferred, please specify: :search_obj => @search or :params_scope => :search_obj_name") unless options[:search_obj].is_a?(Searchgasm::Search::Base)
+          options
+        end
+        
+        # Adds default options for all control type helper methods.
+        def add_searchgasm_control_defaults!(option, options)
+          add_searchgasm_defaults!(options)
           options[:html] ||= {}
           options[:html][:class] ||= ""
           searchgasm_add_class!(options[:html], option)
           options
-        end
-        
-        def searchgasm_url(url_hash, options)
-          url = options[:params_scope].blank? ? url_hash : {options[:params_scope] => url_hash}
-          !options[:url_params].is_a?(Hash) ? url : url.merge(options[:url_params])
-        end
-        
-        def searchgasm_url_hash(option, value, options)
-          params_copy = params.deep_dup.with_indifferent_access
-          params_copy.delete(:commit)
-                    
-          # Extract search params from params
-          search_params = options[:params_scope].blank? ? params_copy : params_copy[options[:params_scope]]
-          search_params ||= {}
-          search_params = search_params.with_indifferent_access
-                    
-          # Never want to keep page
-          search_params.delete(:page)
-          
-          # Use special order_by value
-          search_params[option] = option == :order_by ? searchgasm_order_by_value(value) : value
-          
-          search_params
         end
         
         def searchgasm_add_class!(html_options, new_class)
@@ -61,22 +80,6 @@ module Searchgasm
             @added_state_for << option
           end
           html
-        end
-        
-        # Need to deep dup a hash otherwise the "child" hashes get modified as its passed around
-        def searchgasm_deep_dup(hash)
-          new_hash = {}
-          
-          hash.each do |k, v|
-            case v
-            when Hash
-              hash[k] = searchgasm_deep_dup(v)
-            else
-              hew_hash[k] = v
-            end
-          end
-          
-          new_hash
         end
     end
   end

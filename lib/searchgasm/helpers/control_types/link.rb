@@ -186,35 +186,33 @@ module Searchgasm
         
         private
           def add_order_by_link_defaults!(order_by, options = {})
-            add_searchgasm_helper_defaults!(:order_by, options)
+            add_searchgasm_control_defaults!(:order_by, options)
             options[:text] ||= determine_order_by_text(order_by)
             options[:asc_indicator] ||= Config.asc_indicator
             options[:desc_indicator] ||= Config.desc_indicator
             options[:text] += options[:search_obj].desc? ? options[:desc_indicator] : options[:asc_indicator] if options[:search_obj].order_by == order_by
-            url_hash = searchgasm_url_hash(:order_by, order_by, options)
-            url_hash[:order_as] = (options[:search_obj].order_by == order_by && options[:search_obj].asc?) ? "DESC" : "ASC"
-            options[:url] = searchgasm_url(url_hash, options)
+            options[:url] = searchgasm_params(:order_by, options.merge(:value => order_by))
             options
           end
           
           def add_order_as_link_defaults!(order_as, options = {})
-            add_searchgasm_helper_defaults!(:order_as, options)
+            add_searchgasm_control_defaults!(:order_as, options)
             options[:text] ||= order_as.to_s
-            options[:url] = searchgasm_url(searchgasm_url_hash(:order_as, order_as, options), options)
+            options[:url] = searchgasm_params(:order_as, options.merge(:value => order_as))
             options
           end
           
           def add_per_page_link_defaults!(per_page, options = {})
-            add_searchgasm_helper_defaults!(:per_page, options)
+            add_searchgasm_control_defaults!(:per_page, options)
             options[:text] ||= per_page.blank? ? "Show all" : "#{per_page} per page"
-            options[:url] = searchgasm_url(searchgasm_url_hash(:per_page, per_page, options), options)
+            options[:url] = searchgasm_params(:per_page, options.merge(:value => per_page))
             options
           end
           
           def add_page_link_defaults!(page, options = {})
-            add_searchgasm_helper_defaults!(:page, options)
+            add_searchgasm_control_defaults!(:page, options)
             options[:text] ||= page.to_s
-            options[:url] = searchgasm_url(searchgasm_url_hash(:page, page, options), options)
+            options[:url] = searchgasm_params(:page, options.merge(:value => page))
             options
           end
           
