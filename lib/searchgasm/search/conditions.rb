@@ -9,6 +9,7 @@ module Searchgasm
         klass.class_eval do
           alias_method_chain :initialize, :conditions
           alias_method_chain :conditions=, :conditions
+          alias_method_chain :conditions, :conditions
           alias_method_chain :joins, :conditions
           alias_method_chain :sanitize, :conditions
         end
@@ -33,6 +34,7 @@ module Searchgasm
       # now you can create the rest of your search and your "scope" will get merged into your final SQL.
       # What this does is determine if the value a hash or a conditions object, if not it sets it up as a scope.
       def conditions_with_conditions=(values)
+        @memoized_joins = nil
         case values
         when Searchgasm::Conditions::Base
           @conditions = values
@@ -41,12 +43,17 @@ module Searchgasm
         end
       end
       
+      def conditions_with_conditions
+        @memoized_joins = nil # have to assume they are calling a condition on a relationship
+        conditions_without_conditions
+      end
+      
       # Tells searchgasm what relationships to join during the search. This is based on what conditions you set.
       #
       # <b>Be careful!</b>
       # ActiveRecord associations can be an SQL train wreck. Make sure you think about what you are searching and that you aren't joining a table with a million records.
       def joins_with_conditions
-        merge_joins(joins_without_conditions, conditions.joins)
+        @memoized_joins ||= merge_joins(joins_without_conditions, conditions.joins)
       end
       
       def sanitize_with_conditions(searching = true) # :nodoc:

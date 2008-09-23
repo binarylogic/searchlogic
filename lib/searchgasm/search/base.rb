@@ -55,19 +55,25 @@ module Searchgasm #:nodoc:
       # Makes using searchgasm in the console less annoying and keeps the output meaningful and useful
       def inspect
         current_find_options = {}
-        AR_OPTIONS.each do |option|
+        (AR_OPTIONS - [:conditions]).each do |option|
           value = send(option)
           next if value.nil?
           current_find_options[option] = value
         end
+        conditions_value = conditions.conditions
+        current_find_options[:conditions] = conditions_value unless conditions_value.blank?
         current_find_options[:scope] = scope unless scope.blank?
         "#<#{klass}Search #{current_find_options.inspect}>"
       end
       
-      # need to remote any duplicate joins that are specified in includes
-      #def joins
-      #  # If includes are specified, remove the joins
-      #end
+      def joins=(value)
+        @memoized_joins = nil
+        @joins = value
+      end
+      
+      def joins
+        @memoized_joins ||= @joins
+      end
       
       def limit=(value)
         @set_limit = true
@@ -104,6 +110,8 @@ module Searchgasm #:nodoc:
           next if value.blank?
           find_options[find_option] = value
         end
+        
+        # Need to make sure we didn't create any joins that conflict with includes
 
         unless find_options[:joins].blank?
           # The following is to return uniq records since we are using joins instead of includes

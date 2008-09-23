@@ -200,4 +200,9 @@ class TestConditionsBase < Test::Unit::TestCase
     conditions.created_after = ""
     assert_equal({:name_equals => ""}, conditions.conditions)
   end
+  
+  def test_inspect
+    conditions = Account.new_conditions
+    assert_nothing_raised { conditions.inspect }
+  end
 end

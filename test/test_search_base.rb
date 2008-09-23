@@ -211,4 +211,16 @@ class TestSearchBase < Test::Unit::TestCase
   def test_method_creation_in_scope
     # test ot make sure methods are not created across the board for all models
   end
+  
+  def test_specifying_includes
+    search = Account.new_search
+    search.include = :users
+    search.conditions.users.first_name_like = "Ben"
+    assert_nothing_raised { search.all }
+  end
+  
+  def test_inspect
+    search = Account.new_search
+    assert_nothing_raised { search.inspect }
+  end
 end

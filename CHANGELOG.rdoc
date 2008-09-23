@@ -2,6 +2,8 @@
 
 * Setting a condition to nil removes it if the condition is set to ignore blanks
 * Setting search.conditions = "some sql" will reset ALL conditions. Alternatively search.conditions => {:first_name_contains => "Ben"} will overwrite "some sql". The same goes with search.conditions.first_name_contains = "Ben".
+* Fixed bug with inspect
+* Other small performance enhancements with memoized attributes
 
 == 1.1.2 released 2008-09-22
 

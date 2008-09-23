@@ -116,9 +116,7 @@ module Searchgasm
       end
       
       def inspect
-        conditions_hash = conditions
-        conditions_hash[:protected] = true if protected?
-        conditions_hash.inspect
+        "#<#{klass}Conditions#{conditions.blank? ? "" : " #{conditions.inspect}"}>"
       end
       
       # Sanitizes the conditions down into conditions that ActiveRecord::Base.find can understand.

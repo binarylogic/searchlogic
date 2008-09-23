@@ -24,13 +24,14 @@ module Searchgasm
       end
       
       def joins_with_ordering # :nodoc:
-        merge_joins(joins_without_ordering, order_by_joins)
+        @memoized_joins ||= merge_joins(joins_without_ordering, order_by_joins)
       end
       
       def order_with_ordering=(value) # :nodoc
         @order_by = nil
         @order_as = nil
         self.order_by_joins.clear
+        @memoized_joins = nil
         self.order_without_ordering = value
       end
       
@@ -101,6 +102,7 @@ module Searchgasm
       #   order_by = [:id, {:user_group => :name}] # => users.id ASC, user_groups.name ASC
       def order_by=(value)  
         self.order_by_joins.clear
+        @memoized_joins = nil
         @order_by = get_order_by_value(value)
         @order = order_by_to_order(@order_by, order_as)
         @order_by
