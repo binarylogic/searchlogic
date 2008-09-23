@@ -13,7 +13,7 @@ module Searchgasm #:nodoc:
       AR_FIND_OPTIONS = ::ActiveRecord::Base.valid_find_options
       
       # Options ActiveRecord allows when performing calculations
-      AR_CALCULATIONS_OPTIONS = ::ActiveRecord::Base.valid_calculations_options
+      AR_CALCULATIONS_OPTIONS = (::ActiveRecord::Base.valid_calculations_options - [:select, :limit, :offset, :order, :group])
       
       AR_OPTIONS = (AR_FIND_OPTIONS + AR_CALCULATIONS_OPTIONS).uniq
       
@@ -64,6 +64,11 @@ module Searchgasm #:nodoc:
         "#<#{klass}Search #{current_find_options.inspect}>"
       end
       
+      # need to remote any duplicate joins that are specified in includes
+      #def joins
+      #  # If includes are specified, remove the joins
+      #end
+      
       def limit=(value)
         @set_limit = true
         @limit = value.blank? || value == 0 ? nil : value.to_i
@@ -77,7 +82,7 @@ module Searchgasm #:nodoc:
       def offset=(value)
         @offset = value.blank? ? nil : value.to_i
       end
-      
+
       def options=(values)
         return unless values.is_a?(Hash)
         values.symbolize_keys.fast_assert_valid_keys(OPTIONS)
@@ -93,11 +98,24 @@ module Searchgasm #:nodoc:
       # Sanitizes everything down into options ActiveRecord::Base.find can understand
       def sanitize(searching = true)
         find_options = {}
+        
         (searching ? AR_FIND_OPTIONS : AR_CALCULATIONS_OPTIONS).each do |find_option|
           value = send(find_option)
           next if value.blank?
           find_options[find_option] = value
         end
+
+        unless find_options[:joins].blank?
+          # The following is to return uniq records since we are using joins instead of includes
+          if searching
+            find_options[:group] ||= "#{quote_table_name(klass.table_name)}.#{quote_column_name(klass.primary_key)}"
+          else
+            # If we are calculating use includes because they use joins that grab uniq records. When calculating, includes don't have the
+            # performance hit that they have when searching. Plus it's cleaner.
+            find_options[:include] = merge_joins(find_options[:include], find_options.delete(:joins))
+          end
+        end
+
         find_options
       end
       

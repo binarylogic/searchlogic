@@ -27,6 +27,24 @@ module Searchgasm
         
           [conditions_str, *conditions_subs]
         end
+        
+        def merge_joins(*joins)
+          joins.delete_if { |join| join.blank? }
+          return if joins.blank?
+          return joins.first if joins.size == 1
+          
+          new_joins = []
+          joins.each do |join|
+            case join
+            when Array
+              new_joins += join
+            else
+              new_joins << join
+            end
+          end
+          
+          new_joins.compact.uniq
+        end
     end
   end
 end

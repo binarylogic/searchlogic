@@ -1,4 +1,10 @@
-== 1.1.2 released 2008-09-19
+== 1.1.2 released 2008-09-22
+
+* Fixed bug with select control types not using :search_obj to determine its select values.
+* Added is_nil and is_blank condition types.
+* "memoized" various attributes for performance enhancements
+* Removed the :order option from calculation options when :order is useless and just slows down query.
+* Switched from using :include to :joins, big performance increase
 
 == 1.1.1 released 2008-09-19
 

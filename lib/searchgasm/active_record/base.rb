@@ -1,4 +1,8 @@
 module Searchgasm
+  # == Searchgasm ActiveRecord
+  #
+  # Hooks into ActiveRecord to add all of the searchgasm functionality into your models. Only uses what is publically available, doesn't dig into internals, and
+  # searchgasm only gets involved when needed.
   module ActiveRecord
     # = Searchgasm ActiveRecord Base
     # Adds in base level functionality to ActiveRecord
@@ -6,7 +10,7 @@ module Searchgasm
       # This is an alias method chain. It hook into ActiveRecord's "calculate" method and checks to see if Searchgasm should get involved.
       def calculate_with_searchgasm(*args)
         options = args.extract_options!
-        options = filter_options_with_searchgasm(options)
+        options = filter_options_with_searchgasm(options, false)
         args << options
         calculate_without_searchgasm(*args)
       end
@@ -124,7 +128,7 @@ module Searchgasm
       end
     
       private
-        def filter_options_with_searchgasm(options = {})
+        def filter_options_with_searchgasm(options = {}, searching = true)
           return options unless Searchgasm::Search::Base.needed?(self, options)
           search = Searchgasm::Search::Base.create_virtual_class(self).new # call explicitly to avoid merging the scopes into the searcher
           search.acting_as_filter = true
@@ -138,32 +142,31 @@ module Searchgasm
             end
           end
           search.options = options
-          search.sanitize
+          search.sanitize(searching)
         end
       
         def searchgasm_conditions(options = {})
-          searcher = nil
-          conditions = nil
-          conditions = options.delete(:conditions) if options[:conditions].is_a?(Hash)
-          
-          with_scope(:find => {:conditions => options[:conditions]}) do
-            searcher = Searchgasm::Conditions::Base.create_virtual_class(self).new(scope(:find)[:conditions])
-            searcher.conditions = conditions unless conditions.nil?
-          end
-          
+          searcher = Searchgasm::Conditions::Base.create_virtual_class(self).new
+          conditions = scope(:find) && scope(:find)[:conditions]
+          searcher.scope = {:conditions => conditions} if conditions
+          searcher.conditions = options
           searcher
         end
       
         def searchgasm_searcher(options = {})
-          searcher = nil
-          conditions = nil
-          conditions = options.delete(:conditions) if options[:conditions].is_a?(Hash)
-          
-          with_scope(:find => options) do
-            searcher = Searchgasm::Search::Base.create_virtual_class(self).new(scope(:find))
-            searcher.conditions = conditions unless conditions.nil?
+          scope = {}
+          current_scope = scope(:find) && scope(:find).deep_dup
+          if current_scope
+            [:conditions, :include, :joins].each do |option|
+              value = current_scope.delete(option)
+              next if value.blank?
+              scope[option] = value
+            end
           end
-          
+          searcher = Searchgasm::Search::Base.create_virtual_class(self).new
+          searcher.scope = scope
+          searcher.options = current_scope
+          searcher.options = options
           searcher
         end
     end

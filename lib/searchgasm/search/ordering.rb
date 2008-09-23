@@ -18,18 +18,19 @@ module Searchgasm
     module Ordering
       def self.included(klass)
         klass.class_eval do
-          alias_method_chain :include, :ordering
+          alias_method_chain :joins, :ordering
           alias_method_chain :order=, :ordering
         end
       end
       
-      def include_with_ordering # :nodoc:
-        includes = [include_without_ordering, order_by_includes].flatten.compact.uniq
-        includes.blank? ? nil : (includes.size == 1 ? includes.first : includes)
+      def joins_with_ordering # :nodoc:
+        merge_joins(joins_without_ordering, order_by_joins)
       end
       
       def order_with_ordering=(value) # :nodoc
         @order_by = nil
+        @order_as = nil
+        self.order_by_joins.clear
         self.order_without_ordering = value
       end
       
@@ -45,8 +46,7 @@ module Searchgasm
       
       # Determines how the search is being ordered: as DESC or ASC
       def order_as
-        return "ASC" if order.blank?
-        order =~ /ASC$/i ? "ASC" : "DESC"
+        @order_as ||= (order.blank? || order =~ /ASC$/i) ? "ASC" : "DESC"
       end
       
       # Sets how the results will be ordered: ASC or DESC
@@ -55,12 +55,12 @@ module Searchgasm
         raise(ArgumentError, "order_as only accepts a string as ASC or DESC") unless ["ASC", "DESC"].include?(value)
         
         if order.blank?
-          self.order = order_by_to_order(order_by, value)
+          @order = order_by_to_order(order_by, value)
         else
-          self.order.gsub!(/(ASC|DESC)/i, value)
+          @order.gsub!(/(ASC|DESC)/i, value)
         end
         
-        value
+        @order_as = value
       end
       
       # Determines by what columns the search is being ordered. This is nifty in that is reverse engineers the order SQL to determine this, only
@@ -84,9 +84,9 @@ module Searchgasm
               part
             end
           end.compact
-          order_parts.size <= 1 ? order_parts.first : order_parts
+          @order_by = order_parts.size <= 1 ? order_parts.first : order_parts
         else
-          klass.primary_key
+          @order_by = klass.primary_key
         end
       end
       
@@ -99,22 +99,23 @@ module Searchgasm
       #   order_by = :id # => users.id ASC
       #   order_by = [:id, name] # => users.id ASC, user.name ASC
       #   order_by = [:id, {:user_group => :name}] # => users.id ASC, user_groups.name ASC
-      def order_by=(value)        
+      def order_by=(value)  
+        self.order_by_joins.clear
         @order_by = get_order_by_value(value)
-        @order = order_by_to_order(@order_by, order_as) # use @order so @order_by doesnt get reset
+        @order = order_by_to_order(@order_by, order_as)
         @order_by
       end
       
-      # Returns the includes neccessary for the "order" statement so that we don't get an SQL error
-      def order_by_includes
-        @order_by_includes ||= []
-        @order_by_includes.compact!
-        @order_by_includes.uniq!
-        @order_by_includes
+      # Returns the joins neccessary for the "order" statement so that we don't get an SQL error
+      def order_by_joins
+        @order_by_joins ||= []
+        @order_by_joins.compact!
+        @order_by_joins.uniq!
+        @order_by_joins
       end
       
       private
-        def order_by_to_order(order_by, order_as, alt_klass = nil, new_includes = [])
+        def order_by_to_order(order_by, order_as, alt_klass = nil, new_joins = [])
           k = alt_klass || klass
           table_name = k.table_name
           sql_parts = []
@@ -127,23 +128,23 @@ module Searchgasm
             key = order_by.keys.first
             reflection = k.reflect_on_association(key.to_sym)
             value = order_by.values.first
-            new_includes << key.to_sym
-            sql_parts << order_by_to_order(value, order_as, reflection.klass, new_includes) # using eval, better performance, protection makes sure nothing fishy goes on here
+            new_joins << key.to_sym
+            sql_parts << order_by_to_order(value, order_as, reflection.klass, new_joins)
           when Symbol, String
-            new_include = build_order_by_includes(new_includes)
-            self.order_by_includes << new_include if new_include
+            new_join = build_order_by_joins(new_joins)
+            self.order_by_joins << new_join if new_join
             sql_parts << "#{quote_table_name(table_name)}.#{quote_column_name(order_by)} #{order_as}"
           end
           
           sql_parts.join(", ")
         end
         
-        def build_order_by_includes(includes)
-          return includes.first if includes.size <= 1
-          includes = includes.dup
+        def build_order_by_joins(joins)
+          return joins.first if joins.size <= 1
+          joins = joins.dup
           
-          key = includes.shift
-          {key => build_order_by_includes(includes)}
+          key = joins.shift
+          {key => build_order_by_joins(joins)}
         end
         
         def get_order_by_value(value)

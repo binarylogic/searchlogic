@@ -9,6 +9,9 @@ module Searchgasm
       
       attr_accessor :column, :klass
       attr_reader :value
+      class_inheritable_accessor :ignore_blanks, :type_cast_value
+      self.ignore_blanks = true
+      self.type_cast_value = true
     
       class << self
         # Name of the condition inferred from the class name
@@ -25,6 +28,14 @@ module Searchgasm
         # Alias methods for the column condition.
         def aliases_for_column(column)
           []
+        end
+        
+        def ignore_blanks? # :nodoc:
+          ignore_blanks == true
+        end
+        
+        def type_cast_value? # :nodoc:
+          type_cast_value == true
         end
         
         # Sane as name_for_column but for the class as a whole. For example the tree methods apply to the class as a whole and not
@@ -62,11 +73,6 @@ module Searchgasm
       # Need this if someone wants to actually use nil in a meaningful way
       def explicitly_set_value?
         @explicitly_set_value == true
-      end
-      
-      # In most cases a blank value should be ignored, except for conditions like equals. A blank value is meaningful there, but a blank value for they keyswords condition is not.
-      def ignore_blanks?
-        true
       end
       
       # A convenience method for the name of the method for that specific column or klass
@@ -110,15 +116,20 @@ module Searchgasm
           to_conditions(v)
         end
       end
+      
+      # Should the value be automatically type casted
+      def type_cast_value?
+        true
+      end
     
       # The value for the condition
       def value
-        @value.is_a?(String) ? column.type_cast(@value) : @value
+        self.class.type_cast_value? && @value.is_a?(String) ? column.type_cast(@value) : @value
       end
     
       # Sets the value for the condition, will ignore place if ignore_blanks?
       def value=(v)
-        return if ignore_blanks? && v.blank?
+        return if self.class.ignore_blanks? && v.blank?
         self.explicitly_set_value = true
         @value = v
       end

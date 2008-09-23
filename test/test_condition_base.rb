@@ -49,10 +49,10 @@ class TestConditionBase < Test::Unit::TestCase
   
   def test_ignore_blanks?
     condition = Searchgasm::Condition::Equals.new(Account, Account.columns_hash["id"])
-    assert !condition.ignore_blanks?
+    assert !condition.class.ignore_blanks?
     
     condition = Searchgasm::Condition::Keywords.new(Account, Account.columns_hash["name"])
-    assert condition.ignore_blanks?
+    assert condition.class.ignore_blanks?
   end
   
   def test_value

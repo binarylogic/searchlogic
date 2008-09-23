@@ -9,30 +9,32 @@ module Searchgasm
       SEARCH_METHODS = [:all, :find, :first]
       CALCULATION_METHODS = [:average, :calculate, :count, :maximum, :minimum, :sum]
       
-      # Setup methods for searching
-      SEARCH_METHODS.each do |method|
-        class_eval <<-"end_eval", __FILE__, __LINE__
-          def #{method}(*args)
-            options = args.extract_options!
-            klass.send(:with_scope, :find => options) do
-              args << (self.class < Searchgasm::Conditions::Base ? {:conditions => sanitize} : sanitize)
-              klass.#{method}(*args)
-            end
-          end
-        end_eval
+      def self.included(klass)
+        klass.class_eval do
+          attr_accessor :scope
+        end
       end
-
-      # Setup methods for calculating
-      CALCULATION_METHODS.each do |method|
+      
+      (SEARCH_METHODS + CALCULATION_METHODS).each do |method|
         class_eval <<-"end_eval", __FILE__, __LINE__
           def #{method}(*args)
+            find_options = {}
             options = args.extract_options!
-            klass.send(:with_scope, :find => options) do
-              find_options = (self.class < Searchgasm::Conditions::Base ? {:conditions => sanitize} : sanitize(false))
-              [:select, :limit, :offset].each { |option| find_options.delete(option) }
-              args << find_options
-              klass.#{method}(*args)
+            with_scopes = [scope, (self.class < Searchgasm::Conditions::Base ? {:conditions => sanitize} : sanitize(#{SEARCH_METHODS.include?(method)})), options].compact
+            with_scopes.each do |with_scope|
+              klass.send(:with_scope, :find => find_options) do
+                klass.send(:with_scope, :find => with_scope) do
+                  find_options = klass.send(:scope, :find)
+                end
+              end
             end
+            
+            if self.class < Searchgasm::Search::Base
+              (find_options.symbolize_keys.keys - #{SEARCH_METHODS.include?(method) ? "Search::Base::AR_FIND_OPTIONS" : "Search::Base::AR_CALCULATIONS_OPTIONS"}).each { |option| find_options.delete(option) }
+            end
+            
+            args << find_options
+            klass.#{method}(*args)
           end
         end_eval
       end

@@ -14,7 +14,8 @@ module Searchgasm
         end
         
         def searchgasm_url(url_hash, options)
-          options[:params_scope].blank? ? url_hash : {options[:params_scope] => url_hash}
+          url = options[:params_scope].blank? ? url_hash : {options[:params_scope] => url_hash}
+          !options[:url_params].is_a?(Hash) ? url : url.merge(options[:url_params])
         end
         
         def searchgasm_url_hash(option, value, options)

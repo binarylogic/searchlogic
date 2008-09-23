@@ -9,7 +9,7 @@ module Searchgasm
         klass.class_eval do
           alias_method_chain :initialize, :conditions
           alias_method_chain :conditions=, :conditions
-          alias_method_chain :include, :conditions
+          alias_method_chain :joins, :conditions
           alias_method_chain :sanitize, :conditions
         end
       end
@@ -33,7 +33,6 @@ module Searchgasm
       # now you can create the rest of your search and your "scope" will get merged into your final SQL.
       # What this does is determine if the value a hash or a conditions object, if not it sets it up as a scope.
       def conditions_with_conditions=(values)
-        
         case values
         when Searchgasm::Conditions::Base
           @conditions = values
@@ -42,13 +41,12 @@ module Searchgasm
         end
       end
       
-      # Tells searchgasm was relationships to include during the search. This is based on what conditions you set.
+      # Tells searchgasm what relationships to join during the search. This is based on what conditions you set.
       #
       # <b>Be careful!</b>
       # ActiveRecord associations can be an SQL train wreck. Make sure you think about what you are searching and that you aren't joining a table with a million records.
-      def include_with_conditions
-        includes = [include_without_conditions, conditions.includes].flatten.compact.uniq
-        includes.blank? ? nil : (includes.size == 1 ? includes.first : includes)
+      def joins_with_conditions
+        merge_joins(joins_without_conditions, conditions.joins)
       end
       
       def sanitize_with_conditions(searching = true) # :nodoc:
@@ -58,14 +56,6 @@ module Searchgasm
           find_options[:conditions] = new_conditions unless new_conditions.blank?
         end
         find_options
-      end
-      
-      def scope # :nodoc:
-        conditions.scope
-      end
-      
-      def scope=(value) # :nodoc:
-        conditions.scope = value
       end
     end
   end

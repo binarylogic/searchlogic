@@ -15,38 +15,46 @@ module Searchgasm
       
       def limit_with_pagination=(value) # :nodoc:
         r_value = self.limit_without_pagination = value
-        self.page = @page unless @page.nil? # retry page now that the limit has changed
+        @page_count = nil
+        if @set_page
+          self.page = (@queued_page || @page) # retry setting page
+        else
+          @page = nil # the memoized page is invalid, so reset it
+        end
         r_value
       end
       
       def offset_with_pagination=(value) #:nodoc
         r_value = self.offset_without_pagination = value
-        @page = nil
+        @set_page = @queued_page = @page = nil
         r_value
       end
       
       # The current page that the search is on
       def page
-        return 1 if offset.blank? || limit.blank?
-        (offset.to_f / limit).floor + 1
+        @page ||= (offset.blank? || limit.blank?) ? 1 : (offset.to_f / limit).floor + 1
       end
       alias_method :current_page, :page
       
       # Lets you change the page for the next search
       def page=(value)
-        # Have to use @offset, since self.offset= resets @page
+        @set_page = true
+        
         if value.blank?
           value = nil
           @page = value
-          return @offset = value
+          return @offset = @page
         end
         
         v = value.to_i
-        @page = v
         
         if limit.blank?
+          @queued_page = v
+          @page = 1
           @offset = nil
         else
+          @queued_page = nil
+          @page = v
           v -= 1 unless v == 0
           @offset = v * limit
         end
@@ -55,9 +63,7 @@ module Searchgasm
       
       # The total number of pages in your next search
       def page_count
-        return 1 if per_page.blank? || per_page <= 0
-        # Letting AR caching kick in with the count query
-        (count / per_page.to_f).ceil
+        @page_count ||= (per_page.blank? || per_page <= 0) ? 1 : (count / per_page.to_f).ceil
       end
       alias_method :page_total, :page_count
       

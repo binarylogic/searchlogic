@@ -8,25 +8,25 @@ module Searchgasm
         # Please see order_by_links. All options are the same and applicable here. The only difference is that instead of a group of links, this gets returned as a select form element that will perform the same function when the value is changed.
         def order_by_select(options = {})
           add_order_by_select_defaults!(options)
-          searchgasm_state_for(:order_by, options) + select(options[:params_scope], :order_by, options[:choices], options[:tag] || {}, options[:html] || {})
+          searchgasm_state_for(:order_by, options) + select(options[:params_scope], :order_by, options[:choices], options[:tag], options[:html] || {})
         end
         
         # Please see order_as_links. All options are the same and applicable here. The only difference is that instead of a group of links, this gets returned as a select form element that will perform the same function when the value is changed.
         def order_as_select(options = {})
           add_order_by_select_defaults!(options)
-          searchgasm_state_for(:order_as, options) + select(options[:params_scope], :order_as, options[:choices], options[:tag] || {}, options[:html])
+          searchgasm_state_for(:order_as, options) + select(options[:params_scope], :order_as, options[:choices], options[:tag], options[:html])
         end
         
         # Please see per_page_links. All options are the same and applicable here. The only difference is that instead of a group of links, this gets returned as a select form element that will perform the same function when the value is changed.
         def per_page_select(options = {})
           add_per_page_select_defaults!(options)
-          searchgasm_state_for(:per_page, options) + select(options[:params_scope], :per_page, options[:choices], options[:tag] || {}, options[:html])
+          searchgasm_state_for(:per_page, options) + select(options[:params_scope], :per_page, options[:choices], options[:tag], options[:html])
         end
         
         # Please see page_links. All options are the same and applicable here, excep the :prev, :next, :first, and :last options. The only difference is that instead of a group of links, this gets returned as a select form element that will perform the same function when the value is changed.
         def page_select(options = {})
           add_page_select_defaults!(options)
-          searchgasm_state_for(:page, options) + select(options[:params_scope], :page, (options[:first_page]..options[:last_page]), options[:tag] || {}, options[:html])
+          searchgasm_state_for(:page, options) + select(options[:params_scope], :page, (options[:first_page]..options[:last_page]), options[:tag], options[:html])
         end
         
         private
@@ -56,6 +56,9 @@ module Searchgasm
           end
           
           def add_searchgasm_select_defaults!(option, options)
+            options[:tag] ||= {}
+            options[:tag][:object] = options[:search_obj]
+            
             url = searchgasm_url_hash(option, nil, options)
             url.delete(option)
             url = searchgasm_url(url, options)

@@ -5,9 +5,9 @@ module Searchgasm
     # Represents a collection of conditions and performs various tasks on that collection. For information on each condition see Searchgasm::Condition.
     # Each condition has its own file and class and the source for each condition is pretty self explanatory.
     class Base
-      include Searchgasm::Shared::Utilities
-      include Searchgasm::Shared::Searching
-      include Searchgasm::Shared::VirtualClasses
+      include Shared::Utilities
+      include Shared::Searching
+      include Shared::VirtualClasses
       
       attr_accessor :any, :relationship_name, :sql
       
@@ -104,15 +104,15 @@ module Searchgasm
         @any == true || @any == "true" || @any == "1" || @any == "yes"
       end
       
-      # A list of includes to use when searching, includes relationships
-      def includes
-        i = []
+      # A list of joins to use when searching, includes relationships
+      def joins
+        j = []
         associations.each do |association|
           next if association.conditions.blank?
-          association_includes = association.includes
-          i << (association_includes.blank? ? association.relationship_name.to_sym : {association.relationship_name.to_sym => association_includes})
+          association_joins = association.joins
+          j << (association_joins.blank? ? association.relationship_name.to_sym : {association.relationship_name.to_sym => association_joins})
         end
-        i.blank? ? nil : (i.size == 1 ? i.first : i)
+        j.blank? ? nil : (j.size == 1 ? j.first : j)
       end
       
       def inspect

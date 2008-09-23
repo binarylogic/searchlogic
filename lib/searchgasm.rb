@@ -39,6 +39,8 @@ require "searchgasm/condition/ends_with"
 require "searchgasm/condition/equals"
 require "searchgasm/condition/greater_than"
 require "searchgasm/condition/greater_than_or_equal_to"
+require "searchgasm/condition/is_blank"
+require "searchgasm/condition/is_nil"
 require "searchgasm/condition/keywords"
 require "searchgasm/condition/less_than"
 require "searchgasm/condition/less_than_or_equal_to"
@@ -74,7 +76,7 @@ module Searchgasm
       include Protection
     end
     
-    [:begins_with, :child_of, :contains, :descendant_of, :does_not_equal, :ends_with, :equals, :greater_than, :greater_than_or_equal_to, :inclusive_descendant_of, :keywords, :less_than, :less_than_or_equal_to, :sibling_of].each do |condition|
+    [:begins_with, :child_of, :contains, :descendant_of, :does_not_equal, :ends_with, :equals, :greater_than, :greater_than_or_equal_to, :inclusive_descendant_of, :is_blank, :is_nil, :keywords, :less_than, :less_than_or_equal_to, :sibling_of].each do |condition|
       Base.register_condition("Searchgasm::Condition::#{condition.to_s.camelize}".constantize)
     end
   end

@@ -128,7 +128,7 @@ module Searchgasm
       end
       
       def per_page # :nodoc:
-        @per_page ||= per_page_choices[2]
+        @per_page ||= per_page_choices[1]
       end
       
       # The default for per page. This is only applicaple for protected searches. Meaning you start the search with new_search or new_conditions.

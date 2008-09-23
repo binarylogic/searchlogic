@@ -71,18 +71,18 @@ class TestConditionsBase < Test::Unit::TestCase
     assert_equal conditions.users.last_name_begins_with, "Ben"
   end
   
-  def test_includes
+  def test_joins
     conditions = Account.new_conditions
-    assert_equal conditions.includes, nil
+    assert_equal conditions.joins, nil
     
     conditions.name_like = "Binary"
-    assert_equal conditions.includes, nil
+    assert_equal conditions.joins, nil
     
     conditions.users.first_name_like = "Ben"
-    assert_equal conditions.includes, :users
+    assert_equal conditions.joins, :users
     
     conditions.users.orders.description_like = "apple"
-    assert_equal conditions.includes, {:users => :orders} 
+    assert_equal conditions.joins, {:users => :orders} 
   end
   
   def test_objects

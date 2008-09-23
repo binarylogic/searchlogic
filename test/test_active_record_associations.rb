@@ -16,10 +16,10 @@ class TestActiveRecordAssociations < Test::Unit::TestCase
     search = Account.find(1).users.build_search
     assert_kind_of Searchgasm::Search::Base, search
     assert_equal User, search.klass
-    assert_equal "\"users\".account_id = 1", search.conditions.sql
+    assert_equal({:conditions => "\"users\".account_id = 1"}, search.scope)
     
     search.conditions.first_name_contains = "Ben"
-    assert_equal({:conditions => ["(\"users\".\"first_name\" LIKE ?) AND (\"users\".account_id = 1)", "%Ben%"]}, search.sanitize)
+    assert_equal({:conditions => ["\"users\".\"first_name\" LIKE ?", "%Ben%"]}, search.sanitize)
   end
   
   def test_searching

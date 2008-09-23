@@ -109,20 +109,20 @@ class TestSearchBase < Test::Unit::TestCase
     assert_equal search.lock, true
   end
 
-  def test_include
+  def test_joins
     search = Account.new_search
-    assert_equal nil, search.include
+    assert_equal nil, search.joins
     search.conditions.name_contains = "Binary"
-    assert_equal nil, search.include
+    assert_equal nil, search.joins
     search.conditions.users.first_name_contains = "Ben"
-    assert_equal(:users, search.include)
+    assert_equal(:users, search.joins)
     search.conditions.users.orders.id_gt = 2
-    assert_equal({:users => :orders}, search.include)
+    assert_equal({:users => :orders}, search.joins)
     search.conditions.users.reset_orders!
-    assert_equal(:users, search.include)
+    assert_equal(:users, search.joins)
     search.conditions.users.orders.id_gt = 2
     search.conditions.reset_users!
-    assert_equal nil, search.include
+    assert_equal nil, search.joins
   end
 
   def test_limit
@@ -151,7 +151,7 @@ class TestSearchBase < Test::Unit::TestCase
     search.conditions.users.id_greater_than = 2
     search.page = 3
     search.readonly = true
-    assert_equal({:include => :users, :offset => 4, :readonly => true, :conditions => ["(\"accounts\".\"name\" LIKE ?) AND (\"users\".\"id\" > ?)", "%Binary%", 2], :limit => 2 }, search.sanitize)
+    assert_equal({:joins => :users, :group => "\"accounts\".\"id\"", :offset => 4, :readonly => true, :conditions => ["(\"accounts\".\"name\" LIKE ?) AND (\"users\".\"id\" > ?)", "%Binary%", 2], :limit => 2 }, search.sanitize)
   end
 
   def test_scope

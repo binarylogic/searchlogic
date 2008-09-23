@@ -1,14 +1,12 @@
 module Searchgasm
   module Condition
     class Equals < Base
+      self.ignore_blanks = false
+      
       class << self
         def aliases_for_column(column)
           ["#{column.name}", "#{column.name}_is"]
         end
-      end
-      
-      def ignore_blanks?
-        false
       end
       
       def to_conditions(value)
