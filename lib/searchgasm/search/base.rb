@@ -110,8 +110,6 @@ module Searchgasm #:nodoc:
           next if value.blank?
           find_options[find_option] = value
         end
-        
-        # Need to make sure we didn't create any joins that conflict with includes
 
         unless find_options[:joins].blank?
           # The following is to return uniq records since we are using joins instead of includes

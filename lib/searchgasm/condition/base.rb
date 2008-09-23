@@ -63,6 +63,16 @@ module Searchgasm
         self.klass = klass
         self.column = column.is_a?(String) ? klass.columns_hash[column] : column
       end
+    
+      # Allows nils to be meaninful values
+      def explicitly_set_value=(value)
+        @explicitly_set_value = value
+      end
+    
+      # Need this if someone wants to actually use nil in a meaningful way
+      def explicitly_set_value?
+        @explicitly_set_value == true
+      end
       
       # A convenience method for the name of the method for that specific column or klass
       def name
@@ -96,6 +106,7 @@ module Searchgasm
       
       # You should refrain from overwriting this method, it performs various tasks before callign your to_conditions method, allowing you to keep to_conditions simple.
       def sanitize(alt_value = nil) # :nodoc:
+        return unless explicitly_set_value?
         v = alt_value || value
         if v.is_a?(Array) && !["equals", "does_not_equal"].include?(condition_name)
           merge_conditions(*v.collect { |i| sanitize(i) })
@@ -112,6 +123,7 @@ module Searchgasm
     
       # Sets the value for the condition
       def value=(v)
+        self.explicitly_set_value = true
         @value = v
       end
     end

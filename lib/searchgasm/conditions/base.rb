@@ -152,6 +152,7 @@ module Searchgasm
             next if relationship_conditions.blank?
             conditions_hash[object.relationship_name.to_sym] = relationship_conditions
           else
+            next unless object.explicitly_set_value?
             conditions_hash[object.name.to_sym] = object.value
           end
         end
