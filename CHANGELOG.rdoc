@@ -1,9 +1,11 @@
-== 1.1.4 released 2008-09-24
+== 1.2.0 released 2008-09-24
 
 * Added searchgasm_params and searchgasm_url helper to use outside of the control type helpers.
 * Added dup and clone methods that work properly for searchgasm objects
 * Fixed bug to remove nil scope values, HABTM likes to add :limit => nil
 * Removed unnecessary build_search methods for associations
+* Removed support for searching with conditions only. This just made things much more complicated when you can accomplish the same thing by starting a new search and only setting conditions.
+* Fixed bug when searching with *any* conditions to use left outer joins instead of inner joins.
 
 == 1.1.3 released 2008-09-23
 

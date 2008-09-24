@@ -6,7 +6,6 @@ module Searchgasm
     # Each condition has its own file and class and the source for each condition is pretty self explanatory.
     class Base
       include Shared::Utilities
-      include Shared::Searching
       include Shared::VirtualClasses
       
       attr_accessor :any, :relationship_name
@@ -65,6 +64,8 @@ module Searchgasm
         end
         
         def needed?(model_class, conditions) # :nodoc:
+          return false if conditions.blank?
+          
           if conditions.is_a?(Hash)
             return true if conditions[:any]
             column_names = model_class.column_names
@@ -105,11 +106,11 @@ module Searchgasm
       end
       
       # A list of joins to use when searching, includes relationships
-      def joins
+      def auto_joins
         j = []
         associations.each do |association|
           next if association.conditions.blank?
-          association_joins = association.joins
+          association_joins = association.auto_joins
           j << (association_joins.blank? ? association.relationship_name.to_sym : {association.relationship_name.to_sym => association_joins})
         end
         j.blank? ? nil : (j.size == 1 ? j.first : j)
@@ -262,7 +263,7 @@ module Searchgasm
         end
         
         def reset_objects!
-          objects.each { |object| eval("@#{object.name} = nil") }
+          objects.each { |object| object.class < ::Searchgasm::Conditions::Base ? eval("@#{object.relationship_name} = nil") : eval("@#{object.name} = nil") }
           objects.clear
         end
         

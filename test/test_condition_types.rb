@@ -1,17 +1,6 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
 class TestConditionTypes < Test::Unit::TestCase
-  fixtures :accounts, :users, :orders
-  
-  def setup
-    setup_db
-    load_fixtures
-  end
-  
-  def teardown
-    teardown_db
-  end
-
   def test_sanitize
     condition = Searchgasm::Condition::BeginsWith.new(Account, Account.columns_hash["name"])
     condition.value = "Binary"

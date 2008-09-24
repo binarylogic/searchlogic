@@ -18,20 +18,20 @@ module Searchgasm
     module Ordering
       def self.included(klass)
         klass.class_eval do
-          alias_method_chain :joins, :ordering
+          alias_method_chain :auto_joins, :ordering
           alias_method_chain :order=, :ordering
         end
       end
       
-      def joins_with_ordering # :nodoc:
-        @memoized_joins ||= merge_joins(joins_without_ordering, order_by_joins)
+      def auto_joins_with_ordering # :nodoc:
+        @memoized_auto_joins ||= merge_joins(auto_joins_without_ordering, order_by_auto_joins)
       end
       
       def order_with_ordering=(value) # :nodoc
         @order_by = nil
         @order_as = nil
-        self.order_by_joins.clear
-        @memoized_joins = nil
+        self.order_by_auto_joins.clear
+        @memoized_auto_joins = nil
         self.order_without_ordering = value
       end
       
@@ -101,19 +101,19 @@ module Searchgasm
       #   order_by = [:id, name] # => users.id ASC, user.name ASC
       #   order_by = [:id, {:user_group => :name}] # => users.id ASC, user_groups.name ASC
       def order_by=(value)  
-        self.order_by_joins.clear
-        @memoized_joins = nil
+        self.order_by_auto_joins.clear
+        @memoized_auto_joins = nil
         @order_by = get_order_by_value(value)
         @order = order_by_to_order(@order_by, order_as)
         @order_by
       end
       
       # Returns the joins neccessary for the "order" statement so that we don't get an SQL error
-      def order_by_joins
-        @order_by_joins ||= []
-        @order_by_joins.compact!
-        @order_by_joins.uniq!
-        @order_by_joins
+      def order_by_auto_joins
+        @order_by_auto_joins ||= []
+        @order_by_auto_joins.compact!
+        @order_by_auto_joins.uniq!
+        @order_by_auto_joins
       end
       
       private
@@ -133,20 +133,20 @@ module Searchgasm
             new_joins << key.to_sym
             sql_parts << order_by_to_order(value, order_as, reflection.klass, new_joins)
           when Symbol, String
-            new_join = build_order_by_joins(new_joins)
-            self.order_by_joins << new_join if new_join
+            new_join = build_order_by_auto_joins(new_joins)
+            self.order_by_auto_joins << new_join if new_join
             sql_parts << "#{quote_table_name(table_name)}.#{quote_column_name(order_by)} #{order_as}"
           end
           
           sql_parts.join(", ")
         end
         
-        def build_order_by_joins(joins)
+        def build_order_by_auto_joins(joins)
           return joins.first if joins.size <= 1
           joins = joins.dup
           
           key = joins.shift
-          {key => build_order_by_joins(joins)}
+          {key => build_order_by_auto_joins(joins)}
         end
         
         def get_order_by_value(value)

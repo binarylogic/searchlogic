@@ -11,6 +11,7 @@ module Searchgasm
       def calculate_with_searchgasm(*args)
         options = args.extract_options!
         options = filter_options_with_searchgasm(options, false)
+        args[1] = primary_key if options[:distinct] && [nil, :all].include?(args[1]) # quick fix for adding a column name if distinct is true and no specific column is provided
         args << options
         calculate_without_searchgasm(*args)
       end
@@ -47,30 +48,6 @@ module Searchgasm
         with_scope_without_searchgasm(method_scoping, action, &block)
       end
       
-      # This is a special method that Searchgasm adds in. It returns a new conditions object on the model. So you can search by conditions *only*.
-      #
-      # <b>This method is "protected". Meaning it checks the passed options for SQL injections. So trying to write raw SQL in *any* of the option will result in a raised exception. It's safe to pass a params object when instantiating.</b>
-      #
-      # === Examples
-      #
-      #   conditions = User.new_conditions
-      #   conditions.first_name_contains = "Ben"
-      #   conditions.all # can call any search method: first, find(:all), find(:first), sum("id"), etc...
-      def build_conditions(values = {}, &block)
-        conditions = searchgasm_conditions
-        conditions.protect = true
-        conditions.conditions = values
-        yield conditions if block_given?
-        conditions
-      end
-      
-      # See build_conditions. This is the same method but *without* protection. Do *NOT* pass in a params object to this method.
-      def build_conditions!(values = {}, &block)
-        conditions = searchgasm_conditions(values)
-        yield conditions if block_given?
-        conditions
-      end
-      
       # This is a special method that Searchgasm adds in. It returns a new search object on the model. So you can search via an object.
       #
       # <b>This method is "protected". Meaning it checks the passed options for SQL injections. So trying to write raw SQL in *any* of the option will result in a raised exception. It's safe to pass a params object when instantiating.</b>
@@ -86,7 +63,7 @@ module Searchgasm
       #   search.order_by = {:user_group => :name}
       #   search.all # can call any search method: first, find(:all), find(:first), sum("id"), etc...
       def build_search(options = {}, &block)
-        search = searchgasm_searcher
+        search = searchgasm_search
         search.protect = true
         search.options = options
         yield search if block_given?
@@ -97,7 +74,7 @@ module Searchgasm
       #
       # This also has an alias "new_search!"
       def build_search!(options = {}, &block)
-        search = searchgasm_searcher(options)
+        search = searchgasm_search(options)
         yield search if block_given?
         search
       end
@@ -120,7 +97,7 @@ module Searchgasm
       
       # This is the reverse of conditions_protected. You can specify conditions here and *only* these conditions will be allowed in mass assignment. Any condition not specified here will be blocked.
       def conditions_accessible(*conditions)
-        write_inheritable_attribute(:conditions_accessible, Set.new(conditions.map(&:to_s)) + (protected_conditions || []))
+        write_inheritable_attribute(:conditions_accessible, Set.new(conditions.map(&:to_s)) + (accessible_conditions || []))
       end
 
       def accessible_conditions # :nodoc:
@@ -130,7 +107,7 @@ module Searchgasm
       private
         def filter_options_with_searchgasm(options = {}, searching = true)
           return options unless Searchgasm::Search::Base.needed?(self, options)
-          search = Searchgasm::Search::Base.create_virtual_class(self).new # call explicitly to avoid merging the scopes into the searcher
+          search = Searchgasm::Search::Base.create_virtual_class(self).new # call explicitly to avoid merging the scopes into the search
           search.acting_as_filter = true
           conditions = options.delete(:conditions) || options.delete("conditions") || {}
           if conditions
@@ -145,15 +122,7 @@ module Searchgasm
           search.sanitize(searching)
         end
       
-        def searchgasm_conditions(options = {})
-          searcher = Searchgasm::Conditions::Base.create_virtual_class(self).new
-          conditions = scope(:find) && scope(:find)[:conditions]
-          searcher.scope = {:conditions => conditions} if conditions
-          searcher.conditions = options
-          searcher
-        end
-      
-        def searchgasm_searcher(options = {})
+        def searchgasm_search(options = {})
           scope = {}
           current_scope = scope(:find) && scope(:find).deep_dup
           if current_scope
@@ -168,11 +137,11 @@ module Searchgasm
             current_scope.each { |k, v| new_scope[k] = v unless v.nil? }
             current_scope = new_scope
           end
-          searcher = Searchgasm::Search::Base.create_virtual_class(self).new
-          searcher.scope = scope
-          searcher.options = current_scope
-          searcher.options = options
-          searcher
+          search = Searchgasm::Search::Base.create_virtual_class(self).new
+          search.scope = scope
+          search.options = current_scope
+          search.options = options
+          search
         end
     end
   end
@@ -186,8 +155,6 @@ module ActiveRecord #:nodoc: all
       alias_method_chain :calculate, :searchgasm
       alias_method_chain :find, :searchgasm
       alias_method_chain :with_scope, :searchgasm
-      alias_method :new_conditions, :build_conditions
-      alias_method :new_conditions!, :build_conditions!
       alias_method :new_search, :build_search
       alias_method :new_search!, :build_search!
       

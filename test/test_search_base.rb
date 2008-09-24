@@ -1,17 +1,6 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
 class TestSearchBase < Test::Unit::TestCase
-  fixtures :accounts, :users, :orders
-
-  def setup
-    setup_db
-    load_fixtures
-  end
-
-  def teardown
-    teardown_db
-  end
-
   def test_needed
     assert Searchgasm::Search::Base.needed?(Account, :page => 2, :conditions => {:name => "Ben"})
     assert !Searchgasm::Search::Base.needed?(Account, :conditions => {:name => "Ben"})
@@ -109,20 +98,20 @@ class TestSearchBase < Test::Unit::TestCase
     assert_equal search.lock, true
   end
 
-  def test_joins
+  def test_auto_joins
     search = Account.new_search
-    assert_equal nil, search.joins
+    assert_equal nil, search.auto_joins
     search.conditions.name_contains = "Binary"
-    assert_equal nil, search.joins
+    assert_equal nil, search.auto_joins
     search.conditions.users.first_name_contains = "Ben"
-    assert_equal(:users, search.joins)
+    assert_equal(:users, search.auto_joins)
     search.conditions.users.orders.id_gt = 2
-    assert_equal({:users => :orders}, search.joins)
+    assert_equal({:users => :orders}, search.auto_joins)
     search.conditions.users.reset_orders!
-    assert_equal(:users, search.joins)
+    assert_equal(:users, search.auto_joins)
     search.conditions.users.orders.id_gt = 2
     search.conditions.reset_users!
-    assert_equal nil, search.joins
+    assert_equal nil, search.auto_joins
   end
 
   def test_limit

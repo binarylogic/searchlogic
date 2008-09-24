@@ -177,19 +177,6 @@ Any of the options used in the above example can be used in these, but for the s
   search.conditions.first_name_contains = "Ben"
   search.per_page = 20
   search.all
-
-== Search with conditions only
-
-Don't need pagination, ordering, or any of the other options? Search with conditions only.
-
-  conditions = User.new_conditions(:age_gt => 18)
-  conditions.first_name_contains = "Ben"
-  conditions.all
-  # ... all operations above are available
-
-Pass a conditions object right into ActiveRecord:
-
-  User.all(:conditions => conditions)
   
 == Match ANY or ALL of the conditions
 
@@ -250,12 +237,11 @@ or
 
 == Always use protection...against SQL injections
 
-If there is one thing we all know, it's to always use protection against SQL injections. That's why searchgasm protects you by default. The new\_search and new\_conditions methods protect mass assignments by default (instantiation and search.options = {}). This means that various checks are done to ensure it is not possible to perform any type of SQL injection during mass assignments. But this also limits how you can search, meaning you can't write raw SQL. If you want to be daring and search without protection, all that you have to do is add ! to the end of the methods: new\_search! and new\_conditions!.
+If there is one thing we all know, it's to always use protection against SQL injections. That's why searchgasm protects you by default. The new\_search methods protect mass assignments by default (instantiation and search.options = {}). This means that various checks are done to ensure it is not possible to perform any type of SQL injection during mass assignments. But this also limits how you can search, meaning you can't write raw SQL. If you want to be daring and search without protection, all that you have to do is add ! to the end of the method: new\_search!.
 
 === Protected from SQL injections
 
   search = Account.new_search(params[:search])
-  conditions = Account.new_conditions(params[:conditions])
 
 === *NOT* protected from SQL injections
 
@@ -263,11 +249,10 @@ If there is one thing we all know, it's to always use protection against SQL inj
   accounts = Account.all(params[:search])
   account = Account.first(params[:search])
   search = Account.new_search!(params[:search])
-  conditions = Account.new_conditions!(params[:conditions])
 
 I'm sure you already knew this, but it's tempting to do this when you can pass the params hash right into these methods.
 
-Lesson learned: use new\_search and new\_conditions when passing in params as *ANY* of the options.
+Lesson learned: use new\_search when passing in params as *ANY* of the options.
 
 == Available Conditions
 

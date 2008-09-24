@@ -10,6 +10,7 @@ module Searchgasm
           alias_method_chain :initialize, :conditions
           alias_method_chain :conditions=, :conditions
           alias_method_chain :conditions, :conditions
+          alias_method_chain :auto_joins, :conditions
           alias_method_chain :joins, :conditions
           alias_method_chain :sanitize, :conditions
         end
@@ -34,7 +35,7 @@ module Searchgasm
       # now you can create the rest of your search and your "scope" will get merged into your final SQL.
       # What this does is determine if the value a hash or a conditions object, if not it sets it up as a scope.
       def conditions_with_conditions=(values)
-        @memoized_joins = nil
+        @memoized_auto_joins = nil
         case values
         when Searchgasm::Conditions::Base
           @conditions = values
@@ -44,7 +45,7 @@ module Searchgasm
       end
       
       def conditions_with_conditions
-        @memoized_joins = nil # have to assume they are calling a condition on a relationship
+        @memoized_auto_joins = nil # have to assume they are calling a condition on a relationship
         conditions_without_conditions
       end
       
@@ -52,8 +53,18 @@ module Searchgasm
       #
       # <b>Be careful!</b>
       # ActiveRecord associations can be an SQL train wreck. Make sure you think about what you are searching and that you aren't joining a table with a million records.
+      def auto_joins_with_conditions
+        @memoized_auto_joins ||= merge_joins(auto_joins_without_conditions, conditions.auto_joins)
+      end
+      
+      # Changes joins to use left outer joins if conditions.any == true.
       def joins_with_conditions
-        @memoized_joins ||= merge_joins(joins_without_conditions, conditions.joins)
+        if conditions.any?
+          join_dependency = ::ActiveRecord::Associations::ClassMethods::JoinDependency.new(klass, joins_without_conditions, nil)
+          join_dependency.join_associations.collect { |assoc| assoc.association_join }.join
+        else
+          joins_without_conditions
+        end
       end
       
       def sanitize_with_conditions(searching = true) # :nodoc:

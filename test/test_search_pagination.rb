@@ -1,17 +1,6 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
 class TestSearchPagination < Test::Unit::TestCase
-  fixtures :accounts, :users, :orders
-  
-  def setup
-    setup_db
-    load_fixtures
-  end
-  
-  def teardown
-    teardown_db
-  end
-  
   def test_limit
     search = Account.new_search
     search.limit = 10

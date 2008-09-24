@@ -1,1 +1,0 @@
-# need to test that setting config doesn't mess up regular searches, only protected ones, etc

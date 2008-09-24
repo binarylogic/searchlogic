@@ -3,10 +3,8 @@ module Searchgasm #:nodoc:
     # = Searchgasm
     #
     # Please refer the README.rdoc for usage, examples, and installation.
-    
     class Base
       include Searchgasm::Shared::Utilities
-      include Searchgasm::Shared::Searching
       include Searchgasm::Shared::VirtualClasses
       
       # Options ActiveRecord allows when searching
@@ -24,11 +22,14 @@ module Searchgasm #:nodoc:
       OPTIONS = SPECIAL_FIND_OPTIONS + AR_OPTIONS # the order is very important, these options get set in this order
       
       attr_accessor *AR_OPTIONS
+      attr_reader :auto_joins
       
       class << self
         # Used in the ActiveRecord methods to determine if Searchgasm should get involved or not.
         # This keeps Searchgasm out of the way unless it is needed.
         def needed?(model_class, options)
+          return false if options.blank?
+          
           SPECIAL_FIND_OPTIONS.each do |option|
             return true if options.symbolize_keys.keys.include?(option)
           end
@@ -78,13 +79,8 @@ module Searchgasm #:nodoc:
         "#<#{klass}Search #{current_find_options.inspect}>"
       end
       
-      def joins=(value)
-        @memoized_joins = nil
-        @joins = value
-      end
-      
       def joins
-        @memoized_joins ||= @joins
+        merge_joins(@joins, auto_joins)
       end
       
       def limit=(value)
@@ -128,9 +124,7 @@ module Searchgasm #:nodoc:
           if searching
             find_options[:group] ||= "#{quote_table_name(klass.table_name)}.#{quote_column_name(klass.primary_key)}"
           else
-            # If we are calculating use includes because they use joins that grab uniq records. When calculating, includes don't have the
-            # performance hit that they have when searching. Plus it's cleaner.
-            find_options[:include] = merge_joins(find_options[:include], find_options.delete(:joins))
+            find_options[:distinct] = true
           end
         end
 

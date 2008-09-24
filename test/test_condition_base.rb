@@ -1,29 +1,42 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
 class TestConditionBase < Test::Unit::TestCase
-  fixtures :accounts, :users, :orders
-  
-  def setup
-    setup_db
-    load_fixtures
-  end
-  
-  def teardown
-    teardown_db
-  end
-  
   def test_condition_name
     assert_equal "equals", Searchgasm::Condition::Equals.condition_name
     assert_equal "keywords", Searchgasm::Condition::Keywords.condition_name
     assert_equal "greater_than_or_equal_to", Searchgasm::Condition::GreaterThanOrEqualTo.condition_name
   end
   
+  def test_name_for_column
+    assert_equal "id_equals", Searchgasm::Condition::Equals.name_for_column(Account.columns_hash["id"])
+    assert_equal nil, Searchgasm::Condition::Keywords.name_for_column(Account.columns_hash["id"])
+  end
+  
+  def test_ignore_blanks?
+    assert !Searchgasm::Condition::Equals.ignore_blanks?
+    assert Searchgasm::Condition::Keywords.ignore_blanks?
+  end
+  
+  def test_type_cast_value?
+    assert Searchgasm::Condition::Equals.type_cast_value?
+    assert Searchgasm::Condition::Keywords.type_cast_value?
+    assert !Searchgasm::Condition::IsNil.type_cast_value?
+    assert !Searchgasm::Condition::IsBlank.type_cast_value?
+  end
+  
   def test_string_column
-    
+    assert !Searchgasm::Condition::Base.string_column?(Account.columns_hash["id"])
+    assert Searchgasm::Condition::Base.string_column?(Account.columns_hash["name"])
+    assert !Searchgasm::Condition::Base.string_column?(Account.columns_hash["active"])
+    assert Searchgasm::Condition::Base.string_column?(User.columns_hash["bio"])
   end
   
   def test_comparable_column
-    
+    assert Searchgasm::Condition::Base.comparable_column?(Account.columns_hash["id"])
+    assert !Searchgasm::Condition::Base.comparable_column?(Account.columns_hash["name"])
+    assert !Searchgasm::Condition::Base.comparable_column?(Account.columns_hash["active"])
+    assert !Searchgasm::Condition::Base.comparable_column?(User.columns_hash["bio"])
+    assert Searchgasm::Condition::Base.comparable_column?(Order.columns_hash["total"])
   end
   
   def test_initialize
@@ -35,19 +48,29 @@ class TestConditionBase < Test::Unit::TestCase
     assert_equal condition.column, Account.columns_hash["id"]
   end
   
-  def test_ignore_blanks?
-    condition = Searchgasm::Condition::Equals.new(Account, Account.columns_hash["id"])
-    assert !condition.class.ignore_blanks?
-    
+  def test_explicitly_set_value
     condition = Searchgasm::Condition::Keywords.new(Account, Account.columns_hash["name"])
-    assert condition.class.ignore_blanks?
+    assert !condition.explicitly_set_value?
+    condition.value = "test"
+    assert condition.explicitly_set_value?
+  end
+  
+  def test_name
+    condition = Searchgasm::Condition::Keywords.new(Account, Account.columns_hash["name"])
+    assert_equal "name_keywords", condition.name
+    
+    condition = Searchgasm::Condition::DescendantOf.new(User)
+    assert_equal "descendant_of", condition.name
+    
+    condition = Searchgasm::Condition::DescendantOf.new(Account)
+    assert_equal nil, condition.name
+  end
+  
+  def test_sanitize
+    # This is tested thoroughly in test_condition_types
   end
   
   def test_value
-    
-  end
-  
-  def test_method_creation_in_scope
-    # test ot make sure methods are not created across the board for all models
+    # This is tested thoroughly in test_condition_types
   end
 end

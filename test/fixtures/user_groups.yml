@@ -1,0 +1,13 @@
+neco:
+  id: 1
+  name: NECO
+  user_ids:
+    - 1
+    - 2
+  
+johnsons:
+  id: 2
+  name: Johnsons
+  user_ids:
+    - 1
+    - 3

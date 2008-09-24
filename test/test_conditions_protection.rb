@@ -1,27 +1,16 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
 class TestConditionsProtection < Test::Unit::TestCase
-  fixtures :accounts, :users, :orders
-  
-  def setup
-    setup_db
-    load_fixtures
-  end
-  
-  def teardown
-    teardown_db
-  end
-
   def test_protection
-    assert_raise(ArgumentError) { Account.new_conditions("(DELETE FROM users)") }
-    assert_nothing_raised { Account.build_conditions!("(DELETE FROM users)") }
+    assert_raise(ArgumentError) { Account.new_search(:conditions => "(DELETE FROM users)") }
+    assert_nothing_raised { Account.new_search!(:conditions => "(DELETE FROM users)") }
     
     account = Account.first
     
-    assert_raise(ArgumentError) { account.users.build_conditions("(DELETE FROM users)") }
-    assert_nothing_raised { account.users.build_conditions!("(DELETE FROM users)") }
+    assert_raise(ArgumentError) { account.users.new_search(:conditions => "(DELETE FROM users)") }
+    assert_nothing_raised { account.users.new_search!(:conditions => "(DELETE FROM users)") }
     
-    #search = Account.new_search
-    #assert_nothing_raised { search.conditions = "(DELETE FROM users)" }
+    search = Account.new_search
+    assert_raise(ArgumentError) { search.conditions = "(DELETE FROM users)" }
   end
 end

@@ -1,17 +1,6 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
 class TestSearchProtection < Test::Unit::TestCase
-  fixtures :accounts, :users, :orders
-
-  def setup
-    setup_db
-    load_fixtures
-  end
-
-  def teardown
-    teardown_db
-  end
-
   def test_protection
     assert_raise(ArgumentError) { Account.build_search(:conditions => "(DELETE FROM users)", :page => 2, :per_page => 15) }
     Searchgasm::Search::Base::VULNERABLE_FIND_OPTIONS.each { |option| assert_raise(ArgumentError) { Account.build_search(option => "(DELETE FROM users)") } }

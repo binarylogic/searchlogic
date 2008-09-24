@@ -8,7 +8,6 @@ require "searchgasm/core_ext/hash"
 
 # Shared
 require "searchgasm/shared/utilities"
-require "searchgasm/shared/searching"
 require "searchgasm/shared/virtual_classes"
 
 # Base classes
@@ -23,6 +22,7 @@ require "searchgasm/active_record/associations"
 require "searchgasm/search/ordering"
 require "searchgasm/search/pagination"
 require "searchgasm/search/conditions"
+require "searchgasm/search/searching"
 require "searchgasm/search/base"
 require "searchgasm/search/protection"
 
@@ -68,6 +68,7 @@ module Searchgasm
       include Ordering
       include Protection
       include Pagination
+      include Searching
     end
   end
   

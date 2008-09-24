@@ -1,17 +1,6 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
 class TestSearchOrdering < Test::Unit::TestCase
-  fixtures :accounts, :users, :orders
-  
-  def setup
-    setup_db
-    load_fixtures
-  end
-  
-  def teardown
-    teardown_db
-  end
-  
   def test_order_as
     search = Account.new_search
     assert_equal nil, search.order
