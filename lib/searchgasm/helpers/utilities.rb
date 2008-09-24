@@ -2,39 +2,37 @@ module Searchgasm
   module Helpers #:nodoc:
     module Utilities # :nodoc:
       # Builds a hash of params for creating a url.
-      def searchgasm_params(option, options = {})
+      def searchgasm_params(options = {})
         add_searchgasm_defaults!(options)
+        options[:search_params] ||= {}
+        options[:literal_search_params] ||= {}
+        options[:params] ||= {}
         params_copy = params.deep_dup.with_indifferent_access
-        params_copy.delete(:commit)
-        
-        # Extract search params from params
         search_params = options[:params_scope].blank? ? params_copy : params_copy[options[:params_scope]]
         search_params ||= {}
         search_params = search_params.with_indifferent_access
-        
-        # Never want to keep page
+        search_params.delete(:commit)
         search_params.delete(:page)
+        search_params.deep_delete_duplicates(options[:literal_search_params])
         
-        option_params = search_params
-        
-        if option.is_a?(Array)
-          option_levels = option.up
-          option = option_levels.pop
-          option_levels.each { |option_level| options_params = options_params[option_level] }
-        end
-        
-        if options[:value]
-          option_params[option] = option == :order_by ? searchgasm_order_by_value(options[:value]) : options[:value]
+        if options[:search_params]
+          search_params.deep_merge!(options[:search_params])
           
-          case option
-          when :order_by
-            option_params[:order_as] = (options[:search_obj].order_by == options[:value] && options[:search_obj].asc?) ? "DESC" : "ASC"
+          if options[:search_params][:order_by] && !options[:search_params][:order_as]
+            search_params[:order_as] = (options[:search_obj].order_by == options[:search_params][:order_by] && options[:search_obj].asc?) ? "DESC" : "ASC"
           end
-        else
-          option_params.delete(option)
         end
         
-        options[:params_scope].blank? ? search_params : {options[:params_scope] => search_params}
+        url_params = options[:params_scope].blank? || search_params.blank? ? search_params : {options[:params_scope] => search_params}
+        url_params.deep_merge!(options[:params])
+        url_params
+      end
+      
+      def searchgasm_url(options = {})
+        search_params = searchgasm_params(options)
+        url = url_for(search_params)
+        literal_param_strings = literal_param_strings(options[:literal_search_params], options[:params_scope].blank? ? "" : "#{options[:params_scope]}")
+        url += (url.last == "?" ? "" : (url.include?("?") ? "&amp;" : "?")) + literal_param_strings.join("&amp;")
       end
       
       private
@@ -80,6 +78,24 @@ module Searchgasm
             @added_state_for << option
           end
           html
+        end
+        
+        def literal_param_strings(literal_params, prefix)
+          param_strings = []
+          
+          literal_params.each do |k, v|
+            param_string = prefix.blank? ? k.to_s : "#{prefix}[#{k}]"
+            case v
+            when Hash
+              literal_param_strings(v, param_string).each do |literal_param_string|
+                param_strings << literal_param_string
+              end
+            else
+              param_strings << (CGI.escape(param_string) + "=#{v}")
+            end
+          end
+          
+          param_strings
         end
     end
   end

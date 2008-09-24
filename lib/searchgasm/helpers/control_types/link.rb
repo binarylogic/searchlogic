@@ -191,28 +191,28 @@ module Searchgasm
             options[:asc_indicator] ||= Config.asc_indicator
             options[:desc_indicator] ||= Config.desc_indicator
             options[:text] += options[:search_obj].desc? ? options[:desc_indicator] : options[:asc_indicator] if options[:search_obj].order_by == order_by
-            options[:url] = searchgasm_params(:order_by, options.merge(:value => order_by))
+            options[:url] = searchgasm_params(options.merge(:search_params => {:order_by => order_by}))
             options
           end
           
           def add_order_as_link_defaults!(order_as, options = {})
             add_searchgasm_control_defaults!(:order_as, options)
             options[:text] ||= order_as.to_s
-            options[:url] = searchgasm_params(:order_as, options.merge(:value => order_as))
+            options[:url] = searchgasm_params(options.merge(:search_params => {:order_as => order_as}))
             options
           end
           
           def add_per_page_link_defaults!(per_page, options = {})
             add_searchgasm_control_defaults!(:per_page, options)
             options[:text] ||= per_page.blank? ? "Show all" : "#{per_page} per page"
-            options[:url] = searchgasm_params(:per_page, options.merge(:value => per_page))
+            options[:url] = searchgasm_params(options.merge(:search_params => {:per_page => per_page}))
             options
           end
           
           def add_page_link_defaults!(page, options = {})
             add_searchgasm_control_defaults!(:page, options)
             options[:text] ||= page.to_s
-            options[:url] = searchgasm_params(:page, options.merge(:value => page))
+            options[:url] = searchgasm_params(options.merge(:search_params => {:page => page}))
             options
           end
           

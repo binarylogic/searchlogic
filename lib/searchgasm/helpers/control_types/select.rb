@@ -59,16 +59,14 @@ module Searchgasm
             options[:tag] ||= {}
             options[:tag][:object] = options[:search_obj]
             
-            url = url_for(searchgasm_params(option, options))
-            url_option = CGI.escape((options[:params_scope].blank? ? "#{option}" : "#{options[:params_scope]}[#{option}]")) + "='+this.value"
-            url += (url.last == "?" ? "" : (url.include?("?") ? "&amp;" : "?")) + url_option
+            url = searchgasm_url(:literal_search_params => {option => "'+this.value+'"})
             
             options[:html][:onchange] ||= ""
             options[:html][:onchange] += ";"
             if !options[:remote]
-              options[:html][:onchange] += "window.location='#{url};"
+              options[:html][:onchange] += "window.location='#{url}';"
             else
-              options[:html][:onchange] += remote_function(:url => url, :method => :get).gsub(/\\'\+this.value'/, "'+this.value")
+              options[:html][:onchange] += remote_function(:url => url, :method => :get).gsub(/\\'\+this.value\+\\'/, "'+this.value+'")
             end
             options[:html][:id] ||= ""
             options

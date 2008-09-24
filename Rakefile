@@ -10,7 +10,7 @@ Echoe.new 'searchgasm' do |p|
   p.project = 'searchgasm'
   p.summary = "Object based ActiveRecord searching, ordering, pagination, and more!"
   p.url = "http://github.com/binarylogic/searchgasm"
-  p.dependencies = %w(activerecord activesupport)
+  p.dependencies = ['activerecord', 'activesupport >= 2.1.0']
   p.include_rakefile = true
 end
 

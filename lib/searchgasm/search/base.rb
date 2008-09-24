@@ -52,6 +52,18 @@ module Searchgasm #:nodoc:
         @acting_as_filter == true
       end
       
+      # Specific implementation of cloning
+      def clone
+        options = {}
+        (OPTIONS - [:conditions]).each { |option| options[option] = send(option) }
+        options[:conditions] = conditions.conditions
+        obj = self.class.new(options)
+        obj.protect = protected?
+        obj.scope = scope
+        obj
+      end
+      alias_method :dup, :clone
+      
       # Makes using searchgasm in the console less annoying and keeps the output meaningful and useful
       def inspect
         current_find_options = {}
