@@ -19,7 +19,7 @@ class TestActiveRecordAssociations < Test::Unit::TestCase
     assert_equal({:conditions => "\"users\".account_id = 1"}, search.scope)
     
     search.conditions.first_name_contains = "Ben"
-    assert_equal({:conditions => ["\"users\".\"first_name\" LIKE ?", "%Ben%"]}, search.sanitize)
+    assert_equal({:conditions => ["\"users\".\"first_name\" LIKE ?", "%Ben%"], :limit => 25}, search.sanitize)
   end
   
   def test_searching

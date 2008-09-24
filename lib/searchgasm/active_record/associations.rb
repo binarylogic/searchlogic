@@ -11,26 +11,6 @@ module Searchgasm
           args << filter_options_with_searchgasm(options)
           find_without_searchgasm(*args)
         end
-      
-        # See build_conditions under Searchgasm::ActiveRecord::Base. This is the same thing but for associations.
-        def build_conditions(options = {}, &block)
-          @reflection.klass.send(:with_scope, :find => construct_scope[:find]) { @reflection.klass.build_conditions(options, &block) }
-        end
-      
-        # See build_conditions! under Searchgasm::ActiveRecord::Base. This is the same thing but for associations.
-        def build_conditions!(options = {}, &block)
-          @reflection.klass.send(:with_scope, :find => construct_scope[:find]) { @reflection.klass.build_conditions!(options, &block) }
-        end
-      
-        # See build_search under Searchgasm::ActiveRecord::Base. This is the same thing but for associations.
-        def build_search(options = {}, &block)
-          @reflection.klass.send(:with_scope, :find => construct_scope[:find]) { @reflection.klass.build_search(options, &block) }
-        end
-      
-        # See build_conditions! under Searchgasm::ActiveRecord::Base. This is the same thing but for associations.
-        def build_search!(options = {}, &block)
-          @reflection.klass.send(:with_scope, :find => construct_scope[:find]) { @reflection.klass.build_search!(options, &block) }
-        end
       end
       
       module Shared

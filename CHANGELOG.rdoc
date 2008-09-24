@@ -2,6 +2,8 @@
 
 * Added searchgasm_params and searchgasm_url helper to use outside of the control type helpers.
 * Added dup and clone methods that work properly for searchgasm objects
+* Fixed bug to remove nil scope values, HABTM likes to add :limit => nil
+* Removed unnecessary build_search methods for associations
 
 == 1.1.3 released 2008-09-23
 

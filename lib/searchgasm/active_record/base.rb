@@ -162,6 +162,11 @@ module Searchgasm
               next if value.blank?
               scope[option] = value
             end
+            
+            # Delete nil values in the scope, for some reason habtm relationships like to pass :limit => nil
+            new_scope = {}
+            current_scope.each { |k, v| new_scope[k] = v unless v.nil? }
+            current_scope = new_scope
           end
           searcher = Searchgasm::Search::Base.create_virtual_class(self).new
           searcher.scope = scope

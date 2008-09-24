@@ -8,7 +8,7 @@ module Searchgasm
         options[:literal_search_params] ||= {}
         options[:params] ||= {}
         params_copy = params.deep_dup.with_indifferent_access
-        search_params = options[:params_scope].blank? ? params_copy : params_copy[options[:params_scope]]
+        search_params = options[:params_scope].blank? ? params_copy : params_copy.delete(options[:params_scope])
         search_params ||= {}
         search_params = search_params.with_indifferent_access
         search_params.delete(:commit)
@@ -23,9 +23,14 @@ module Searchgasm
           end
         end
         
-        url_params = options[:params_scope].blank? || search_params.blank? ? search_params : {options[:params_scope] => search_params}
-        url_params.deep_merge!(options[:params])
-        url_params
+        new_params = params_copy
+        new_params.deep_merge!(options[:params])
+        
+        if options[:params_scope].blank? || search_params.blank?
+          new_params
+        else
+          new_params.merge(options[:params_scope] => search_params)
+        end
       end
       
       def searchgasm_url(options = {})
