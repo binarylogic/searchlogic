@@ -16,7 +16,7 @@ module Searchgasm #:nodoc:
       AR_OPTIONS = (AR_FIND_OPTIONS + AR_CALCULATIONS_OPTIONS).uniq
       
       # Options that ActiveRecord doesn't suppport, but Searchgasm does
-      SPECIAL_FIND_OPTIONS = [:order_by, :order_as, :page, :per_page]
+      SPECIAL_FIND_OPTIONS = [:order_by, :order_as, :page, :per_page, :priority_order, :priority_order_by, :priority_order_as]
       
       # Valid options you can use when searching
       OPTIONS = SPECIAL_FIND_OPTIONS + AR_OPTIONS # the order is very important, these options get set in this order

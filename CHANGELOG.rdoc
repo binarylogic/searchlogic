@@ -2,6 +2,9 @@
 
 * Fixed problem when determining if an order_by_link is currently being ordered. Just "stringified" both comparable values.
 * Removed default order_by and order_as. They will ONLY have values if you specify how to order, otherwise they are nil.
+* Added in deep_merge methods for hash, copied over from ActiveSupport 2.1
+* Improved order by auto joins to be based off of what order_by returns instead of setting it when setting order_by.
+* Added priority_order_by. Useful if you want to order featured products first and then order as usual. See documentation in Searchgasm::Search::Ordering for more info.
 
 == 1.2.0 released 2008-09-24
 

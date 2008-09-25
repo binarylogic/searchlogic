@@ -22,11 +22,11 @@ module Searchgasm
     #   User.all(params[:search])
     module Protection
       # Options that are allowed when protecting against SQL injections (still checked though)
-      SAFE_OPTIONS = Base::SPECIAL_FIND_OPTIONS + [:conditions, :limit, :offset]
+      SAFE_OPTIONS = Base::SPECIAL_FIND_OPTIONS + [:conditions, :limit, :offset] - [:priority_order]
       
-      VULNERABLE_FIND_OPTIONS = Base::AR_FIND_OPTIONS - SAFE_OPTIONS
+      VULNERABLE_FIND_OPTIONS = Base::AR_FIND_OPTIONS - SAFE_OPTIONS + [:priority_order]
       
-      VULNERABLE_CALCULATIONS_OPTIONS = Base::AR_CALCULATIONS_OPTIONS - SAFE_OPTIONS
+      VULNERABLE_CALCULATIONS_OPTIONS = Base::AR_CALCULATIONS_OPTIONS - SAFE_OPTIONS + [:priority_order]
       
       # Options that are not allowed, at all, when protecting against SQL injections
       VULNERABLE_OPTIONS = Base::OPTIONS - SAFE_OPTIONS
