@@ -29,6 +29,20 @@ module Searchgasm
         self
       end
       
+      def deep_merge(other_hash)
+        self.merge(other_hash) do |key, oldval, newval|
+          oldval = oldval.to_hash if oldval.respond_to?(:to_hash)
+          newval = newval.to_hash if newval.respond_to?(:to_hash)
+          oldval.class.to_s == 'Hash' && newval.class.to_s == 'Hash' ? oldval.deep_merge(newval) : newval
+        end
+      end
+
+      # Returns a new hash with +self+ and +other_hash+ merged recursively.
+      # Modifies the receiver in place.
+      def deep_merge!(other_hash)
+        replace(deep_merge(other_hash))
+      end
+      
       # assert_valid_keys was killing performance. Array.flatten was the culprit, so I rewrote this method, got a 35% performance increase
       def fast_assert_valid_keys(valid_keys)
         unknown_keys = keys - valid_keys

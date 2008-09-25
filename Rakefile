@@ -13,4 +13,3 @@ Echoe.new 'searchgasm' do |p|
   p.dependencies = ['activerecord', 'activesupport >= 2.1.0']
   p.include_rakefile = true
 end
-
