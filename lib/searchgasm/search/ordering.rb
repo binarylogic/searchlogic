@@ -37,58 +37,52 @@ module Searchgasm
       
       # Convenience method for determining if the ordering is ascending
       def asc?
+        return false if order_as.nil?
         !desc?
       end
       
       # Convenience method for determining if the ordering is descending
       def desc?
+        return false if order_as.nil?
         order_as == "DESC"
       end
       
       # Determines how the search is being ordered: as DESC or ASC
       def order_as
-        @order_as ||= (order.blank? || order =~ /ASC$/i) ? "ASC" : "DESC"
+        return if order.blank?
+        @order_as ||= order =~ /ASC$/i ? "ASC" : "DESC"
       end
       
       # Sets how the results will be ordered: ASC or DESC
       def order_as=(value)
         value = value.to_s.upcase
         raise(ArgumentError, "order_as only accepts a string as ASC or DESC") unless ["ASC", "DESC"].include?(value)
-        
-        if order.blank?
-          @order = order_by_to_order(order_by, value)
-        else
-          @order.gsub!(/(ASC|DESC)/i, value)
-        end
-        
+        @order.gsub!(/(ASC|DESC)/i, value) if !order.blank?
         @order_as = value
       end
       
       # Determines by what columns the search is being ordered. This is nifty in that is reverse engineers the order SQL to determine this, only
       # if you haven't explicitly set the order_by option yourself.
       def order_by
+        return if order.blank?
         return @order_by if @order_by
         
-        if !order.blank?
-          # Reversege engineer order, only go 1 level deep with relationships, anything beyond that is probably excessive and not good for performance
-          order_parts = order.split(",").collect do |part|
-            part.strip!
-            part.gsub!(/ (ASC|DESC)$/i, "").gsub!(/(.*)\./, "")
-            table_name = ($1 ? $1.gsub(/[^a-z0-9_]/i, "") : nil)
-            part.gsub!(/[^a-z0-9_]/i, "")
-            reflection = nil
-            if table_name && table_name != klass.table_name
-              reflection = klass.reflect_on_association(table_name.to_sym) || klass.reflect_on_association(table_name.singularize.to_sym)
-              next unless reflection
-              {reflection.name.to_s => part}
-            else
-              part
-            end
-          end.compact
-          @order_by = order_parts.size <= 1 ? order_parts.first : order_parts
-        else
-          @order_by = klass.primary_key
-        end
+        # Reversege engineer order, only go 1 level deep with relationships, anything beyond that is probably excessive and not good for performance
+        order_parts = order.split(",").collect do |part|
+          part.strip!
+          part.gsub!(/ (ASC|DESC)$/i, "").gsub!(/(.*)\./, "")
+          table_name = ($1 ? $1.gsub(/[^a-z0-9_]/i, "") : nil)
+          part.gsub!(/[^a-z0-9_]/i, "")
+          reflection = nil
+          if table_name && table_name != klass.table_name
+            reflection = klass.reflect_on_association(table_name.to_sym) || klass.reflect_on_association(table_name.singularize.to_sym)
+            next unless reflection
+            {reflection.name.to_s => part}
+          else
+            part
+          end
+        end.compact
+        @order_by = order_parts.size <= 1 ? order_parts.first : order_parts
       end
       
       # Lets you set how to order the data
@@ -104,7 +98,7 @@ module Searchgasm
         self.order_by_auto_joins.clear
         @memoized_auto_joins = nil
         @order_by = get_order_by_value(value)
-        @order = order_by_to_order(@order_by, order_as)
+        @order = order_by_to_order(@order_by, @order_as || "ASC")
         @order_by
       end
       

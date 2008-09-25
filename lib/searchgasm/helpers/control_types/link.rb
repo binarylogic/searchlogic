@@ -190,7 +190,7 @@ module Searchgasm
             options[:text] ||= determine_order_by_text(order_by)
             options[:asc_indicator] ||= Config.asc_indicator
             options[:desc_indicator] ||= Config.desc_indicator
-            options[:text] += options[:search_obj].desc? ? options[:desc_indicator] : options[:asc_indicator] if options[:search_obj].order_by == order_by
+            options[:text] += options[:search_obj].desc? ? options[:desc_indicator] : options[:asc_indicator] if deep_stringify(options[:search_obj].order_by) == order_by
             options[:url] = searchgasm_params(options.merge(:search_params => {:order_by => order_by}))
             options
           end
@@ -234,13 +234,15 @@ module Searchgasm
             when String
               obj
             when Symbol
-              obj = obj.to_s
+              obj.to_s
             when Array
-              obj = obj.collect { |item| deep_stringify(item) }
+              obj.collect { |item| deep_stringify(item) }
             when Hash
               new_obj = {}
               obj.each { |key, value| new_obj[key.to_s] = deep_stringify(value) }
               new_obj
+            else
+              obj
             end
           end
       end

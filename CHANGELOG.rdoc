@@ -1,3 +1,8 @@
+== 1.2.1 released 2008-09-24
+
+* Fixed problem when determining if an order_by_link is currently being ordered. Just "stringified" both comparable values.
+* Removed default order_by and order_as. They will ONLY have values if you specify how to order, otherwise they are nil.
+
 == 1.2.0 released 2008-09-24
 
 * Added searchgasm_params and searchgasm_url helper to use outside of the control type helpers.

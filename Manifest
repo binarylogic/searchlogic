@@ -38,7 +38,7 @@ lib/searchgasm/search/conditions.rb
 lib/searchgasm/search/ordering.rb
 lib/searchgasm/search/pagination.rb
 lib/searchgasm/search/protection.rb
-lib/searchgasm/shared/searching.rb
+lib/searchgasm/search/searching.rb
 lib/searchgasm/shared/utilities.rb
 lib/searchgasm/shared/virtual_classes.rb
 lib/searchgasm/version.rb
@@ -49,6 +49,7 @@ Rakefile
 README.rdoc
 test/fixtures/accounts.yml
 test/fixtures/orders.yml
+test/fixtures/user_groups.yml
 test/fixtures/users.yml
 test/libs/acts_as_tree.rb
 test/libs/rexml_fix.rb
@@ -65,4 +66,3 @@ test/test_search_conditions.rb
 test/test_search_ordering.rb
 test/test_search_pagination.rb
 test/test_search_protection.rb
-test/text_config.rb

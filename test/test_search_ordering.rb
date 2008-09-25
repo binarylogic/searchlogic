@@ -4,13 +4,20 @@ class TestSearchOrdering < Test::Unit::TestCase
   def test_order_as
     search = Account.new_search
     assert_equal nil, search.order
-    assert_equal "ASC", search.order_as
-    assert search.asc?
+    assert_equal nil, search.order_as
+    assert !search.asc?
     
     search.order_as = "DESC"
-    assert_equal "DESC", search.order_as
-    assert search.desc?
-    assert_equal "\"accounts\".\"id\" DESC", search.order
+    assert_equal nil, search.order_as
+    assert !search.desc?
+    assert_equal nil, search.order
+    
+    search.order_by = "name"
+    assert_equal "\"accounts\".\"name\" DESC", search.order
+    
+    search.order_as = "ASC"
+    assert_equal "\"accounts\".\"name\" ASC", search.order
+    assert search.asc?
     
     search.order = "id ASC"
     assert_equal "ASC", search.order_as
@@ -31,7 +38,7 @@ class TestSearchOrdering < Test::Unit::TestCase
   def test_order_by
     search = Account.new_search
     assert_equal nil, search.order
-    assert_equal "id", search.order_by
+    assert_equal nil, search.order_by
     
     search.order_by = "first_name"
     assert_equal "first_name", search.order_by
