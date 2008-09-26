@@ -147,6 +147,7 @@ module Searchgasm
         # === Options
         # * <tt>:activate_text</tt> -- default: "Show #{column_name.to_s.humanize} first"
         # * <tt>:deactivate_text</tt> -- default: "Don't show #{column_name.to_s.humanize} first", text for the link, text for the link
+        # * <tt>:column_name</tt> -- default: column_name.to_s.humanize, automatically inferred by what you are ordering by and is added into the active_text and deactive_text strings.
         # * <tt>:text</tt> -- default: :activate_text or :deactivate_text depending on if its active or not, Overwriting this will make this text stay the same, no matter way. A good alternative would be "Toggle featured first"
         # * <tt>:html</tt> -- html arrtributes for the <a> tag.
         #
@@ -257,14 +258,15 @@ module Searchgasm
           
           def add_priority_order_by_link_defaults!(priority_order_by, priority_order_as, options = {})
             add_searchgasm_control_defaults!(:priority_order_by, options)
-            options[:activate_text] ||= "Show #{determine_order_by_text(priority_order_by)} first"
-            options[:deactivate_text] ||= "Don't show #{determine_order_by_text(priority_order_by)} first"
+            options[:column_name] ||= determine_order_by_text(priority_order_by).downcase 
+            options[:activate_text] ||= "Show #{options[:column_name]} first"
+            options[:deactivate_text] ||= "Don't show #{options[:column_name]} first"
             active = deep_stringify(options[:search_obj].priority_order_by) == priority_order_by && options[:search_obj].priority_order_as == priority_order_as
-            options[:text] += active ? options[:deactivate_text] : options[:activate_text]
+            options[:text] ||= active ? options[:deactivate_text] : options[:activate_text]
             if active
-              options.merge(:search_params => {:priority_order_by => priority_order_by, :priority_order_as => priority_order_as})
+              options.merge!(:search_params => {:priority_order_by => nil, :priority_order_as => nil})
             else
-              options.merge(:exclude_search_params => [:priority_order_by, :priority_order_as])
+              options.merge!(:search_params => {:priority_order_by => priority_order_by, :priority_order_as => priority_order_as})
             end
             options[:url] = searchgasm_params(options)
             options

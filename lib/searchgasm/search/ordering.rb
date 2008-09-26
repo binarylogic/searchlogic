@@ -150,7 +150,7 @@ module Searchgasm
         raise(ArgumentError, "priority_order_as only accepts a blank string / nil or a string as 'ASC' or 'DESC'") if !value.blank? && !["ASC", "DESC"].include?(value)
         if @priority_order_by
           @priority_order = order_by_to_order(@priority_order_by, value)
-        elsif order
+        elsif priority_order
           @priority_order.gsub!(/(ASC|DESC)/i, value)
         end
         @priority_order_as = value
