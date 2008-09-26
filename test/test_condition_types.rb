@@ -6,6 +6,30 @@ class TestConditionTypes < Test::Unit::TestCase
     condition.value = "Binary"
     assert_equal condition.sanitize, ["\"accounts\".\"name\" LIKE ?", "Binary%"]
     
+    condition = Searchgasm::Condition::Blank.new(Account, Account.columns_hash["id"])
+    condition.value = true
+    assert_equal condition.sanitize, "\"accounts\".\"id\" is NULL or \"accounts\".\"id\" = ''"
+    
+    condition = Searchgasm::Condition::Blank.new(Account, Account.columns_hash["id"])
+    condition.value = false
+    assert_equal condition.sanitize, "\"accounts\".\"id\" is NOT NULL and \"accounts\".\"id\" != ''"
+    
+    condition = Searchgasm::Condition::Blank.new(Account, Account.columns_hash["id"])
+    condition.value = "true"
+    assert_equal condition.sanitize, "\"accounts\".\"id\" is NULL or \"accounts\".\"id\" = ''"
+    
+    condition = Searchgasm::Condition::Blank.new(Account, Account.columns_hash["id"])
+    condition.value = "false"
+    assert_equal condition.sanitize, "\"accounts\".\"id\" is NOT NULL and \"accounts\".\"id\" != ''"
+    
+    condition = Searchgasm::Condition::Blank.new(Account, Account.columns_hash["id"])
+    condition.value = nil
+    assert_equal condition.sanitize, nil
+    
+    condition = Searchgasm::Condition::Blank.new(Account, Account.columns_hash["id"])
+    condition.value = ""
+    assert_equal condition.sanitize, nil
+    
     condition = Searchgasm::Condition::ChildOf.new(User)
     condition.value = User.first.id
     assert_equal condition.sanitize, ["\"users\".\"parent_id\" = ?", User.first.id]
@@ -62,51 +86,27 @@ class TestConditionTypes < Test::Unit::TestCase
     condition.value = User.find(1)
     assert_equal condition.sanitize, ["(\"users\".\"id\" = ?) OR (\"users\".\"id\" = ? OR \"users\".\"id\" = ?)", 1, 2, 3]
     
-    condition = Searchgasm::Condition::IsBlank.new(Account, Account.columns_hash["id"])
-    condition.value = true
-    assert_equal condition.sanitize, "\"accounts\".\"id\" is NULL or \"accounts\".\"id\" = ''"
-    
-    condition = Searchgasm::Condition::IsBlank.new(Account, Account.columns_hash["id"])
-    condition.value = false
-    assert_equal condition.sanitize, "\"accounts\".\"id\" is NOT NULL and \"accounts\".\"id\" != ''"
-    
-    condition = Searchgasm::Condition::IsBlank.new(Account, Account.columns_hash["id"])
-    condition.value = "true"
-    assert_equal condition.sanitize, "\"accounts\".\"id\" is NULL or \"accounts\".\"id\" = ''"
-    
-    condition = Searchgasm::Condition::IsBlank.new(Account, Account.columns_hash["id"])
-    condition.value = "false"
-    assert_equal condition.sanitize, "\"accounts\".\"id\" is NOT NULL and \"accounts\".\"id\" != ''"
-    
-    condition = Searchgasm::Condition::IsBlank.new(Account, Account.columns_hash["id"])
-    condition.value = nil
-    assert_equal condition.sanitize, nil
-    
-    condition = Searchgasm::Condition::IsBlank.new(Account, Account.columns_hash["id"])
-    condition.value = ""
-    assert_equal condition.sanitize, nil
-    
-    condition = Searchgasm::Condition::IsNil.new(Account, Account.columns_hash["id"])
+    condition = Searchgasm::Condition::Nil.new(Account, Account.columns_hash["id"])
     condition.value = true
     assert_equal condition.sanitize, "\"accounts\".\"id\" is NULL"
     
-    condition = Searchgasm::Condition::IsNil.new(Account, Account.columns_hash["id"])
+    condition = Searchgasm::Condition::Nil.new(Account, Account.columns_hash["id"])
     condition.value = false
     assert_equal condition.sanitize, "\"accounts\".\"id\" is NOT NULL"
     
-    condition = Searchgasm::Condition::IsNil.new(Account, Account.columns_hash["id"])
+    condition = Searchgasm::Condition::Nil.new(Account, Account.columns_hash["id"])
     condition.value = "true"
     assert_equal condition.sanitize, "\"accounts\".\"id\" is NULL"
     
-    condition = Searchgasm::Condition::IsNil.new(Account, Account.columns_hash["id"])
+    condition = Searchgasm::Condition::Nil.new(Account, Account.columns_hash["id"])
     condition.value = "false"
     assert_equal condition.sanitize, "\"accounts\".\"id\" is NOT NULL"
     
-    condition = Searchgasm::Condition::IsNil.new(Account, Account.columns_hash["id"])
+    condition = Searchgasm::Condition::Nil.new(Account, Account.columns_hash["id"])
     condition.value = nil
     assert_equal condition.sanitize, nil
     
-    condition = Searchgasm::Condition::IsNil.new(Account, Account.columns_hash["id"])
+    condition = Searchgasm::Condition::Nil.new(Account, Account.columns_hash["id"])
     condition.value = ""
     assert_equal condition.sanitize, nil
     

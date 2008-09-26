@@ -45,6 +45,16 @@ module Searchgasm
           
           new_joins.compact.uniq
         end
+        
+        # "meaningful" is subjective which is why this is not a core extension like .blank?
+        def meaningless?(value)
+          return false if value == false
+          value.blank?
+        end
+        
+        def meaningful?(value)
+          !meaningless?
+        end
     end
   end
 end

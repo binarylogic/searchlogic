@@ -12,16 +12,18 @@ class TestConditionBase < Test::Unit::TestCase
     assert_equal nil, Searchgasm::Condition::Keywords.name_for_column(Account.columns_hash["id"])
   end
   
-  def test_ignore_blanks?
-    assert !Searchgasm::Condition::Equals.ignore_blanks?
-    assert Searchgasm::Condition::Keywords.ignore_blanks?
+  def test_ignore_meaningless?
+    assert !Searchgasm::Condition::Equals.ignore_meaningless?
+    assert Searchgasm::Condition::Keywords.ignore_meaningless?
+    assert !Searchgasm::Condition::DoesNotEqual.ignore_meaningless?
   end
   
-  def test_type_cast_value?
-    assert Searchgasm::Condition::Equals.type_cast_value?
-    assert Searchgasm::Condition::Keywords.type_cast_value?
-    assert !Searchgasm::Condition::IsNil.type_cast_value?
-    assert !Searchgasm::Condition::IsBlank.type_cast_value?
+  def test_type_cast_sql_type
+    assert_equal nil, Searchgasm::Condition::Equals.type_cast_sql_type
+    assert_equal nil, Searchgasm::Condition::Keywords.type_cast_sql_type
+    assert_equal "boolean", Searchgasm::Condition::Nil.type_cast_sql_type
+    assert_equal "boolean", Searchgasm::Condition::Blank.type_cast_sql_type
+    assert_equal nil, Searchgasm::Condition::GreaterThan.type_cast_sql_type
   end
   
   def test_string_column

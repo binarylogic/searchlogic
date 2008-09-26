@@ -1,7 +1,7 @@
 module Searchgasm
   module Condition
     class DoesNotEqual < Base
-      self.ignore_blanks = false
+      self.ignore_meaningless = false
       
       class << self
         def aliases_for_column(column)

@@ -8,9 +8,8 @@ module Searchgasm
       include Shared::Utilities
       
       attr_accessor :column, :klass
-      class_inheritable_accessor :ignore_blanks, :type_cast_value
-      self.ignore_blanks = true
-      self.type_cast_value = true
+      class_inheritable_accessor :ignore_meaningless, :type_cast_sql_type
+      self.ignore_meaningless = true
     
       class << self
         # Name of the condition inferred from the class name
@@ -29,12 +28,8 @@ module Searchgasm
           []
         end
         
-        def ignore_blanks? # :nodoc:
-          ignore_blanks == true
-        end
-        
-        def type_cast_value? # :nodoc:
-          type_cast_value == true
+        def ignore_meaningless? # :nodoc:
+          ignore_meaningless == true
         end
         
         # Sane as name_for_column but for the class as a whole. For example the tree methods apply to the class as a whole and not
@@ -48,6 +43,16 @@ module Searchgasm
           []
         end
         
+        # A utility method for using in name_for_column. Determines if a column contains a date.
+        def date_column?(column)
+          [:datetime, :date, :timestamp].include?(column.type)
+        end
+        
+        # A utility method for using in name_for_column. Determines if a column contains a date and a time.
+        def datetime_column?(column)
+          [:datetime, :timestamp, :time, :date].include?(column.type)
+        end
+        
         # A utility method for using in name_for_column. For example the keywords condition only applied to string columns, the great than condition doesnt.
         def string_column?(column)
           [:string, :text].include?(column.type)
@@ -56,6 +61,11 @@ module Searchgasm
         # A utility method for using in name_for_column. For example you wouldn't want a string column to use the greater thann condition, but you would for an integer column.
         def comparable_column?(column)
           [:integer, :float, :decimal, :datetime, :timestamp, :time, :date].include?(column.type)
+        end
+        
+        # A utility method for using in name_for_column. Determines if a column contains a time.
+        def time_column?(column)
+          [:datetime, :timestamp, :time].include?(column.type)
         end
       end
     
@@ -118,14 +128,20 @@ module Searchgasm
     
       # The value for the condition
       def value
-        self.class.type_cast_value? && @value.is_a?(String) ? column.type_cast(@value) : @value
+        @value.is_a?(String) ? column_for_type_cast.type_cast(@value) : @value
       end
     
       # Sets the value for the condition
       def value=(v)
+        return if self.class.ignore_meaningless? && meaningless?(v)
         self.explicitly_set_value = true
         @value = v
       end
+      
+      private
+        def column_for_type_cast
+          @column_for_type_cast ||= self.class.type_cast_sql_type ? self.column.class.new(column.name, column.default.to_s, self.class.type_cast_sql_type.to_s, column.null) : column
+        end
     end
   end
 end

@@ -8,7 +8,13 @@ module Searchgasm
         end
         
         def aliases_for_column(column)
-          ["#{column.name}_lte", "#{column.name}_at_most"]
+          column_names = [column.name]
+          column_names << column.name.gsub(/_(at|on)$/, "") if datetime_column?(column) && column.name =~ /_(at|on)$/
+          
+          aliases = []
+          column_names.each { |column_name| aliases += ["#{column_name}_lte", "#{column_name}_at_most"] }
+          aliases << "#{column_names.last}_less_than_or_equal_to" if column_names.size > 1
+          aliases
         end
       end
       

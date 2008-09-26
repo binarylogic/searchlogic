@@ -1,2 +1,5 @@
 = To Do
 
+1. Add month condition for date and datetime columns. So you can specify a specific month, by name, number, etc.
+2. Add day condition for time and datetime columns. So you can specify that the time is during the day or the night.
+3. Add weekend condition for date and datetime columns. So you can specify if the date is on a friday, saturday, or sunday
