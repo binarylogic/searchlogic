@@ -44,7 +44,7 @@ module Searchgasm
       end
       
       def hidden_fields # :nodoc:
-        @hidden_fields ||= (Search::Base::SPECIAL_FIND_OPTIONS - [:page])
+        @hidden_fields ||= (Search::Base::SPECIAL_FIND_OPTIONS - [:page, :priority_order])
       end
       
       # Which hidden fields to automatically include when creating a form with a Searchgasm object. See Searchgasm::Helpers::Form for more info.

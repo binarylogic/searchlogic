@@ -145,6 +145,8 @@ module Searchgasm
       
       private
         def order_by_to_order(order_by, order_as, alt_klass = nil)
+          return if order_by.blank?
+          
           k = alt_klass || klass
           table_name = k.table_name
           sql_parts = []

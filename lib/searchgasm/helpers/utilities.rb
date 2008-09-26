@@ -19,8 +19,10 @@ module Searchgasm
           search_params.deep_merge!(options[:search_params])
           
           if options[:search_params][:order_by] && !options[:search_params][:order_as]
-            search_params[:order_as] = (options[:search_obj].order_by == options[:search_params][:order_by] && options[:search_obj].asc?) ? "DESC" : "ASC"
+            search_params[:order_as] = (options[:search_obj].order_by == options[:search_params][:order_by] && options[:search_obj].asc?) ? "DESC" : "ASC" 
           end
+          
+          [:order_by, :priority_order_by].each { |base64_field| search_params[base64_field] = searchgasm_base64_value(search_params[base64_field]) if search_params.has_key?(base64_field) }
         end
         
         new_params = params_copy
@@ -65,7 +67,7 @@ module Searchgasm
           html_options[:class] = classes.join(" ")
         end
         
-        def searchgasm_order_by_value(order_by)
+        def searchgasm_base64_value(order_by)
           case order_by
           when String
             order_by
@@ -79,7 +81,7 @@ module Searchgasm
           html = ""
           unless @added_state_for.include?(option)
             value = options[:search_obj].send(option)
-            html = hidden_field(options[:params_scope], option, :value => (option == :order_by ? searchgasm_order_by_value(value) : value))
+            html = hidden_field(options[:params_scope], option, :value => (option == :order_by ? searchgasm_base64_value(value) : value))
             @added_state_for << option
           end
           html

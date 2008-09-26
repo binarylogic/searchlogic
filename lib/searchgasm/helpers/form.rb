@@ -122,7 +122,7 @@ module Searchgasm
             options = args.extract_options!
             options
             search_options[:hidden_fields].each do |field|
-              html = hidden_field(name, field, :object => search_object, :id => "#{name}_#{field}_hidden", :value => (field == :order_by ? searchgasm_order_by_value(search_object.order_by) : search_object.send(field)))
+              html = hidden_field(name, field, :object => search_object, :id => "#{name}_#{field}_hidden", :value => (field == :order_by ? searchgasm_base64_value(search_object.order_by) : search_object.send(field)))
               
               # For edge rails and older version compatibility, passing a binding to concat was deprecated
               begin

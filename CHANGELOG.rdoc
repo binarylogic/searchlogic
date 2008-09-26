@@ -5,6 +5,7 @@
 * Added in deep_merge methods for hash, copied over from ActiveSupport 2.1
 * Improved order by auto joins to be based off of what order_by returns instead of setting it when setting order_by.
 * Added priority_order_by. Useful if you want to order featured products first and then order as usual. See documentation in Searchgasm::Search::Ordering for more info.
+* Added in base64 for order_by and priority_order_by so that it's value is safe in the URL
 
 == 1.2.0 released 2008-09-24
 
