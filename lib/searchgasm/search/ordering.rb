@@ -199,7 +199,8 @@ module Searchgasm
           # Reversege engineer order, only go 1 level deep with relationships, anything beyond that is probably excessive and not good for performance
           order_parts = order.split(",").collect do |part|
             part.strip!
-            part.gsub!(/ (ASC|DESC)$/i, "").gsub!(/(.*)\./, "")
+            part.gsub!(/ (ASC|DESC)$/i, "")
+            part.gsub!(/(.*)\./, "")
             table_name = ($1 ? $1.gsub(/[^a-z0-9_]/i, "") : nil)
             part.gsub!(/[^a-z0-9_]/i, "")
             reflection = nil

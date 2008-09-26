@@ -1,6 +1,18 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
 class TestSearchOrdering < Test::Unit::TestCase
+  def test_order
+    search = Account.new_search
+    search.order = "name"
+    assert_equal "name", search.order_by
+    search.order = "users.first_name"
+    assert_equal({"users" => "first_name"}, search.order_by)
+    search.order = "\"users\".\"first_name\""
+    assert_equal({"users" => "first_name"}, search.order_by)
+    search.order = "\"users\".\"first_name\", name ASC"
+    assert_equal([{"users" => "first_name"}, "name"], search.order_by)
+  end
+  
   def test_order_by
     search = Account.new_search
     assert_equal nil, search.order
