@@ -16,17 +16,37 @@ module Searchgasm
         new_hash
       end
       
-      def deep_delete_duplicates(hash)
+      def deep_delete_duplicate_keys(hash)
         hash.each do |k, v|
           if v.is_a?(Hash) && self[k]
             self[k].deep_delete_duplicates(v)
-            self.delete(k) if self[k].blank?
+            delete(k) if self[k].blank?
           else
-            self.delete(k)
+            delete(k)
           end
         end
         
         self
+      end
+      
+      def deep_delete(value)
+        case value
+        when Array
+          value.each { |v| deep_delete(v) }
+        when Hash
+          value.each do |k, v|
+            next unless self[k].is_a?(Hash)
+            
+            case v
+            when Hash, Array
+              self[k].deep_delete(v)
+            when String, Symbol
+              self[k].delete(v)
+            end
+          end
+        when String, Symbol
+          delete(value)
+        end
       end
       
       def deep_merge(other_hash)

@@ -1,11 +1,31 @@
 module Searchgasm
   module Helpers #:nodoc:
     module Utilities # :nodoc:
-      # Builds a hash of params for creating a url.
+      # Builds a hash of params for creating a url and preserves any existing params. You can pass this into url_for and build your url. Although most rails helpers accept a hash.
+      #
+      # Let's take the page_link helper. Here is the code behind that helper:
+      #
+      #   link_to("Page 2", searchgasm_params(:search_params => {:page => 2}))
+      #
+      # That's pretty much it. So if you wanted to roll your own link to execute a search, go for it. It's pretty simple. Pass conditions instead of the page, set how the search will be ordered, etc.
+      #
+      # <b>Be careful</b> when taking this approach though. Searchgasm helps you out when you use form_for. For example, when you use the per_page_select helper, it adds in a hidden form field with the value of the page. So when
+      # your search form is submitted it searches the document for that element, finds the current value, which is the current per_page value, and includes that in the search. So when a user searches the per_page
+      # value stays consistent. If you use the searchgasm_params you are on your own. I am always curious how people are using searchgasm. So if you are building your own helpers contact me and maybe I can help you
+      # and add in a helper for you, making it an *official* feature.
+      #
+      # === Options
+      # * <tt>:params_scope</tt> -- default: :search, this is the scope in which your search params will be preserved (params[:search]). If you don't want a scope and want your options to be at base leve in params such as params[:page], params[:per_page], etc, then set this to nil.
+      # * <tt>:search_obj</tt> -- default: @#{params_scope}, this is your search object, everything revolves around this. It will try to infer the name from your params_scope. If your params_scope is :search it will try to get @search, etc. If it can not be inferred by this, you need to pass the object itself.
+      # * <tt>:params</tt> -- default: nil, Additional params to add to the url, must be a hash
+      # * <tt>:exclude_params</tt> -- default: nil, params you want to exclude. This is nifty because it does a "deep delete". So you can pass {:param1 => {:param2 => :param3}} and it will make sure param3 does not get include. param1 and param2 will not be touched. This also accepts an array or just a symbol or string.
+      # * <tt>:search_params</tt> -- default: nil, Additional search params to add to the url, must be a hash. Adds the options into the :params_scope.
+      # * <tt>:exclude_search_params</tt> -- default: nil, Same as :exclude_params but for the :search_params.
       def searchgasm_params(options = {})
         add_searchgasm_defaults!(options)
         options[:search_params] ||= {}
         options[:literal_search_params] ||= {}
+        
         options[:params] ||= {}
         params_copy = params.deep_dup.with_indifferent_access
         search_params = options[:params_scope].blank? ? params_copy : params_copy.delete(options[:params_scope])
@@ -13,7 +33,8 @@ module Searchgasm
         search_params = search_params.with_indifferent_access
         search_params.delete(:commit)
         search_params.delete(:page)
-        search_params.deep_delete_duplicates(options[:literal_search_params])
+        search_params.deep_delete_duplicate_keys(options[:literal_search_params])
+        search_params.deep_delete(options[:exclude_search_params])
         
         if options[:search_params]
           search_params.deep_merge!(options[:search_params])
@@ -27,6 +48,7 @@ module Searchgasm
         
         new_params = params_copy
         new_params.deep_merge!(options[:params])
+        new_params.deep_delete(options[:exclude_params])
         
         if options[:params_scope].blank? || search_params.blank?
           new_params
@@ -35,6 +57,32 @@ module Searchgasm
         end
       end
       
+      # Similar to searchgasm_hash, but instead returns a string url. The reason this exists is to assist in creating urls in javascript. It's the muscle behind all of the select helpers that searchgasm provides.
+      # Take the instance where you want to do:
+      #
+      #   :onchange => "window.location = '#{url_for(searchgasm_params)}&my_param=' + this.value;"
+      #
+      # Well the above obviously won't work. Do you need to apped the url with a ? or a &? What about that tricky :params_scope? That's where this is handy, beacuse it does all of the params string building for you. Check it out:
+      #
+      #   :onchange => "window.location = '" + searchgasm_url(:literal_search_params => {:per_page => "' + escape(this.value) + '"}) + "';"
+      #
+      # or what about something a little more tricky?
+      #
+      #   :onchange => "window.location = '" + searchgasm_url(:literal_search_params => {:conditions => {:name_contains => "' + escape(this.value) + '"}}) + "';"
+      #
+      # I have personally used this for an event calendar. Above the calendar there was a drop down for each month. Here is the code:
+      #
+      #   :onchange => "window.location = '" + searchgasm_url(:literal_search_params => {:conditions => {:occurs_at_after => "' + escape(this.value) + '"}}) + "';"
+      #
+      # Now when the user changes the month in the drop down it just runs a new search that sets my conditions to occurs_at_after = selected month. Then in my controller I set occurs_at_before = occurs_at_after.at_end_of_month.
+      #
+      # === Options
+      # * <tt>:params_scope</tt> -- default: :search, this is the scope in which your search params will be preserved (params[:search]). If you don't want a scope and want your options to be at base leve in params such as params[:page], params[:per_page], etc, then set this to nil.
+      # * <tt>:search_obj</tt> -- default: @#{params_scope}, this is your search object, everything revolves around this. It will try to infer the name from your params_scope. If your params_scope is :search it will try to get @search, etc. If it can not be inferred by this, you need to pass the object itself.
+      # * <tt>:params</tt> -- default: nil, Additional params to add to the url, must be a hash
+      # * <tt>:exclude_params</tt> -- default: nil, params you want to exclude. This is nifty because it does a "deep delete". So you can pass {:param1 => {:param2 => :param3}} and it will make sure param3 does not get include. param1 and param2 will not be touched. This also accepts an array or just a symbol or string.
+      # * <tt>:search_params</tt> -- default: nil, Additional search params to add to the url, must be a hash. Adds the options into the :params_scope.
+      # * <tt>:exclude_search_params</tt> -- default: nil, Same as :exclude_params but for the :search_params.
       def searchgasm_url(options = {})
         search_params = searchgasm_params(options)
         url = url_for(search_params)

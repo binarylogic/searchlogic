@@ -135,7 +135,7 @@ module Searchgasm
       # The reason for this not to disturb regular queries such as Whatever.find(:all). You would not expect that to be limited.
       #
       # * <tt>Default:</tt> The 3rd option in your per_page_choices, default of 50
-      # * <tt>Accepts:</tt> Any value in your per_page choices, nil means "show all"
+      # * <tt>Accepts:</tt> Any value in your per_page choices, nil or a blank string means "show all"
       def per_page=(value)
         @per_page = value
       end

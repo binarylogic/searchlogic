@@ -23,7 +23,7 @@ module Searchgasm
           per_page_select(options)
         end
         
-        # Please see page_links. All options are the same and applicable here, excep the :prev, :next, :first, and :last options. The only difference is that instead of a group of links, this gets returned as a select form element that will perform the same function when the value is changed.
+        # Please see page_links. All options are the same and applicable here, except the :prev, :next, :first, and :last options. The only difference is that instead of a group of links, this gets returned as a select form element that will perform the same function when the value is changed.
         def remote_page_select(options = {})
           add_remote_defaults!(options)
           page_select(options)

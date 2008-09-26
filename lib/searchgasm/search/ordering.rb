@@ -52,14 +52,27 @@ module Searchgasm
       # Determines how the search is being ordered: as DESC or ASC
       def order_as
         return if order.blank?
-        @order_as ||= order =~ /ASC$/i ? "ASC" : "DESC"
+        return @order_as if @order_as
+        
+        case order
+        when /ASC$/i
+          @order_as = "ASC"
+        when /DESC$/i 
+          @order_as = "DESC"
+        else
+          nil
+        end
       end
       
       # Sets how the results will be ordered: ASC or DESC
       def order_as=(value)
-        value = value.to_s.upcase
-        raise(ArgumentError, "order_as only accepts a string as ASC or DESC") unless ["ASC", "DESC"].include?(value)
-        @order.gsub!(/(ASC|DESC)/i, value) if !order.blank?
+        value = value.blank? ? nil : value.to_s.upcase
+        raise(ArgumentError, "order_as only accepts a blank string / nil or a string as 'ASC' or 'DESC'") if !value.blank? && !["ASC", "DESC"].include?(value)
+        if @order_by
+          @order = order_by_to_order(@order_by, value)
+        elsif order
+          @order.gsub!(/(ASC|DESC)/i, value)
+        end
         @order_as = value
       end
       
@@ -83,7 +96,7 @@ module Searchgasm
         @order_by_auto_joins = nil
         @memoized_auto_joins = nil
         @order_by = get_order_by_value(value)
-        @order = order_by_to_order(@order_by, @order_as || "ASC")
+        @order = order_by_to_order(@order_by, @order_as)
         @order_by
       end
       
@@ -112,21 +125,34 @@ module Searchgasm
         @priority_order_by_auto_joins = nil
         @memoized_auto_joins = nil
         @priority_order_by = get_order_by_value(value)
-        @priority_order = order_by_to_order(@priority_order_by, @priority_order_as || "ASC")
+        @priority_order = order_by_to_order(@priority_order_by, @priority_order_as)
         @priority_order_by
       end
       
       # Same as order_as but for your priority order. See priority_order= for more informaton on priority_order.
       def priority_order_as
         return if priority_order.blank?
-        @priority_order_as ||= priority_order =~ /ASC$/i ? "ASC" : "DESC"
+        return @priority_order_as if @priority_order_as
+        
+        case priority_order
+        when /ASC$/i
+          @priority_order_as = "ASC"
+        when /DESC$/i 
+          @priority_order_as = "DESC"
+        else
+          nil
+        end
       end
       
       # Same as order_as= but for your priority order. See priority_order= for more informaton on priority_order.
       def priority_order_as=(value)
-        value = value.to_s.upcase
-        raise(ArgumentError, "priority_order_as only accepts a string as ASC or DESC") unless ["ASC", "DESC"].include?(value)
-        @priority_order.gsub!(/(ASC|DESC)/i, value) if !priority_order.blank?
+        value = value.blank? ? nil : value.to_s.upcase
+        raise(ArgumentError, "priority_order_as only accepts a blank string / nil or a string as 'ASC' or 'DESC'") if !value.blank? && !["ASC", "DESC"].include?(value)
+        if @priority_order_by
+          @priority_order = order_by_to_order(@priority_order_by, value)
+        elsif order
+          @priority_order.gsub!(/(ASC|DESC)/i, value)
+        end
         @priority_order_as = value
       end
       
@@ -161,7 +187,9 @@ module Searchgasm
             value = order_by.values.first
             sql_parts << order_by_to_order(value, order_as, reflection.klass)
           when Symbol, String
-            sql_parts << "#{quote_table_name(table_name)}.#{quote_column_name(order_by)} #{order_as}"
+            part = "#{quote_table_name(table_name)}.#{quote_column_name(order_by)}"
+            part += " #{order_as}" unless order_as.blank?
+            sql_parts << part
           end
           
           sql_parts.join(", ")

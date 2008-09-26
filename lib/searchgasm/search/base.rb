@@ -100,13 +100,7 @@ module Searchgasm #:nodoc:
       def options=(values)
         return unless values.is_a?(Hash)
         values.symbolize_keys.fast_assert_valid_keys(OPTIONS)
-        
-        OPTIONS.each do |option|
-          next unless values.has_key?(option)
-          send("#{option}=", values[option])
-        end
-        
-        values
+        values.each { |key, value| send("#{key}=", value) }
       end
       
       # Sanitizes everything down into options ActiveRecord::Base.find can understand

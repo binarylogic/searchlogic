@@ -8,15 +8,15 @@ class TestSearchOrdering < Test::Unit::TestCase
     
     search.order_by = "first_name"
     assert_equal "first_name", search.order_by
-    assert_equal "\"accounts\".\"first_name\" ASC", search.order
+    assert_equal "\"accounts\".\"first_name\"", search.order
     
     search.order_by = "last_name"
     assert_equal "last_name", search.order_by
-    assert_equal "\"accounts\".\"last_name\" ASC", search.order
+    assert_equal "\"accounts\".\"last_name\"", search.order
     
     search.order_by = ["first_name", "last_name"]
     assert_equal ["first_name", "last_name"], search.order_by
-    assert_equal "\"accounts\".\"first_name\" ASC, \"accounts\".\"last_name\" ASC", search.order
+    assert_equal "\"accounts\".\"first_name\", \"accounts\".\"last_name\"", search.order
     
     search.order = "created_at DESC"
     assert_equal "created_at", search.order_by
@@ -84,7 +84,7 @@ class TestSearchOrdering < Test::Unit::TestCase
     assert search.desc?
     assert_equal "\"accounts\".\"name\" DESC", search.order
     
-    assert_raise(ArgumentError) { search.order_as = nil }
+    assert_raise(ArgumentError) { search.order_as = "awesome" }
   end
   
   def test_order_by_auto_joins
@@ -110,16 +110,16 @@ class TestSearchOrdering < Test::Unit::TestCase
     assert_equal nil, search.priority_order_as
     
     search.priority_order_by = :name
-    assert_equal "\"accounts\".\"name\" ASC", search.priority_order
-    assert_equal "\"accounts\".\"name\" ASC", search.sanitize[:order]
+    assert_equal "\"accounts\".\"name\"", search.priority_order
+    assert_equal "\"accounts\".\"name\"", search.sanitize[:order]
     assert_equal nil, search.order
     assert_equal :name, search.priority_order_by
-    assert_equal "ASC", search.priority_order_as
+    assert_equal nil, search.priority_order_as
     
     search.order_by = :id
-    assert_equal "\"accounts\".\"name\" ASC, \"accounts\".\"id\" ASC", search.sanitize[:order]
+    assert_equal "\"accounts\".\"name\", \"accounts\".\"id\"", search.sanitize[:order]
     search.order_as = "DESC"
-    assert_equal "\"accounts\".\"name\" ASC, \"accounts\".\"id\" DESC", search.sanitize[:order]
+    assert_equal "\"accounts\".\"name\", \"accounts\".\"id\" DESC", search.sanitize[:order]
   end
   
   def test_priority_order_as
@@ -135,7 +135,7 @@ class TestSearchOrdering < Test::Unit::TestCase
     search.priority_order_as = "DESC"
     assert_equal "DESC", search.priority_order_as
     assert_equal nil, search.order_as
-    assert_raise(ArgumentError) { search.priority_order_as = nil }
+    assert_raise(ArgumentError) { search.priority_order_as = "awesome" }
     search.priority_order = nil
     assert_equal nil, search.priority_order_as
     assert_equal nil, search.order_as
