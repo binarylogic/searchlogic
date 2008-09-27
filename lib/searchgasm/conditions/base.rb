@@ -68,9 +68,11 @@ module Searchgasm
           
           if conditions.is_a?(Hash)
             return true if conditions[:any]
+            stringified_conditions = conditions.stringify_keys
+            stringified_conditions.keys.each { |condition| return false if condition.include?(".") } # setting conditions on associations, which is just another way of writing SQL, and we ignore SQL
+            
             column_names = model_class.column_names
-            conditions.stringify_keys.keys.each do |condition|
-              next if condition.include?(".") # setting conditions on associations, which is just another way of writing SQL, and we ignore SQL
+            stringified_conditions.keys.each do |condition|
               return true unless column_names.include?(condition)
             end
           end
