@@ -70,6 +70,7 @@ module Searchgasm
             return true if conditions[:any]
             column_names = model_class.column_names
             conditions.stringify_keys.keys.each do |condition|
+              next if condition.include?(".") # setting conditions on associations, which is just another way of writing SQL, and we ignore SQL
               return true unless column_names.include?(condition)
             end
           end

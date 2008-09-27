@@ -22,6 +22,7 @@ class TestConditionsBase < Test::Unit::TestCase
     assert !Searchgasm::Conditions::Base.needed?(User, {})
     assert !Searchgasm::Conditions::Base.needed?(User, {:first_name => "Ben"})
     assert Searchgasm::Conditions::Base.needed?(User, {:first_name_contains => "Awesome"})
+    assert !Searchgasm::Conditions::Base.needed?(User, {"orders.id" => 2})
   end
   
   def test_initialize

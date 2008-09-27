@@ -1,10 +1,11 @@
-== 1.2.2 released 2008-09-24
+== 1.2.2 released 2008-09-27
 
-* Fixed bug when reverse engineering order to order_by, assumed ASC and DESC would always be present.
+* Fixed bug when reverse engineering order to order_by, assumed ASC and DESC would always be present when they are not.
 * False is a meaningful value for some conditions, and false.blank? == true. So instead of using value.blank? to ignore conditions we use meaningless?(value), which returns false if it is false.
 * Fixed aliases for lt, lte, gt, and gte.
+* Fixed bug when writing conditions on associations via a hash with string keys
 
-== 1.2.1 released 2008-09-24
+== 1.2.1 released 2008-09-25
 
 * Fixed problem when determining if an order_by_link is currently being ordered. Just "stringified" both comparable values.
 * Removed default order_by and order_as. They will ONLY have values if you specify how to order, otherwise they are nil.
