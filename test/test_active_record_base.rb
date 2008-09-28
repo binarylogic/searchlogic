@@ -11,6 +11,7 @@ class TestActiveRecordBase < Test::Unit::TestCase
     assert_equal 1, Account.find(:first).id
     assert_equal [1,2,3], Account.find(:all, nil).map(&:id)
     assert_equal [1,2,3], Account.find(:all, {}).map(&:id)
+    assert_equal [1,2,3], Account.find(:all, :select => "id, name").map(&:id)
   end
   
   def test_standard_calculations

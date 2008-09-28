@@ -118,8 +118,7 @@ module Searchgasm #:nodoc:
             # The following is to return uniq records since we are using joins instead of includes
             if searching
               if !find_options[:select] || !find_options[:select] =~ /DISTINCT/i
-                select = find_options[:select] ? find_options[:select] : "*"
-                select = "#{quote_table_name(klass.table_name)}.#{select}" unless select.include?(".")
+                select = find_options[:select] ? find_options[:select] : "#{quote_table_name(klass.table_name)}.*"
                 find_options[:select] = "DISTINCT #{select}"
               end
             else

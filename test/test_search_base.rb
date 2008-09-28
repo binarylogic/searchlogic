@@ -180,6 +180,10 @@ class TestSearchBase < Test::Unit::TestCase
     assert_equal [Account.find(1)], search.find(:all)
     assert_equal Account.find(1), search.first
     assert_equal Account.find(1), search.find(:first)
+    
+    search = Account.new_search
+    search.select = "id, name"
+    assert_equal Account.all, search.all
   end
 
   def test_calculations
