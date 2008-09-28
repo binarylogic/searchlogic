@@ -4,6 +4,7 @@
 * False is a meaningful value for some conditions, and false.blank? == true. So instead of using value.blank? to ignore conditions we use meaningless?(value), which returns false if it is false.
 * Fixed aliases for lt, lte, gt, and gte.
 * Fixed bug when writing conditions on associations via a hash with string keys
+* Fixed bug in PostgreSQL where group by causes an error. Switched to DISTINCT instead.
 
 == 1.2.1 released 2008-09-25
 

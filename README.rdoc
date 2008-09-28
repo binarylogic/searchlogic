@@ -345,7 +345,7 @@ What that rule means is that any options you pass when searching get "sanitized"
 
 Author: {Ben Johnson}[http://github.com/binarylogic] of {Binary Logic}[http://www.binarylogic.com]
 
-Credit to {Zack Ham}[http://github.com/zackham] and {Robert Malko}[http://github.com/malkomalko/] for helping with feature suggestions.
+Credit to {Zack Ham}[http://github.com/zackham] for helping with feature suggestions.
 
 
 Copyright (c) 2008 {Ben Johnson}[http://github.com/binarylogic] of {Binary Logic}[http://www.binarylogic.com], released under the MIT license 

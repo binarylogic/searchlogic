@@ -153,6 +153,23 @@ module Searchgasm
       def per_page_choices=(value)
         @per_page_choices = value
       end
+      
+      def remove_duplicates # :nodoc:
+        @remove_duplicates = true unless @set_remove_duplicates
+        @remove_duplicates
+      end
+      
+      def remove_duplicates? # :nodoc:
+        remove_duplicates == true
+      end
+      
+      # Searchgasm removes all duplicates results in *ALL* search / calculation queries. It does this by forcing the DISTINCT operation in your SQL. ActiveRecord does this if you provide the :include option, but
+      # does not do this if you provide the :joins option. This is as expected because if you are using the joins you should know what you are doing. :joins are MUCH faster than the alternative :include. So to get
+      # the best of both world Searchgasm forces the DISTINCT option. If this comes as a surprise to you and don't want Searchgasm to do this, just set this to false.
+      def remove_duplicates=(value)
+        @set_remove_duplicates = true
+        @remove_duplicates = value
+      end
     end
   end
 end

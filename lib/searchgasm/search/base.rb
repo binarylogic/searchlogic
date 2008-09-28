@@ -112,13 +112,19 @@ module Searchgasm #:nodoc:
           next if value.blank?
           find_options[find_option] = value
         end
-
-        unless find_options[:joins].blank?
-          # The following is to return uniq records since we are using joins instead of includes
-          if searching
-            find_options[:group] ||= "#{quote_table_name(klass.table_name)}.#{quote_column_name(klass.primary_key)}"
-          else
-            find_options[:distinct] = true
+        
+        if Config.remove_duplicates?
+          unless find_options[:joins].blank?
+            # The following is to return uniq records since we are using joins instead of includes
+            if searching
+              if !find_options[:select] || !find_options[:select] =~ /DISTINCT/i
+                select = find_options[:select] ? find_options[:select] : "*"
+                select = "#{quote_table_name(klass.table_name)}.#{select}" unless select.include?(".")
+                find_options[:select] = "DISTINCT #{select}"
+              end
+            else
+              find_options[:distinct] = true
+            end
           end
         end
 
