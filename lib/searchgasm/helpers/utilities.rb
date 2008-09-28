@@ -37,10 +37,12 @@ module Searchgasm
         search_params.deep_delete(options[:exclude_search_params])
         
         if options[:search_params]
+          
+          #raise params_copy.inspect if options[:search_params][:order_by] == :id
           search_params.deep_merge!(options[:search_params])
           
           if options[:search_params][:order_by] && !options[:search_params][:order_as]
-            search_params[:order_as] = (options[:search_obj].order_by == options[:search_params][:order_by] && options[:search_obj].asc?) ? "DESC" : "ASC" 
+            search_params[:order_as] = (searchgasm_ordering_by?(options[:search_params][:order_by], options) && options[:search_obj].asc?) ? "DESC" : "ASC" 
           end
           
           [:order_by, :priority_order_by].each { |base64_field| search_params[base64_field] = searchgasm_base64_value(search_params[base64_field]) if search_params.has_key?(base64_field) }
@@ -90,6 +92,30 @@ module Searchgasm
         url += (url.last == "?" ? "" : (url.include?("?") ? "&amp;" : "?")) + literal_param_strings.join("&amp;")
       end
       
+      # When you set up a search form using form_for for remote_form_for searchgasm adds in some *magic* for you.
+      #
+      # Take the instance where a user orders the data by something other than the default, and then does a search. The user would expect the search to remember what the user selected to order the data by, right?
+      # What searchgasm does is add in some hidden fields, somewhere in the page, the represent the searchgasm "state". These are automatically added for you when you use the searchgasm helpers.
+      # Such as: page_links, page_link, order_by_link, per_page_select, etc. So if you are using those you do not need to worry about this helper.
+      #
+      # If for some reason you do not use any of these you need to put the searchgasm state on your page somewhere. Somewhere where the state will *always* be up-to-date, which would be most likely be in the
+      # partial that renders your search results (assuming you are using AJAX). Otherwise when the user starts a new search, the state will be reset. Meaning the order_by, per_page, etc will all be reset.
+      #
+      # === Options
+      # * <tt>:params_scope</tt> -- default: :search, this is the scope in which your search params will be preserved (params[:search]). If you don't want a scope and want your options to be at base leve in params such as params[:page], params[:per_page], etc, then set this to nil.
+      # * <tt>:search_obj</tt> -- default: @#{params_scope}, this is your search object, everything revolves around this. It will try to infer the name from your params_scope. If your params_scope is :search it will try to get @search, etc. If it can not be inferred by this, you need to pass the object itself.
+      def searchgasm_state(options)
+        return "" if @added_searchgasm_state
+        add_searchgasm_defaults!(options)
+        html = ""
+        (Search::Base::SPECIAL_FIND_OPTIONS - [:page, :priority_order]).each do |option|
+          value = options[:search_obj].send(option)
+          html += hidden_field(options[:params_scope], option, :value => (option == :order_by ? searchgasm_base64_value(value) : value))
+        end
+        @added_searchgasm_state = true
+        html
+      end
+      
       private
         # Adds default options for all helper methods.
         def add_searchgasm_defaults!(options)
@@ -117,22 +143,17 @@ module Searchgasm
         
         def searchgasm_base64_value(order_by)
           case order_by
-          when String
+          when String, Symbol
             order_by
           when Array, Hash
             [Marshal.dump(order_by)].pack("m")
           end
         end
         
-        def searchgasm_state_for(option, options)
-          @added_state_for ||= []
-          html = ""
-          unless @added_state_for.include?(option)
-            value = options[:search_obj].send(option)
-            html = hidden_field(options[:params_scope], option, :value => (option == :order_by ? searchgasm_base64_value(value) : value))
-            @added_state_for << option
-          end
-          html
+        def searchgasm_ordering_by?(order_by, options)
+          stringified_search_order_by = deep_stringify(options[:search_obj].order_by)
+          stringified_order_by = deep_stringify(order_by)
+          (options[:search_obj].order_by.blank? && options[:search_obj].klass.primary_key == stringified_order_by) || stringified_search_order_by == stringified_order_by
         end
         
         def literal_param_strings(literal_params, prefix)
@@ -151,6 +172,23 @@ module Searchgasm
           end
           
           param_strings
+        end
+        
+        def deep_stringify(obj)
+          case obj
+          when String
+            obj
+          when Symbol
+            obj.to_s
+          when Array
+            obj.collect { |item| deep_stringify(item) }
+          when Hash
+            new_obj = {}
+            obj.each { |key, value| new_obj[key.to_s] = deep_stringify(value) }
+            new_obj
+          else
+            obj
+          end
         end
     end
   end

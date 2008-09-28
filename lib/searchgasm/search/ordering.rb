@@ -39,7 +39,6 @@ module Searchgasm
       
       # Convenience method for determining if the ordering is ascending
       def asc?
-        return false if order_as.nil?
         !desc?
       end
       
@@ -224,9 +223,9 @@ module Searchgasm
             value = order_by_value.values.first
             case value
             when Hash
-              {key => build_order_by_auto_joins(value)}
+              {key.to_sym => build_order_by_auto_joins(value)}
             else
-              key
+              key.to_sym
             end
           else
             nil

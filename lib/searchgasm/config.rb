@@ -155,17 +155,19 @@ module Searchgasm
       end
       
       def remove_duplicates # :nodoc:
-        @remove_duplicates = true unless @set_remove_duplicates
-        @remove_duplicates
+        return @remove_duplicates if @set_remove_duplicates
+        @remove_duplicates ||= ::ActiveRecord::VERSION::MAJOR < 2 || (::ActiveRecord::VERSION::MAJOR == 2 && ::ActiveRecord::VERSION::MINOR < 2)
       end
       
       def remove_duplicates? # :nodoc:
         remove_duplicates == true
       end
       
-      # Searchgasm removes all duplicates results in *ALL* search / calculation queries. It does this by forcing the DISTINCT operation in your SQL. ActiveRecord does this if you provide the :include option, but
-      # does not do this if you provide the :joins option. This is as expected because if you are using the joins you should know what you are doing. :joins are MUCH faster than the alternative :include. So to get
-      # the best of both world Searchgasm forces the DISTINCT option. If this comes as a surprise to you and don't want Searchgasm to do this, just set this to false.
+      # If you are using ActiveRecord < 2.2.0 then ActiveRecord does not remove duplicates when using the :joins option, when it should. To fix this problem searchgasm does this for you. Searchgasm tries to act
+      # just like ActiveRecord, but in this instance it doesn't make sense.
+      #
+      # As a result, Searchgasm removes all duplicates results in *ALL* search / calculation queries. It does this by forcing the DISTINCT or GROUP BY operation in your SQL. Which might come as a surprise to you
+      # since it is not the "norm". If you don't want searchgasm to do this, set this to false.
       #
       # * <tt>Default:</tt> true
       # * <tt>Accepts:</tt> Boolean

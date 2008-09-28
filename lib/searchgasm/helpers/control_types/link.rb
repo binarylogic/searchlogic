@@ -85,9 +85,8 @@ module Searchgasm
         # * <tt>:search_params</tt> -- default: nil, Additional search params to add to the url, must be a hash. Adds the options into the :params_scope.
         # * <tt>:exclude_search_params</tt> -- default: nil, Same as :exclude_params but for the :search_params.
         def order_by_link(order_by, options = {})
-          order_by = deep_stringify(order_by)
           add_order_by_link_defaults!(order_by, options)
-          html = searchgasm_state_for(:order_by, options) + searchgasm_state_for(:order_as, options)
+          html = searchgasm_state(options)
           
           if !options[:is_remote]
             html += link_to(options[:text], options[:url], options[:html])
@@ -119,7 +118,7 @@ module Searchgasm
         # * <tt>:exclude_search_params</tt> -- default: nil, Same as :exclude_params but for the :search_params.
         def order_as_link(order_as, options = {})
           add_order_as_link_defaults!(order_as, options)
-          html = searchgasm_state_for(:order_as, options)
+          html = searchgasm_state(options)
           
           if !options[:is_remote]
             html += link_to(options[:text], options[:url], options[:html])
@@ -159,9 +158,8 @@ module Searchgasm
         # * <tt>:search_params</tt> -- default: nil, Additional search params to add to the url, must be a hash. Adds the options into the :params_scope.
         # * <tt>:exclude_search_params</tt> -- default: nil, Same as :exclude_params but for the :search_params.
         def priority_order_by_link(priority_order_by, priority_order_as, options = {})
-          priority_order_by = deep_stringify(priority_order_by)
           add_priority_order_by_link_defaults!(priority_order_by, priority_order_as, options)
-          html = searchgasm_state_for(:priority_order_by, options) + searchgasm_state_for(:priority_order_as, options)
+          html = searchgasm_state(options)
           
           if !options[:is_remote]
             html += link_to(options[:text], options[:url], options[:html])
@@ -195,7 +193,7 @@ module Searchgasm
         # * <tt>:exclude_search_params</tt> -- default: nil, Same as :exclude_params but for the :search_params.
         def per_page_link(per_page, options = {})
           add_per_page_link_defaults!(per_page, options)
-          html = searchgasm_state_for(:per_page, options)
+          html = searchgasm_state(options)
           
           if !options[:is_remote]
             html += link_to(options[:text], options[:url], options[:html])
@@ -227,7 +225,7 @@ module Searchgasm
         # * <tt>:exclude_search_params</tt> -- default: nil, Same as :exclude_params but for the :search_params.
         def page_link(page, options = {})
           add_page_link_defaults!(page, options)
-          html = searchgasm_state_for(:page, options)
+          html = searchgasm_state(options)
           
           if !options[:is_remote]
             html += link_to(options[:text], options[:url], options[:html])
@@ -244,7 +242,7 @@ module Searchgasm
             options[:text] ||= determine_order_by_text(order_by)
             options[:asc_indicator] ||= Config.asc_indicator
             options[:desc_indicator] ||= Config.desc_indicator
-            options[:text] += options[:search_obj].desc? ? options[:desc_indicator] : options[:asc_indicator] if deep_stringify(options[:search_obj].order_by) == order_by
+            options[:text] += options[:search_obj].desc? ? options[:desc_indicator] : options[:asc_indicator] if searchgasm_ordering_by?(order_by, options)
             options[:url] = searchgasm_params(options.merge(:search_params => {:order_by => order_by}))
             options
           end
@@ -261,7 +259,7 @@ module Searchgasm
             options[:column_name] ||= determine_order_by_text(priority_order_by).downcase 
             options[:activate_text] ||= "Show #{options[:column_name]} first"
             options[:deactivate_text] ||= "Don't show #{options[:column_name]} first"
-            active = deep_stringify(options[:search_obj].priority_order_by) == priority_order_by && options[:search_obj].priority_order_as == priority_order_as
+            active = deep_stringify(options[:search_obj].priority_order_by) == deep_stringify(priority_order_by) && options[:search_obj].priority_order_as == priority_order_as
             options[:text] ||= active ? options[:deactivate_text] : options[:activate_text]
             if active
               options.merge!(:search_params => {:priority_order_by => nil, :priority_order_as => nil})
@@ -296,23 +294,6 @@ module Searchgasm
               k = column_name.keys.first
               v = column_name.values.first
               determine_order_by_text(v, k)
-            end
-          end
-          
-          def deep_stringify(obj)
-            case obj
-            when String
-              obj
-            when Symbol
-              obj.to_s
-            when Array
-              obj.collect { |item| deep_stringify(item) }
-            when Hash
-              new_obj = {}
-              obj.each { |key, value| new_obj[key.to_s] = deep_stringify(value) }
-              new_obj
-            else
-              obj
             end
           end
       end

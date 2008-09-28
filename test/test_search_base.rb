@@ -140,7 +140,7 @@ class TestSearchBase < Test::Unit::TestCase
     search.conditions.users.id_greater_than = 2
     search.page = 3
     search.readonly = true
-    assert_equal({:joins => :users, :select=>"DISTINCT \"accounts\".*", :offset => 4, :readonly => true, :conditions => ["(\"accounts\".\"name\" LIKE ?) AND (\"users\".\"id\" > ?)", "%Binary%", 2], :limit => 2 }, search.sanitize)
+    assert_equal({:joins => :users, :group => "\"accounts\".\"id\"", :offset => 4, :readonly => true, :conditions => ["(\"accounts\".\"name\" LIKE ?) AND (\"users\".\"id\" > ?)", "%Binary%", 2], :limit => 2 }, search.sanitize)
   end
 
   def test_scope

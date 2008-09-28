@@ -5,6 +5,7 @@
 * Fixed aliases for lt, lte, gt, and gte.
 * Fixed bug when writing conditions on associations via a hash with string keys
 * Added Config.remove_duplicates to turn off the "automatic" removing of duplicates if desired.
+* Updated searchgasm_state helper to insert the entire state all at once.
 
 == 1.2.1 released 2008-09-25
 

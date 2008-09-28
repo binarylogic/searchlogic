@@ -67,7 +67,8 @@ class TestSearchOrdering < Test::Unit::TestCase
     search = Account.new_search
     assert_equal nil, search.order
     assert_equal nil, search.order_as
-    assert !search.asc?
+    assert search.asc?
+    assert !search.desc?
     
     search.order_as = "DESC"
     assert_equal nil, search.order_as
