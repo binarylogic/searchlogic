@@ -117,10 +117,13 @@ module Searchgasm #:nodoc:
           unless find_options[:joins].blank?
             # The following is to return uniq records since we are using joins instead of includes
             if searching
+              find_options[:group] ||= "#{quote_table_name(klass.table_name)}.#{quote_column_name(klass.primary_key)}"
+=begin
               if !find_options[:select] || !find_options[:select] =~ /DISTINCT/i
                 select = find_options[:select] ? find_options[:select] : "#{quote_table_name(klass.table_name)}.*"
                 find_options[:select] = "DISTINCT #{select}"
               end
+=end
             else
               find_options[:distinct] = true
             end
