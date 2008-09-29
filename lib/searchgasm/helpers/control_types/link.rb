@@ -239,10 +239,12 @@ module Searchgasm
         private
           def add_order_by_link_defaults!(order_by, options = {})
             add_searchgasm_control_defaults!(:order_by, options)
+            ordering_by_this = searchgasm_ordering_by?(order_by, options)
+            searchgasm_add_class!(options[:html], "ordering") if ordering_by_this
             options[:text] ||= determine_order_by_text(order_by)
             options[:asc_indicator] ||= Config.asc_indicator
             options[:desc_indicator] ||= Config.desc_indicator
-            options[:text] += options[:search_obj].desc? ? options[:desc_indicator] : options[:asc_indicator] if searchgasm_ordering_by?(order_by, options)
+            options[:text] += options[:search_obj].desc? ? options[:desc_indicator] : options[:asc_indicator] if ordering_by_this
             options[:url] = searchgasm_params(options.merge(:search_params => {:order_by => order_by}))
             options
           end

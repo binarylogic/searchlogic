@@ -1,4 +1,4 @@
-== 1.2.2 released 2008-09-27
+== 1.2.2 released 2008-09-29
 
 * Fixed bug when reverse engineering order to order_by, assumed ASC and DESC would always be present when they are not.
 * False is a meaningful value for some conditions, and false.blank? == true. So instead of using value.blank? to ignore conditions we use meaningless?(value), which returns false if it is false.
@@ -6,6 +6,7 @@
 * Fixed bug when writing conditions on associations via a hash with string keys
 * Added Config.remove_duplicates to turn off the "automatic" removing of duplicates if desired.
 * Updated searchgasm_state helper to insert the entire state all at once.
+* Added CSS class "ordering" to order_by_link if the search is being ordered by that.
 
 == 1.2.1 released 2008-09-25
 
