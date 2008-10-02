@@ -1,4 +1,9 @@
-== 1.3.0 released 2008-09-29
+== 1.3.1 released 2008-10-02
+
+* Fixed bug when requiring a connection adapter that is not present
+* Fixes bug in "not" conditions
+
+== 1.3.0 released 2008-10-02
 
 * Added modifiers into the mix: hour_of_created_at_less_than = 10, etc.
 * Changed how the Searchgasm::Conditions::Base class works. Instead of predefining all methods for all conditions upon instantiation, they are defined as needed via method_missing. Similar to

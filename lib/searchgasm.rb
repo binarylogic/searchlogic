@@ -1,11 +1,16 @@
 $:.unshift(File.dirname(__FILE__)) unless $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
-  
+
+require "active_support"
 require "active_record"
 require "active_record/version"
-require "active_record/connection_adapters/mysql_adapter"
-require "active_record/connection_adapters/postgresql_adapter"
-require "active_record/connection_adapters/sqlite_adapter"
-require "active_support"
+
+["mysql", "postgresql", "sqlite"].each do |adapter_name|
+  begin
+    require "active_record/connection_adapters/#{adapter_name}_adapter"
+    require "searchgasm/active_record/connection_adapters/#{adapter_name}_adapter"
+  rescue Exception
+  end
+end
 
 # Core Ext
 require "searchgasm/core_ext/hash"
@@ -21,9 +26,6 @@ require "searchgasm/config"
 # ActiveRecord
 require "searchgasm/active_record/base"
 require "searchgasm/active_record/associations"
-require "searchgasm/active_record/connection_adapters/mysql_adapter"
-require "searchgasm/active_record/connection_adapters/postgresql_adapter"
-require "searchgasm/active_record/connection_adapters/sqlite_adapter"
 
 # Search
 require "searchgasm/search/ordering"

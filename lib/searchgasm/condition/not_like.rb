@@ -10,7 +10,10 @@ module Searchgasm
       def to_conditions(value)
         like = Like.new
         like.value = value
-        like.to_conditions.gsub(" LIKE ", " NOT LIKE ")
+        conditions = like.to_conditions
+        return conditions if conditions.blank?
+        conditions.first.gsub!(" LIKE ", " NOT LIKE ")
+        conditions
       end
     end
   end
