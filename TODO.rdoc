@@ -1,5 +1,3 @@
 = To Do
 
-1. Add month condition for date and datetime columns. So you can specify a specific month, by name, number, etc.
-2. Add day condition for time and datetime columns. So you can specify that the time is during the day or the night.
-3. Add weekend condition for date and datetime columns. So you can specify if the date is on a friday, saturday, or sunday
+1. Perform "more efficient" checks: year_of_created_at = 2008 and month_of_created_at = 8. Should result in a "BETWEEN" statement utilizing the column indexes. Thanks Georg for letting me know about this.

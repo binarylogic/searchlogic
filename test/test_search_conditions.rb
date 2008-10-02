@@ -10,7 +10,7 @@ class TestSearchConditions < Test::Unit::TestCase
     assert_kind_of Searchgasm::Conditions::Base, search.conditions
     
     search = Account.new_search(:conditions => {:name_like => "Ben"})
-    assert_equal({:name_contains => "Ben"}, search.conditions.conditions)
+    assert_equal({:name_like => "Ben"}, search.conditions.conditions)
   end
   
   def test_auto_joins

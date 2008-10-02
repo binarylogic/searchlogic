@@ -1,11 +1,12 @@
 module Searchgasm
   module Condition
-    class DoesNotEqual < Base
-      self.ignore_meaningless = false
+    class NotEqual < Base
+      self.handle_array_value = true
+      self.ignore_meaningless_value = false
       
       class << self
-        def aliases_for_column(column)
-          ["#{column.name}_is_not", "#{column.name}_not"]
+        def condition_names_for_column
+          super + ["does_not_equal", "not_equal", "is_not", "not"]
         end
       end
       

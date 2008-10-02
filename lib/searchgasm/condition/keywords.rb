@@ -4,13 +4,8 @@ module Searchgasm
       BLACKLISTED_WORDS = ('a'..'z').to_a + ["about", "an", "are", "as", "at", "be", "by", "com", "de", "en", "for", "from", "how", "in", "is", "it", "la", "of", "on", "or", "that", "the", "the", "this", "to", "und", "was", "what", "when", "where", "who", "will", "with", "www"] # from ranks.nl        
       
       class << self
-        def name_for_column(column)
-          return unless string_column?(column)
-          super
-        end
-        
-        def aliases_for_column(column)
-          ["#{column.name}_kwords", "#{column.name}_kw"]
+        def condition_names_for_column
+          super + ["kwords", "kw"]
         end
       end
       
@@ -22,7 +17,7 @@ module Searchgasm
         return if search_parts.blank?
         
         search_parts.each do |search_part|
-          strs << "#{quoted_table_name}.#{quoted_column_name} LIKE ?"
+          strs << "#{column_sql} LIKE ?"
           subs << "%#{search_part}%"
         end
         

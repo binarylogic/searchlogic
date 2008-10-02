@@ -1,11 +1,12 @@
 module Searchgasm
   module Condition
     class Equals < Base
-      self.ignore_meaningless = false
+      self.handle_array_value = true
+      self.ignore_meaningless_value = false
       
       class << self
-        def aliases_for_column(column)
-          ["#{column.name}", "#{column.name}_is"]
+        def condition_names_for_column
+          super + ["", "is"]
         end
       end
       

@@ -1,3 +1,11 @@
+== 1.3.0 released 2008-09-29
+
+* Added modifiers into the mix: hour_of_created_at_less_than = 10, etc.
+* Changed how the Searchgasm::Conditions::Base class works. Instead of predefining all methods for all conditions upon instantiation, they are defined as needed via method_missing. Similar to
+  ActiveRecord's dynamic finders: User.find_by_name_and_email(name, email). Once the are defined they never hit method_missing again, acts like a cache.
+* Altered how values are handled for each condition, meaningless values are ignored completely.
+* Added in more "not" conditions: not_like, not_begin_with, not_have_keywords, etc
+
 == 1.2.2 released 2008-09-29
 
 * Fixed bug when reverse engineering order to order_by, assumed ASC and DESC would always be present when they are not.
