@@ -48,15 +48,15 @@ class TestConditionTypes < Test::Unit::TestCase
     
     condition = Searchgasm::Condition::Equals.new(Account, Account.columns_hash["id"])
     condition.value = 12
-    assert_equal "\"accounts\".\"id\" = 12", condition.sanitize
+    assert_equal ["\"accounts\".\"id\" = ?", 12], condition.sanitize
     
     condition = Searchgasm::Condition::Equals.new(Account, Account.columns_hash["id"])
     condition.value = [1,2,3,4]
-    assert_equal "\"accounts\".\"id\" IN (1,2,3,4)", condition.sanitize
+    assert_equal ["\"accounts\".\"id\" IN (?)", [1, 2, 3, 4]], condition.sanitize
     
     condition = Searchgasm::Condition::Equals.new(Account, Account.columns_hash["id"])
     condition.value = (1..10)
-    assert_equal "\"accounts\".\"id\" BETWEEN 1 AND 10", condition.sanitize
+    assert_equal ["\"accounts\".\"id\" BETWEEN ? AND ?", 1, 10], condition.sanitize
     
     condition = Searchgasm::Condition::GreaterThan.new(Account, Account.columns_hash["id"])
     condition.value = 2
@@ -100,15 +100,15 @@ class TestConditionTypes < Test::Unit::TestCase
     
     condition = Searchgasm::Condition::NotEqual.new(Account, Account.columns_hash["id"])
     condition.value = 12
-    assert_equal "\"accounts\".\"id\" != 12", condition.sanitize
+    assert_equal ["\"accounts\".\"id\" != ?", 12], condition.sanitize
     
     condition = Searchgasm::Condition::NotEqual.new(Account, Account.columns_hash["id"])
     condition.value = [1,2,3,4]
-    assert_equal "\"accounts\".\"id\" NOT IN (1,2,3,4)", condition.sanitize
+    assert_equal ["\"accounts\".\"id\" NOT IN (?)", [1, 2, 3, 4]], condition.sanitize
     
     condition = Searchgasm::Condition::NotEqual.new(Account, Account.columns_hash["id"])
     condition.value = (1..10)
-    assert_equal "\"accounts\".\"id\" NOT BETWEEN 1 AND 10", condition.sanitize
+    assert_equal ["\"accounts\".\"id\" NOT BETWEEN ? AND ?", 1, 10], condition.sanitize
     
     condition = Searchgasm::Condition::Keywords.new(Account, Account.columns_hash["name"])
     condition.value = "freedom yeah, freedom YEAH right"

@@ -15,12 +15,12 @@ module Searchgasm
         condition = Equals.new(klass, column)
         condition.value = value
         
-        sql = condition.sanitize
-        sql.gsub!(/ IS /, " IS NOT ")
-        sql.gsub!(/ BETWEEN /, " NOT BETWEEN ")
-        sql.gsub!(/ IN /, " NOT IN ")
-        sql.gsub!(/=/, "!=")
-        sql
+        conditions_array = condition.sanitize
+        conditions_array.first.gsub!(/ IS /, " IS NOT ")
+        conditions_array.first.gsub!(/ BETWEEN /, " NOT BETWEEN ")
+        conditions_array.first.gsub!(/ IN /, " NOT IN ")
+        conditions_array.first.gsub!(/=/, "!=")
+        conditions_array
       end
     end
   end

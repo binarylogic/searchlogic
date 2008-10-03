@@ -1,13 +1,17 @@
-== 1.3.2 released 2008-10-02
+== 1.3.3 released 2008-10-03
+
+* Fixed modifiers being double escaped on equals condition
+
+== 1.3.2 released 2008-10-03
 
 * Fixed condition to type cast all values in an array
 * Fixed bug to properly set the type for the type cast column
 * Fixed bug to allow conditions on local columns
 * Apparently ActiveRecord 2.2 doesnt remove duplicates on all joins, need to enforce this for ALL versions of ActiveRecord
 * Fixed bug when passing a symbol as the SQL type for condition return types
-* Moved duplicate removal to only apply when searching or calculating from a search object. Anything done in a normal ActiveRecord method should remain untouched and let ActiveRecord handle it. Just like in ActiveRecord if you do a User.all search and pass some :joins, you might get duplicate records.
-* Discard meaningless array values
-* Delete blank strings from mass assignments on conditions
+* Moved duplicate removal to only apply when searching or calculating from a search object. Anything done in a normal ActiveRecord method should remain untouched and let ActiveRecord handle it. Just like in ActiveRecord if you do a User.all search and pass some :joins, you might get duplicate records. Searchgasm should not change that behavior, unless called from a searchgasm object.
+* Discard meaningless array values when setting a condition.
+* Delete blank strings from mass assignments on conditions.
 
 == 1.3.1 released 2008-10-02
 

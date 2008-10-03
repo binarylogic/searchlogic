@@ -12,7 +12,7 @@ module Searchgasm
       
       def to_conditions(value)
         # Let ActiveRecord handle this
-        klass.send(:sanitize_sql_hash_for_conditions, {column.name => value})
+        ["#{column_sql} #{klass.send(:attribute_condition, value)}", *klass.send(:expand_range_bind_variables, [value])]
       end
     end
   end

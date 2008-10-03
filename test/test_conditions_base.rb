@@ -44,11 +44,11 @@ class TestConditionsBase < Test::Unit::TestCase
     conditions.name_contains = "Binary"
     assert_equal ["\"accounts\".\"name\" LIKE ?", "%Binary%"], conditions.sanitize
     conditions.id = 1
-    assert_equal ["(\"accounts\".\"id\" = 1) AND (\"accounts\".\"name\" LIKE ?)", "%Binary%"], conditions.sanitize
+    assert_equal ["(\"accounts\".\"id\" = ?) AND (\"accounts\".\"name\" LIKE ?)", 1, "%Binary%"], conditions.sanitize
     conditions.any = true
-    assert_equal ["(\"accounts\".\"id\" = 1) OR (\"accounts\".\"name\" LIKE ?)", "%Binary%"], conditions.sanitize
+    assert_equal ["(\"accounts\".\"id\" = ?) OR (\"accounts\".\"name\" LIKE ?)", 1, "%Binary%"], conditions.sanitize
     conditions.any = false
-    assert_equal ["(\"accounts\".\"id\" = 1) AND (\"accounts\".\"name\" LIKE ?)", "%Binary%"], conditions.sanitize
+    assert_equal ["(\"accounts\".\"id\" = ?) AND (\"accounts\".\"name\" LIKE ?)", 1, "%Binary%"], conditions.sanitize
   end
   
   def test_auto_joins
@@ -117,8 +117,9 @@ class TestConditionsBase < Test::Unit::TestCase
     conditions.name_contains = "awesome"
     assert_equal({:name_like => "awesome"}, conditions.conditions)
     
-    conditions.conditions = {:id_gt => "", :id => "", :name => ["", "", ""], :name_starts_with => "Ben"}
-    assert_equal({:name_like => "awesome", :name_begins_with => "Ben"}, conditions.conditions)
+    now = Time.now
+    conditions.conditions = {:id_gt => "", :id => "", :name => ["", "", ""], :created_at => ["", now], :name_starts_with => "Ben"}
+    assert_equal({:name_like => "awesome", :name_begins_with => "Ben", :created_at_equals => now}, conditions.conditions)
   end
   
   # Other general usage tests, need to clean these up

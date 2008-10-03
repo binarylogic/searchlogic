@@ -208,6 +208,7 @@ module Searchgasm
               new_condition_value = []
               condition_value.each { |v| new_condition_value << v unless v == "" }
               next if new_condition_value.size == 0
+              new_condition_value = new_condition_value.first if new_condition_value.size == 1
             else
               next if condition_value == ""
               new_condition_value = condition_value
