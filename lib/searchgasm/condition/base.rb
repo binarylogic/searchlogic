@@ -74,14 +74,7 @@ module Searchgasm
       
       # The value for the condition
       def value
-        return @casted_value if @casted_value
-        
-        case @value
-        when Array
-          @casted_value = @value.collect { |v| type_cast_value(v) }.flatten
-        else
-          @casted_value = type_cast_value(@value)
-        end
+        @casted_value ||= type_cast_value(@value)
       end
     
       # Sets the value for the condition
@@ -97,7 +90,13 @@ module Searchgasm
       
       private
         def meaningless?(v)
-          !explicitly_set_value? || (self.class.ignore_meaningless_value? && v != false && v.blank?)
+          case v
+          when Array
+            v.each { |i| return false unless meaningless?(i) }
+            true
+          else
+            !explicitly_set_value? || (self.class.ignore_meaningless_value? && v != false && v.blank?)
+          end
         end
 
         def meaningful?(v)
@@ -117,9 +116,14 @@ module Searchgasm
         end
         
         def type_cast_value(v)
-          return if meaningless?(v)
-          return v if !column_for_type_cast || !v.is_a?(String)
-          column_for_type_cast.type_cast(v)
+          case v
+          when Array
+            v.collect { |i| type_cast_value(i) }.compact
+          else
+            return if meaningless?(v)
+            return v if !column_for_type_cast || !v.is_a?(String)
+            column_for_type_cast.type_cast(v)
+          end
         end
     end
   end
