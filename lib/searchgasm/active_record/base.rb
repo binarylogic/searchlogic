@@ -11,7 +11,6 @@ module Searchgasm
       def calculate_with_searchgasm(*args)
         options = args.extract_options!
         options = filter_options_with_searchgasm(options, false)
-        args[1] = primary_key if options[:distinct] && [nil, :all].include?(args[1]) # quick fix for adding a column name if distinct is true and no specific column is provided
         args << options
         calculate_without_searchgasm(*args)
       end

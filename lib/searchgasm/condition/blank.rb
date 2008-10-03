@@ -10,7 +10,6 @@ module Searchgasm
       end
       
       def to_conditions(value)
-        # Some databases handle null values differently, let AR handle this
         if value == true
           "#{column_sql} is NULL or #{column_sql} = ''"
         elsif value == false

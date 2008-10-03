@@ -395,7 +395,20 @@ module Searchgasm
         
         def assert_valid_conditions(conditions)
           conditions.each do |condition, value|
-            raise(ArgumentError, "The #{condition} condition is not a valid condition") if !(self.class.condition_names + self.class.association_names + ["any"]).include?(condition.to_s) && respond_to?(condition)
+            next if (self.class.condition_names + self.class.association_names + ["any"]).include?(condition.to_s)
+            
+            go_to_next = false
+            self.class.column_details.each do |column_detail|
+              if column_detail[:column].name == condition.to_s || column_detail[:aliases].include?(condition.to_s)
+                go_to_next = true
+                break
+              end
+            end
+            next if go_to_next
+            
+            next unless respond_to?(condition)
+            
+            raise(ArgumentError, "The #{condition} condition is not a valid condition")
           end
         end
         

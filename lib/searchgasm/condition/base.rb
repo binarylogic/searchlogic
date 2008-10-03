@@ -44,8 +44,8 @@ module Searchgasm
 
         if column_obj
           self.column = column_obj.class < ::ActiveRecord::ConnectionAdapters::Column ? column_obj : klass.columns_hash[column_obj.to_s]
-          column_type ||= column.type
-          self.column_for_type_cast = column.class.new(column.name, column.default.to_s, self.class.value_type.to_s || column_type.to_s, column.null)
+          type = (!self.class.value_type.blank? && self.class.value_type.to_s) || (!column_type.blank? && column_type.to_s) || column.sql_type
+          self.column_for_type_cast = column.class.new(column.name, column.default.to_s, type, column.null)
           self.column_sql = column_sql || "#{klass.connection.quote_table_name(klass.table_name)}.#{klass.connection.quote_column_name(column.name)}"
         end
       end
@@ -80,10 +80,14 @@ module Searchgasm
       def value
         return @casted_value if @casted_value
         
-        if !column_for_type_cast || meaningless_value?
+        if !column_for_type_cast || meaningless_value? || (!@value.is_a?(String) && !@value.is_a?(Array))
           @casted_value = @value
         else
-          @casted_value = @value.is_a?(String) ? column_for_type_cast.type_cast(@value) : @value
+          if @value.is_a?(Array)
+            @casted_value = @value.collect { |v| v.is_a?(String) ? column_for_type_cast.type_cast(v) : v }
+          else
+            @casted_value = column_for_type_cast.type_cast(@value)
+          end
         end
       end
     

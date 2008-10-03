@@ -140,7 +140,7 @@ class TestSearchBase < Test::Unit::TestCase
     search.conditions.users.id_greater_than = 2
     search.page = 3
     search.readonly = true
-    assert_equal({:joins => :users, :group => "\"accounts\".\"id\"", :offset => 4, :readonly => true, :conditions => ["(\"accounts\".\"name\" LIKE ?) AND (\"users\".\"id\" > ?)", "%Binary%", 2], :limit => 2 }, search.sanitize)
+    assert_equal({:joins => :users, :offset => 4, :readonly => true, :conditions => ["(\"accounts\".\"name\" LIKE ?) AND (\"users\".\"id\" > ?)", "%Binary%", 2], :limit => 2 }, search.sanitize)
   end
 
   def test_scope
@@ -199,6 +199,15 @@ class TestSearchBase < Test::Unit::TestCase
     
     search.readonly = true
     assert_equal 4, search.sum('id')
+    
+    search = Account.new_search(:conditions => {:users => {:orders => {:id_gt => 1}}})
+    assert_equal 1, search.count
+    
+    search = Order.new_search(:conditions => {:user => {:account => {:id_gt => 1}}})
+    assert_equal 1, search.count
+    
+    search = UserGroup.new_search(:conditions => {:users => {:orders => {:id_gt => 1}}})
+    assert_equal 1, search.count
   end
   
   def test_method_creation_in_scope

@@ -21,8 +21,15 @@ module Searchgasm
             find_options = {}
             options = args.extract_options! # can't pass options, your options are in the search
             klass.send(:with_scope, :find => scope) do
-              args << sanitize(#{SEARCH_METHODS.include?(method)})
-              klass.#{method}(*args)
+              options = sanitize(#{SEARCH_METHODS.include?(method)})
+              if #{CALCULATION_METHODS.include?(method)}
+                options[:distinct] = true
+                args[0] = klass.primary_key if [nil, :all].include?(args[0])
+              end
+              args << options
+              result = klass.#{method}(*args)
+              result.uniq! if result.is_a?(Array) && Config.remove_duplicates?
+              result
             end
           end
         end_eval
