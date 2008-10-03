@@ -156,7 +156,7 @@ module Searchgasm
       
       def remove_duplicates # :nodoc:
         return @remove_duplicates if @set_remove_duplicates
-        @remove_duplicates ||= ::ActiveRecord::VERSION::MAJOR < 2 || (::ActiveRecord::VERSION::MAJOR == 2 && ::ActiveRecord::VERSION::MINOR < 2)
+        @remove_duplicates ||= true
       end
       
       def remove_duplicates? # :nodoc:
