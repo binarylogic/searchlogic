@@ -117,7 +117,7 @@ class TestConditionsBase < Test::Unit::TestCase
     conditions.name_contains = "awesome"
     assert_equal({:name_like => "awesome"}, conditions.conditions)
     
-    conditions.conditions = {:id_gt => "", :name_starts_with => "Ben"}
+    conditions.conditions = {:id_gt => "", :id => "", :name => ["", "", ""], :name_starts_with => "Ben"}
     assert_equal({:name_like => "awesome", :name_begins_with => "Ben"}, conditions.conditions)
   end
   

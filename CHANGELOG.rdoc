@@ -7,6 +7,7 @@
 * Fixed bug when passing a symbol as the SQL type for condition return types
 * Moved duplicate removal to only apply when searching or calculating from a search object. Anything done in a normal ActiveRecord method should remain untouched and let ActiveRecord handle it. Just like in ActiveRecord if you do a User.all search and pass some :joins, you might get duplicate records.
 * Discard meaningless array values
+* Delete blank strings from mass assignments on conditions
 
 == 1.3.1 released 2008-10-02
 

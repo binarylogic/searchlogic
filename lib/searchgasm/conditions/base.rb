@@ -199,6 +199,23 @@ module Searchgasm
         when Hash
           assert_valid_conditions(value)
           remove_conditions_from_protected_assignement(value).each do |condition, condition_value|
+            
+            # delete all blanks from mass assignments, forms submit blanks, blanks are meaningless
+            # equals condition thinks everything is meaningful, and arrays can be pased
+            case condition_value
+            when Array
+              skip_condition = true
+              condition_value.each do |v|
+                if v != ""
+                  skip_condition = false
+                  break
+                end
+              end
+              next if skip_condition
+            else
+              next if condition_value == ""
+            end
+            
             send("#{condition}=", condition_value)
           end
         else
