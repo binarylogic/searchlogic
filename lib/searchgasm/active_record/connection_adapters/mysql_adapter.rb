@@ -44,7 +44,7 @@ module Searchgasm
         end
         
         def year_sql(column_name)
-          "MONTH(#{column_name})"
+          "YEAR(#{column_name})"
         end
         
         # String functions
