@@ -202,21 +202,18 @@ module Searchgasm
             
             # delete all blanks from mass assignments, forms submit blanks, blanks are meaningless
             # equals condition thinks everything is meaningful, and arrays can be pased
+            new_condition_value = nil
             case condition_value
             when Array
-              skip_condition = true
-              condition_value.each do |v|
-                if v != ""
-                  skip_condition = false
-                  break
-                end
-              end
-              next if skip_condition
+              new_condition_value = []
+              condition_value.each { |v| new_condition_value << v unless v == "" }
+              next if new_condition_value.size == 0
             else
               next if condition_value == ""
+              new_condition_value = condition_value
             end
             
-            send("#{condition}=", condition_value)
+            send("#{condition}=", new_condition_value)
           end
         else
           reset_objects!
