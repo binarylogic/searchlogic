@@ -219,7 +219,7 @@ module Searchgasm
             next if relationship_conditions.blank?
             conditions_hash[object.relationship_name.to_sym] = relationship_conditions
           else
-            next if object.meaningless_value?
+            next if object.value_is_meaningless?
             conditions_hash[name] = object.value
           end
         end
@@ -374,7 +374,7 @@ module Searchgasm
               @conditions = nil
               
               #{name}_object.value = value
-              reset_#{name}! if #{name}_object.meaningless_value?
+              reset_#{name}! if #{name}_object.value_is_meaningless?
               value
             end
             

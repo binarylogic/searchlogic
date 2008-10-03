@@ -60,13 +60,9 @@ module Searchgasm
         @explicitly_set_value == true
       end
       
-      def meaningless_value?
-        !explicitly_set_value? || (self.class.ignore_meaningless_value? && meaningless?(@value))
-      end
-      
       # You should refrain from overwriting this method, it performs various tasks before callign your to_conditions method, allowing you to keep to_conditions simple.
       def sanitize(alt_value = nil) # :nodoc:
-        return if meaningless_value?
+        return if value_is_meaningless?
         v = alt_value || value
         if v.is_a?(Array) && !self.class.handle_array_value?
           merge_conditions(*v.collect { |i| sanitize(i) })
@@ -80,14 +76,11 @@ module Searchgasm
       def value
         return @casted_value if @casted_value
         
-        if !column_for_type_cast || meaningless_value? || (!@value.is_a?(String) && !@value.is_a?(Array))
-          @casted_value = @value
+        case @value
+        when Array
+          @casted_value = @value.collect { |v| type_cast_value(v) }.flatten
         else
-          if @value.is_a?(Array)
-            @casted_value = @value.collect { |v| v.is_a?(String) ? column_for_type_cast.type_cast(v) : v }
-          else
-            @casted_value = column_for_type_cast.type_cast(@value)
-          end
+          @casted_value = type_cast_value(@value)
         end
       end
     
@@ -98,10 +91,13 @@ module Searchgasm
         @value = v
       end
       
+      def value_is_meaningless? # :nodoc:
+        meaningless?(@value)
+      end
+      
       private
         def meaningless?(v)
-          return false if v == false
-          v.blank?
+          !explicitly_set_value? || (self.class.ignore_meaningless_value? && v != false && v.blank?)
         end
 
         def meaningful?(v)
@@ -118,6 +114,12 @@ module Searchgasm
         
         def quoted_table_name
           quote_table_name(klass.table_name)
+        end
+        
+        def type_cast_value(v)
+          return if meaningless?(v)
+          return v if !column_for_type_cast || !v.is_a?(String)
+          column_for_type_cast.type_cast(v)
         end
     end
   end
