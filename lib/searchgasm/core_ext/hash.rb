@@ -19,7 +19,7 @@ module Searchgasm
       def deep_delete_duplicate_keys(hash)
         hash.each do |k, v|
           if v.is_a?(Hash) && self[k]
-            self[k].deep_delete_duplicates(v)
+            self[k].deep_delete_duplicate_keys(v)
             delete(k) if self[k].blank?
           else
             delete(k)
