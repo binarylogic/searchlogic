@@ -1,6 +1,6 @@
 module Searchgasm
   module Helpers #:nodoc:
-    module Utilities # :nodoc:
+    module Utilities
       # Builds a hash of params for creating a url and preserves any existing params. You can pass this into url_for and build your url. Although most rails helpers accept a hash.
       #
       # Let's take the page_link helper. Here is the code behind that helper:

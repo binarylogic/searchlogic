@@ -8,19 +8,19 @@ class TestConditionTypes < Test::Unit::TestCase
     
     condition = Searchgasm::Condition::Blank.new(Account, Account.columns_hash["id"])
     condition.value = "true"
-    assert_equal "\"accounts\".\"id\" is NULL or \"accounts\".\"id\" = ''", condition.sanitize
+    assert_equal "\"accounts\".\"id\" is NULL or \"accounts\".\"id\" = '' or \"accounts\".\"id\" = false", condition.sanitize
     
     condition = Searchgasm::Condition::Blank.new(Account, Account.columns_hash["id"])
     condition.value = "false"
-    assert_equal "\"accounts\".\"id\" is NOT NULL and \"accounts\".\"id\" != ''", condition.sanitize
+    assert_equal "\"accounts\".\"id\" is NOT NULL and \"accounts\".\"id\" != '' and \"accounts\".\"id\" != false", condition.sanitize
     
     condition = Searchgasm::Condition::Blank.new(Account, Account.columns_hash["id"])
     condition.value = true
-    assert_equal "\"accounts\".\"id\" is NULL or \"accounts\".\"id\" = ''", condition.sanitize
+    assert_equal "\"accounts\".\"id\" is NULL or \"accounts\".\"id\" = '' or \"accounts\".\"id\" = false", condition.sanitize
     
     condition = Searchgasm::Condition::Blank.new(Account, Account.columns_hash["id"])
     condition.value = false
-    assert_equal "\"accounts\".\"id\" is NOT NULL and \"accounts\".\"id\" != ''", condition.sanitize
+    assert_equal "\"accounts\".\"id\" is NOT NULL and \"accounts\".\"id\" != '' and \"accounts\".\"id\" != false", condition.sanitize
     
     condition = Searchgasm::Condition::Blank.new(Account, Account.columns_hash["id"])
     condition.value = nil

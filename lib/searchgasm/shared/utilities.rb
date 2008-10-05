@@ -13,7 +13,7 @@ module Searchgasm
         
           conditions.each do |condition|
             next if condition.blank?
-            arr_condition = [condition].flatten
+            arr_condition = condition.is_a?(Array) ? condition : [condition]
             conditions_strs << arr_condition.first
             conditions_subs += arr_condition[1..-1]
           end

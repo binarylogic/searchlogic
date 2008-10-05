@@ -12,7 +12,15 @@ module Searchgasm
       
       def to_conditions(value)
         # Let ActiveRecord handle this
-        ["#{column_sql} #{klass.send(:attribute_condition, value)}", *klass.send(:expand_range_bind_variables, [value])]
+        args = []
+        case value
+        when Range
+          args = [value.first, value.last]
+        else
+          args << value
+        end
+                        
+        ["#{column_sql} #{klass.send(:attribute_condition, value)}", *args]
       end
     end
   end
