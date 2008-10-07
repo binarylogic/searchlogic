@@ -79,8 +79,27 @@ module Searchgasm #:nodoc:
         "#<#{klass}Search #{current_find_options.inspect}>"
       end
       
+      # Searchgasm requires that all joins be left outer joins for conditions and ordering to work properly
       def joins
-        merge_joins(@joins, auto_joins)
+        joins_sql = ""
+        all_joins = auto_joins
+        
+        case @joins
+        when String
+          joins_sql += @joins
+        else
+          all_joins = merge_joins(@joins, all_joins)
+        end
+        
+        return if joins_sql.blank? && all_joins.blank?
+        
+        unless all_joins.blank?
+          join_dependency = ::ActiveRecord::Associations::ClassMethods::JoinDependency.new(klass, all_joins, nil)
+          joins_sql += " " unless joins_sql.blank?
+          joins_sql += join_dependency.join_associations.collect { |assoc| assoc.association_join }.join
+        end
+        
+        joins_sql
       end
       
       def limit=(value)

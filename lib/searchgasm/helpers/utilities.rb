@@ -84,6 +84,7 @@ module Searchgasm
       # * <tt>:params</tt> -- default: nil, Additional params to add to the url, must be a hash
       # * <tt>:exclude_params</tt> -- default: nil, params you want to exclude. This is nifty because it does a "deep delete". So you can pass {:param1 => {:param2 => :param3}} and it will make sure param3 does not get include. param1 and param2 will not be touched. This also accepts an array or just a symbol or string.
       # * <tt>:search_params</tt> -- default: nil, Additional search params to add to the url, must be a hash. Adds the options into the :params_scope.
+      # * <tt>:literal_search_params</tt> -- default: nil, Additional search params to add to the url, but are not escaped. So you can add javascript into the URL: :literal_search_params => {:per_page => "' + escape(this.value) + '"}
       # * <tt>:exclude_search_params</tt> -- default: nil, Same as :exclude_params but for the :search_params.
       def searchgasm_url(options = {})
         search_params = searchgasm_params(options)

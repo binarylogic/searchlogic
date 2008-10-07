@@ -213,4 +213,9 @@ class TestConditionsBase < Test::Unit::TestCase
     conditions.reset_users!
     assert_equal({}, conditions.send(:objects))
   end
+  
+  def test_method_conflicts
+    conditions = Searchgasm::Cache::AccountConditions.new
+    assert_equal nil, conditions.id
+  end
 end

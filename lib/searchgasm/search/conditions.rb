@@ -11,7 +11,6 @@ module Searchgasm
           alias_method_chain :conditions=, :conditions
           alias_method_chain :conditions, :conditions
           alias_method_chain :auto_joins, :conditions
-          alias_method_chain :joins, :conditions
           alias_method_chain :sanitize, :conditions
         end
       end
@@ -55,16 +54,6 @@ module Searchgasm
       # ActiveRecord associations can be an SQL train wreck. Make sure you think about what you are searching and that you aren't joining a table with a million records.
       def auto_joins_with_conditions
         @memoized_auto_joins ||= merge_joins(auto_joins_without_conditions, conditions.auto_joins)
-      end
-      
-      # Changes joins to use left outer joins if conditions.any == true.
-      def joins_with_conditions
-        if conditions.any?
-          join_dependency = ::ActiveRecord::Associations::ClassMethods::JoinDependency.new(klass, joins_without_conditions, nil)
-          join_dependency.join_associations.collect { |assoc| assoc.association_join }.join
-        else
-          joins_without_conditions
-        end
       end
       
       def sanitize_with_conditions(searching = true) # :nodoc:

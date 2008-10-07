@@ -11,7 +11,7 @@ module Searchgasm
       attr_accessor :any, :relationship_name
       
       class << self
-        attr_accessor :added_klass_conditions, :added_column_conditions, :added_associations
+        attr_accessor :added_klass_conditions, :added_column_equals_conditions, :added_associations
         
         def column_details # :nodoc:
           return @column_details if @column_details
@@ -149,6 +149,7 @@ module Searchgasm
       
       def initialize(init_conditions = {})
         add_associations!
+        add_column_equals_conditions!
         self.conditions = init_conditions
       end
       
@@ -266,6 +267,12 @@ module Searchgasm
           self.class.added_associations = true
         end
         
+        def add_column_equals_conditions!
+          return true if self.class.added_column_equals_conditions
+          klass.column_names.each { |name| setup_condition(name) }
+          self.class.added_column_equals_conditions = true
+        end
+        
         def extract_column_and_condition_from_method_name(name)
           name_parts = name.gsub("=", "").split("_")
           
@@ -334,42 +341,56 @@ module Searchgasm
           modifier_name_parts = []
           modifier_klasses.each { |modifier_klass| modifier_name_parts << modifier_klass.modifier_names.first }
           method_name_parts = []
-          method_name_parts << modifier_name_parts.join("_of_") unless modifier_name_parts.blank?
+          method_name_parts << modifier_name_parts.join("_of_") + "_of" unless modifier_name_parts.blank?
           method_name_parts << column_name
-          method_name_parts << condition_name
+          method_name_parts << condition_name unless condition_name.blank?
           method_name_parts.join("_")
         end
         
         def method_missing(name, *args, &block)
-          modifier_klasses, column_detail, condition_klass = breakdown_method_name(name.to_s)
-          if !column_detail.nil? && !condition_klass.nil?
-            method_name = build_method_name(modifier_klasses, column_detail[:column].name, condition_klass.condition_names_for_column.first)
-            column_type = column_sql = nil
-            if !modifier_klasses.blank?
-              # Find the column type
-              column_type = modifier_klasses.first.return_type
-              
-              # Build the column sql
-              column_sql = "#{klass.connection.quote_table_name(klass.table_name)}.#{klass.connection.quote_column_name(column_detail[:column].name)}"
-              modifier_klasses.each do |modifier_klass|
-                next unless klass.connection.respond_to?(modifier_klass.adapter_method_name)
-                column_sql = klass.connection.send(modifier_klass.adapter_method_name, column_sql)
-              end
-            end
-            
-            add_condition!(condition_klass, method_name, column_detail[:column], column_type, column_sql)
-            
-            ([column_detail[:column].name] + column_detail[:aliases]).each do |column_name|
-              condition_klass.condition_names_for_column.each do |condition_name|
-                alias_method_name = build_method_name(modifier_klasses, column_name, condition_name)
-                add_condition_alias!(alias_method_name, method_name) unless alias_method_name == method_name
-              end
-            end
-            
-            send(method_name + (name.to_s =~ /=$/ ? "=" : ""), *args, &block)
+          if setup_condition(name)
+            send(name, *args, &block)
           else
             super
           end
+        end
+        
+        def setup_condition(name)
+          modifier_klasses, column_detail, condition_klass = breakdown_method_name(name.to_s)
+          if !column_detail.nil? && !condition_klass.nil?
+            method_name = build_method_name(modifier_klasses, column_detail[:column].name, condition_klass.condition_names_for_column.first)
+            
+            if !added_condition?(method_name)
+              column_type = column_sql = nil
+              if !modifier_klasses.blank?
+                # Find the column type
+                column_type = modifier_klasses.first.return_type
+              
+                # Build the column sql
+                column_sql = "#{klass.connection.quote_table_name(klass.table_name)}.#{klass.connection.quote_column_name(column_detail[:column].name)}"
+                modifier_klasses.each do |modifier_klass|
+                  next unless klass.connection.respond_to?(modifier_klass.adapter_method_name)
+                  column_sql = klass.connection.send(modifier_klass.adapter_method_name, column_sql)
+                end
+              end
+            
+              add_condition!(condition_klass, method_name, column_detail[:column], column_type, column_sql)
+            
+              ([column_detail[:column].name] + column_detail[:aliases]).each do |column_name|
+                condition_klass.condition_names_for_column.each do |condition_name|
+                  alias_method_name = build_method_name(modifier_klasses, column_name, condition_name)
+                  add_condition_alias!(alias_method_name, method_name) unless added_condition?(alias_method_name)
+                end
+              end
+            end
+            
+            alias_method_name = name.to_s.gsub("=", "")
+            add_condition_alias!(alias_method_name, method_name) unless added_condition?(alias_method_name)
+            
+            return true
+          end
+          
+          false
         end
         
         def add_condition!(condition, name, column = nil, column_type = nil, column_sql = nil)
@@ -395,6 +416,10 @@ module Searchgasm
             
             def reset_#{name}!; objects.delete(:#{name}); end
           end_eval
+        end
+        
+        def added_condition?(name)
+          respond_to?("#{name}_object") && respond_to?(name) && respond_to?("#{name}=") && respond_to?("reset_#{name}!")
         end
         
         def add_condition_alias!(alias_name, name)

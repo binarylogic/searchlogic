@@ -157,4 +157,10 @@ class TestSearchOrdering < Test::Unit::TestCase
   def test_sanitize
     # tested in test_priority_order_by
   end
+  
+  def test_ordering_includes_blank
+    search = User.new_search
+    search.order_by = {:account => :name}
+    assert_equal 4, search.count
+  end
 end

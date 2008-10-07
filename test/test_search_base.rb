@@ -28,9 +28,9 @@ class TestSearchBase < Test::Unit::TestCase
   end
 
   def test_setting_first_level_options
-    search = Account.new_search!(:include => :users, :joins => :test, :offset => 5, :limit => 20, :order => "name ASC", :select => "name", :readonly => true, :group => "name", :from => "accounts", :lock => true)
+    search = Account.new_search!(:include => :users, :joins => :users, :offset => 5, :limit => 20, :order => "name ASC", :select => "name", :readonly => true, :group => "name", :from => "accounts", :lock => true)
     assert_equal :users, search.include
-    assert_equal :test, search.joins
+    assert_equal " LEFT OUTER JOIN \"users\" ON users.account_id = accounts.id ", search.joins
     assert_equal 5, search.offset
     assert_equal 20, search.limit
     assert_equal "name ASC", search.order
@@ -44,9 +44,10 @@ class TestSearchBase < Test::Unit::TestCase
   
     search.include = :users
     assert_equal :users, search.include
-  
-    search.joins = "test"
-    assert_equal "test", search.joins
+    
+    # treat it like SQL, just like AR
+    search.joins = "users"
+    assert_equal "users", search.joins
   
     search.page = 5
     assert_equal 1, search.page
@@ -140,7 +141,7 @@ class TestSearchBase < Test::Unit::TestCase
     search.conditions.users.id_greater_than = 2
     search.page = 3
     search.readonly = true
-    assert_equal({:joins => :users, :offset => 4, :readonly => true, :conditions => ["(\"accounts\".\"name\" LIKE ?) AND (\"users\".\"id\" > ?)", "%Binary%", 2], :limit => 2 }, search.sanitize)
+    assert_equal({:joins => " LEFT OUTER JOIN \"users\" ON users.account_id = accounts.id ", :offset => 4, :readonly => true, :conditions => ["(\"accounts\".\"name\" LIKE ?) AND (\"users\".\"id\" > ?)", "%Binary%", 2], :limit => 2 }, search.sanitize)
   end
 
   def test_scope

@@ -1,3 +1,10 @@
+== 1.3.4 released 2008-10-03
+
+* Fixed method names creation for conditions with modifiers
+* Create local column conditions, incase there are method conflicts. Such as "id".
+* All joins are switched to left outer joins. When search with *any* conditions, inner joins return incorrect results. Also when ordering by an association that allows for blanks, inner joins exclude the records with blank values. Only option is left outer joins.
+* If joins is manually set with a string, treat it as SQL, just like ActiveRecord
+
 == 1.3.3 released 2008-10-03
 
 * Fixed modifiers being double escaped on equals condition
