@@ -1,3 +1,7 @@
+== 1.3.6 released 2008-10-08
+
+* Fixed bug when duping or cloning to copy over instance vars instead of method values
+
 == 1.3.5 released 2008-10-08
 
 * Since joins are now strings, AR doesn't know how to merge them properly. So searchgasm now checks which joins to skip over to avoid conflicts.

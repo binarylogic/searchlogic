@@ -56,8 +56,9 @@ module Searchgasm #:nodoc:
       # Specific implementation of cloning
       def clone
         options = {}
-        (OPTIONS - [:conditions]).each { |option| options[option] = send(option) }
+        (AR_OPTIONS - [:conditions]).each { |option| options[option] = instance_variable_get("@#{option}") }
         options[:conditions] = conditions.conditions
+        SPECIAL_FIND_OPTIONS.each { |option| options[option] = send(option) }
         obj = self.class.new(options)
         obj.protect = protected?
         obj.scope = scope
@@ -111,12 +112,12 @@ module Searchgasm #:nodoc:
         safe_joins = []
         join_dependency.join_associations.each do |assoc|
           join_sql = assoc.association_join
-          
-          #debugger if scope && scope[:joins].include?("LEFT OUTER JOIN \"users\"")
-          safe_joins << join_sql if scope_joins_sql.blank? || !scope_joins_sql.include?(join_sql.gsub(/(LEFT OUTER JOIN|INNER JOIN)/i, "").strip)
+          clean_join_sql = join_sql.gsub(/(LEFT OUTER JOIN|INNER JOIN)/i, "").strip
+          safe_joins << join_sql if (scope_joins_sql.blank? || !scope_joins_sql.include?(clean_join_sql)) && (joins_sql.blank? || !joins_sql.include?(clean_join_sql))
         end
         
         
+        debugger if conditions.respond_to?(:name_begins_with) && conditions.name_begins_with == "Ass"
         
         joins_sql += " " unless joins_sql.blank?
         joins_sql += safe_joins.join

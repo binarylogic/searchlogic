@@ -23,7 +23,7 @@ module Searchgasm
       end
       
       def protect=(value)
-        associations.each { |association| association.protect = value }
+        associations.each { |name, obj| obj.protect = value }
         @protect = value
       end
       
