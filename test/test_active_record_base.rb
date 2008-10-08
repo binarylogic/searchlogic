@@ -51,6 +51,8 @@ class TestActiveRecordBase < Test::Unit::TestCase
     
     assert_equal Account.find(1, 3), Account.all(:conditions => {:name_contains => "Binary"}, :page => 2)
     assert_equal [], Account.all(:conditions => {:name_contains => "Binary"}, :page => 2, :per_page => 20)
+    
+    assert_equal [Account.find(1)], Account.scope1.all(:conditions => {:users => {:first_name_starts_with => "Ben"}})
   end
   
   def test_searchgasm_counting

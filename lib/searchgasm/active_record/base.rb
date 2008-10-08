@@ -108,6 +108,7 @@ module Searchgasm
           return options unless Searchgasm::Search::Base.needed?(self, options)
           search = Searchgasm::Search::Base.create_virtual_class(self).new # call explicitly to avoid merging the scopes into the search
           search.acting_as_filter = true
+          search.scope = scope(:find)
           conditions = options.delete(:conditions) || options.delete("conditions") || {}
           if conditions
             case conditions
@@ -120,7 +121,7 @@ module Searchgasm
           search.options = options
           search.sanitize(searching)
         end
-      
+        
         def searchgasm_search(options = {})
           scope = {}
           current_scope = scope(:find) && scope(:find).deep_dup

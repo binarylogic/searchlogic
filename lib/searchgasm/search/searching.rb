@@ -20,7 +20,7 @@ module Searchgasm
           def #{method}(*args)
             find_options = {}
             options = args.extract_options! # can't pass options, your options are in the search
-            klass.send(:with_scope, :find => scope) do
+            klass.send(:with_scope, :find => acting_as_filter? ? {} : scope) do
               options = sanitize(#{SEARCH_METHODS.include?(method)})
               if #{CALCULATION_METHODS.include?(method)}
                 options[:distinct] = true

@@ -43,7 +43,7 @@ module Searchgasm #:nodoc:
       end
       
       # Flag to determine if searchgasm is acting as a filter for the ActiveRecord search methods.
-      # The purpose of this is to determine if Config.per_page should be implemented.
+      # By filter it means that searchgasm is being used on the default ActiveRecord search methods, like all, count, find(:all), first, etc.
       def acting_as_filter=(value)
         @acting_as_filter = value
       end
@@ -79,7 +79,8 @@ module Searchgasm #:nodoc:
         "#<#{klass}Search #{current_find_options.inspect}>"
       end
       
-      # Searchgasm requires that all joins be left outer joins for conditions and ordering to work properly
+      # The method is unique in the fact that if searchgasm is acting_as_filter? then auto joins are not included. Searchgasm should not change the default ActiveRecord behavior.
+      # If you are running a search via new_search or build_search then auto joins are included.
       def joins
         joins_sql = ""
         all_joins = auto_joins
@@ -92,14 +93,33 @@ module Searchgasm #:nodoc:
         end
         
         return if joins_sql.blank? && all_joins.blank?
+        return joins_sql if all_joins.blank?
         
-        unless all_joins.blank?
-          join_dependency = ::ActiveRecord::Associations::ClassMethods::JoinDependency.new(klass, all_joins, nil)
-          joins_sql += " " unless joins_sql.blank?
-          joins_sql += join_dependency.join_associations.collect { |assoc| assoc.association_join }.join
+        # convert scopes joins to sql, so we can determine which joins to skip
+        scope_joins_sql = nil
+        if scope && !scope[:joins].blank?
+          case scope[:joins]
+          when String
+            scope_joins_sql = scope[:joins]
+          else
+            join_dependency = ::ActiveRecord::Associations::ClassMethods::JoinDependency.new(klass, scope[:joins], nil)
+            scope_joins_sql = join_dependency.join_associations.collect { |assoc| assoc.association_join }.join
+          end
+        end
+
+        join_dependency = ::ActiveRecord::Associations::ClassMethods::JoinDependency.new(klass, all_joins, nil)
+        safe_joins = []
+        join_dependency.join_associations.each do |assoc|
+          join_sql = assoc.association_join
+          
+          #debugger if scope && scope[:joins].include?("LEFT OUTER JOIN \"users\"")
+          safe_joins << join_sql if scope_joins_sql.blank? || !scope_joins_sql.include?(join_sql.gsub(/(LEFT OUTER JOIN|INNER JOIN)/i, "").strip)
         end
         
-        joins_sql
+        
+        
+        joins_sql += " " unless joins_sql.blank?
+        joins_sql += safe_joins.join
       end
       
       def limit=(value)
@@ -123,7 +143,7 @@ module Searchgasm #:nodoc:
       end
       
       # Sanitizes everything down into options ActiveRecord::Base.find can understand
-      def sanitize(searching = true)
+      def sanitize(searching = true)  
         find_options = {}
         
         (searching ? AR_FIND_OPTIONS : AR_CALCULATIONS_OPTIONS).each do |find_option|

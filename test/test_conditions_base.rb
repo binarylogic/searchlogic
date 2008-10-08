@@ -10,7 +10,7 @@ class TestConditionsBase < Test::Unit::TestCase
   end
   
   def test_association_names
-    assert_equal ["account", "parent", "orders", "user_groups", "children"], Searchgasm::Cache::UserConditions.association_names
+    assert_equal ["children", "orders", "account", "parent", "user_groups"], Searchgasm::Cache::UserConditions.association_names
     assert_equal ["admin", "orders", "users"], Searchgasm::Cache::AccountConditions.association_names
   end
   

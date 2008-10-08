@@ -185,6 +185,8 @@ class TestSearchBase < Test::Unit::TestCase
     search = Account.new_search
     search.select = "id, name"
     assert_equal Account.all, search.all
+    
+    assert_equal [Account.find(1)], Account.scope1.new_search(:conditions => {:users => {:first_name_starts_with => "Ben"}}).all
   end
 
   def test_calculations

@@ -13,6 +13,8 @@ class Account < ActiveRecord::Base
   has_one :admin, :class_name => "User", :conditions => {:first_name => "Ben"}
   has_many :users, :dependent => :destroy
   has_many :orders, :through => :users
+  
+  named_scope :scope1, :conditions => {:users => {:first_name_contains => "Ben"}}
 end
 
 class UserGroup < ActiveRecord::Base

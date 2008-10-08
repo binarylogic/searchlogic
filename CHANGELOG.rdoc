@@ -1,4 +1,8 @@
-== 1.3.4 released 2008-10-03
+== 1.3.5 released 2008-10-08
+
+* Since joins are now strings, AR doesn't know how to merge them properly. So searchgasm now checks which joins to skip over to avoid conflicts.
+
+== 1.3.4 released 2008-10-07
 
 * Fixed method names creation for conditions with modifiers
 * Create local column conditions, incase there are method conflicts. Such as "id".
