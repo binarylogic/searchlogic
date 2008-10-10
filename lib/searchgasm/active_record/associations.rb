@@ -13,7 +13,7 @@ module Searchgasm
         end
       end
       
-      module Shared
+      module HasManyAssociation
         def count_with_searchgasm(*args)
           options = args.extract_options!
           args << filter_options_with_searchgasm(options)
@@ -27,15 +27,19 @@ end
 module ActiveRecord
   module Associations
     class AssociationCollection
-      include Searchgasm::ActiveRecord::Associations::AssociationCollection
-      
-      alias_method_chain :find, :searchgasm
+      if respond_to?(:find)
+        include Searchgasm::ActiveRecord::Associations::AssociationCollection
+        alias_method_chain :find, :searchgasm
+      end
     end
     
     class HasManyAssociation
-      include Searchgasm::ActiveRecord::Associations::Shared
-      
+      include Searchgasm::ActiveRecord::Associations::HasManyAssociation
       alias_method_chain :count, :searchgasm
+      
+      # Older versions of AR have find in here, not in AssociationCollection
+      include Searchgasm::ActiveRecord::Associations::AssociationCollection
+      alias_method_chain :find, :searchgasm
     end
   end
 end
