@@ -305,6 +305,11 @@ Here are all of the available modifiers:
   
   :md5                                                          Converts to a MD5
   :char_length      :length                                     The length of the string (integer)
+  :lower            :downcase, :lcase                           Converts the string to all lower case characters
+  :ltrin            :lstrip                                     Strips off spaces from the beginning of the string
+  :trim             :strip                                      Strips off spaces from the beginning and end of the string
+  :rtrim            :rstrip                                     Strips off spaces from the end of the string
+  :upper            :upcase, :ucase                             Converts the string to all upper case character
   
   :absolute         :abs                                        The absolute value (-1 => 1)
   :acos                                                         The arc cosine
@@ -343,6 +348,12 @@ Here's the cool part. Chaining modifiers:
   search.conditions.ceil_of_cos_of_sec_of_created_at_greater_than = 3
   
 As long as the modifier chain makes sense the possibilities are endless.
+
+=== Modifiers are not indexed
+
+Depending on your database you can create complex indexes. But chances are you probably didn't or don't plan to. So keep in mind that once you use a modifier it will not be using an index, meaning the query will be slower. One of the ways to get the best of both worlds is to cache virtual attributes in the database. Checkout my tutorial:
+
+http://www.binarylogic.com/2008/10/5/tutorial-caching-virtual-attributes-in-the-database
 
 == Roll your own conditions & modifiers
 

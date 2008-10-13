@@ -3,7 +3,7 @@ module Searchgasm
     class Lower < Base
       class << self
         def modifier_names
-          super + ["downcase"]
+          super + ["downcase", "lcase"]
         end
         
         def return_type

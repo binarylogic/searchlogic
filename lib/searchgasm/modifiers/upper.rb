@@ -3,7 +3,7 @@ module Searchgasm
     class Upper < Base
       class << self
         def modifier_names
-          super + ["upcase"]
+          super + ["upcase", "ucase"]
         end
         
         def return_type
