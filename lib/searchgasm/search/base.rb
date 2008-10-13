@@ -116,9 +116,6 @@ module Searchgasm #:nodoc:
           safe_joins << join_sql if (scope_joins_sql.blank? || !scope_joins_sql.include?(clean_join_sql)) && (joins_sql.blank? || !joins_sql.include?(clean_join_sql))
         end
         
-        
-        debugger if conditions.respond_to?(:name_begins_with) && conditions.name_begins_with == "Ass"
-        
         joins_sql += " " unless joins_sql.blank?
         joins_sql += safe_joins.join
       end

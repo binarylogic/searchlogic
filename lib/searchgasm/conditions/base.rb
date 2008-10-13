@@ -179,7 +179,7 @@ module Searchgasm
         associations.each do |name, association|
           next if association.conditions.blank?
           association_joins = association.auto_joins
-          j << (association_joins.blank? ? association.relationship_name.to_sym : {association.relationship_name.to_sym => association_joins})
+          j << (association_joins.blank? ? name : {name => association_joins})
         end
         j.blank? ? nil : (j.size == 1 ? j.first : j)
       end
@@ -233,7 +233,7 @@ module Searchgasm
           if object.class < Searchgasm::Conditions::Base
             relationship_conditions = object.conditions
             next if relationship_conditions.blank?
-            conditions_hash[object.relationship_name.to_sym] = relationship_conditions
+            conditions_hash[name] = relationship_conditions
           else
             next if object.value_is_meaningless?
             conditions_hash[name] = object.value
@@ -465,7 +465,7 @@ module Searchgasm
         end
         
         def reset_objects!
-          objects.each { |name, object| object.class < ::Searchgasm::Conditions::Base ? eval("@#{object.relationship_name} = nil") : eval("@#{name} = nil") }
+          objects.each { |name, object| eval("@#{name} = nil") }
           objects.clear
         end
         

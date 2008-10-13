@@ -234,4 +234,8 @@ class TestSearchBase < Test::Unit::TestCase
     search = Account.new_search
     assert_nothing_raised { search.inspect }
   end
+  
+  def test_sti
+    
+  end
 end

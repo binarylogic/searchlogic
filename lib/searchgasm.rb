@@ -47,7 +47,7 @@ SEARCHGASM_CONDITIONS.each { |condition| require "searchgasm/condition/#{conditi
 
 # Modifiers
 require "searchgasm/modifiers/base"
-SEARCHGASM_MODIFIERS = [:day_of_month, :day_of_week, :day_of_year, :hour, :microseconds, :milliseconds, :minute, :month, :second, :week, :year]
+SEARCHGASM_MODIFIERS = [:absolute, :acos, :asin, :atan, :ceil, :char_length, :cos, :cot, :day_of_month, :day_of_week, :day_of_year, :degrees, :exp, :floor, :hex, :hour, :log, :log10, :log2, :lower, :ltrim, :md5, :microseconds, :milliseconds, :minute, :month, :octal, :radians, :round, :rtrim, :second, :sign, :sin, :square_root, :tan, :trim, :upper, :week, :year]
 SEARCHGASM_MODIFIERS.each { |modifier| require "searchgasm/modifiers/#{modifier}" }
 
 # Helpers

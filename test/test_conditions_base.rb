@@ -10,7 +10,7 @@ class TestConditionsBase < Test::Unit::TestCase
   end
   
   def test_association_names
-    assert_equal ["children", "orders", "account", "parent", "user_groups"], Searchgasm::Cache::UserConditions.association_names
+    assert_equal ["dogs", "children", "user_groups", "orders", "account", "parent", "cats"], Searchgasm::Cache::UserConditions.association_names
     assert_equal ["admin", "orders", "users"], Searchgasm::Cache::AccountConditions.association_names
   end
   
@@ -217,5 +217,26 @@ class TestConditionsBase < Test::Unit::TestCase
   def test_method_conflicts
     conditions = Searchgasm::Cache::AccountConditions.new
     assert_equal nil, conditions.id
+  end
+  
+  def test_sti
+    #s = User.new_search
+    #s.conditions.dogs.description_like = "awesome"
+    #s.conditions.cats.description_like = "awesome"
+    #s.select = "ass"
+    #s.all
+    
+    joins = []
+    join_dependency = ::ActiveRecord::Associations::ClassMethods::JoinDependency.new(User, [:dogs, :cats], nil)
+    join_dependency.join_associations.each_with_index do |assoc, index|
+      #raise assoc.aliased_table_name.inspect if index == 1
+      joins << assoc.association_join
+    end
+    #raise joins.inspect
+    
+    conditions = Searchgasm::Cache::UserConditions.new
+    conditions.dogs.description_like = "Harry"
+    r = User.reflect_on_association(:dogs)
+    #raise r.inspect
   end
 end

@@ -52,8 +52,28 @@ module Searchgasm
           "length(#{column_name})"
         end
         
+        def lower_sql(column_name)
+          "lower(#{column_name})"
+        end
+        
+        def ltrim_sql(column_name)
+          "ltrim(#{column_name})"
+        end
+        
         def md5_sql(column_name)
           "md5(#{column_name})"
+        end
+        
+        def rtrim_sql(column_name)
+          "rtrim(#{column_name})"
+        end
+        
+        def trim_sql(column_name)
+          "trim(#{column_name})"
+        end
+        
+        def upper_sql(column_name)
+          "upper(#{column_name})"
         end
         
         # Number functions
