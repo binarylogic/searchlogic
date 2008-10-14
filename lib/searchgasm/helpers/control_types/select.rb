@@ -68,7 +68,7 @@ module Searchgasm
             else
               options[:html][:onchange] += remote_function(:url => url, :method => :get).gsub(/\\'\+this.value\+\\'/, "'+this.value+'")
             end
-            options[:html][:id] ||= ""
+            options[:html][:id] ||= "#{option}_select"
             options
           end
       end
