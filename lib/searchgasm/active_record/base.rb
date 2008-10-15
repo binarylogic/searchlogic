@@ -175,13 +175,17 @@ module ActiveRecord #:nodoc: all
         #
         # Where as before, the only way to get the above query to work would be to include line_items also, which is not neccessarily what you want.
         def add_joins!(sql, options_or_joins, scope = :auto) # :nodoc:
-          if respond_to?(:merge_joins)
+          code_type = array_of_strings?([""]) && :array_of_strings rescue nil
+          code_type ||= merge_joins("", "") && :merge_joins rescue nil
+
+          case code_type
+          when :array_of_strings, :merge_joins
             joins = options_or_joins
             scope = scope(:find) if :auto == scope
             merged_joins = scope && scope[:joins] && joins ? merge_joins(scope[:joins], joins) : (joins || scope && scope[:joins])
             case merged_joins
             when Symbol, Hash, Array
-              if array_of_strings?(merged_joins)
+              if code_type == :array_of_strings && array_of_strings?(merged_joins)
                 merged_joins.each { |merged_join| sql << " #{merged_join} " unless sql.include?(merged_join) }
               else
                 join_dependency = ActiveRecord::Associations::ClassMethods::InnerJoinDependency.new(self, merged_joins, nil)
