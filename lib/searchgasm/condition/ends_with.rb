@@ -1,6 +1,8 @@
 module Searchgasm
   module Condition
     class EndsWith < Base
+      self.join_arrays_with_or = true
+      
       class << self
         def condition_names_for_column
           super + ["ew", "ends", "end"]

@@ -1,6 +1,8 @@
 module Searchgasm
   module Condition
     class Tree < Base # :nodoc:
+      self.join_arrays_with_or = true
+      
       class << self
         def condition_names_for_column
           []

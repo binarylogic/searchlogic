@@ -1,6 +1,6 @@
 module Searchgasm
   module Condition
-    class InclusiveDescendantOf < Tree
+    class InclusiveDescendantOf < Tree      
       def to_conditions(value)
         condition = DescendantOf.new(klass, options)
         condition.value = value

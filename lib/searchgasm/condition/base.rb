@@ -8,7 +8,7 @@ module Searchgasm
       include Shared::Utilities
       
       attr_accessor :column, :column_for_type_cast, :column_sql, :column_sql_format, :klass, :table_name
-      class_inheritable_accessor :handle_array_value, :ignore_meaningless_value, :value_type
+      class_inheritable_accessor :handle_array_value, :ignore_meaningless_value, :join_arrays_with_or, :value_type
       self.ignore_meaningless_value = true
     
       class << self
@@ -23,6 +23,10 @@ module Searchgasm
         
         def ignore_meaningless_value? # :nodoc:
           ignore_meaningless_value == true
+        end
+        
+        def join_arrays_with_or?
+          joins_arrays_with_or == true
         end
         
         # Determines what to call the condition for the model
@@ -82,7 +86,7 @@ module Searchgasm
         return if value_is_meaningless?
         v = alt_value || value
         if v.is_a?(Array) && !self.class.handle_array_value?
-          merge_conditions(*v.collect { |i| sanitize(i) })
+          merge_conditions(*v.collect { |i| sanitize(i) } << {:any => self.class.join_arrays_with_or?})
         else
           v = v.utc if column && v.respond_to?(:utc) && [:time, :timestamp, :datetime].include?(column.type) && klass.time_zone_aware_attributes && !klass.skip_time_zone_conversion_for_attributes.include?(column.name.to_sym)
           to_conditions(v)

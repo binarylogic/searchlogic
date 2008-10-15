@@ -1,6 +1,9 @@
 module Searchgasm
   module Condition
     class Keywords < Base
+      # Because be default it joins with AND, so padding an array just gives you more options. Joining with and is no different than combining all of the words.
+      self.join_arrays_with_or = true
+      
       BLACKLISTED_WORDS = ('a'..'z').to_a + ["about", "an", "are", "as", "at", "be", "by", "com", "de", "en", "for", "from", "how", "in", "is", "it", "la", "of", "on", "or", "that", "the", "the", "this", "to", "und", "was", "what", "when", "where", "who", "will", "with", "www"] # from ranks.nl        
       
       class << self

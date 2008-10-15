@@ -1,9 +1,13 @@
-== 1.4.1 released 2008-10-08
+== 1.4.2 released 2008-10-08
+
+* Merge array of conditions with or or and where it makes sense. Begins with condition does not make sense to join with and, so instead join with or.
+
+== 1.4.1 released 2008-10-15
 
 * Extracted english text into configuration to support alternate languages. I18n support.
 * Improved method detection in add_joins to use respond_to? with the private method option set to true
 
-== 1.4.0 released 2008-10-08
+== 1.4.0 released 2008-10-15
 
 * Fixed bug when duping or cloning to copy over instance vars instead of method values
 * Fixed bug with older versions of ActiveRecord and creating an alias method chain on find in AssociationCollection
