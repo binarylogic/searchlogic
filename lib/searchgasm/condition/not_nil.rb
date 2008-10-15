@@ -8,7 +8,7 @@ module Searchgasm
       end
       
       def to_conditions(value)
-        is_nil = Nil.new
+        is_nil = Nil.new(klass, options)
         is_nil.value = !value
         is_nil.to_conditions
       end

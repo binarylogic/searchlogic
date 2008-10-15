@@ -18,22 +18,16 @@ module Searchgasm
     module Ordering
       def self.included(klass)
         klass.class_eval do
-          alias_method_chain :auto_joins, :ordering
           alias_method_chain :order=, :ordering
           alias_method_chain :sanitize, :ordering
           attr_reader :priority_order
         end
       end
       
-      def auto_joins_with_ordering # :nodoc:
-        @memoized_auto_joins ||= merge_joins(auto_joins_without_ordering, order_by_auto_joins, priority_order_by_auto_joins)
-      end
-      
       def order_with_ordering=(value) # :nodoc
         @order_by = nil
         @order_as = nil
         @order_by_auto_joins = nil
-        @memoized_auto_joins = nil
         self.order_without_ordering = value
       end
       
@@ -93,7 +87,6 @@ module Searchgasm
       #   order_by = [:id, {:user_group => :name}] # => users.id ASC, user_groups.name ASC
       def order_by=(value)  
         @order_by_auto_joins = nil
-        @memoized_auto_joins = nil
         @order_by = get_order_by_value(value)
         @order = order_by_to_order(@order_by, @order_as)
         @order_by
@@ -122,7 +115,6 @@ module Searchgasm
       # Same as order_by= but for your priority order. See priority_order= for more informaton on priority_order.
       def priority_order_by=(value)
         @priority_order_by_auto_joins = nil
-        @memoized_auto_joins = nil
         @priority_order_by = get_order_by_value(value)
         @priority_order = order_by_to_order(@priority_order_by, @priority_order_as)
         @priority_order_by

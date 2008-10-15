@@ -367,14 +367,14 @@ module Searchgasm
                 column_type = modifier_klasses.first.return_type
               
                 # Build the column sql
-                column_sql = "#{klass.connection.quote_table_name(klass.table_name)}.#{klass.connection.quote_column_name(column_detail[:column].name)}"
+                column_sql = "{table}.{column}"
                 modifier_klasses.each do |modifier_klass|
                   next unless klass.connection.respond_to?(modifier_klass.adapter_method_name)
                   column_sql = klass.connection.send(modifier_klass.adapter_method_name, column_sql)
                 end
               end
             
-              add_condition!(condition_klass, method_name, column_detail[:column], column_type, column_sql)
+              add_condition!(condition_klass, method_name, :column => column_detail[:column], :column_type => column_type, :column_sql_format => column_sql)
             
               ([column_detail[:column].name] + column_detail[:aliases]).each do |column_name|
                 condition_klass.condition_names_for_column.each do |condition_name|
@@ -393,13 +393,15 @@ module Searchgasm
           false
         end
         
-        def add_condition!(condition, name, column = nil, column_type = nil, column_sql = nil)
+        def add_condition!(condition, name, options = {})
           self.class.condition_names << name
+          options[:column] = options[:column].name if options[:column].class < ::ActiveRecord::ConnectionAdapters::Column
           
           self.class.class_eval <<-"end_eval", __FILE__, __LINE__
             def #{name}_object
               if objects[:#{name}].nil?
-                objects[:#{name}] = #{condition.name}.new(klass, #{column.blank? ? "nil" : "klass.columns_hash['#{column.name}']"}, #{column_type.blank? ? "nil" : "\"#{column_type}\""}, #{column_sql.blank? ? "nil" : "\"#{column_sql.gsub('"', '\"')}\""})
+                options = {}
+                objects[:#{name}] = #{condition.name}.new(klass, #{options.inspect})
               end
               objects[:#{name}]
             end

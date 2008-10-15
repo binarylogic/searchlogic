@@ -22,7 +22,7 @@ module Searchgasm #:nodoc:
       OPTIONS = SPECIAL_FIND_OPTIONS + AR_OPTIONS # the order is very important, these options get set in this order
       
       attr_accessor *AR_OPTIONS
-      attr_reader :auto_joins
+      attr_writer :scope
       
       class << self
         # Used in the ActiveRecord methods to determine if Searchgasm should get involved or not.
@@ -80,46 +80,27 @@ module Searchgasm #:nodoc:
         "#<#{klass}Search #{current_find_options.inspect}>"
       end
       
-      # The method is unique in the fact that if searchgasm is acting_as_filter? then auto joins are not included. Searchgasm should not change the default ActiveRecord behavior.
-      # If you are running a search via new_search or build_search then auto joins are included.
+      # Merges all joins together, including the scopes joins for
       def joins
-        joins_sql = ""
-        all_joins = auto_joins
-        
-        case @joins
-        when String
-          joins_sql += @joins
-        else
-          all_joins = merge_joins(@joins, all_joins)
-        end
-        
-        return if joins_sql.blank? && all_joins.blank?
-        return joins_sql if all_joins.blank?
-        
-        # convert scopes joins to sql, so we can determine which joins to skip
-        scope_joins_sql = nil
-        if scope && !scope[:joins].blank?
-          case scope[:joins]
-          when String
-            scope_joins_sql = scope[:joins]
-          else
-            join_dependency = ::ActiveRecord::Associations::ClassMethods::JoinDependency.new(klass, scope[:joins], nil)
-            scope_joins_sql = join_dependency.join_associations.collect { |assoc| assoc.association_join }.join
-          end
-        end
-
-        join_dependency = ::ActiveRecord::Associations::ClassMethods::JoinDependency.new(klass, all_joins, nil)
-        safe_joins = []
-        join_dependency.join_associations.each do |assoc|
-          join_sql = assoc.association_join
-          clean_join_sql = join_sql.gsub(/(LEFT OUTER JOIN|INNER JOIN)/i, "").strip
-          safe_joins << join_sql if (scope_joins_sql.blank? || !scope_joins_sql.include?(clean_join_sql)) && (joins_sql.blank? || !joins_sql.include?(clean_join_sql))
-        end
-        
-        joins_sql += " " unless joins_sql.blank?
-        joins_sql += safe_joins.join
+        all_joins = (safe_to_array(conditions.auto_joins) + safe_to_array(order_by_auto_joins) + safe_to_array(priority_order_by_auto_joins) + safe_to_array(@joins)).uniq
+        # For partial backwards compatibility, delete if the scope contains conflicts, AR 2.2 does this for you
+        scope_joins = safe_to_array(scope && scope[:joins])
+        all_joins.delete_if { |j| scope_joins.include?(j) } unless scope_joins.blank?
+        all_joins.size <= 1 ? all_joins.first : all_joins
       end
-      
+=begin
+      def joins
+        auto_joins = joins_to_sql_array((safe_to_array(conditions.auto_joins) + safe_to_array(order_by_auto_joins) + safe_to_array(priority_order_by_auto_joins)).uniq)
+        scope_joins = joins_to_sql_array(scope && scope[:joins])
+        include_joins = joins_to_sql_array(include)
+        
+        #raise auto_joins.inspect if conditions.respond_to?(:dogs) && conditions.dogs.id == 1
+        
+        auto_joins.delete_if { |auto_join| scope_joins.include?(auto_join) || include_joins.include?(auto_join) }
+        
+        #raise auto_joins.inspect if auto_joins.size > 1
+      end
+=end
       def limit=(value)
         @set_limit = true
         @limit = value.blank? || value == 0 ? nil : value.to_i
@@ -156,6 +137,31 @@ module Searchgasm #:nodoc:
       def scope
         @scope ||= {}
       end
+      
+      private
+        def joins_to_sql_array(joins)
+          unless array_of_strings?(safe_to_array(joins))
+            join_dependency = ::ActiveRecord::Associations::ClassMethods::JoinDependency.new(klass, joins, nil)
+            join_dependency.join_associations.collect { |assoc| assoc.association_join }
+          else
+            joins.is_a?(Array) ? joins : safe_to_array(joins)
+          end
+        end
+        
+        def safe_to_array(o)
+          case o
+          when NilClass
+            []
+          when Array
+            o
+          else
+            [o]
+          end
+        end
+        
+        def array_of_strings?(o)
+          o.is_a?(Array) && o.all?{|obj| obj.is_a?(String)}
+        end
     end
   end
 end

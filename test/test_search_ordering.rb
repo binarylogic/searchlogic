@@ -99,7 +99,7 @@ class TestSearchOrdering < Test::Unit::TestCase
     
     assert_raise(ArgumentError) { search.order_as = "awesome" }
   end
-  
+
   def test_order_by_auto_joins
     search = Account.new_search
     assert_equal nil, search.order_by_auto_joins
@@ -113,9 +113,8 @@ class TestSearchOrdering < Test::Unit::TestCase
     assert_equal [:users, :orders, {:users => :user_groups}], search.order_by_auto_joins
     search.priority_order_by = {:users => {:orders => :total}}
     assert_equal({:users => :orders}, search.priority_order_by_auto_joins)
-    assert_equal [:users, :orders, {:users => :user_groups}, {:users => :orders}], search.auto_joins
   end
-  
+
   def test_priority_order_by
     search = Account.new_search
     assert_equal nil, search.priority_order
@@ -159,7 +158,7 @@ class TestSearchOrdering < Test::Unit::TestCase
   end
   
   def test_ordering_includes_blank
-    search = User.new_search
+    search = User.new_search!
     search.order_by = {:account => :name}
     assert_equal 4, search.count
   end

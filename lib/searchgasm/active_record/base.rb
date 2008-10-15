@@ -165,6 +165,51 @@ module ActiveRecord #:nodoc: all
       def valid_calculations_options
         Calculations::CALCULATIONS_OPTIONS
       end
+      
+      private
+        # This is copied over from 2 different versions of ActiveRecord. I have to do this in order to preserve the "auto joins"
+        # as symbols. Keeping them as symbols allows ActiveRecord to merge them properly. The problem is when they conflict with includes.
+        # Includes add joins also, and they add them before joins do. So if they already added them skip them. Now you can do queries like:
+        #
+        # User.all(:joins => {:orders => :line_items}, :include => :orders)
+        #
+        # Where as before, the only way to get the above query to work would be to include line_items also, which is not neccessarily what you want.
+        def add_joins!(sql, options_or_joins, scope = :auto) # :nodoc:
+          if respond_to?(:merge_joins)
+            joins = options_or_joins
+            scope = scope(:find) if :auto == scope
+            merged_joins = scope && scope[:joins] && joins ? merge_joins(scope[:joins], joins) : (joins || scope && scope[:joins])
+            case merged_joins
+            when Symbol, Hash, Array
+              if array_of_strings?(merged_joins)
+                merged_joins.each { |merged_join| sql << " #{merged_join} " unless sql.include?(merged_join) }
+              else
+                join_dependency = ActiveRecord::Associations::ClassMethods::InnerJoinDependency.new(self, merged_joins, nil)
+                join_dependency.join_associations.each do |assoc|
+                  join_sql = assoc.association_join
+                  sql << " #{join_sql} " unless sql.include?(join_sql)
+                end
+              end
+            when String
+              sql << " #{merged_joins} " if merged_joins && !sql.include?(merged_joins)
+            end
+          else
+            options = options_or_joins
+            scope = scope(:find) if :auto == scope
+            [(scope && scope[:joins]), options[:joins]].each do |join|
+              case join
+              when Symbol, Hash, Array
+                join_dependency = ActiveRecord::Associations::ClassMethods::InnerJoinDependency.new(self, join, nil)
+                join_dependency.join_associations.each do |assoc|
+                  join_sql = assoc.association_join
+                  sql << " #{join_sql} " unless sql.include?(join_sql)
+                end
+              else
+                sql << " #{join} " if join && !sql.include?(join)
+              end
+            end
+          end
+        end
     end
   end
 end

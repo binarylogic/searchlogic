@@ -8,7 +8,7 @@ module Searchgasm
       end
       
       def to_conditions(value)
-        like = Like.new
+        like = Like.new(klass, options)
         like.value = value
         conditions = like.to_conditions
         return conditions if conditions.blank?

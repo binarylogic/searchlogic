@@ -105,7 +105,7 @@ module Searchgasm
       # === Options
       # * <tt>:params_scope</tt> -- default: :search, this is the scope in which your search params will be preserved (params[:search]). If you don't want a scope and want your options to be at base leve in params such as params[:page], params[:per_page], etc, then set this to nil.
       # * <tt>:search_obj</tt> -- default: @#{params_scope}, this is your search object, everything revolves around this. It will try to infer the name from your params_scope. If your params_scope is :search it will try to get @search, etc. If it can not be inferred by this, you need to pass the object itself.
-      def searchgasm_state(options)
+      def searchgasm_state(options = {})
         return "" if @added_searchgasm_state
         add_searchgasm_defaults!(options)
         html = ""

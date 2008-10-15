@@ -12,7 +12,7 @@ module Searchgasm
       
       def to_conditions(value)
         # Delegate to equals and then change
-        condition = Equals.new(klass, column)
+        condition = Equals.new(klass, options)
         condition.value = value
         
         conditions_array = condition.sanitize

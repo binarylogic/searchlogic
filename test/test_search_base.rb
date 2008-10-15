@@ -30,7 +30,7 @@ class TestSearchBase < Test::Unit::TestCase
   def test_setting_first_level_options
     search = Account.new_search!(:include => :users, :joins => :users, :offset => 5, :limit => 20, :order => "name ASC", :select => "name", :readonly => true, :group => "name", :from => "accounts", :lock => true)
     assert_equal :users, search.include
-    assert_equal " LEFT OUTER JOIN \"users\" ON users.account_id = accounts.id ", search.joins
+    assert_equal :users, search.joins
     assert_equal 5, search.offset
     assert_equal 20, search.limit
     assert_equal "name ASC", search.order
@@ -98,7 +98,7 @@ class TestSearchBase < Test::Unit::TestCase
     search.lock = true
     assert_equal search.lock, true
   end
-
+=begin
   def test_auto_joins
     search = Account.new_search
     assert_equal nil, search.auto_joins
@@ -114,7 +114,7 @@ class TestSearchBase < Test::Unit::TestCase
     search.conditions.reset_users!
     assert_equal nil, search.auto_joins
   end
-
+=end
   def test_limit
     search = Account.new_search
     search.limit = 10
@@ -141,7 +141,7 @@ class TestSearchBase < Test::Unit::TestCase
     search.conditions.users.id_greater_than = 2
     search.page = 3
     search.readonly = true
-    assert_equal({:joins => " LEFT OUTER JOIN \"users\" ON users.account_id = accounts.id ", :offset => 4, :readonly => true, :conditions => ["(\"accounts\".\"name\" LIKE ?) AND (\"users\".\"id\" > ?)", "%Binary%", 2], :limit => 2 }, search.sanitize)
+    assert_equal({:joins => :users, :offset => 4, :readonly => true, :conditions => ["(\"accounts\".\"name\" LIKE ?) AND (\"users\".\"id\" > ?)", "%Binary%", 2], :limit => 2 }, search.sanitize)
   end
 
   def test_scope
@@ -215,20 +215,6 @@ class TestSearchBase < Test::Unit::TestCase
     search = UserGroup.new_search(:conditions => {:users => {:orders => {:id_gt => 1}}})
     assert_equal 1, search.count
   end
-  
-  def test_method_creation_in_scope
-    # test ot make sure methods are not created across the board for all models
-  end
-  
-=begin
-  # AR desont handle this problem either
-  def test_specifying_includes
-    search = Account.new_search
-    search.include = :users
-    search.conditions.users.first_name_like = "Ben"
-    assert_nothing_raised { search.all }
-  end
-=end
   
   def test_inspect
     search = Account.new_search

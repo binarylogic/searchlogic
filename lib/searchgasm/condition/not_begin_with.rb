@@ -8,7 +8,7 @@ module Searchgasm
       end
       
       def to_conditions(value)
-        begin_with = BeginWith.new
+        begin_with = BeginWith.new(klass, options)
         begin_with.value = value
         conditions = being_with.to_conditions
         return conditions if conditions.blank?

@@ -9,12 +9,6 @@ module Searchgasm
       SEARCH_METHODS = [:all, :find, :first]
       CALCULATION_METHODS = [:average, :calculate, :count, :maximum, :minimum, :sum]
       
-      def self.included(klass)
-        klass.class_eval do
-          attr_accessor :scope
-        end
-      end
-      
       (SEARCH_METHODS + CALCULATION_METHODS).each do |method|
         class_eval <<-"end_eval", __FILE__, __LINE__
           def #{method}(*args)

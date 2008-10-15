@@ -22,21 +22,21 @@ class TestConditionBase < Test::Unit::TestCase
   end
   
   def test_initialize
-    condition = Searchgasm::Condition::Keywords.new(Account, Account.columns_hash["name"])
+    condition = Searchgasm::Condition::Keywords.new(Account, :column => Account.columns_hash["name"])
     assert_equal condition.klass, Account
     assert_equal Account.columns_hash["name"], condition.column
     
-    condition = Searchgasm::Condition::GreaterThan.new(Account, "id")
+    condition = Searchgasm::Condition::GreaterThan.new(Account, :column => "id")
     assert_equal Account.columns_hash["id"], condition.column
     
-    condition = Searchgasm::Condition::GreaterThan.new(Account, "id", :string, "some sql")
+    condition = Searchgasm::Condition::GreaterThan.new(Account, :column => "id", :column_type => :string, :column_sql_format => "some sql")
     assert_equal Account.columns_hash["id"], condition.column
     condition.value = "awesome"
     assert_equal ["some sql > ?", "awesome"], condition.sanitize
   end
   
   def test_explicitly_set_value
-    condition = Searchgasm::Condition::Keywords.new(Account, Account.columns_hash["name"])
+    condition = Searchgasm::Condition::Keywords.new(Account, :column => Account.columns_hash["name"])
     assert !condition.explicitly_set_value?
     condition.value = "test"
     assert condition.explicitly_set_value?

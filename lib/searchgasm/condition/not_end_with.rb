@@ -8,7 +8,7 @@ module Searchgasm
       end
       
       def to_conditions(value)
-        ends_with = EndsWith.new
+        ends_with = EndsWith.new(klass, options)
         ends_with.value = value
         conditions = ends_with.to_conditions
         return conditions if conditions.blank?

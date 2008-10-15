@@ -85,4 +85,8 @@ class TestActiveRecordBase < Test::Unit::TestCase
     assert_equal Set.new(["id_gt", "name_contains"]), Account.protected_conditions
     Account.send(:write_inheritable_attribute, :conditions_protected, nil)
   end
+  
+  def test_includes
+    assert_nothing_raised { Account.all(:conditions => {:users => {:first_name_like => "Ben"}}, :include => :users) }
+  end
 end

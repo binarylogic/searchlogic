@@ -1,9 +1,13 @@
-== 1.3.6 released 2008-10-08
+== 1.4.0 released 2008-10-08
 
 * Fixed bug when duping or cloning to copy over instance vars instead of method values
-* Fixed bug with older versions of ActiveRecord and creating an alias method change on find in AssociationCollection
+* Fixed bug with older versions of ActiveRecord and creating an alias method chain on find in AssociationCollection
 * Added modifiers: upper, lower, trim, ltrim, rtrim
 * Added not_nil and not_blank conditions
+* Modified conditions so that table name is a variable, this allows table name to be switched on the fly.
+* Modified auto joins to return symbols instead of SQL. This allows AR to properly merge the joins and ultimately result in proper SQL when performing multiple complex scopes.
+* Fixed conflicts between includes and joins, duplicate joins are not added. Includes are prioritized. This also makes ActiveRecord much more flexible. Now you can cherry pick included associations. And not have to worry about conflicting with joins.
+* Modified ActiveRecord's default behavior to use inner joins with the :joins option. Inner joins impose limitations. When providing this as a "convenience", inner joins do not make sense. The don't allow OR conditions to be across associations, nor does it properly order when an ordering by an association attribute when that association is optional.
 
 == 1.3.5 released 2008-10-08
 

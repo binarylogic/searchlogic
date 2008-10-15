@@ -7,7 +7,7 @@ module Searchgasm
     class Base
       include Shared::Utilities
       
-      attr_accessor :column, :column_for_type_cast, :column_sql, :klass
+      attr_accessor :column, :column_for_type_cast, :column_sql, :column_sql_format, :klass, :table_name
       class_inheritable_accessor :handle_array_value, :ignore_meaningless_value, :value_type
       self.ignore_meaningless_value = true
     
@@ -16,7 +16,7 @@ module Searchgasm
         def condition_type_name
           name.split("::").last.underscore
         end
-        
+                
         def handle_array_value?
           handle_array_value == true
         end
@@ -39,15 +39,28 @@ module Searchgasm
         end
       end
     
-      def initialize(klass, column_obj = nil, column_type = nil, column_sql = nil)
+      def initialize(klass, options = {})
         self.klass = klass
-
-        if column_obj
-          self.column = column_obj.class < ::ActiveRecord::ConnectionAdapters::Column ? column_obj : klass.columns_hash[column_obj.to_s]
-          type = (!self.class.value_type.blank? && self.class.value_type.to_s) || (!column_type.blank? && column_type.to_s) || column.sql_type
-          self.column_for_type_cast = column.class.new(column.name, column.default.to_s, type, column.null)
-          self.column_sql = column_sql || "#{klass.connection.quote_table_name(klass.table_name)}.#{klass.connection.quote_column_name(column.name)}"
+        self.table_name = options[:table_name] || klass.table_name
+        
+        if options[:column]
+          self.column = options[:column].class < ::ActiveRecord::ConnectionAdapters::Column ? options[:column] : klass.columns_hash[options[:column].to_s]
+          
+          if options[:column_for_type_cast]
+            self.column_for_type_cast = options[:column_for_type_cast]
+          else
+            type = (!self.class.value_type.blank? && self.class.value_type.to_s) || (!options[:column_type].blank? && options[:column_type].to_s) || column.sql_type
+            self.column_for_type_cast = column.class.new(column.name, column.default.to_s, type, column.null)
+          end
+          
+          self.column_sql_format = options[:column_sql_format] || "{table}.{column}"
         end
+      end
+      
+      # Substitutes string vars with table and column name. Allows us to switch the column and table on the fly and have the condition update appropriately.
+      # The table name could be variable depending on the condition. Take STI and more than one child model is used in the condition, the first gets the parent table name, the rest get aliases.
+      def column_sql
+        column_sql_format.gsub("{table}", quoted_table_name).gsub("{column}", quoted_column_name)
       end
     
       # Allows nils to be meaninful values
@@ -58,6 +71,10 @@ module Searchgasm
       # Need this if someone wants to actually use nil in a meaningful way
       def explicitly_set_value?
         @explicitly_set_value == true
+      end
+      
+      def options
+        {:table_name => table_name, :column => column, :column_for_type_cast => column_for_type_cast, :column_sql_format => column_sql_format}
       end
       
       # You should refrain from overwriting this method, it performs various tasks before callign your to_conditions method, allowing you to keep to_conditions simple.
@@ -107,12 +124,16 @@ module Searchgasm
           klass.connection.quote_column_name(column_name)
         end
         
+        def quoted_column_name
+          quote_column_name(column.name)
+        end
+        
         def quote_table_name(table_name)
           klass.connection.quote_table_name(table_name)
         end
         
         def quoted_table_name
-          quote_table_name(klass.table_name)
+          quote_table_name(table_name)
         end
         
         def type_cast_value(v)

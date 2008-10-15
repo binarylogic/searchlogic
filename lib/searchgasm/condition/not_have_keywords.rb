@@ -8,7 +8,7 @@ module Searchgasm
       end
       
       def to_conditions(value)
-        keywords = Keywords.new
+        keywords = Keywords.new(klass, options)
         keywords.value = value
         conditions = keywords.to_conditions
         return conditions if conditions.blank?

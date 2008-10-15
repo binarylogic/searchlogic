@@ -8,7 +8,7 @@ module Searchgasm
       end
       
       def to_conditions(value)
-        blank = Blank.new
+        blank = Blank.new(klass, options)
         blank.value = !value
         blank.to_conditions
       end
