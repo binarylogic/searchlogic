@@ -175,8 +175,7 @@ module ActiveRecord #:nodoc: all
         #
         # Where as before, the only way to get the above query to work would be to include line_items also, which is not neccessarily what you want.
         def add_joins!(sql, options_or_joins, scope = :auto) # :nodoc:
-          code_type = array_of_strings?([""]) && :array_of_strings rescue nil
-          code_type ||= merge_joins("", "") && :merge_joins rescue nil
+          code_type = (respond_to?(:array_of_strings?, true) && :array_of_strings) || (respond_to?(:merge_joins, true) && :merge_joins)
 
           case code_type
           when :array_of_strings, :merge_joins

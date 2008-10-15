@@ -45,6 +45,7 @@ class TestActiveRecordBase < Test::Unit::TestCase
     assert_equal Account.find(1, 3), Account.all(:conditions => {:name_contains => "Binary"})
     assert_equal [Account.find(1)], Account.all(:conditions => {:name_contains => "Binary", :users => {:first_name_starts_with => "Ben"}})
     assert_equal [], Account.all(:conditions => {:name_contains => "Binary", :users => {:first_name_starts_with => "Ben", :last_name => "Mills"}})
+    assert_equal Account.find(1, 2), Account.all(:conditions => {:users => {:id_gt => 0}}, :include => :users)
     
     read_only_accounts = Account.all(:conditions => {:name_contains => "Binary"}, :readonly => true)
     assert read_only_accounts.first.readonly?

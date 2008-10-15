@@ -1,6 +1,7 @@
 == 1.4.1 released 2008-10-08
 
 * Extracted english text into configuration to support alternate languages. I18n support.
+* Improved method detection in add_joins to use respond_to? with the private method option set to true
 
 == 1.4.0 released 2008-10-08
 

@@ -129,15 +129,6 @@ module Searchgasm #:nodoc:
       end
       
       private
-        def joins_to_sql_array(joins)
-          unless array_of_strings?(safe_to_array(joins))
-            join_dependency = ::ActiveRecord::Associations::ClassMethods::JoinDependency.new(klass, joins, nil)
-            join_dependency.join_associations.collect { |assoc| assoc.association_join }
-          else
-            joins.is_a?(Array) ? joins : safe_to_array(joins)
-          end
-        end
-        
         def safe_to_array(o)
           case o
           when NilClass
