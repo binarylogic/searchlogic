@@ -83,24 +83,9 @@ module Searchgasm #:nodoc:
       # Merges all joins together, including the scopes joins for
       def joins
         all_joins = (safe_to_array(conditions.auto_joins) + safe_to_array(order_by_auto_joins) + safe_to_array(priority_order_by_auto_joins) + safe_to_array(@joins)).uniq
-        # For partial backwards compatibility, delete if the scope contains conflicts, AR 2.2 does this for you
-        scope_joins = safe_to_array(scope && scope[:joins])
-        all_joins.delete_if { |j| scope_joins.include?(j) } unless scope_joins.blank?
         all_joins.size <= 1 ? all_joins.first : all_joins
       end
-=begin
-      def joins
-        auto_joins = joins_to_sql_array((safe_to_array(conditions.auto_joins) + safe_to_array(order_by_auto_joins) + safe_to_array(priority_order_by_auto_joins)).uniq)
-        scope_joins = joins_to_sql_array(scope && scope[:joins])
-        include_joins = joins_to_sql_array(include)
-        
-        #raise auto_joins.inspect if conditions.respond_to?(:dogs) && conditions.dogs.id == 1
-        
-        auto_joins.delete_if { |auto_join| scope_joins.include?(auto_join) || include_joins.include?(auto_join) }
-        
-        #raise auto_joins.inspect if auto_joins.size > 1
-      end
-=end
+      
       def limit=(value)
         @set_limit = true
         @limit = value.blank? || value == 0 ? nil : value.to_i
@@ -132,6 +117,11 @@ module Searchgasm #:nodoc:
         end
         
         find_options
+      end
+      
+      def select
+        @select ||= "DISTINCT #{klass.connection.quote_table_name(klass.table_name)}.*" if !joins.blank? && Config.remove_duplicates?
+        @select
       end
       
       def scope

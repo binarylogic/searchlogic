@@ -21,9 +21,7 @@ module Searchgasm
                 args[0] = klass.primary_key if [nil, :all].include?(args[0])
               end
               args << options
-              result = klass.#{method}(*args)
-              result.uniq! if result.is_a?(Array) && Config.remove_duplicates?
-              result
+              klass.#{method}(*args)
             end
           end
         end_eval
