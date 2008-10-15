@@ -26,7 +26,7 @@ module Searchgasm
         end
         
         def join_arrays_with_or?
-          joins_arrays_with_or == true
+          joins_array_with_or == true
         end
         
         # Determines what to call the condition for the model
