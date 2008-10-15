@@ -1,3 +1,7 @@
+== 1.4.1 released 2008-10-08
+
+* Extracted english text into configuration to support alternate languages.
+
 == 1.4.0 released 2008-10-08
 
 * Fixed bug when duping or cloning to copy over instance vars instead of method values

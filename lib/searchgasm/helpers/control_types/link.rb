@@ -259,8 +259,8 @@ module Searchgasm
           def add_priority_order_by_link_defaults!(priority_order_by, priority_order_as, options = {})
             add_searchgasm_control_defaults!(:priority_order_by, options)
             options[:column_name] ||= determine_order_by_text(priority_order_by).downcase 
-            options[:activate_text] ||= "Show #{options[:column_name]} first"
-            options[:deactivate_text] ||= "Don't show #{options[:column_name]} first"
+            options[:activate_text] ||= Config.priority_order_by_link_activate_text % options[:column_name]
+            options[:deactivate_text] ||= Config.priority_order_by_link_deactivate_text % options[:column_name]
             active = deep_stringify(options[:search_obj].priority_order_by) == deep_stringify(priority_order_by) && options[:search_obj].priority_order_as == priority_order_as
             options[:text] ||= active ? options[:deactivate_text] : options[:activate_text]
             if active
@@ -274,7 +274,7 @@ module Searchgasm
           
           def add_per_page_link_defaults!(per_page, options = {})
             add_searchgasm_control_defaults!(:per_page, options)
-            options[:text] ||= per_page.blank? ? "Show all" : "#{per_page} per page"
+            options[:text] ||= per_page.blank? ? Config.per_page_show_all_text : Config.per_page.text % per_page
             options[:url] = searchgasm_params(options.merge(:search_params => {:per_page => per_page}))
             options
           end
