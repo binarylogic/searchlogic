@@ -44,7 +44,9 @@ module Searchgasm
           
           def add_per_page_select_defaults!(options)
             add_per_page_links_defaults!(options)
-            options[:choices] = options[:choices].collect { |choice| choice.nil? ? [Config.per_page_show_all_text, choice] : [Config.per_page_text % choice, choice]}
+            options[:show_all_text] ||= Config.per_page_show_all_text
+            options[:text] ||= Config.per_page_text
+            options[:choices] = options[:choices].collect { |choice| choice.nil? ? [options[:show_all_text], choice] : [options[:text] % choice, choice]}
             add_searchgasm_select_defaults!(:per_page, options)
             options
           end

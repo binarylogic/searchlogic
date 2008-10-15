@@ -181,7 +181,8 @@ module Searchgasm
         # As you can see above, passing nil means "show all" and the text will automatically revert to "show all"
         #
         # === Options
-        # * <tt>:text</tt> -- default: column_name.to_s.humanize, text for the link
+        # * <tt>:text</tt> -- default: "%s per page", text for the link, only if per_page is not blank
+        # * <tt>:show_all_text</tt> -- default: "Show all", text for the link, only if per_page is blank
         # * <tt>:html</tt> -- html arrtributes for the <a> tag.
         #
         # === Advanced Options
@@ -274,7 +275,8 @@ module Searchgasm
           
           def add_per_page_link_defaults!(per_page, options = {})
             add_searchgasm_control_defaults!(:per_page, options)
-            options[:text] ||= per_page.blank? ? Config.per_page_show_all_text : Config.per_page.text % per_page
+            options[:show_all_text] ||= Config.per_page_show_all_text
+            options[:text] ||= per_page.blank? ? options[:show_all_text] : Config.per_page.text % per_page
             options[:url] = searchgasm_params(options.merge(:search_params => {:per_page => per_page}))
             options
           end
