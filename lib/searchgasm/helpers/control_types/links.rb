@@ -16,10 +16,15 @@ module Searchgasm
         # * <tt>:choices</tt> -- default: the models column names, the choices to loop through when calling order_by_link
         def order_by_links(options = {})
           add_order_by_links_defaults!(options)
-          link_options = options.deep_dup
-          link_options.delete(:choices)
+          links_options = options.deep_dup
+          links_options.delete(:choices)
           html = ""
-          options[:choices].each { |choice| html += order_by_link(choice, link_options.deep_dup) }
+          options[:choices].each do |choice|
+            link_options = links_option.deep_dup
+            text, value = option_text_and_value(choice)
+            link_options[:text] ||= text
+            html += order_by_link(value, link_options)
+          end
           html
         end
         
@@ -37,10 +42,15 @@ module Searchgasm
         # * <tt>:choices</tt> -- default: ["asc", "desc"], the choices to loop through when calling order_as_link
         def order_as_links(options = {})
           add_order_as_links_defaults!(options)
-          link_options = options.deep_dup
-          link_options.delete(:choices)
+          links_options = options.deep_dup
+          links_options.delete(:choices)
           html = ""
-          options[:choices].each { |choice| html += order_as_link(choice, link_options.deep_dup) }
+          options[:choices].each do |choice|
+            link_options = links_option.deep_dup
+            text, value = option_text_and_value(choice)
+            link_options[:text] ||= text
+            html += order_as_link(value, link_options)
+          end
           html
         end
         
@@ -55,13 +65,18 @@ module Searchgasm
         #
         # Please look at per_page_link. All options there are applicable here and are passed onto each option.
         #
-        # * <tt>:choices</tt> -- default: [10, 25, 50, 100, 150, 200, nil], the choices to loop through when calling per_page_link.
+        # * <tt>:choices</tt> -- default: [["10 per page", 10], ["25 per page", 25], ["50 per page", 50], ["100 per page", 100], ["150 per page", 150], ["200 per page", 200], ["Show all", nil]]
         def per_page_links(options = {})
           add_per_page_links_defaults!(options)
-          link_options = options.deep_dup
-          link_options.delete(:choices)
+          links_options = options.deep_dup
+          links_options.delete(:choices)
           html = ""
-          options[:choices].each { |choice| html += per_page_link(choice, link_options.deep_dup) }
+          options[:choices].each do |choice|
+            link_options = links_option.deep_dup
+            text, value = option_text_and_value(choice)
+            link_options[:text] ||= text
+            html += per_page_link(value, link_options)
+          end
           html
         end
         
@@ -148,41 +163,45 @@ module Searchgasm
         
         private
           def add_order_by_links_defaults!(options)
-            add_searchgasm_control_defaults!(:order_by, options)
+            add_searchgasm_control_defaults!(options)
             options[:choices] ||= options[:search_obj].klass.column_names.map(&:humanize)
             options
           end
           
           def add_order_as_links_defaults!(options)
-            add_searchgasm_control_defaults!(:order_as, options)
+            add_searchgasm_control_defaults!(options)
             options[:choices] = [:asc, :desc]
             options
           end
           
           def add_per_page_links_defaults!(options)
-            add_searchgasm_control_defaults!(:per_page, options)
-            options[:choices] ||= Config.per_page_choices.dup
+            add_searchgasm_control_defaults!(options)
+            options[:choices] ||= Config.helpers.per_page_links_choices.dup
             if !options[:search_obj].per_page.blank? && !options[:choices].include?(options[:search_obj].per_page)
               options[:choices] << options[:search_obj].per_page
               has_nil = options[:choices].include?(nil)
               options[:choices].compact!
-              options[:choices].sort!
+              options[:choices].sort! do |a, b|
+                a_value = (a.is_a?(Array) ? a.last : a).to_i
+                b_value = (b.is_a?(Array) ? b.last : b).to_i
+                a_value <=> b_value
+              end
               options[:choices] << nil if has_nil
             end
             options
           end
           
           def add_page_links_defaults!(options)
-            add_searchgasm_control_defaults!(:page, options)
+            add_searchgasm_control_defaults!(options)
             options[:first_page] ||= 1
             options[:last_page] ||= options[:search_obj].page_count
             options[:current_page] ||= options[:search_obj].page
-            options[:inner_spread] = Config.page_links_inner_spread unless options.has_key?(:inner_spread)
-            options[:outer_spread] = Config.page_links_outer_spread unless options.has_key?(:outer_spread)
-            options[:prev] = Config.page_links_prev unless options.has_key?(:prev)
-            options[:next] = Config.page_links_next unless options.has_key?(:next)
-            options[:first] = Config.page_links_first unless options.has_key?(:first)
-            options[:last] = Config.page_links_last unless options.has_key?(:last)
+            options[:inner_spread] = Config.helpers.page_links_inner_spread unless options.has_key?(:inner_spread)
+            options[:outer_spread] = Config.helpers.page_links_outer_spread unless options.has_key?(:outer_spread)
+            options[:prev] = Config.helpers.page_links_prev unless options.has_key?(:prev)
+            options[:next] = Config.helpers.page_links_next unless options.has_key?(:next)
+            options[:first] = Config.helpers.page_links_first unless options.has_key?(:first)
+            options[:last] = Config.helpers.page_links_last unless options.has_key?(:last)
             options
           end
           
@@ -193,14 +212,17 @@ module Searchgasm
             when Fixnum
               text = name
               page = name
-              searchgasm_add_class!(options[:html], "current_page") if span
+              searchgasm_add_class!(options[:html], Config.helpers.page_links_current_page_class_name) if span
             else
               text = options[name]
               page = options[:search_obj].send("#{name}_page")
-              searchgasm_add_class!(options[:html], "#{name}_page")
+              searchgasm_add_class!(options[:html], Config.helpers.send("page_links_#{name}_page_class_name"))
             end
             
-            searchgasm_add_class!(options[:html], "disabled_page") if span
+            if span
+              searchgasm_add_class!(options[:html], Config.helpers.page_links_disabled_class_name)
+              searchgasm_add_class!(options[:html], "page")
+            end
             options[:text] = text
             span ? content_tag(:span, text, options[:html]) : page_link(page, options)
           end

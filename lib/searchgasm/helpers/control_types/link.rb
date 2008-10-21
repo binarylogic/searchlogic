@@ -181,8 +181,6 @@ module Searchgasm
         # As you can see above, passing nil means "show all" and the text will automatically revert to "show all"
         #
         # === Options
-        # * <tt>:text</tt> -- default: "%s per page", text for the link, only if per_page is not blank
-        # * <tt>:show_all_text</tt> -- default: "Show all", text for the link, only if per_page is blank
         # * <tt>:html</tt> -- html arrtributes for the <a> tag.
         #
         # === Advanced Options
@@ -239,29 +237,32 @@ module Searchgasm
         
         private
           def add_order_by_link_defaults!(order_by, options = {})
-            add_searchgasm_control_defaults!(:order_by, options)
+            add_searchgasm_control_defaults!(options)
+            searchgasm_add_class!(options[:html], Config.helpers.order_by_link_class_name)
             ordering_by_this = searchgasm_ordering_by?(order_by, options)
             searchgasm_add_class!(options[:html], "ordering") if ordering_by_this
             options[:text] ||= determine_order_by_text(order_by)
-            options[:asc_indicator] ||= Config.asc_indicator
-            options[:desc_indicator] ||= Config.desc_indicator
+            options[:asc_indicator] ||= Config.helpers.order_by_link_asc_indicator
+            options[:desc_indicator] ||= Config.helpers.order_by_link_desc_indicator
             options[:text] += options[:search_obj].desc? ? options[:desc_indicator] : options[:asc_indicator] if ordering_by_this
             options[:url] = searchgasm_params(options.merge(:search_params => {:order_by => order_by}))
             options
           end
           
           def add_order_as_link_defaults!(order_as, options = {})
-            add_searchgasm_control_defaults!(:order_as, options)
+            add_searchgasm_control_defaults!(options)
+            searchgasm_add_class!(options[:html], Config.helpers.order_as_link_class_name)
             options[:text] ||= order_as.to_s
             options[:url] = searchgasm_params(options.merge(:search_params => {:order_as => order_as}))
             options
           end
           
           def add_priority_order_by_link_defaults!(priority_order_by, priority_order_as, options = {})
-            add_searchgasm_control_defaults!(:priority_order_by, options)
+            add_searchgasm_control_defaults!(options)
+            searchgasm_add_class!(options[:html], Config.helpers.priority_order_by_link_class_name)
             options[:column_name] ||= determine_order_by_text(priority_order_by).downcase 
-            options[:activate_text] ||= Config.priority_order_by_link_activate_text % options[:column_name]
-            options[:deactivate_text] ||= Config.priority_order_by_link_deactivate_text % options[:column_name]
+            options[:activate_text] ||= Config.helpers.priority_order_by_link_activate_text % options[:column_name]
+            options[:deactivate_text] ||= Config.helpers.priority_order_by_link_deactivate_text % options[:column_name]
             active = deep_stringify(options[:search_obj].priority_order_by) == deep_stringify(priority_order_by) && options[:search_obj].priority_order_as == priority_order_as
             options[:text] ||= active ? options[:deactivate_text] : options[:activate_text]
             if active
@@ -274,15 +275,16 @@ module Searchgasm
           end
           
           def add_per_page_link_defaults!(per_page, options = {})
-            add_searchgasm_control_defaults!(:per_page, options)
-            options[:show_all_text] ||= Config.per_page_show_all_text
-            options[:text] ||= per_page.blank? ? options[:show_all_text] : Config.per_page.text % per_page
+            add_searchgasm_control_defaults!(options)
+            searchgasm_add_class!(options[:html], Config.helpers.per_page_link_class_name)
+            options[:text] ||= per_page.to_s
             options[:url] = searchgasm_params(options.merge(:search_params => {:per_page => per_page}))
             options
           end
           
           def add_page_link_defaults!(page, options = {})
-            add_searchgasm_control_defaults!(:page, options)
+            add_searchgasm_control_defaults!(options)
+            searchgasm_add_class!(options[:html], Config.helpers.page_link_class_name)
             options[:text] ||= page.to_s
             options[:url] = searchgasm_params(options.merge(:search_params => {:page => page}))
             options

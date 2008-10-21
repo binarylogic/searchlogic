@@ -21,6 +21,8 @@ require "searchgasm/shared/virtual_classes"
 
 # Base classes
 require "searchgasm/version"
+require "searchgasm/config/helpers"
+require "searchgasm/config/search"
 require "searchgasm/config"
 
 # ActiveRecord

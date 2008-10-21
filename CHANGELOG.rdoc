@@ -1,6 +1,9 @@
-== 1.4.2 released 2008-10-08
+== 1.5.0 released 2008-10-20
 
 * Merge array of conditions with or or and where it makes sense. Begins with condition does not make sense to join with and, so instead join with or.
+* Cleaned up html validity so it will pass W3C validators
+* Restructure configuration to be more organized and allow for more configuration options.
+* Added more configuration options, especially for class names.
 
 == 1.4.1 released 2008-10-15
 

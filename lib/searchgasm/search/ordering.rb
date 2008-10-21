@@ -170,7 +170,7 @@ module Searchgasm
           
           case order_by
           when Array
-            order_by.each { |part| sql_parts << order_by_to_order(part, order_as) }
+            order_by.each { |part| sql_parts << order_by_to_order(part, order_as, alt_klass) }
           when Hash
             raise(ArgumentError, "when passing a hash to order_by you must only have 1 key: {:user_group => :name} not {:user_group => :name, :user_group => :id}. The latter should be [{:user_group => :name}, {:user_group => :id}]") if order_by.keys.size != 1
             key = order_by.keys.first

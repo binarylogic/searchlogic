@@ -55,12 +55,12 @@ module Searchgasm
           def extract_searchgasm_options!(args)
             options = args.extract_options!
             searchgasm_options = {}
-            [:hidden_fields].each { |option| searchgasm_options[option] = options.has_key?(option) ? options.delete(option) : Config.send(option) }
+            [:hidden_fields].each { |option| searchgasm_options[option] = options.has_key?(option) ? options.delete(option) : Config.helpers.send(option) }
             searchgasm_options[:hidden_fields] = [searchgasm_options[:hidden_fields]].flatten.compact
             args << options
             searchgasm_options
           end
-        
+          
           def searchgasm_args(args, search_object, search_options, for_helper = nil)
             args = args.dup
             first = args.shift
@@ -93,7 +93,7 @@ module Searchgasm
               
                 javascript = "if(typeof(Prototype) != 'undefined') {"
                 search_options[:hidden_fields].each { |field| javascript += "field = $('#{name}_#{field}'); if(field) { $('#{name}_#{field}_hidden').value = field.value; }" }
-                javascript += "} else if(jQuery) {"
+                javascript += "} else if(typeof(jQuery) != 'undefined') {"
                 search_options[:hidden_fields].each { |field| javascript += "field = $('##{name}_#{field}'); if(field) { $('##{name}_#{field}_hidden').val(field.val()); }" }
                 javascript += "}"
               

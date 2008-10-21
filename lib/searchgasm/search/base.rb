@@ -92,7 +92,7 @@ module Searchgasm #:nodoc:
       end
       
       def limit
-        @limit ||= Config.per_page if !acting_as_filter? && !@set_limit
+        @limit ||= Config.search.per_page if !acting_as_filter? && !@set_limit
         @limit
       end
       
@@ -120,7 +120,7 @@ module Searchgasm #:nodoc:
       end
       
       def select
-        @select ||= "DISTINCT #{klass.connection.quote_table_name(klass.table_name)}.*" if !joins.blank? && Config.remove_duplicates?
+        @select ||= "DISTINCT #{klass.connection.quote_table_name(klass.table_name)}.*" if !joins.blank? && Config.search.remove_duplicates?
         @select
       end
       

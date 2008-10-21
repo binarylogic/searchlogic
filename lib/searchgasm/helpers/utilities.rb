@@ -127,16 +127,15 @@ module Searchgasm
         end
         
         # Adds default options for all control type helper methods.
-        def add_searchgasm_control_defaults!(option, options)
+        def add_searchgasm_control_defaults!(options)
           add_searchgasm_defaults!(options)
           options[:html] ||= {}
-          options[:html][:class] ||= ""
-          searchgasm_add_class!(options[:html], option)
           options
         end
         
         def searchgasm_add_class!(html_options, new_class)
           new_class = new_class.to_s
+          html_options[:class] ||= ""
           classes = html_options[:class].split(" ")
           classes << new_class unless classes.include?(new_class)
           html_options[:class] = classes.join(" ")
