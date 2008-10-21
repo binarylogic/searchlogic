@@ -65,6 +65,17 @@ module Searchgasm
         end
         attr_writer :order_by_link_desc_indicator
         
+        # The class name used in order_by_links for the link that it is currently ordering by
+        #
+        # * <tt>Default:</tt> "# The class name for used in the page_link helper
+        #
+        # * <tt>Default:</tt> "page"
+        # * <tt>Accepts:</tt> String
+        def order_by_links_ordering_by_class_name
+          @order_by_links_ordering_by_class_name ||= "ordering_by"
+        end
+        attr_writer :order_by_links_ordering_by_class_name
+        
         # The class name for used in the order_by_select helper
         #
         # * <tt>Default:</tt> "order_by"
@@ -222,7 +233,7 @@ module Searchgasm
         def per_page_select_choices
           return @per_page_select_choices if @per_page_select_choices
           @per_page_select_choices = []
-          [10, 25, 50, 100, 150, 200].each { |choice| @per_page_select_choices << ["#{choice} per page", 25] }
+          [10, 25, 50, 100, 150, 200].each { |choice| @per_page_select_choices << ["#{choice} per page", choice] }
           @per_page_select_choices << ["Show all", nil]
         end
         attr_writer :per_page_select_choices

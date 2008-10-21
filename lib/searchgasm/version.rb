@@ -66,7 +66,7 @@ module Searchgasm
     end
 
     MAJOR = 1
-    MINOR = 4
+    MINOR = 5
     TINY  = 1
 
     # The current version as a Version instance

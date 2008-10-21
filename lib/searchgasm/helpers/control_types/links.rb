@@ -72,9 +72,10 @@ module Searchgasm
           links_options.delete(:choices)
           html = ""
           options[:choices].each do |choice|
-            link_options = links_option.deep_dup
+            link_options = links_options.deep_dup
             text, value = option_text_and_value(choice)
             link_options[:text] ||= text
+            searchgasm_add_class!(link_options[:html], Config.helpers.order_by_links_ordering_by_class_name) if link_options[:search_obj].per_page == value
             html += per_page_link(value, link_options)
           end
           html
@@ -177,18 +178,24 @@ module Searchgasm
           def add_per_page_links_defaults!(options)
             add_searchgasm_control_defaults!(options)
             options[:choices] ||= Config.helpers.per_page_links_choices.dup
-            if !options[:search_obj].per_page.blank? && !options[:choices].include?(options[:search_obj].per_page)
-              options[:choices] << options[:search_obj].per_page
-              has_nil = options[:choices].include?(nil)
-              options[:choices].compact!
+            if !options[:search_obj].per_page.blank? && !choices_include?(options[:choices], options[:search_obj].per_page)
+              options[:choices] << ["#{options[:search_obj].per_page} per page", options[:search_obj].per_page]
               options[:choices].sort! do |a, b|
                 a_value = (a.is_a?(Array) ? a.last : a).to_i
+                return -1 if a_value == 0
                 b_value = (b.is_a?(Array) ? b.last : b).to_i
                 a_value <=> b_value
               end
-              options[:choices] << nil if has_nil
             end
             options
+          end
+          
+          def choices_include?(choices, includes)
+            choices.each do |choice|
+              value = choice.is_a?(Array) ? choice.last : choice
+              return true if value == includes
+            end
+            false
           end
           
           def add_page_links_defaults!(options)

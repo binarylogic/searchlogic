@@ -32,6 +32,8 @@ lib/searchgasm/condition/sibling_of.rb
 lib/searchgasm/condition/tree.rb
 lib/searchgasm/conditions/base.rb
 lib/searchgasm/conditions/protection.rb
+lib/searchgasm/config/helpers.rb
+lib/searchgasm/config/search.rb
 lib/searchgasm/config.rb
 lib/searchgasm/core_ext/hash.rb
 lib/searchgasm/helpers/control_types/link.rb
