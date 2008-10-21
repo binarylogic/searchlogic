@@ -15,6 +15,7 @@ lib/searchgasm/condition/ends_with.rb
 lib/searchgasm/condition/equals.rb
 lib/searchgasm/condition/greater_than.rb
 lib/searchgasm/condition/greater_than_or_equal_to.rb
+lib/searchgasm/condition/ilike.rb
 lib/searchgasm/condition/inclusive_descendant_of.rb
 lib/searchgasm/condition/keywords.rb
 lib/searchgasm/condition/less_than.rb
@@ -26,6 +27,7 @@ lib/searchgasm/condition/not_blank.rb
 lib/searchgasm/condition/not_end_with.rb
 lib/searchgasm/condition/not_equal.rb
 lib/searchgasm/condition/not_have_keywords.rb
+lib/searchgasm/condition/not_ilike.rb
 lib/searchgasm/condition/not_like.rb
 lib/searchgasm/condition/not_nil.rb
 lib/searchgasm/condition/sibling_of.rb

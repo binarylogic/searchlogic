@@ -118,6 +118,10 @@ class TestConditionTypes < Test::Unit::TestCase
     condition.value = "%^$*(^$)"
     assert_equal nil, condition.sanitize
     
+    condition = Searchgasm::Condition::Keywords.new(Account, :column => Account.columns_hash["name"])
+    condition.value = "%^$*(^$) àáâãäåßéèêëìíîïñòóôõöùúûüýÿ"
+    assert_equal ["\"accounts\".\"name\" LIKE ?", "%àáâãäåßéèêëìíîïñòóôõöùúûüýÿ%"], condition.sanitize
+    
     condition = Searchgasm::Condition::LessThan.new(Account, :column => Account.columns_hash["id"])
     condition.value = 2
     assert_equal ["\"accounts\".\"id\" < ?", 2], condition.sanitize

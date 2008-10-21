@@ -1,6 +1,11 @@
+== 1.5.3 released 2008-10-21
+
+* Removed ilike conditions and let the like condition determine if it should use like or ilike depending on the connection adapter.
+* Fixed bug where the keywords condition was removing foreign characters.
+
 == 1.5.2 released 2008-10-21
 
-* Added ilike conditons
+* Added ilike conditions
 * Removed configatron dependency (was accidentally added)
 
 == 1.5.1 released 2008-10-20

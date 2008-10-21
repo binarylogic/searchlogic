@@ -12,7 +12,7 @@ module Searchgasm
         keywords.value = value
         conditions = keywords.to_conditions
         return conditions if conditions.blank?
-        conditions.first.gsub!(" LIKE ", " NOT LIKE ")
+        conditions.first.gsub!(" #{like_condition_name} ", " NOT #{like_condition_name} ")
         conditions
       end
     end

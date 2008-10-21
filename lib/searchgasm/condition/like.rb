@@ -8,7 +8,7 @@ module Searchgasm
       end
       
       def to_conditions(value)
-        ["#{column_sql} LIKE ?", "%#{value}%"]
+        ["#{column_sql} #{like_condition_name} ?", "%#{value}%"]
       end
     end
   end

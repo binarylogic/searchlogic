@@ -110,6 +110,10 @@ module Searchgasm
       end
       
       private
+        def like_condition_name
+          @like_condition_name ||= klass.connection.adapter_name == "PostgreSQL" ? "ILIKE" : "LIKE"
+        end
+        
         def meaningless?(v)
           case v
           when Array
