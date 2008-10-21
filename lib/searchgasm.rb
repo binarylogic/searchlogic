@@ -44,7 +44,7 @@ require "searchgasm/conditions/base"
 # Condition
 require "searchgasm/condition/base"
 require "searchgasm/condition/tree"
-SEARCHGASM_CONDITIONS = [:begins_with, :blank, :child_of, :descendant_of, :ends_with, :equals, :greater_than, :greater_than_or_equal_to, :inclusive_descendant_of, :like, :nil, :not_begin_with, :not_blank, :not_end_with, :not_equal, :not_have_keywords, :not_nil, :keywords, :less_than, :less_than_or_equal_to, :sibling_of]
+SEARCHGASM_CONDITIONS = [:begins_with, :blank, :child_of, :descendant_of, :ends_with, :equals, :greater_than, :greater_than_or_equal_to, :inclusive_descendant_of, :ilike, :like, :nil, :not_begin_with, :not_blank, :not_end_with, :not_equal, :not_have_keywords, :not_ilike, :not_nil, :keywords, :less_than, :less_than_or_equal_to, :sibling_of]
 SEARCHGASM_CONDITIONS.each { |condition| require "searchgasm/condition/#{condition}" }
 
 # Modifiers

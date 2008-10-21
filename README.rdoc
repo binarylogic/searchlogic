@@ -251,6 +251,7 @@ Each column can be used with any of the following conditions
   :equals                       :is, ""                             Lets ActiveRecord handle this
   :greater_than                 :gt, :after                         col > value
   :greater_than_or_equal_to     :at_least, :least, :gte             col >= value
+  :ilike                        :icontains, :ihas                   PostgreSQL specific, makes LIKE case insensitive
   :less_than                    :lt, :before                        col < value
   :less_than_or_equal_to        :at_most, :most, :lte               col <= value
   :keywords                     :kwords, :kw                        Splits into each word and omits meaningless words, a true keyword search
@@ -260,6 +261,7 @@ Each column can be used with any of the following conditions
   :not_end_with                 :not_ew, :not_end, :end_is_not, :end_not
   :not_equal                    :does_not_equal, :is_not, :not
   :not_have_keywords            :not_have_keywords, :not_keywords, :not_have_kw, :not_kw, :not_have_kwwords, :not_kwwords
+  :not_ilike                    :not_icontain, :not_ihave
   :not_like                     :not_contain, :not_have
 
 === Class level conditions
