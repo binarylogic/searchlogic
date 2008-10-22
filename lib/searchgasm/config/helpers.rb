@@ -17,6 +17,16 @@ module Searchgasm
           @hidden_fields ||= (Searchgasm::Search::Base::SPECIAL_FIND_OPTIONS - [:page, :priority_order])
         end
         attr_writer :hidden_fields
+        
+        # Searchgasm does some javascript magic when you use the form helpers with a Searchgasm object. To make configuration easier Searchgasm checks for the existence of Prototype and jQuery and uses the first
+        # one it finds. To cut back on the javascript output you can specify your library here.
+        #
+        # * <tt>Default:</tt> nil
+        # * <tt>Accepts:</tt> :prototype or :jquery
+        def javascript_library
+          @javascript_library
+        end
+        attr_writer :javascript_library
       
         # The class name for used in the order_as_link helper
         #

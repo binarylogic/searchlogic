@@ -35,7 +35,7 @@ Now try out some of the examples below:
       :first_name_contains => "Ben",          # first_name like '%Ben%'
       :email_ends_with => "binarylogic.com",  # email like '%binarylogic.com'
       :created_after => Time.now,             # created_at > Time.now
-      :created_at_hour_gt => 5                # HOUR(created_at) > 5 (depends on DB type)
+      :hour_of_created_at => 5                # HOUR(created_at) > 5 (depends on DB type)
     },
     :per_page => 20,                        # limit 20
     :page => 3,                             # offset 40, which starts us on page 3
@@ -49,7 +49,7 @@ same as above, but object based
   search.conditions.first_name_contains = "Ben"
   search.conditions.email_ends_with = "binarylogic.com"
   search.conditions.created_after = Time.now
-  search.conditiona.created_at_hour_gt = 5
+  search.conditiona.hour_of_created_at = 5
   search.per_page = 20
   search.page = 3
   search.order_as = "ASC"
