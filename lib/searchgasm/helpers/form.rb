@@ -91,7 +91,8 @@ module Searchgasm
                 options[:html][:onsubmit] ||= ""
                 options[:html][:onsubmit] += ";"
                 
-                javascript = "if(typeof(Prototype) != 'undefined') {" if Config.helpers.javascript_library.blank?
+                javascript = ""
+                javascript += "if(typeof(Prototype) != 'undefined') {" if Config.helpers.javascript_library.blank?
                 search_options[:hidden_fields].each { |field| javascript += "field = $('#{name}_#{field}'); if(field) { $('#{name}_#{field}_hidden').value = field.value; }" } if Config.helpers.javascript_library.blank? || Config.helpers.javascript_library == :prototype
                 javascript += "} else if(typeof(jQuery) != 'undefined') {" if Config.helpers.javascript_library.blank?
                 search_options[:hidden_fields].each { |field| javascript += "field = $('##{name}_#{field}'); if(field) { $('##{name}_#{field}_hidden').val(field.val()); }" } if Config.helpers.javascript_library.blank? || Config.helpers.javascript_library == :jquery
