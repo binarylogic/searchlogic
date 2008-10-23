@@ -128,7 +128,7 @@ module Searchgasm
               # For edge rails and older version compatibility, passing a binding to concat was deprecated
               begin
                 concat(html)
-              rescue ArgumentError
+              rescue ArgumentError, NameError
                 concat(html, block.binding)
               end
             end
