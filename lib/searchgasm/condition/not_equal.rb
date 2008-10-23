@@ -14,7 +14,6 @@ module Searchgasm
         # Delegate to equals and then change
         condition = Equals.new(klass, options)
         condition.value = value
-        
         conditions_array = condition.sanitize
         conditions_array.first.gsub!(/ IS /, " IS NOT ")
         conditions_array.first.gsub!(/ BETWEEN /, " NOT BETWEEN ")

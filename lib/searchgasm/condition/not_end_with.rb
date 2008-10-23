@@ -10,7 +10,7 @@ module Searchgasm
       def to_conditions(value)
         ends_with = EndsWith.new(klass, options)
         ends_with.value = value
-        conditions = ends_with.to_conditions
+        conditions = ends_with.sanitize
         return conditions if conditions.blank?
         conditions.first.gsub!(" LIKE ", " NOT LIKE ")
         conditions

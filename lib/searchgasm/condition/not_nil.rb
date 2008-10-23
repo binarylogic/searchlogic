@@ -10,7 +10,7 @@ module Searchgasm
       def to_conditions(value)
         is_nil = Nil.new(klass, options)
         is_nil.value = !value
-        is_nil.to_conditions
+        is_nil.sanitize
       end
     end
   end

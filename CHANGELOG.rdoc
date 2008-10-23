@@ -3,6 +3,7 @@
 * Removed ilike conditions and let the like condition determine if it should use like or ilike depending on the connection adapter.
 * Fixed bug where the keywords condition was removing foreign characters.
 * Added configuration option for specifying your javascript library, to cut down on the javascript Searchgasm adds into the form helpers
+* Fixed bug with "not" conditions to use sanitize method, like it should, instead of to_conditions.
 
 == 1.5.2 released 2008-10-21
 
