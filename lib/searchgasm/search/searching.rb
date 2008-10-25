@@ -17,7 +17,7 @@ module Searchgasm
             klass.send(:with_scope, :find => acting_as_filter? ? {} : scope) do
               options = sanitize(#{SEARCH_METHODS.include?(method)})
               if #{CALCULATION_METHODS.include?(method)}
-                options[:distinct] = true if !joins.blank? && Config.search.remove_duplicates?
+                options[:distinct] = true if #{method == :count} && !joins.blank? && Config.search.remove_duplicates?
                 args[0] = klass.primary_key if [nil, :all].include?(args[0])
               end
               args << options

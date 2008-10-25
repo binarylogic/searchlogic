@@ -61,7 +61,7 @@ class TestActiveRecordAssociations < Test::Unit::TestCase
     
     assert_equal User.find(1, 2), search.all
     assert_equal User.find(1), search.first
-    assert_equal 1.5, search.average("id")
+    assert_equal (1.5).to_s, search.average("id").to_s
     assert_equal 2, search.count
     
     search.conditions.first_name_contains = "Ben"
