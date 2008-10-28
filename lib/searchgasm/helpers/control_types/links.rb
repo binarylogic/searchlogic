@@ -228,7 +228,7 @@ module Searchgasm
             
             if span
               searchgasm_add_class!(options[:html], Config.helpers.page_links_disabled_class_name)
-              searchgasm_add_class!(options[:html], "page")
+              searchgasm_add_class!(options[:html], Config.helpers.page_link_class_name)
             end
             options[:text] = text
             span ? content_tag(:span, text, options[:html]) : page_link(page, options)
