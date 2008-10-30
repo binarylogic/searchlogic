@@ -1,6 +1,8 @@
 module Searchgasm
   module Condition
     class NotNil < Base
+      self.value_type = :boolean
+      
       class << self
         def condition_names_for_column
           super + ["is_not_nil", "is_not_null", "not_null"]

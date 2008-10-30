@@ -171,9 +171,9 @@ class TestConditionsBase < Test::Unit::TestCase
     conditions.dow_of_created_at_most = 5
     assert_equal ["(strftime('%w', \"accounts\".\"created_at\") <= ?) AND (strftime('%H', \"accounts\".\"created_at\") > ?)", 5, 2], conditions.sanitize
     conditions.month_of_created_at_nil = true
-    assert_equal ["(strftime('%w', \"accounts\".\"created_at\") <= ?) AND (strftime('%H', \"accounts\".\"created_at\") > ?) AND (strftime('%m', \"accounts\".\"created_at\") is NULL)", 5, 2], conditions.sanitize
+    assert_equal ["(strftime('%w', \"accounts\".\"created_at\") <= ?) AND (strftime('%H', \"accounts\".\"created_at\") > ?) AND (strftime('%m', \"accounts\".\"created_at\") IS NULL)", 5, 2], conditions.sanitize
     conditions.min_of_hour_of_month_of_created_at_nil = true
-    assert_equal ["(strftime('%w', \"accounts\".\"created_at\") <= ?) AND (strftime('%H', \"accounts\".\"created_at\") > ?) AND (strftime('%m', strftime('%H', strftime('%M', \"accounts\".\"created_at\"))) is NULL) AND (strftime('%m', \"accounts\".\"created_at\") is NULL)", 5, 2], conditions.sanitize
+    assert_equal ["(strftime('%w', \"accounts\".\"created_at\") <= ?) AND (strftime('%H', \"accounts\".\"created_at\") > ?) AND (strftime('%m', strftime('%H', strftime('%M', \"accounts\".\"created_at\"))) IS NULL) AND (strftime('%m', \"accounts\".\"created_at\") IS NULL)", 5, 2], conditions.sanitize
   end
   
   def test_objects

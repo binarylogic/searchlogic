@@ -11,9 +11,9 @@ module Searchgasm
       
       def to_conditions(value)
         if value == true
-          "#{column_sql} is NULL"
+          "#{column_sql} IS NULL"
         elsif value == false
-          "#{column_sql} is NOT NULL"
+          "#{column_sql} IS NOT NULL"
         end
       end
     end

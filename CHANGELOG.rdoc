@@ -5,6 +5,7 @@
 * Added configuration option for specifying your javascript library, to cut down on the javascript Searchgasm adds into the form helpers
 * Fixed bug with "not" conditions to use sanitize method, like it should, instead of to_conditions.
 * Only pass :distinct option for the count calculation
+* Fixed not_nil and not_blank conditions to use boolean values configuration option.
 
 == 1.5.2 released 2008-10-21
 
