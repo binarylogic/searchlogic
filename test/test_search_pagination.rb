@@ -63,7 +63,7 @@ class TestSearchPagination < Test::Unit::TestCase
     search.per_page = 100
     assert_equal 1, search.page_count
     
-    Searchgasm::Config.search.per_page = 1
+    Searchlogic::Config.search.per_page = 1
     search = Account.new_search
     assert_equal 3, search.page_count    
     search.conditions.users.first_name_contains

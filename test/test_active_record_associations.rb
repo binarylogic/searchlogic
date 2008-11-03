@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/test_helper.rb'
 class TestActiveRecordAssociations < Test::Unit::TestCase
   def test_has_many
     search = Account.find(1).users.new_search
-    assert_kind_of Searchgasm::Search::Base, search
+    assert_kind_of Searchlogic::Search::Base, search
     assert_equal User, search.klass
     assert_equal({:conditions => "\"users\".account_id = 1"}, search.scope)
     
@@ -29,7 +29,7 @@ class TestActiveRecordAssociations < Test::Unit::TestCase
   
   def test_has_many_through
     search = Account.find(1).orders.new_search
-    assert_kind_of Searchgasm::Search::Base, search
+    assert_kind_of Searchlogic::Search::Base, search
     assert_equal Order, search.klass
     assert_equal({:joins => "INNER JOIN users ON orders.user_id = users.id   ", :conditions => "(\"users\".account_id = 1)"}, search.scope)
     
@@ -55,7 +55,7 @@ class TestActiveRecordAssociations < Test::Unit::TestCase
   
   def test_habtm
     search = UserGroup.find(1).users.new_search
-    assert_kind_of Searchgasm::Search::Base, search
+    assert_kind_of Searchlogic::Search::Base, search
     assert_equal User, search.klass
     assert_equal({:conditions => "\"user_groups_users\".user_group_id = 1 ", :joins => "INNER JOIN \"user_groups_users\" ON \"users\".id = \"user_groups_users\".user_id"}, search.scope)
     

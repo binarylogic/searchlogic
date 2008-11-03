@@ -2,11 +2,11 @@ require File.dirname(__FILE__) + '/test_helper.rb'
 
 class TestSearchBase < Test::Unit::TestCase
   def test_needed
-    assert Searchgasm::Search::Base.needed?(Account, :page => 2, :conditions => {:name => "Ben"})
-    assert !Searchgasm::Search::Base.needed?(Account, :conditions => {:name => "Ben"})
-    assert Searchgasm::Search::Base.needed?(Account, :limit => 2, :conditions => {:name_contains => "Ben"})
-    assert !Searchgasm::Search::Base.needed?(Account, :limit => 2)
-    assert Searchgasm::Search::Base.needed?(Account, :per_page => 2)
+    assert Searchlogic::Search::Base.needed?(Account, :page => 2, :conditions => {:name => "Ben"})
+    assert !Searchlogic::Search::Base.needed?(Account, :conditions => {:name => "Ben"})
+    assert Searchlogic::Search::Base.needed?(Account, :limit => 2, :conditions => {:name_contains => "Ben"})
+    assert !Searchlogic::Search::Base.needed?(Account, :limit => 2)
+    assert Searchlogic::Search::Base.needed?(Account, :per_page => 2)
   end
 
   def test_initialize

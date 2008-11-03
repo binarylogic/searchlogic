@@ -2,16 +2,16 @@ require File.dirname(__FILE__) + '/test_helper.rb'
 
 class TestConditionsBase < Test::Unit::TestCase
   def test_register_conditions
-    Searchgasm::Conditions::Base.register_condition(Searchgasm::Condition::Keywords)
-    assert [Searchgasm::Condition::Keywords], Searchgasm::Conditions::Base.conditions
+    Searchlogic::Conditions::Base.register_condition(Searchlogic::Condition::Keywords)
+    assert [Searchlogic::Condition::Keywords], Searchlogic::Conditions::Base.conditions
     
-    Searchgasm::Conditions::Base.register_condition(Searchgasm::Condition::Like)
-    assert [Searchgasm::Condition::Keywords, Searchgasm::Condition::Like], Searchgasm::Conditions::Base.conditions
+    Searchlogic::Conditions::Base.register_condition(Searchlogic::Condition::Like)
+    assert [Searchlogic::Condition::Keywords, Searchlogic::Condition::Like], Searchlogic::Conditions::Base.conditions
   end
   
   def test_association_names
-    assert_equal ["dogs", "children", "user_groups", "orders", "account", "parent", "cats"], Searchgasm::Cache::UserConditions.association_names
-    assert_equal ["admin", "orders", "users"], Searchgasm::Cache::AccountConditions.association_names
+    assert_equal ["dogs", "children", "user_groups", "orders", "account", "parent", "cats"], Searchlogic::Cache::UserConditions.association_names
+    assert_equal ["admin", "orders", "users"], Searchlogic::Cache::AccountConditions.association_names
   end
   
   def test_condition_names
@@ -19,28 +19,28 @@ class TestConditionsBase < Test::Unit::TestCase
   end
   
   def test_needed
-    assert !Searchgasm::Conditions::Base.needed?(User, {})
-    assert !Searchgasm::Conditions::Base.needed?(User, {:first_name => "Ben"})
-    assert Searchgasm::Conditions::Base.needed?(User, {:first_name_contains => "Awesome"})
-    assert !Searchgasm::Conditions::Base.needed?(User, {"orders.id" => 2})
+    assert !Searchlogic::Conditions::Base.needed?(User, {})
+    assert !Searchlogic::Conditions::Base.needed?(User, {:first_name => "Ben"})
+    assert Searchlogic::Conditions::Base.needed?(User, {:first_name_contains => "Awesome"})
+    assert !Searchlogic::Conditions::Base.needed?(User, {"orders.id" => 2})
   end
   
   def test_initialize
-    conditions = Searchgasm::Cache::AccountConditions.new(:name_contains => "Binary")
+    conditions = Searchlogic::Cache::AccountConditions.new(:name_contains => "Binary")
     assert_equal conditions.klass, Account
     assert_equal conditions.name_contains, "Binary"
   end
   
   def test_any
-    conditions = Searchgasm::Cache::AccountConditions.new
+    conditions = Searchlogic::Cache::AccountConditions.new
     assert !conditions.any?
 
-    conditions = Searchgasm::Cache::AccountConditions.new(:any => true)
+    conditions = Searchlogic::Cache::AccountConditions.new(:any => true)
     assert conditions.any?
     conditions.any = "false"
     assert !conditions.any?
     
-    conditions = Searchgasm::Cache::AccountConditions.new
+    conditions = Searchlogic::Cache::AccountConditions.new
     conditions.name_contains = "Binary"
     assert_equal ["\"accounts\".\"name\" LIKE ?", "%Binary%"], conditions.sanitize
     conditions.id = 1
@@ -52,7 +52,7 @@ class TestConditionsBase < Test::Unit::TestCase
   end
   
   def test_auto_joins
-    conditions = Searchgasm::Cache::AccountConditions.new
+    conditions = Searchlogic::Cache::AccountConditions.new
     assert_equal conditions.auto_joins, nil
     
     conditions.name_like = "Binary"
@@ -66,12 +66,12 @@ class TestConditionsBase < Test::Unit::TestCase
   end
   
   def test_inspect
-    conditions = Searchgasm::Cache::AccountConditions.new
+    conditions = Searchlogic::Cache::AccountConditions.new
     assert_nothing_raised { conditions.inspect }
   end
   
   def test_sanitize
-    conditions = Searchgasm::Cache::AccountConditions.new
+    conditions = Searchlogic::Cache::AccountConditions.new
     conditions.name_contains = "Binary"
     conditions.id_gt = 5
     now = Time.now
@@ -90,7 +90,7 @@ class TestConditionsBase < Test::Unit::TestCase
   end
   
   def test_conditions
-    conditions = Searchgasm::Cache::AccountConditions.new
+    conditions = Searchlogic::Cache::AccountConditions.new
     now = Time.now
     v = {:name_like => "Binary", :created_at_greater_than => now}
     conditions.conditions = v
@@ -126,7 +126,7 @@ class TestConditionsBase < Test::Unit::TestCase
   
   def test_setting_conditions
     [Account, User, Order].each do |klass|
-      conditions = "Searchgasm::Cache::#{klass}Conditions".constantize.new
+      conditions = "Searchlogic::Cache::#{klass}Conditions".constantize.new
       conditions.class.condition_names.each do |condition_name|
         conditions.send("#{condition_name}=", 1)
         assert_equal 1, conditions.send(condition_name)
@@ -136,13 +136,13 @@ class TestConditionsBase < Test::Unit::TestCase
   
   def test_accessible_protected_conditions
     Account.conditions_accessible << :name_contains
-    conditions = Searchgasm::Cache::AccountConditions.new
+    conditions = Searchlogic::Cache::AccountConditions.new
     conditions.conditions = {:created_after => Time.now, :name_contains => "Binary"}
     assert({:name_contains => "Binary"}, conditions.conditions)
     Account.send(:write_inheritable_attribute, :conditions_accessible, nil)
     
     Account.conditions_protected << :name_contains
-    conditions = Searchgasm::Cache::AccountConditions.new
+    conditions = Searchlogic::Cache::AccountConditions.new
     now = Time.now
     conditions.conditions = {:created_after => now, :name_contains => "Binary"}
     assert({:created_after => now}, conditions.conditions)
@@ -150,14 +150,14 @@ class TestConditionsBase < Test::Unit::TestCase
   end
   
   def test_assert_valid_values
-    conditions = Searchgasm::Cache::UserConditions.new
+    conditions = Searchlogic::Cache::UserConditions.new
     assert_raise(NoMethodError) { conditions.conditions = {:unknown => "blah"} }
     assert_nothing_raised { conditions.conditions = {:first_name => "blah"} }
     assert_nothing_raised { conditions.conditions = {:first_name_contains => "blah"} }
   end
   
   def test_setting_associations
-    conditions = Searchgasm::Cache::AccountConditions.new(:users => {:first_name_like => "Ben"})
+    conditions = Searchlogic::Cache::AccountConditions.new(:users => {:first_name_like => "Ben"})
     assert_equal conditions.users.first_name_like, "Ben"
     
     conditions.users.last_name_begins_with = "Ben"
@@ -165,7 +165,7 @@ class TestConditionsBase < Test::Unit::TestCase
   end
   
   def test_virtual_columns
-    conditions = Searchgasm::Cache::AccountConditions.new
+    conditions = Searchlogic::Cache::AccountConditions.new
     conditions.hour_of_created_gt = 2
     assert_equal ["strftime('%H', \"accounts\".\"created_at\") > ?", 2], conditions.sanitize
     conditions.dow_of_created_at_most = 5
@@ -177,7 +177,7 @@ class TestConditionsBase < Test::Unit::TestCase
   end
   
   def test_objects
-    conditions = Searchgasm::Cache::AccountConditions.new
+    conditions = Searchlogic::Cache::AccountConditions.new
     assert_equal({}, conditions.send(:objects))
     
     conditions.name_contains = "Binary"
@@ -188,7 +188,7 @@ class TestConditionsBase < Test::Unit::TestCase
   end
   
   def test_reset
-    conditions = Searchgasm::Cache::AccountConditions.new
+    conditions = Searchlogic::Cache::AccountConditions.new
     
     conditions.name_contains = "Binary"
     assert_equal 1, conditions.send(:objects).size
@@ -215,7 +215,7 @@ class TestConditionsBase < Test::Unit::TestCase
   end
   
   def test_method_conflicts
-    conditions = Searchgasm::Cache::AccountConditions.new
+    conditions = Searchlogic::Cache::AccountConditions.new
     assert_equal nil, conditions.id
   end
   
@@ -234,7 +234,7 @@ class TestConditionsBase < Test::Unit::TestCase
     end
     #raise joins.inspect
     
-    conditions = Searchgasm::Cache::UserConditions.new
+    conditions = Searchlogic::Cache::UserConditions.new
     conditions.dogs.description_like = "Harry"
     r = User.reflect_on_association(:dogs)
     #raise r.inspect

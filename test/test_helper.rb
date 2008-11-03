@@ -5,7 +5,7 @@ require "active_record"
 require File.dirname(__FILE__) + '/../test_libs/acts_as_tree'
 require File.dirname(__FILE__) + '/../test_libs/ordered_hash'
 require File.dirname(__FILE__) + '/../test_libs/rexml_fix'
-require File.dirname(__FILE__) + '/../lib/searchgasm'
+require File.dirname(__FILE__) + '/../lib/searchlogic'
 
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :dbfile => ":memory:")
 

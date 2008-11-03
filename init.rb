@@ -1,1 +1,1 @@
-require File.dirname(__FILE__) << "/lib/searchgasm"
+require File.dirname(__FILE__) << "/lib/searchlogic"

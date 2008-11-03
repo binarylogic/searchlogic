@@ -3,11 +3,11 @@ require File.dirname(__FILE__) + '/test_helper.rb'
 class TestSearchConditions < Test::Unit::TestCase
   def test_conditions
     search = Account.new_search
-    assert_kind_of Searchgasm::Conditions::Base, search.conditions
+    assert_kind_of Searchlogic::Conditions::Base, search.conditions
     assert_equal search.conditions.klass, Account
   
     search.conditions = {:name_like => "Binary"}
-    assert_kind_of Searchgasm::Conditions::Base, search.conditions
+    assert_kind_of Searchlogic::Conditions::Base, search.conditions
     
     search = Account.new_search(:conditions => {:name_like => "Ben"})
     assert_equal({:name_like => "Ben"}, search.conditions.conditions)

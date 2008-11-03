@@ -33,7 +33,7 @@ class TestActiveRecordBase < Test::Unit::TestCase
   
   def test_build_search
     search = Account.new_search(:conditions => {:name_keywords => "awesome"}, :page => 2, :per_page => 15)
-    assert_kind_of Searchgasm::Search::Base, search
+    assert_kind_of Searchlogic::Search::Base, search
     assert_equal({}, search.scope)
     assert_equal Account, search.klass
     assert_equal "awesome", search.conditions.name_keywords
@@ -41,7 +41,7 @@ class TestActiveRecordBase < Test::Unit::TestCase
     assert_equal 15, search.per_page
   end
   
-  def test_searchgasm_searching
+  def test_searchlogic_searching
     assert_equal Account.find(1, 3), Account.all(:conditions => {:name_contains => "Binary"})
     assert_equal [Account.find(1)], Account.all(:conditions => {:name_contains => "Binary", :users => {:first_name_starts_with => "Ben"}})
     assert_equal [], Account.all(:conditions => {:name_contains => "Binary", :users => {:first_name_starts_with => "Ben", :last_name => "Mills"}})
@@ -56,7 +56,7 @@ class TestActiveRecordBase < Test::Unit::TestCase
     assert_equal [Account.find(1)], Account.scope1.all(:conditions => {:users => {:first_name_starts_with => "Ben"}})
   end
   
-  def test_searchgasm_counting
+  def test_searchlogic_counting
     assert_equal 2, Account.count(:conditions => {:name_contains => "Binary"})
     assert_equal 1, Account.count(:conditions => {:name_contains => "Binary", :users => {:first_name_contains => "Ben"}})
     assert_equal 1, Account.count(:conditions => {:name_contains => "Binary", :users => {:first_name_contains => "Ben"}}, :limit => 10, :offset => 10, :order_by => "id", :group => "id")

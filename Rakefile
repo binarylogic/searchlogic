@@ -1,15 +1,15 @@
 require 'rubygems'
 require 'echoe'
 
-require File.dirname(__FILE__) << "/lib/searchgasm/version"
+require File.dirname(__FILE__) << "/lib/searchlogic/version"
 
-Echoe.new 'searchgasm' do |p|
-  p.version = Searchgasm::Version::STRING
+Echoe.new 'searchlogic' do |p|
+  p.version = Searchlogic::Version::STRING
   p.author = "Ben Johnson of Binary Logic"
   p.email  = 'bjohnson@binarylogic.com'
-  p.project = 'searchgasm'
+  p.project = 'searchlogic'
   p.summary = "Object based ActiveRecord searching, ordering, pagination, and more!"
-  p.url = "http://github.com/binarylogic/searchgasm"
+  p.url = "http://github.com/binarylogic/searchlogic"
   p.dependencies = %w(activerecord activesupport)
   p.include_rakefile = true
 end

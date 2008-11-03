@@ -1,8 +1,8 @@
-== 1.5.3 released 2008-10-21
+== 1.5.3 released 2008-10-30
 
 * Removed ilike conditions and let the like condition determine if it should use like or ilike depending on the connection adapter.
 * Fixed bug where the keywords condition was removing foreign characters.
-* Added configuration option for specifying your javascript library, to cut down on the javascript Searchgasm adds into the form helpers
+* Added configuration option for specifying your javascript library, to cut down on the javascript Searchlogic adds into the form helpers
 * Fixed bug with "not" conditions to use sanitize method, like it should, instead of to_conditions.
 * Only pass :distinct option for the count calculation
 * Fixed not_nil and not_blank conditions to use boolean values configuration option.
@@ -42,7 +42,7 @@
 
 == 1.3.5 released 2008-10-08
 
-* Since joins are now strings, AR doesn't know how to merge them properly. So searchgasm now checks which joins to skip over to avoid conflicts.
+* Since joins are now strings, AR doesn't know how to merge them properly. So searchlogic now checks which joins to skip over to avoid conflicts.
 
 == 1.3.4 released 2008-10-07
 
@@ -65,7 +65,7 @@
 * Fixed bug to allow conditions on local columns
 * Apparently ActiveRecord 2.2 doesnt remove duplicates on all joins, need to enforce this for ALL versions of ActiveRecord
 * Fixed bug when passing a symbol as the SQL type for condition return types
-* Moved duplicate removal to only apply when searching or calculating from a search object. Anything done in a normal ActiveRecord method should remain untouched and let ActiveRecord handle it. Just like in ActiveRecord if you do a User.all search and pass some :joins, you might get duplicate records. Searchgasm should not change that behavior, unless called from a searchgasm object.
+* Moved duplicate removal to only apply when searching or calculating from a search object. Anything done in a normal ActiveRecord method should remain untouched and let ActiveRecord handle it. Just like in ActiveRecord if you do a User.all search and pass some :joins, you might get duplicate records. Searchlogic should not change that behavior, unless called from a searchlogic object.
 * Discard meaningless array values when setting a condition.
 * Delete blank strings from mass assignments on conditions.
 
@@ -77,7 +77,7 @@
 == 1.3.0 released 2008-10-02
 
 * Added modifiers into the mix: hour_of_created_at_less_than = 10, etc.
-* Changed how the Searchgasm::Conditions::Base class works. Instead of predefining all methods for all conditions upon instantiation, they are defined as needed via method_missing. Similar to
+* Changed how the Searchlogic::Conditions::Base class works. Instead of predefining all methods for all conditions upon instantiation, they are defined as needed via method_missing. Similar to
   ActiveRecord's dynamic finders: User.find_by_name_and_email(name, email). Once the are defined they never hit method_missing again, acts like a cache.
 * Altered how values are handled for each condition, meaningless values are ignored completely.
 * Added in more "not" conditions: not_like, not_begin_with, not_have_keywords, etc
@@ -89,7 +89,7 @@
 * Fixed aliases for lt, lte, gt, and gte.
 * Fixed bug when writing conditions on associations via a hash with string keys
 * Added Config.remove_duplicates to turn off the "automatic" removing of duplicates if desired.
-* Updated searchgasm_state helper to insert the entire state all at once.
+* Updated searchlogic_state helper to insert the entire state all at once.
 * Added CSS class "ordering" to order_by_link if the search is being ordered by that.
 
 == 1.2.1 released 2008-09-25
@@ -99,14 +99,14 @@
 * Removed order_as requirement. order_as is optional.
 * Added in deep_merge methods for hash, copied over from ActiveSupport 2.1
 * Improved order by auto joins to be based off of what order_by returns instead of setting it when setting order_by.
-* Added priority_order_by. Useful if you want to order featured products first and then order as usual. See documentation in Searchgasm::Search::Ordering for more info.
+* Added priority_order_by. Useful if you want to order featured products first and then order as usual. See documentation in Searchlogic::Search::Ordering for more info.
 * Added in base64 support for order_by and priority_order_by so that it's value is safe in the URL
 * Added priority_order_by_link
 
 == 1.2.0 released 2008-09-24
 
-* Added searchgasm_params and searchgasm_url helper to use outside of the control type helpers.
-* Added dup and clone methods that work properly for searchgasm objects
+* Added searchlogic_params and searchlogic_url helper to use outside of the control type helpers.
+* Added dup and clone methods that work properly for searchlogic objects
 * Fixed bug to remove nil scope values, HABTM likes to add :limit => nil
 * Removed unnecessary build_search methods for associations
 * Removed support for searching with conditions only. This just made things much more complicated when you can accomplish the same thing by starting a new search and only setting conditions.
@@ -133,13 +133,13 @@
 * Updated valid options for searching and performing calculations, fixed some bugs when searching and performing calculations with advanced options.
 * Fixed bug in ordering where table name was assumed by the hash. Now assumed by the reflection.
 * Added default for per_page, so pagination comes implemented by default
-* On mass assignments blank strings for *any* conditions are ignored. Sometimes blank strings are meaningful for "equals" and "does not equal", those only takes effect if you explicitly call these conditions: search.conditions.name = "". User.new_search(:conditions => {:name => ""}) will be ignored. Also, Searchgasm should never change how ActiveRecord behaves by default. So User.all(:conditions => {:name => ""}) will NOT be ignored.
+* On mass assignments blank strings for *any* conditions are ignored. Sometimes blank strings are meaningful for "equals" and "does not equal", those only takes effect if you explicitly call these conditions: search.conditions.name = "". User.new_search(:conditions => {:name => ""}) will be ignored. Also, Searchlogic should never change how ActiveRecord behaves by default. So User.all(:conditions => {:name => ""}) will NOT be ignored.
 
 == 1.1.0 released 2008-09-18
 
 * Added the options :inner_spread and :outer_spread to the page_links helper. Also added various config options for setting page_links defaults.
 * Updated calculation methods to ignore :limit and :offset. AR returns 0 or nil on calculations that provide an offset.
-* Added support to allow for "any" of the conditions, instead of all of them. Joins conditions with "or" instead of "and". See Searchgasm::Conditions::Base or the readme
+* Added support to allow for "any" of the conditions, instead of all of them. Joins conditions with "or" instead of "and". See Searchlogic::Conditions::Base or the readme
 
 == 1.0.4 released 2008-09-18
 
@@ -152,13 +152,13 @@
 * Made sure protection state is persistent among relationship conditions.
 * Fixed bug with backwards compatibility of rails. concat requires a proc in older version.
 * Defaulted remote control types to use GET requests instead of POST.
-* Completely reengineered integration with ActiveRecord. Searchgasm is properly using scopes letting you do use serachgasm where scope are implemented. @current_users.orders.new_search, etc. If your search is scoped and you want a search object, that search object will represent a new search in the context of those scopes, meaning the scopes get merged into Searchgasm as options.
-* Dropped support for Searchgasm functionality when defining relationships: has_many :order, :conditions => {:total_gt => 100}, will not work anymore. It's a chicken and the egg thing. Searchgasm needs AR constants, some models get loaded before others, therefore the Order model may not have been loaded yet, causing an unknown constant error.
-* Clean up redundant code and moved it into the Searchgasm::Shared namespace.
+* Completely reengineered integration with ActiveRecord. Searchlogic is properly using scopes letting you do use serachgasm where scope are implemented. @current_users.orders.new_search, etc. If your search is scoped and you want a search object, that search object will represent a new search in the context of those scopes, meaning the scopes get merged into Searchlogic as options.
+* Dropped support for Searchlogic functionality when defining relationships: has_many :order, :conditions => {:total_gt => 100}, will not work anymore. It's a chicken and the egg thing. Searchlogic needs AR constants, some models get loaded before others, therefore the Order model may not have been loaded yet, causing an unknown constant error.
+* Clean up redundant code and moved it into the Searchlogic::Shared namespace.
 
 == 1.0.2 released 2008-09-12
 
-* Moved cached searchers out of the global namespace and into the Searchgasm::Cache namespce.
+* Moved cached searchers out of the global namespace and into the Searchlogic::Cache namespce.
 * Various changes to improve performance through profiling / benchmarking. http://pastie.org/271936
 * Config.per_page works with new_search & new_search! only. Where as before it was only working if the search was protected.
 
