@@ -7,6 +7,7 @@ require File.dirname(__FILE__) + '/../test_libs/ordered_hash'
 require File.dirname(__FILE__) + '/../test_libs/rexml_fix'
 require File.dirname(__FILE__) + '/../lib/searchlogic'
 
+ActiveRecord::Schema.verbose = false
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :dbfile => ":memory:")
 
 class Account < ActiveRecord::Base

@@ -1,8 +1,6 @@
 = Searchlogic
 
-Searchlogic is orgasmic. Maybe not orgasmic, but you will get aroused. So go grab a towel and let's dive in.
-
-<b>Searchlogic's inspiration comes right from ActiveRecord. ActiveRecord lets you create objects that represent a record in the database, so why can't you create objects that represent searching the database? Now you can! It's searching, ordering, and pagination all in one.</b>
+Searchlogic's is object based ActiveRecord searching, ordering, and pagination all in one.
 
 == Helpful links
 
@@ -218,9 +216,9 @@ or
     end
   end
 
-== Always use protection...against SQL injections
+== Protection against SQL injections
 
-If there is one thing we all know, it's to always use protection against SQL injections. That's why searchlogic protects you by default. The new\_search methods protect mass assignments by default (instantiation and search.options = {}). This means that various checks are done to ensure it is not possible to perform any type of SQL injection during mass assignments. But this also limits how you can search, meaning you can't write raw SQL. If you want to be daring and search without protection, all that you have to do is add ! to the end of the method: new\_search!.
+SQL injections are not fun, so let's make sure they don't happen. That's why searchlogic protects you by default. The new\_search methods protect mass assignments by default (instantiation and search.options = {}). This means that various checks are done to ensure it is not possible to perform any type of SQL injection during mass assignments. But this also limits how you can search, meaning you can't write raw SQL. If you want to be daring and search without protection, all that you have to do is add ! to the end of the method: new\_search!.
 
 === Protected from SQL injections
 
