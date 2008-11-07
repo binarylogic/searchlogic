@@ -91,10 +91,8 @@ Now your view:
           %td= user.last_name
           %td= user.email
   
-    Per page:
-    = per_page_select
-    Page:
-    = page_select
+    == Per page: #{per_page_select}
+    == Page: #{page_select}
   - else
     No users were found.
 
