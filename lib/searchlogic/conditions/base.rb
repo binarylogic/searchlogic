@@ -173,6 +173,20 @@ module Searchlogic
         ["true", "1", "yes"].include? @any.to_s
       end
       
+      # Sets the conditions to be searched by "or"
+      def any!
+        any = true
+      end
+      
+      def all # :nodoc:
+        not any?
+      end
+      
+      # Sets the conditions to be searched by "and"
+      def all!
+        any = false
+      end
+      
       # A list of joins to use when searching, includes relationships
       def auto_joins
         j = []
