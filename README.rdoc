@@ -77,7 +77,7 @@ Now your view:
         = orders.select :total_gt, (1..100)
     = f.submit "Search"
   
-  - if @users_count > 0
+  - unless @users_count.zero?
     %table
       %tr
         %th= order_by_link :account => :name
@@ -91,10 +91,8 @@ Now your view:
           %td= user.last_name
           %td= user.email
   
-    Per page:
-    = per_page_select
-    Page:
-    = page_select
+    == Per page: #{per_page_select}
+    == Page: #{page_select}
   - else
     No users were found.
 
@@ -184,10 +182,11 @@ Any of the options used in the above example can be used in these, but for the s
 
 As you saw above, the nice thing about Searchlogic is it's integration with forms. I designed the "any" option so that forms can set this as well, just like a condition.
 
-  search = User.new_search(:conditions => {:age_gt => 18})
-  search.conditions.first_name_contains = "Ben"
-  search.conditions.any = true # can set this to "true" or "1" or "yes"
-  search.all # will join all conditions with "or" instead of "and"
+  @search = User.new_search(:conditions => {:age_gt => 18}) do |search|
+    search.conditions.first_name_contains = "Ben"
+    search.conditions.any = true # can set this to "true" or "1" or "yes"
+    search.all # will join all conditions with "or" instead of "and"
+  end
   # ... all operations above are available
 
 == Scoped searching
@@ -195,8 +194,7 @@ As you saw above, the nice thing about Searchlogic is it's integration with form
   @current_user.orders.find(:all, :conditions => {:total_lte => 500})
   @current_user.orders.count(:conditions => {:total_lte => 500})
   @current_user.orders.sum('total', :conditions => {:total_lte => 500})
-  
-  search = @current_user.orders.build_search(:conditions => {:total_lte => 500})
+  @current_user.orders.build_search(:conditions => {:total_lte => 500})
 
 == Scope support
 

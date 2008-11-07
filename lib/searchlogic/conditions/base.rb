@@ -170,7 +170,21 @@ module Searchlogic
       
       # Convenience method for determining if we should join the conditions with "AND" or "OR".
       def any?
-        @any == true || @any == "true" || @any == "1" || @any == "yes"
+        ["true", "1", "yes"].include? @any.to_s
+      end
+      
+      # Sets the conditions to be searched by "or"
+      def any!
+        any = true
+      end
+      
+      def all # :nodoc:
+        not any?
+      end
+      
+      # Sets the conditions to be searched by "and"
+      def all!
+        any = false
       end
       
       # A list of joins to use when searching, includes relationships
