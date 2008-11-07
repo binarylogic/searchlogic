@@ -1,6 +1,6 @@
 = Searchlogic
 
-Searchlogic's is object based ActiveRecord searching, ordering, and pagination all in one.
+Searchlogic is object based ActiveRecord searching, ordering, and pagination all in one.
 
 == Helpful links
 
@@ -56,7 +56,7 @@ same as above, but object based
 
 In both examples, instead of using the "all" method you could use any search method: first, find(:all), find(:first), count, sum, average, etc, just like ActiveRecord.
 
-== The beauty of searchlogic, integration into rails
+== The beauty of Searchlogic, integration into rails
 
 Using Searchlogic in rails is the best part, because rails has all kinds of nifty methods to make dealing with ActiveRecord objects quick and easy, especially with forms. So let's take advantage of them! That's the idea behind this plugin. Searchlogic is searching, ordering, and pagination all rolled into one simple plugin. Take all of that pagination and searching cruft out of your models and controllers, and let Searchlogic handle it. Check it out:
 
