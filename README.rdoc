@@ -77,7 +77,7 @@ Now your view:
         = orders.select :total_gt, (1..100)
     = f.submit "Search"
   
-  - if @users_count > 0
+  - unless @users_count.zero?
     %table
       %tr
         %th= order_by_link :account => :name
