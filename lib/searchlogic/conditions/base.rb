@@ -44,8 +44,8 @@ module Searchlogic
         #   class SoundsLike < Searchlogic::Condition::Base
         #     # The name of the conditions. By default its the name of the class, if you want alternate or alias conditions just add them on.
         #     # If you don't want to add aliases you don't even need to define this method
-        #     def self.name_for_column(column)
-        #       super
+        #     def self.condition_names_for_column(column)
+        #       super + ["similar_to", "sounds"]
         #     end
         #
         #     # You can return an array or a string. NOT a hash, because all of these conditions
@@ -57,7 +57,7 @@ module Searchlogic
         #     end
         #   end
         #
-        #   Searchlogic::Seearch::Conditions.register_condition(SoundsLike)
+        #   Searchlogic::Conditions::Base.register_condition(SoundsLike)
         def register_condition(condition_class)
           raise(ArgumentError, "You can only register conditions that extend Searchlogic::Condition::Base") unless condition_class.ancestors.include?(Searchlogic::Condition::Base)
           conditions << condition_class unless conditions.include?(condition_class)
@@ -409,7 +409,7 @@ module Searchlogic
         
         def add_condition!(condition, name, options = {})
           self.class.condition_names << name
-          options[:column] = options[:column].name if options[:column].class < ::ActiveRecord::ConnectionAdapters::Column
+          options[:column] = options[:column].name
           
           self.class.class_eval <<-"end_eval", __FILE__, __LINE__
             def #{name}_object

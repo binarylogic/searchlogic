@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
-class TestConfig < Test::Unit::TestCase
+class ConfigTest < ActiveSupport::TestCase
   def test_per_page
     Searchlogic::Config.search.per_page = 1
     

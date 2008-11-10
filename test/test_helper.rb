@@ -2,13 +2,61 @@ require "test/unit"
 require "rubygems"
 require "ruby-debug"
 require "active_record"
+require "active_record/fixtures"
 require File.dirname(__FILE__) + '/../test_libs/acts_as_tree'
-require File.dirname(__FILE__) + '/../test_libs/ordered_hash'
 require File.dirname(__FILE__) + '/../test_libs/rexml_fix'
-require File.dirname(__FILE__) + '/../lib/searchlogic'
+require File.dirname(__FILE__) + '/../lib/searchlogic' unless defined?(Searchlogic)
 
 ActiveRecord::Schema.verbose = false
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :dbfile => ":memory:")
+ActiveRecord::Base.configurations = true
+ActiveRecord::Schema.define(:version => 1) do
+  create_table :accounts do |t|
+    t.datetime  :created_at
+    t.datetime  :updated_at
+    t.string    :name
+    t.boolean   :active
+  end
+
+  create_table :user_groups do |t|
+    t.datetime  :created_at      
+    t.datetime  :updated_at
+    t.string    :name
+  end
+  
+  create_table :user_groups_users, :id => false do |t|
+    t.integer :user_group_id
+    t.integer :user_id
+  end
+  
+  create_table :users do |t|
+    t.datetime  :created_at      
+    t.datetime  :updated_at
+    t.integer   :account_id
+    t.integer   :parent_id
+    t.string    :first_name
+    t.string    :last_name
+    t.boolean   :active
+    t.text      :bio
+  end
+
+  create_table :orders do |t|
+    t.datetime  :created_at      
+    t.datetime  :updated_at
+    t.integer   :user_id
+    t.float     :total
+    t.text      :description
+    t.binary    :receipt
+  end
+  
+  create_table :animals do |t|
+    t.datetime  :created_at      
+    t.datetime  :updated_at
+    t.string   :type
+    t.text     :description
+  end
+end
+
 
 class Account < ActiveRecord::Base
   has_one :admin, :class_name => "User", :conditions => {:first_name => "Ben"}
@@ -46,90 +94,37 @@ class Cat < Animal
 end
 
 class Test::Unit::TestCase
-  def setup_db
-    ActiveRecord::Schema.define(:version => 1) do
-      create_table :accounts do |t|
-        t.datetime  :created_at    
-        t.datetime  :updated_at
-        t.string    :name
-        t.boolean   :active
-      end
-
-      create_table :user_groups do |t|
-        t.datetime  :created_at      
-        t.datetime  :updated_at
-        t.string    :name
-      end
-      
-      create_table :user_groups_users, :id => false do |t|
-        t.integer :user_group_id
-        t.integer :user_id
-      end
-      
-      create_table :users do |t|
-        t.datetime  :created_at      
-        t.datetime  :updated_at
-        t.integer   :account_id
-        t.integer   :parent_id
-        t.string    :first_name
-        t.string    :last_name
-        t.boolean   :active
-        t.text      :bio
-      end
-
-      create_table :orders do |t|
-        t.datetime  :created_at      
-        t.datetime  :updated_at
-        t.integer   :user_id
-        t.float     :total
-        t.text      :description
-        t.binary    :receipt
-      end
-      
-      create_table :animals do |t|
-        t.datetime  :created_at      
-        t.datetime  :updated_at
-        t.string   :type
-        t.text     :description
-      end
-    end
-  end
+  self.fixture_path = File.dirname(__FILE__) + "/fixtures"
+  self.use_transactional_fixtures = true
+  self.use_instantiated_fixtures  = false
+  self.pre_loaded_fixtures = true
+  fixtures :all
   
-  def load_fixtures
-    fixtures = [:accounts, :orders, :users, :user_groups, :dogs, :cats]
-    fixtures.each do |fixture|
-      records = YAML.load(File.read(File.dirname(__FILE__) + "/fixtures/#{fixture.to_s}.yml"))
-      records.each do |name, attributes|
-        record = fixture.to_s.singularize.classify.constantize.new
-        attributes.each { |k, v| record.send("#{k}=", v) }
-        record.save!
+  private
+    def assert_equal_find_options(find_options, result)
+      find_options_conditions = find_options.delete(:conditions)
+      result_conditions = result.delete(:conditions)
+      
+      assert_equal find_options, result
+      if find_options_conditions.blank? || result_conditions.blank?
+        assert_equal find_options_conditions, result_conditions
+      else
+        assert_equal_sql find_options_conditions, result_conditions
       end
     end
     
-    # Not sure why I have to do this, but sick of dealing with it
-    UserGroup.all.each do |user_group|
-      user_ids = user_group.user_ids.uniq!
-      user_group.users.clear
-      user_group.user_ids = user_ids
-      user_group.save!
+    def assert_equal_sql(sql, result)
+      sql_parts = breakdown_sql(sql)
+      result_parts = breakdown_sql(sql)
+      
+      assert_equal sql_parts.size, result_parts.size
+      sql_parts.each { |part| assert result_parts.include?(part) }
     end
     
-    # Create the cached virtual classes
-    fixtures.each { |fixture| fixture.to_s.classify.constantize.new_search }
-  end
-  
-  def teardown_db
-    ActiveRecord::Base.connection.tables.each do |table|
-      ActiveRecord::Base.connection.drop_table(table)
+    def breakdown_sql(sql)
+      sanitized_sql = ActiveRecord::Base.send(:sanitize_sql, sql)
+      sanitized_sql.gsub!(/(\(|\))/, "")
+      sql_parts = sanitized_sql.split(/or/i)
+      sql_parts.collect { |part| part.split(/ and /i) }.flatten
     end
-  end
-  
-  def setup
-    setup_db
-    load_fixtures
-  end
-  
-  def teardown
-    teardown_db
-  end
 end

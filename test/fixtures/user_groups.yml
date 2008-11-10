@@ -1,13 +1,7 @@
 neco:
-  id: 1
   name: NECO
-  user_ids:
-    - 1
-    - 2
-  
+  users: ben, drew
+
 johnsons:
-  id: 2
   name: Johnsons
-  user_ids:
-    - 1
-    - 3
+  users: ben, jennifer

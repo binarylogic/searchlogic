@@ -1,3 +1,7 @@
+== 1.5.4 released 2008-10-30
+
+* Removed subclass requirement for adding conditions in Conditions::Base
+
 == 1.5.3 released 2008-10-30
 
 * Removed ilike conditions and let the like condition determine if it should use like or ilike depending on the connection adapter.
