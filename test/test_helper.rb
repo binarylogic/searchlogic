@@ -3,8 +3,8 @@ require "rubygems"
 require "ruby-debug"
 require "active_record"
 require "active_record/fixtures"
-require File.dirname(__FILE__) + '/../test_libs/acts_as_tree'
-require File.dirname(__FILE__) + '/../test_libs/rexml_fix'
+require File.dirname(__FILE__) + '/libs/acts_as_tree'
+require File.dirname(__FILE__) + '/libs/rexml_fix'
 require File.dirname(__FILE__) + '/../lib/searchlogic' unless defined?(Searchlogic)
 
 ActiveRecord::Schema.verbose = false
