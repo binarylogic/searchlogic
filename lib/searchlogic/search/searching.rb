@@ -21,7 +21,9 @@ module Searchlogic
                 args[0] = klass.primary_key if [nil, :all].include?(args[0])
               end
               args << options
-              klass.#{method}(*args)
+              results = klass.#{method}(*args)
+              results.uniq! if #{SEARCH_METHODS.include?(method)} && results.is_a?(Array) && !joins.blank? && Config.search.remove_duplicates?
+              results
             end
           end
         end_eval

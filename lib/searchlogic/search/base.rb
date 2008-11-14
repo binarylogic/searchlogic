@@ -119,11 +119,6 @@ module Searchlogic #:nodoc:
         find_options
       end
       
-      def select
-        @select ||= "DISTINCT #{klass.connection.quote_table_name(klass.table_name)}.*" if !joins.blank? && Config.search.remove_duplicates?
-        @select
-      end
-      
       def scope
         @scope ||= {}
       end

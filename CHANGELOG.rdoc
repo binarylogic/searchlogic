@@ -1,6 +1,7 @@
 == 1.5.4 released 2008-10-30
 
 * Removed subclass requirement for adding conditions in Conditions::Base
+* Removed DISTINCT in the select clause, instead called uniq! on the results. PostgreSQL complains about DISTINCT and AR uses uniq! when using :includes, so this is the best option.
 
 == 1.5.3 released 2008-10-30
 

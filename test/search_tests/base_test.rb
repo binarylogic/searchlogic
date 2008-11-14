@@ -142,7 +142,7 @@ module SearchTests
       search.conditions.users.id_greater_than = 2
       search.page = 3
       search.readonly = true
-      assert_equal_find_options({:joins => :users, :offset => 4, :select => "DISTINCT \"accounts\".*", :readonly => true, :conditions => ["(\"accounts\".\"name\" LIKE ?) AND (\"users\".\"id\" > ?)", "%Binary%", 2], :limit => 2 }, search.sanitize)
+      assert_equal_find_options({:joins => :users, :offset => 4, :readonly => true, :conditions => ["(\"accounts\".\"name\" LIKE ?) AND (\"users\".\"id\" > ?)", "%Binary%", 2], :limit => 2 }, search.sanitize)
     end
 
     def test_scope

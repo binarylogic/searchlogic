@@ -1,4 +1,0 @@
-=== Live example
-
-*	Please see the live example: http://searchlogic_example.binarylogic.com
-*	Source / Github project for the example: http://github.com/binarylogic/searchlogic_example.binarylogic.com
