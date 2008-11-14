@@ -358,7 +358,7 @@ module Searchlogic
           method_name_parts << modifier_name_parts.join("_of_") + "_of" unless modifier_name_parts.blank?
           method_name_parts << column_name
           method_name_parts << condition_name unless condition_name.blank?
-          method_name_parts.join("_")
+          method_name_parts.join("_").underscore
         end
         
         def method_missing(name, *args, &block)
