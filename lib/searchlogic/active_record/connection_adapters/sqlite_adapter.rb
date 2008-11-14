@@ -12,39 +12,39 @@ module Searchlogic
         end
         
         def second_sql(column_name)
-          "strftime('%S', #{column_name})"
+          "(strftime('%S', #{column_name}) * 1)"
         end
         
         def minute_sql(column_name)
-          "strftime('%M', #{column_name})"
+          "(strftime('%M', #{column_name}) * 1)"
         end
         
         def hour_sql(column_name)
-          "strftime('%H', #{column_name})"
+          "(strftime('%H', #{column_name}) * 1)"
         end
         
         def day_of_week_sql(column_name)
-          "strftime('%w', #{column_name})"
+          "(strftime('%w', #{column_name}) * 1)"
         end
         
         def day_of_month_sql(column_name)
-          "strftime('%d', #{column_name})"
+          "(strftime('%d', #{column_name}) * 1)"
         end
         
         def day_of_year_sql(column_name)
-          "strftime('%j', #{column_name})"
+          "(strftime('%j', #{column_name}) * 1)"
         end
         
         def week_sql(column_name)
-          "strftime('%W', #{column_name})"
+          "(strftime('%W', #{column_name}) * 1)"
         end
         
         def month_sql(column_name)
-          "strftime('%m', #{column_name})"
+          "(strftime('%m', #{column_name}) * 1)"
         end
         
         def year_sql(column_name)
-          "strftime('%Y', #{column_name})"
+          "(strftime('%Y', #{column_name}) * 1)"
         end
         
         # String functions
