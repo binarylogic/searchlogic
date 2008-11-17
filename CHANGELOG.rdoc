@@ -1,3 +1,9 @@
+== 1.5.5 released 2008-11-17
+
+* Cleaned up class_name configuration for helpers, so that setting them to nil disables the class name
+* Added page_links_div_wrapper and page_links_div_wrapper_class_name configuration option to add an wrapping div around page_links
+* Added page_links_act_like_will_paginate configuration option to help with the transition from will_paginate
+
 == 1.5.4 released 2008-11-16
 
 * Removed subclass requirement for adding conditions in Conditions::Base

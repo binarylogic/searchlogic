@@ -159,6 +159,7 @@ module Searchlogic
           
           html += span_or_page_link(:next, options.deep_dup, options[:current_page] == options[:last_page]) if options[:next]
           html += span_or_page_link(:last, options.deep_dup, options[:current_page] == options[:last_page]) if options[:last]
+          html = content_tag(:div, html, :class => Config.helpers.page_links_div_wrapper_class_name) if Config.helpers.page_links_div_wrapper
           html
         end
         

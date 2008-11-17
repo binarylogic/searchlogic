@@ -31,18 +31,20 @@ module Searchlogic
         # The class name for used in the order_as_link helper
         #
         # * <tt>Default:</tt> "order_as"
-        # * <tt>Accepts:</tt> String
+        # * <tt>Accepts:</tt> String, set to nil to disable
         def order_as_link_class_name
-          @order_as_link_class_name ||= "order_as"
+          return @order_as_link_class_name if defined?(@order_as_link_class_name)
+          @order_as_link_class_name = "order_as"
         end
         attr_writer :order_as_link_class_name
         
         # The class name for used in the order_as_select helper
         #
         # * <tt>Default:</tt> "order_as"
-        # * <tt>Accepts:</tt> String
+        # * <tt>Accepts:</tt> String, set to nil to disable
         def order_as_select_class_name
-          @order_as_select_class_name ||= "order_as"
+          return @order_as_select_class_name if defined?(@order_as_select_class_name)
+          @order_as_select_class_name = "order_as"
         end
         attr_writer :order_as_select_class_name
         
@@ -63,9 +65,10 @@ module Searchlogic
         # The class name for used in the order_by_link helper
         #
         # * <tt>Default:</tt> "order_by"
-        # * <tt>Accepts:</tt> String
+        # * <tt>Accepts:</tt> String, set to nil to disable
         def order_by_link_class_name
-          @order_by_link_class_name ||= "order_by"
+          return @order_by_link_class_name if defined?(@order_by_link_class_name)
+          @order_by_link_class_name = "order_by"
         end
         attr_writer :order_by_link_class_name
       
@@ -80,9 +83,10 @@ module Searchlogic
         # * <tt>Default:</tt> "# The class name for used in the page_link helper
         #
         # * <tt>Default:</tt> "page"
-        # * <tt>Accepts:</tt> String
+        # * <tt>Accepts:</tt> String, set to nil to disable
         def order_by_links_ordering_by_class_name
-          @order_by_links_ordering_by_class_name ||= "ordering_by"
+          return @order_by_links_ordering_by_class_name if defined?(@order_by_links_ordering_by_class_name)
+          @order_by_links_ordering_by_class_name = "ordering_by"
         end
         attr_writer :order_by_links_ordering_by_class_name
         
@@ -95,12 +99,27 @@ module Searchlogic
         end
         attr_writer :order_by_select_class_name
         
+        # Makes page_links look just like the output of will_paginate.
+        #
+        # * <tt>Default:</tt> false
+        # * <tt>Accepts:</tt> Boolean
+        def page_links_act_like_will_paginate
+          @page_links_act_like_will_paginate ||= false
+        end
+        attr_writer :page_links_act_like_will_paginate
+        
+        # Convenience methods for determining if page_links_act_like_will_paginate is set to true
+        def page_links_act_like_will_paginate?
+          page_links_act_like_will_paginate == true
+        end
+        
         # The class name for used in the page_link helper
         #
         # * <tt>Default:</tt> "page"
-        # * <tt>Accepts:</tt> String
+        # * <tt>Accepts:</tt> String, set to nil to disable
         def page_link_class_name
-          @page_link_class_name ||= "page"
+          return @page_link_class_name if defined?(@page_link_class_name)
+          @page_link_class_name = "page"
         end
         attr_writer :page_link_class_name
         
@@ -115,7 +134,8 @@ module Searchlogic
         # * <tt>Default:</tt> "current_page"
         # * <tt>Accepts:</tt> String, set to nil to disable
         def page_links_current_page_class_name
-          @page_links_current_page_class_name ||= "current_page"
+          return @page_links_current_page_class_name if defined?(@page_links_current_page_class_name)
+          @page_links_current_page_class_name = page_links_act_like_will_paginate? ? "current" : "current_page"
         end
         attr_writer :page_links_current_page_class_name
         
@@ -124,9 +144,30 @@ module Searchlogic
         # * <tt>Default:</tt> "disabled_page"
         # * <tt>Accepts:</tt> String, set to nil to disable
         def page_links_disabled_class_name
-          @page_links_disabled_class_name ||= "disabled_page"
+          return @page_links_disabled_class_name if defined?(@page_links_disabled_class_name)
+          @page_links_disabled_class_name = page_links_act_like_will_paginate? ? "disabled" : "disabled_page"
         end
         attr_writer :page_links_disabled_class_name
+        
+        # Wraps page links in a div
+        #
+        # * <tt>Default:</tt> false
+        # * <tt>Accepts:</tt> Boolean
+        def page_links_div_wrapper
+          return @page_links_div_wrapper if defined?(@page_links_div_wrapper)
+          @page_links_div_wrapper = page_links_act_like_will_paginate?
+        end
+        attr_writer :page_links_div_wrapper
+        
+        # If page_links_div_wrapper is true you can specify a class name here.
+        #
+        # * <tt>Default:</tt> "pagination"
+        # * <tt>Accepts:</tt> String, set to nil to disable
+        def page_links_div_wrapper_class_name
+          return @page_links_div_wrapper_class_name if defined?(@page_links_div_wrapper_class_name)
+          @page_links_div_wrapper_class_name = "pagination"
+        end
+        attr_writer :page_links_div_wrapper_class_name
         
         # The default for the :first option for the page_links helper.
         #
@@ -149,9 +190,10 @@ module Searchlogic
         # The class for the first page link
         #
         # * <tt>Default:</tt> "first_page"
-        # * <tt>Accepts:</tt> String, nil to disable
+        # * <tt>Accepts:</tt> String, set to nil to disable
         def page_links_first_page_class_name
-          @page_links_first_page_class_name ||= "first_page"
+          return @page_links_first_page_class_name if defined?(@page_links_first_page_class_name)
+          @page_links_first_page_class_name = "first_page"
         end
         attr_writer :page_links_first_page_class_name
         
@@ -167,9 +209,10 @@ module Searchlogic
         # The class for the last page link
         #
         # * <tt>Default:</tt> "last_page"
-        # * <tt>Accepts:</tt> String, nil to disable
+        # * <tt>Accepts:</tt> String, set to nil to disable
         def page_links_last_page_class_name
-          @page_links_last_page_class_name ||= "last_page"
+          return @page_links_last_page_class_name if defined?(@page_links_last_page_class_name)
+          @page_links_last_page_class_name = "last_page"
         end
         attr_writer :page_links_last_page_class_name
         
@@ -185,9 +228,10 @@ module Searchlogic
         # The class for the next page link
         #
         # * <tt>Default:</tt> "next_page"
-        # * <tt>Accepts:</tt> String, nil to disable
+        # * <tt>Accepts:</tt> String, set to nil to disable
         def page_links_next_page_class_name
-          @page_links_next_page_class_name ||= "next_page"
+          return @page_links_next_page_class_name if defined?(@page_links_next_page_class_name)
+          @page_links_next_page_class_name = "next_page"
         end
         attr_writer :page_links_next_page_class_name
         
@@ -203,9 +247,10 @@ module Searchlogic
         # The class for the previous page link
         #
         # * <tt>Default:</tt> "prev_page"
-        # * <tt>Accepts:</tt> String, nil to disable
+        # * <tt>Accepts:</tt> String, set to nil to disable
         def page_links_prev_page_class_name
-          @page_links_prev_page_class_name ||= "prev_page"
+          return @page_links_prev_page_class_name if defined?(@page_links_prev_page_class_name)
+          @page_links_prev_page_class_name = "prev_page"
         end
         attr_writer :page_links_prev_page_class_name
         
@@ -221,18 +266,20 @@ module Searchlogic
         # The class name for used in the page_seect helper
         #
         # * <tt>Default:</tt> "page"
-        # * <tt>Accepts:</tt> String
+        # * <tt>Accepts:</tt> String, set to nil to disable
         def page_select_class_name
-          @page_select_class_name ||= "page"
+          return @page_select_class_name if defined?(@page_select_class_name)
+          @page_select_class_name = "page"
         end
         attr_writer :page_select_class_name
         
         # The class name for used in the per_page_link helper
         #
         # * <tt>Default:</tt> "per_page"
-        # * <tt>Accepts:</tt> String
+        # * <tt>Accepts:</tt> String, set to nil to disable
         def per_page_link_class_name
-          @per_page_link_class_name ||= "per_page"
+          return @per_page_link_class_name if defined?(@per_page_link_class_name)
+          @per_page_link_class_name = "per_page"
         end
         attr_writer :per_page_link_class_name
         
@@ -251,9 +298,10 @@ module Searchlogic
         # The class name for used in the per_page_select helper
         #
         # * <tt>Default:</tt> "per_page"
-        # * <tt>Accepts:</tt> String
+        # * <tt>Accepts:</tt> String, set to nil to disable
         def per_page_select_class_name
-          @per_page_select_class_name ||= "per_page"
+          return @per_page_select_class_name if defined?(@per_page_select_class_name)
+          @per_page_select_class_name = "per_page"
         end
         attr_writer :per_page_select_class_name
         
@@ -269,9 +317,10 @@ module Searchlogic
         # The class name for used in the priority_order_by_link helper
         #
         # * <tt>Default:</tt> "priority_order_by"
-        # * <tt>Accepts:</tt> String
+        # * <tt>Accepts:</tt> String, set to nil to disable
         def priority_order_by_link_class_name
-          @priority_order_by_link_class_name ||= "priority_order_by"
+          return @priority_order_by_link_class_name if defined?(@priority_order_by_link_class_name)
+          @priority_order_by_link_class_name = "priority_order_by"
         end
         attr_writer :priority_order_by_link_class_name
       
