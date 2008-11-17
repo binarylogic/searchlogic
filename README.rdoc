@@ -13,12 +13,12 @@ Searchlogic is object based ActiveRecord searching, ordering, and pagination all
 
   sudo gem install searchlogic
 
-For rails
+For rails, as a gem (recommended)
+  
+  # config/environment.rb
+  config.gem "searchlogic"
 
-  $ cd vendor/plugins
-  $ sudo gem unpack searchlogic
-
-Or as a plugin
+Or as a plugin (for older versions of rails)
 
   script/plugin install git://github.com/binarylogic/searchlogic.git
 
