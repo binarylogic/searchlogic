@@ -11,5 +11,4 @@ Echoe.new 'searchlogic' do |p|
   p.summary = "Object based ActiveRecord searching, ordering, pagination, and more!"
   p.url = "http://github.com/binarylogic/searchlogic"
   p.dependencies = %w(activerecord activesupport)
-  p.include_rakefile = true
 end

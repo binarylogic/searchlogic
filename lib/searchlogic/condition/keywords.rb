@@ -5,7 +5,7 @@ module Searchlogic
       self.join_arrays_with_or = true
       
       BLACKLISTED_WORDS = ('a'..'z').to_a + ["about", "an", "are", "as", "at", "be", "by", "com", "de", "en", "for", "from", "how", "in", "is", "it", "la", "of", "on", "or", "that", "the", "the", "this", "to", "und", "was", "what", "when", "where", "who", "will", "with", "www"] # from ranks.nl        
-      FOREIGN_CHARACTERS = 'àáâãäåßéèêëìíîïñòóôõöùúûüýÿ'
+      ALLOWED_CHARACTERS = 'àáâãäåßéèêëìíîïñòóôõöùúûüýÿ\-_\.@'
       
       class << self
         def condition_names_for_column
@@ -35,7 +35,7 @@ module Searchlogic
         def replace_non_alnum_characters!(search_parts)
           search_parts.each do |word|
             word.downcase!
-            word.gsub!(/[^[:alnum:]#{FOREIGN_CHARACTERS}]/, '')
+            word.gsub!(/[^[:alnum:]#{ALLOWED_CHARACTERS}]/, '')
           end
         end
         
