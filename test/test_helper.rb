@@ -49,6 +49,13 @@ ActiveRecord::Schema.define(:version => 1) do
     t.binary    :receipt
   end
   
+  create_table :line_items do |t|
+    t.datetime  :created_at      
+    t.datetime  :updated_at
+    t.integer   :order_id
+    t.string      :name
+  end
+  
   create_table :animals do |t|
     t.datetime  :created_at      
     t.datetime  :updated_at
@@ -81,6 +88,11 @@ end
 
 class Order < ActiveRecord::Base
   belongs_to :user
+  has_many :line_items
+end
+
+class LineItem < ActiveRecord::Base
+  belongs_to :order
 end
 
 # STI
@@ -99,32 +111,4 @@ class Test::Unit::TestCase
   self.use_instantiated_fixtures  = false
   self.pre_loaded_fixtures = true
   fixtures :all
-  
-  private
-    def assert_equal_find_options(find_options, result)
-      find_options_conditions = find_options.delete(:conditions)
-      result_conditions = result.delete(:conditions)
-      
-      assert_equal find_options, result
-      if find_options_conditions.blank? || result_conditions.blank?
-        assert_equal find_options_conditions, result_conditions
-      else
-        assert_equal_sql find_options_conditions, result_conditions
-      end
-    end
-    
-    def assert_equal_sql(sql, result)
-      sql_parts = breakdown_sql(sql)
-      result_parts = breakdown_sql(sql)
-      
-      assert_equal sql_parts.size, result_parts.size
-      sql_parts.each { |part| assert result_parts.include?(part) }
-    end
-    
-    def breakdown_sql(sql)
-      sanitized_sql = ActiveRecord::Base.send(:sanitize_sql, sql)
-      sanitized_sql.gsub!(/(\(|\))/, "")
-      sql_parts = sanitized_sql.split(/or/i)
-      sql_parts.collect { |part| part.split(/ and /i) }.flatten
-    end
 end

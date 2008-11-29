@@ -23,7 +23,7 @@ module Searchlogic
       end
       
       def protect=(value)
-        associations.each { |name, obj| obj.protect = value }
+        association_objects.each { |obj| obj.protect = value }
         @protect = value
       end
       

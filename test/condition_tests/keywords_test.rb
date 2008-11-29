@@ -14,6 +14,10 @@ module ConditionTests
       condition = Searchlogic::Condition::Keywords.new(Account, :column => Account.columns_hash["name"])
       condition.value = "%^$*(^$) àáâãäåßéèêëìíîïñòóôõöùúûüýÿ"
       assert_equal ["\"accounts\".\"name\" LIKE ?", "%àáâãäåßéèêëìíîïñòóôõöùúûüýÿ%"], condition.sanitize
+      
+      condition = Searchlogic::Condition::Keywords.new(Account, :column => Account.columns_hash["name"])
+      condition.value = "ben@ben.com"
+      assert_equal ["\"accounts\".\"name\" LIKE ?", "%ben@ben.com%"], condition.sanitize
     end
   end
 end

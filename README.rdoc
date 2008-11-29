@@ -1,6 +1,6 @@
 = Searchlogic
 
-Searchlogic is object based ActiveRecord searching, ordering, and pagination all in one.
+Searchlogic is object based ActiveRecord searching, ordering, and pagination all in one. It's a simple, quick, all inclusive package for displaying data in your application.
 
 == Helpful links
 
@@ -178,16 +178,83 @@ Any of the options used in the above example can be used in these, but for the s
   search.per_page = 20
   search.all
   
+  search = User.new_search(:conditions => {:age_gt => 18}) do |s|
+    s.conditions.first_name_contains = "Ben"
+    s.per_page = 20
+  end
+  search.all
+  
 == Match ANY or ALL of the conditions
 
 As you saw above, the nice thing about Searchlogic is it's integration with forms. I designed the "any" option so that forms can set this as well, just like a condition.
 
-  @search = User.new_search(:conditions => {:age_gt => 18}) do |search|
-    search.conditions.first_name_contains = "Ben"
-    search.conditions.any = true # can set this to "true" or "1" or "yes"
-    search.all # will join all conditions with "or" instead of "and"
-  end
+  @search = User.new_search(:conditions => {:age_gt => 18})
+  @search.conditions.first_name_contains = "Ben"
+  @search.conditions.any = true # can set this to "true" or "1" or "yes"
+  @search.all # will join all conditions with "or" instead of "and"
   # ... all operations above are available
+
+What if you want to mix and match?
+
+  @search = User.new_search(:conditions => {:age_gt => 18})
+  @search.conditions.or_first_name_contains = "Ben"
+  @search.conditions.or_last_name_contains = "Johnson"
+  @search.conditions.and_id_gt = 5 # the and_ is optional, calling just id_gt is the same thing
+  @search.all # will join conditions in the orders they were set with their specified join condition
+  # => age > 17 OR first_name like '%Ben%' OR lsat_name like '%Johnson%' AND id > 5
+
+The order the conditions is set is relevant, as the SQL will be built in the same order.
+
+== Grouping conditions
+
+In more complex searching situations you might want to group conditions. Just like you use parenthesis in raw SQL. Searchlogic's "group" function is basically a way to implement parenthesis in your conditions. It's simple:
+
+Group off an object:
+
+  search = User.new_search
+  search.id_gt = 2
+  group1 = search.conditions.group
+  group.first_name_like = "Ben"
+  group2 = search.conditions.group
+  group.last_name_like = "Johnson"
+  group21 = group2.group
+  group21.email_ends_with = "binarylogic.com"
+  # => id > 2 AND (first_name like '%Ben%') AND (last_name like '%Johnson%' AND (email like '%binarylogic.com'))
+  
+Group with a block:
+
+  search = User.new_search
+  search.id_gt = 2
+  search.conditions.group do |group|
+    group.first_name_like = "Ben"
+  end
+  search.conditions.group do |group|
+    group.last_name_like = "Johnson"
+    group.group do |sub_group|
+      sub_group.email_ends_with = "binarylogic.com"
+    end
+  end
+  # => id > 2 AND (first_name like '%Ben%') AND (last_name like '%Johnson%' AND (email like '%binarylogic.com'))
+
+Group with a hash:
+
+  search = User.new_search(:conditions => {
+    :id_gt => 2,
+    :group => [
+      {:first_name_like => "Ben"},
+      {
+        :last_name_like => "Johnson",
+        :group => {:email_ends_with => "binarylogic.com"}
+      }
+    ]
+  })
+  # => id > 2 AND (first_name like '%Ben%') AND (last_name like '%Johnson%' AND (email like '%binarylogic.com'))
+
+I want to end this by saying Searchlog was never meant to replace SQL, name_scopes, etc. If you need to perform complex searching there is nothing wrong with resorting to a named scope or using the traditional search methods. In fact, search logic plays nice with named_scopes anyways, so you can combine the 2 if needed:
+
+  @search = User.my_awesome_scope.another_cool_scope.new_search
+
+The only reason I added this was to allow searchlogic to extend a little further into those advanced searches. If you need to scope conditions by using parenthesis, etc. you should resort to named_scopes or the traditional search method.
 
 == Scoped searching
 

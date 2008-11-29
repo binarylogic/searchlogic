@@ -38,6 +38,9 @@ require "searchlogic/search/base"
 require "searchlogic/search/protection"
 
 # Conditions
+require "searchlogic/conditions/any_or_all"
+require "searchlogic/conditions/groups"
+require "searchlogic/conditions/magic_methods"
 require "searchlogic/conditions/protection"
 require "searchlogic/conditions/base"
 
@@ -76,6 +79,9 @@ module Searchlogic
   
   module Conditions
     class Base
+      include AnyOrAll
+      include Groups
+      include MagicMethods
       include Protection
     end
     

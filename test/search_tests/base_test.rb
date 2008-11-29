@@ -142,7 +142,7 @@ module SearchTests
       search.conditions.users.id_greater_than = 2
       search.page = 3
       search.readonly = true
-      assert_equal_find_options({:joins => :users, :offset => 4, :readonly => true, :conditions => ["(\"accounts\".\"name\" LIKE ?) AND (\"users\".\"id\" > ?)", "%Binary%", 2], :limit => 2 }, search.sanitize)
+      assert_equal({:joins => :users, :offset => 4, :readonly => true, :conditions => ["\"accounts\".\"name\" LIKE ? AND \"users\".\"id\" > ?", "%Binary%", 2], :limit => 2 }, search.sanitize)
     end
 
     def test_scope
@@ -151,7 +151,7 @@ module SearchTests
       conditions = search.conditions
       assert_equal "some sql", search.conditions.conditions
       search.conditions = nil
-      assert_nil search.conditions.conditions
+      assert_equal({}, search.conditions.conditions)
       search.conditions = "some sql"
       assert_equal "some sql", search.conditions.conditions
       search.conditions = "some sql"
@@ -217,7 +217,7 @@ module SearchTests
     
       search = Account.new_search(:conditions => {:users => {:orders => {:id_gt => bens_order.id}}})
       assert_equal 1, search.count
-    
+
       search = Order.new_search(:conditions => {:user => {:account => {:id_gt => binary_logic.id}}})
       assert_equal 1, search.count
     
@@ -232,6 +232,10 @@ module SearchTests
   
     def test_sti
     
+    end
+    
+    def test_include_in_relationships
+      
     end
   end
 end

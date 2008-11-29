@@ -1,3 +1,10 @@
+== 1.5.6 released 2008-11-17
+
+* The order conditions are set is now relevant and will be reflected in the SQL. Setting a condition first will make it first in the SQL, setting a condition last will make it last in the SQL.
+* The above allows for prefixing any condition with and_ or or_. Thus letting you create somewhat more complex queries, since the order matters.
+* Added ability to group conditions to mimic parenthesis in raw SQL.
+* Major clean up in the Searchlogic::Conditions name space: faster, smaller, cleaner, and modular.
+
 == 1.5.5 released 2008-11-17
 
 * Cleaned up class_name configuration for helpers, so that setting them to nil disables the class name

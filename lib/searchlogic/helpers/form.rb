@@ -70,7 +70,7 @@ module Searchlogic
             when String, Symbol
               args.unshift(search_object).unshift(first)
             else
-              name = search_object.is_a?(Conditions::Base) ? (search_object.relationship_name || :conditions) : :search
+              name = search_object.is_a?(Conditions::Base) ? (search_object.object_name || :conditions) : :search
               args.unshift(search_object).unshift(name)
             end
             

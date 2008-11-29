@@ -7,6 +7,7 @@ module Searchlogic
           conditions.delete_if { |condition| condition.blank? }
           return if conditions.blank?
           return conditions.first if conditions.size == 1
+          options[:scope] = true unless options.key?(:scope)
         
           conditions_strs = []
           conditions_subs = []
@@ -20,12 +21,18 @@ module Searchlogic
         
           return if conditions_strs.blank?
         
-          join = options[:any] ? "OR" : "AND"
-          conditions_str = "(#{conditions_strs.join(") #{join} (")})"
+          join = options[:any] ? " OR " : " AND "
+          conditions_str = options[:scope] ? "(#{conditions_strs.join(")#{join}(")})" : conditions_strs.join(join)
         
           return conditions_str if conditions_subs.blank?
         
           [conditions_str, *conditions_subs]
+        end
+        
+        def scope_condition(condition)
+          arr_condition = condition.is_a?(Array) ? condition : [condition]
+          arr_condition[0] = "(#{arr_condition[0]})"
+          arr_condition.size == 1 ? arr_condition.first : arr_condition
         end
         
         def merge_joins(*joins)

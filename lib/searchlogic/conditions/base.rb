@@ -8,33 +8,9 @@ module Searchlogic
       include Shared::Utilities
       include Shared::VirtualClasses
       
-      attr_accessor :any, :relationship_name
+      attr_accessor :object_name
       
       class << self
-        attr_accessor :added_klass_conditions, :added_column_equals_conditions, :added_associations
-        
-        def column_details # :nodoc:
-          return @column_details if @column_details
-          
-          @column_details = []
-          
-          klass.columns.each do |column|
-            column_detail = {:column => column}
-            column_detail[:aliases] = case column.type
-            when :datetime, :time, :timestamp
-              [column.name.gsub(/_at$/, "")]
-            when :date
-              [column.name.gsub(/_at$/, "")]
-            else
-              []
-            end
-            
-            @column_details << column_detail
-          end
-          
-          @column_details
-        end
-        
         # Registers a condition as an available condition for a column or a class. MySQL supports a "sounds like" function. I want to use it, so let's add it.
         #
         # === Example
@@ -44,7 +20,7 @@ module Searchlogic
         #   class SoundsLike < Searchlogic::Condition::Base
         #     # The name of the conditions. By default its the name of the class, if you want alternate or alias conditions just add them on.
         #     # If you don't want to add aliases you don't even need to define this method
-        #     def self.condition_names_for_column(column)
+        #     def self.condition_names_for_column
         #       super + ["similar_to", "sounds"]
         #     end
         #
@@ -119,16 +95,6 @@ module Searchlogic
           @@modifiers ||= []
         end
         
-        # A list of all associations created, used for caching and performance
-        def association_names
-          @association_names ||= []
-        end
-        
-        # A list of all conditions available, users for caching and performance
-        def condition_names
-          @condition_names ||= []
-        end
-        
         def needed?(model_class, conditions) # :nodoc:
           return false if conditions.blank?
           
@@ -147,82 +113,49 @@ module Searchlogic
         end
       end
       
+      # Initializes a conditions object, accepts a hash of conditions as the single parameter
       def initialize(init_conditions = {})
-        add_associations!
-        add_column_equals_conditions!
         self.conditions = init_conditions
-      end
-      
-      # Determines if we should join the conditions with "AND" or "OR".
-      #
-      # === Examples
-      #
-      #   search.conditions.any = true # will join all conditions with "or", you can also set this to "true", "1", or "yes"
-      #   search.conditions.any = false # will join all conditions with "and"
-      def any=(value)
-        associations.each { |name, association| association.any = value }
-        @any = value
-      end
-      
-      def any # :nodoc:
-        any?
-      end
-      
-      # Convenience method for determining if we should join the conditions with "AND" or "OR".
-      def any?
-        ["true", "1", "yes"].include? @any.to_s
-      end
-      
-      # Sets the conditions to be searched by "or"
-      def any!
-        any = true
-      end
-      
-      def all # :nodoc:
-        not any?
-      end
-      
-      # Sets the conditions to be searched by "and"
-      def all!
-        any = false
       end
       
       # A list of joins to use when searching, includes relationships
       def auto_joins
         j = []
-        associations.each do |name, association|
+        association_objects.each do |association|
           next if association.conditions.blank?
           association_joins = association.auto_joins
-          j << (association_joins.blank? ? name : {name => association_joins})
+          j << (association_joins.blank? ? association.object_name : {association.object_name => association_joins})
         end
         j.blank? ? nil : (j.size == 1 ? j.first : j)
       end
       
+      # Provides a much more informative and easier to understand inspection of the object
       def inspect
         "#<#{klass}Conditions#{conditions.blank? ? "" : " #{conditions.inspect}"}>"
       end
       
       # Sanitizes the conditions down into conditions that ActiveRecord::Base.find can understand.
       def sanitize
-        return @conditions if @conditions
-        merge_conditions(*(objects.collect { |name, object| object.sanitize } << {:any => any}))
+        return @conditions if @conditions # return the conditions if the user set them with a string, aka sql conditions
+        joined_conditions = nil
+        objects.each { |object| joined_conditions = merge_conditions(joined_conditions, object.class == self.class ? scope_condition(object.sanitize) : object.sanitize, :any => object.any?, :scope => false) }
+        joined_conditions
       end
       
       # Allows you to set the conditions via a hash.
       def conditions=(value)
         case value
         when Hash
-          assert_valid_conditions(value)
           remove_conditions_from_protected_assignement(value).each do |condition, condition_value|
+            next if [:conditions].include?(condition.to_sym) # protect sensitive methods
             
             # delete all blanks from mass assignments, forms submit blanks, blanks are meaningless
             # equals condition thinks everything is meaningful, and arrays can be pased
             new_condition_value = nil
             case condition_value
             when Array
-              new_condition_value = []
-              condition_value.each { |v| new_condition_value << v unless v == "" }
-              next if new_condition_value.size == 0
+              new_condition_value = condition_value.reject { |v| v == "" }
+              next if new_condition_value.empty?
               new_condition_value = new_condition_value.first if new_condition_value.size == 1
             else
               next if condition_value == ""
@@ -232,7 +165,7 @@ module Searchlogic
             send("#{condition}=", new_condition_value)
           end
         else
-          reset_objects!
+          reset!
           @conditions = value
         end
       end
@@ -240,249 +173,40 @@ module Searchlogic
       # All of the active conditions (conditions that have been set)
       def conditions
         return @conditions if @conditions
-        return if objects.blank?
         
         conditions_hash = {}
-        objects.each do |name, object|
-          if object.class < Searchlogic::Conditions::Base
-            relationship_conditions = object.conditions
-            next if relationship_conditions.blank?
-            conditions_hash[name] = relationship_conditions
-          else
-            next if object.value_is_meaningless?
-            conditions_hash[name] = object.value
-          end
+        
+        association_objects.each do |association_object|
+          relationship_conditions = association_object.conditions
+          next if relationship_conditions.blank?
+          conditions_hash[association_object.object_name] = relationship_conditions
         end
+        
+        condition_objects.each do |condition_object|
+          next if condition_object.value_is_meaningless?
+          conditions_hash[condition_object.object_name] = condition_object.value
+        end
+        
         conditions_hash
       end
       
+      # Resets all of the conditions, including conditions set on associations
+      def reset!
+        objects.each { |object| eval("@#{object.object_name} = nil") }
+        objects.clear
+      end
+      
       private
-        def add_associations!
-          return true if self.class.added_associations
-          
-          klass.reflect_on_all_associations.each do |association|
-            self.class.association_names << association.name.to_s
-            
-            self.class.class_eval <<-"end_eval", __FILE__, __LINE__
-              def #{association.name}
-                if objects[:#{association.name}].nil?
-                  objects[:#{association.name}] = Searchlogic::Conditions::Base.create_virtual_class(#{association.class_name}).new
-                  objects[:#{association.name}].relationship_name = "#{association.name}"
-                  objects[:#{association.name}].protect = protect
-                end
-                objects[:#{association.name}]
-              end
-            
-              def #{association.name}=(conditions); @conditions = nil; #{association.name}.conditions = conditions; end
-              def reset_#{association.name}!; objects.delete(:#{association.name}); end
-            end_eval
-          end
-          
-          self.class.added_associations = true
+        def association_objects
+          objects.select { |object| object.class < Base && object.class != self.class }
         end
         
-        def add_column_equals_conditions!
-          return true if self.class.added_column_equals_conditions
-          klass.column_names.each { |name| setup_condition(name) }
-          self.class.added_column_equals_conditions = true
-        end
-        
-        def extract_column_and_condition_from_method_name(name)
-          name_parts = name.gsub("=", "").split("_")
-          
-          condition_parts = []
-          column = nil
-          while column.nil? && name_parts.size > 0
-            possible_column_name = name_parts.join("_")
-            
-            self.class.column_details.each do |column_detail|
-              if column_detail[:column].name == possible_column_name || column_detail[:aliases].include?(possible_column_name)
-                column = column_detail
-                break
-              end
-            end
-            
-            condition_parts << name_parts.pop if !column
-          end
-          
-          return if column.nil?
-          
-          condition_name = condition_parts.reverse.join("_")
-          condition = nil
-          
-          # Find the real condition
-          self.class.conditions.each do |condition_klass|
-            if condition_klass.condition_names_for_column.include?(condition_name)
-              condition = condition_klass
-              break
-            end
-          end
-                                         
-          [column, condition]
-        end
-        
-        def breakdown_method_name(name)
-          column_detail, condition_klass = extract_column_and_condition_from_method_name(name)
-          if !column_detail.nil? && !condition_klass.nil?
-            # There were no modifiers
-            return [[], column_detail, condition_klass]
-          else
-            # There might be modifiers
-            name_parts = name.split("_of_")
-            column_detail, condition_klass = extract_column_and_condition_from_method_name(name_parts.pop)
-            if !column_detail.nil? && !condition_klass.nil?
-              # There were modifiers, lets get their real names
-              modifier_klasses = []
-              name_parts.each do |modifier_name|
-                size_before = modifier_klasses.size
-                self.class.modifiers.each do |modifier_klass|
-                  if modifier_klass.modifier_names.include?(modifier_name)
-                    modifier_klasses << modifier_klass
-                    break
-                  end
-                end
-                return if modifier_klasses.size == size_before # there was an invalid modifer, return nil for everything and let it act as a nomethoderror
-              end
-              
-              return [modifier_klasses, column_detail, condition_klass]
-            end
-          end
-          
-          nil
-        end
-        
-        def build_method_name(modifier_klasses, column_name, condition_name)
-          modifier_name_parts = []
-          modifier_klasses.each { |modifier_klass| modifier_name_parts << modifier_klass.modifier_names.first }
-          method_name_parts = []
-          method_name_parts << modifier_name_parts.join("_of_") + "_of" unless modifier_name_parts.blank?
-          method_name_parts << column_name
-          method_name_parts << condition_name unless condition_name.blank?
-          method_name_parts.join("_").underscore
-        end
-        
-        def method_missing(name, *args, &block)
-          if setup_condition(name)
-            send(name, *args, &block)
-          else
-            super
-          end
-        end
-        
-        def setup_condition(name)
-          modifier_klasses, column_detail, condition_klass = breakdown_method_name(name.to_s)
-          if !column_detail.nil? && !condition_klass.nil?
-            method_name = build_method_name(modifier_klasses, column_detail[:column].name, condition_klass.condition_names_for_column.first)
-            
-            if !added_condition?(method_name)
-              column_type = column_sql = nil
-              if !modifier_klasses.blank?
-                # Find the column type
-                column_type = modifier_klasses.first.return_type
-              
-                # Build the column sql
-                column_sql = "{table}.{column}"
-                modifier_klasses.each do |modifier_klass|
-                  next unless klass.connection.respond_to?(modifier_klass.adapter_method_name)
-                  column_sql = klass.connection.send(modifier_klass.adapter_method_name, column_sql)
-                end
-              end
-            
-              add_condition!(condition_klass, method_name, :column => column_detail[:column], :column_type => column_type, :column_sql_format => column_sql)
-            
-              ([column_detail[:column].name] + column_detail[:aliases]).each do |column_name|
-                condition_klass.condition_names_for_column.each do |condition_name|
-                  alias_method_name = build_method_name(modifier_klasses, column_name, condition_name)
-                  add_condition_alias!(alias_method_name, method_name) unless added_condition?(alias_method_name)
-                end
-              end
-            end
-            
-            alias_method_name = name.to_s.gsub("=", "")
-            add_condition_alias!(alias_method_name, method_name) unless added_condition?(alias_method_name)
-            
-            return true
-          end
-          
-          false
-        end
-        
-        def add_condition!(condition, name, options = {})
-          self.class.condition_names << name
-          options[:column] = options[:column].name
-          
-          self.class.class_eval <<-"end_eval", __FILE__, __LINE__
-            def #{name}_object
-              if objects[:#{name}].nil?
-                options = {}
-                objects[:#{name}] = #{condition.name}.new(klass, #{options.inspect})
-              end
-              objects[:#{name}]
-            end
-
-            def #{name}; #{name}_object.value; end
-            
-            def #{name}=(value)
-              @conditions = nil
-              
-              #{name}_object.value = value
-              reset_#{name}! if #{name}_object.value_is_meaningless?
-              value
-            end
-            
-            def reset_#{name}!; objects.delete(:#{name}); end
-          end_eval
-        end
-        
-        def added_condition?(name)
-          respond_to?("#{name}_object") && respond_to?(name) && respond_to?("#{name}=") && respond_to?("reset_#{name}!")
-        end
-        
-        def add_condition_alias!(alias_name, name)
-          self.class.condition_names << alias_name
-          
-          self.class.class_eval do
-            alias_method "#{alias_name}_object", "#{name}_object"
-            alias_method alias_name, name
-            alias_method "#{alias_name}=", "#{name}="
-            alias_method "reset_#{alias_name}!", "reset_#{name}!"
-          end
-        end
-        
-        def assert_valid_conditions(conditions)
-          conditions.each do |condition, value|
-            next if (self.class.condition_names + self.class.association_names + ["any"]).include?(condition.to_s)
-            
-            go_to_next = false
-            self.class.column_details.each do |column_detail|
-              if column_detail[:column].name == condition.to_s || column_detail[:aliases].include?(condition.to_s)
-                go_to_next = true
-                break
-              end
-            end
-            next if go_to_next
-            
-            next unless respond_to?(condition)
-            
-            raise(ArgumentError, "The #{condition} condition is not a valid condition")
-          end
-        end
-        
-        def associations
-          associations = {}
-          objects.each do |name, object|
-            associations[name] = object if object.class < ::Searchlogic::Conditions::Base
-          end
-          associations
+        def condition_objects
+          objects.select { |object| object.class < Condition::Base }
         end
         
         def objects
-          @objects ||= {}
-        end
-        
-        def reset_objects!
-          objects.each { |name, object| eval("@#{name} = nil") }
-          objects.clear
+          @objects ||= []
         end
         
         def remove_conditions_from_protected_assignement(conditions)
