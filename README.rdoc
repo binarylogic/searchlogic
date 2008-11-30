@@ -239,33 +239,31 @@ Group with a block:
   search.conditions.group do |group|
     group.first_name_like = "Ben"
   end
-  search.conditions.group do |group|
+  search.conditions.or_group do |group|
     group.last_name_like = "Johnson"
     group.group do |sub_group|
       sub_group.email_ends_with = "binarylogic.com"
     end
   end
-  # => id > 2 AND (first_name like '%Ben%') AND (last_name like '%Johnson%' AND (email like '%binarylogic.com'))
+  # => id > 2 AND (first_name like '%Ben%') OR (last_name like '%Johnson%' AND (email like '%binarylogic.com'))
 
 Group with a hash:
 
   search = User.new_search(:conditions => [
     {:id_gt => 2},
+    {:group => {:first_name_like => "Ben"}},
     {:group => [
-      {:first_name_like => "Ben"},
-      [
-        {:last_name_like => "Johnson"},
-        {:group => {:email_ends_with => "binarylogic.com"}}
-      ]
+      {:last_name_like => "Johnson"},
+      {:group => {:email_ends_with => "binarylogic.com"}}
     ]}
   ])
   # => id > 2 AND (first_name like '%Ben%') AND (last_name like '%Johnson%' AND (email like '%binarylogic.com'))
 
-I want to end this by saying Searchlog was never meant to replace SQL, name_scopes, etc. If you need to perform complex searching there is nothing wrong with resorting to a named scope or using the traditional search methods. In fact, search logic plays nice with named_scopes anyways, so you can combine the 2 if needed:
+I want to end this by saying Searchlogic was never meant to replace SQL, name_scopes, etc. If you need to perform complex searching there is nothing wrong with resorting to a named scope or using the traditional search methods. In fact, search logic plays nice with named_scopes anyways, so you can combine the 2 if needed:
 
   @search = User.my_awesome_scope.another_cool_scope.new_search
 
-The only reason I added this was to allow searchlogic to extend a little further into those advanced searches. If you need to scope conditions by using parenthesis, etc. you should resort to named_scopes or the traditional search method.
+You decide when a named scope makes the most sense. If you are creating a named scope that is specific to the search form you are building you should consider adding the conditions right into the form.
 
 == Scoped searching
 

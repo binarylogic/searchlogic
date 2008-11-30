@@ -1,3 +1,7 @@
+== 1.5.8 released 2008-11-30
+
+* Removed array support for groups, arrays will set conditions, not create multiple groups. If you need to create multiple groups you will have to pass an array with multiple {:group => my_groups} hashes.
+
 == 1.5.7 released 2008-11-30
 
 * Fixed how grouping works, you can now specify "and_group" and "or_group", just like you can with conditions.

@@ -10,40 +10,26 @@ module Searchlogic
       end
       
       # Creates a new group object to set condition off of. See examples at top of class on how to use this.
-      def group(conditions = nil, forward_arrays = false, &block)
-        if conditions.is_a?(Array) && !forward_arrays
-          group_objects = []
-          conditions.each { |condition| group_objects << group(condition, true, &block) }
-          group_objects
-        else
-          obj = self.class.new
-          obj.conditions = conditions unless conditions.nil?
-          yield obj if block_given?
-          objects << obj
-          obj
-        end
+      def group(conditions = nil, &block)
+        obj = self.class.new
+        obj.conditions = conditions unless conditions.nil?
+        yield obj if block_given?
+        objects << obj
+        obj
       end
       alias_method :group=, :group
       
       def and_group(*args, &block)
         obj = group(*args, &block)
-        case obj
-        when Array
-          obj.each { |o| o.group_any = false }
-        else
-          obj
-        end
+        obj.explicit_any = false
+        obj
       end
       alias_method :and_group=, :and_group
       
       def or_group(*args, &block)
         obj = group(*args, &block)
-        case obj
-        when Array
-          obj.each { |o| o.group_any = true }
-        else
-          obj
-        end
+        obj.explicit_any = true
+        obj
       end
       alias_method :or_group=, :or_group
       
