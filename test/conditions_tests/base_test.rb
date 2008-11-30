@@ -73,7 +73,7 @@ module ConditionsTests
       conditions = Searchlogic::Cache::AccountConditions.new
       conditions.name_contains = "Binary"
       conditions.or_id_gt = 5
-      assert conditions.id_gt_object.any?
+      assert conditions.id_gt_object.explicit_any?
       assert_equal ["\"accounts\".\"name\" LIKE ? OR \"accounts\".\"id\" > ?", "%Binary%", 5], conditions.sanitize
       now = Time.now
       conditions.created_at_after = now

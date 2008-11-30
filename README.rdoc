@@ -1,6 +1,17 @@
 = Searchlogic
 
-Searchlogic is object based ActiveRecord searching, ordering, and pagination all in one. It's a simple, quick, all inclusive package for displaying data in your application.
+Searchlogic's goal is to keep your application free of searching clutter. It's is an ActiveRecord extension that allows you to perform simple and complex searches with a hash. Why is this great? Because GET and POST parameters are a hash. This means if you can execute a search with a hash, you can execute a search using GET or POST parameters. This makes searching in your application dead simple and clutter free:
+
+  @search = User.new_search(params[:search])
+  @users = @search.all
+
+Now think about it this way. How are resources / web services used? Through GET and POST. All of a sudden you have a resource that comes preloaded with a *very* flexible searching functionality, all with 2 lines of code.
+
+What about your interface? What is an HTML form's sole purpose? It's to send GET or POST parameters to a URI. Now you can build a form that represents a search. Meaning adding a condition to your search is as easy as adding a field to your form. That's what the @search object above is all about. You can pass that right into your form builder and build a form just like you would for an ActiveRecord object. Now you can use that handy form builder that you like you use and get rid of even more searching clutter in your views.
+
+Searching in your application has never been cleaner, more flexible, or easier.
+
+These are just the basics of Searchlogic, it can do a lot more, including pagination, ordering data, etc. All of these things are just as simple, if not simpler. Keep reading to find out everything it can do.
 
 == Helpful links
 
@@ -238,16 +249,16 @@ Group with a block:
 
 Group with a hash:
 
-  search = User.new_search(:conditions => {
-    :id_gt => 2,
-    :group => [
+  search = User.new_search(:conditions => [
+    {:id_gt => 2},
+    {:group => [
       {:first_name_like => "Ben"},
-      {
-        :last_name_like => "Johnson",
-        :group => {:email_ends_with => "binarylogic.com"}
-      }
-    ]
-  })
+      [
+        {:last_name_like => "Johnson"},
+        {:group => {:email_ends_with => "binarylogic.com"}}
+      ]
+    ]}
+  ])
   # => id > 2 AND (first_name like '%Ben%') AND (last_name like '%Johnson%' AND (email like '%binarylogic.com'))
 
 I want to end this by saying Searchlog was never meant to replace SQL, name_scopes, etc. If you need to perform complex searching there is nothing wrong with resorting to a named scope or using the traditional search methods. In fact, search logic plays nice with named_scopes anyways, so you can combine the 2 if needed:

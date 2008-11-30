@@ -9,7 +9,7 @@ module ConditionTests
       
       condition = Searchlogic::Condition::SiblingOf.new(User)
       condition.value = drew
-      assert_equal ["(\"users\".\"id\" != ?) AND (\"users\".\"parent_id\" = ?)", drew.id, ben.id], condition.sanitize
+      assert_equal ["\"users\".\"id\" != ? AND \"users\".\"parent_id\" = ?", drew.id, ben.id], condition.sanitize
     end
   end
 end

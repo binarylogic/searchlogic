@@ -35,17 +35,20 @@ module ConditionsTests
     
     def test_group_hash
       now = Time.now
-      conditions = Searchlogic::Cache::AccountConditions.new(
-        :id_gt => 3,
-        :group => [
+      conditions = Searchlogic::Cache::AccountConditions.new([
+        {:id_gt => 3},
+        {:group => [
           {:name_like => "Binary"},
-          {
-            :id_gt => 5,
-            :group => {:created_at_after => now}
-          }
-        ]
-      )
-      assert_equal ["\"accounts\".\"id\" > ? AND (\"accounts\".\"name\" LIKE ?) AND (\"accounts\".\"id\" > ? AND (\"accounts\".\"created_at\" > ?))", 3, "%Binary%", 5, now], conditions.sanitize
+          [
+            {:id_gt => 5},
+            {:group => {
+              :id_lt => 20,
+              :created_at_after => now
+            }}
+          ]
+        ]}
+      ])
+      assert_equal ["\"accounts\".\"id\" > ? AND (\"accounts\".\"name\" LIKE ?) AND (\"accounts\".\"id\" > ? AND (\"accounts\".\"id\" < ? AND \"accounts\".\"created_at\" > ?))", 3, "%Binary%", 5, 20, now], conditions.sanitize
     end
   end
 end

@@ -10,27 +10,62 @@ module Searchlogic
       end
       
       # Creates a new group object to set condition off of. See examples at top of class on how to use this.
-      def group(&block)
-        obj = self.class.new
-        yield obj if block_given?
-        objects << obj
-        obj
+      def group(conditions = nil, forward_arrays = false, &block)
+        if conditions.is_a?(Array) && !forward_arrays
+          group_objects = []
+          conditions.each { |condition| group_objects << group(condition, true, &block) }
+          group_objects
+        else
+          obj = self.class.new
+          obj.conditions = conditions unless conditions.nil?
+          yield obj if block_given?
+          objects << obj
+          obj
+        end
+      end
+      alias_method :group=, :group
+      
+      def and_group(*args, &block)
+        obj = group(*args, &block)
+        case obj
+        when Array
+          obj.each { |o| o.group_any = false }
+        else
+          obj
+        end
+      end
+      alias_method :and_group=, :and_group
+      
+      def or_group(*args, &block)
+        obj = group(*args, &block)
+        case obj
+        when Array
+          obj.each { |o| o.group_any = true }
+        else
+          obj
+        end
+      end
+      alias_method :or_group=, :or_group
+      
+      def explicit_any=(value) # :nodoc:
+        @explicit_any = value
       end
       
-      # Lets you conditions to be groups or an array of conditions to be put in their own group. Each item in the array will create a new group. This is nice for using
-      # groups in forms.
-      def group=(value)
-        case value
-        when Array
-          value.each { |v| group.conditions = v }
-        else
-          group.conditions = value
-        end
+      def explicit_any # :nodoc
+        @explicit_any
+      end
+      
+      def explicit_any? # :nodoc:
+        ["true", "1", "yes"].include? explicit_any.to_s
       end
       
       private
         def group_objects
-          objects.select { |object| object.class == self.class }
+          objects.select { |object| group?(object) }
+        end
+        
+        def group?(object)
+          object.class == self.class
         end
     end
   end

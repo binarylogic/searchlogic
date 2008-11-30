@@ -7,7 +7,6 @@ module Searchlogic
           conditions.delete_if { |condition| condition.blank? }
           return if conditions.blank?
           return conditions.first if conditions.size == 1
-          options[:scope] = true unless options.key?(:scope)
         
           conditions_strs = []
           conditions_subs = []
@@ -22,7 +21,7 @@ module Searchlogic
           return if conditions_strs.blank?
         
           join = options[:any] ? " OR " : " AND "
-          conditions_str = options[:scope] ? "(#{conditions_strs.join(")#{join}(")})" : conditions_strs.join(join)
+          conditions_str = conditions_strs.join(join)
         
           return conditions_str if conditions_subs.blank?
         

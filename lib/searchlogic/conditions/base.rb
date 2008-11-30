@@ -138,13 +138,19 @@ module Searchlogic
       def sanitize
         return @conditions if @conditions # return the conditions if the user set them with a string, aka sql conditions
         joined_conditions = nil
-        objects.each { |object| joined_conditions = merge_conditions(joined_conditions, object.class == self.class ? scope_condition(object.sanitize) : object.sanitize, :any => object.any?, :scope => false) }
+        objects.each do |object|
+          any = !object.explicit_any.nil? && (condition?(object) || group?(object)) ? object.explicit_any? : any?
+          sanitized_conditions = group?(object) ? scope_condition(object.sanitize) : object.sanitize
+          joined_conditions = merge_conditions(joined_conditions, sanitized_conditions, :any => any)
+        end
         joined_conditions
       end
       
       # Allows you to set the conditions via a hash.
       def conditions=(value)
         case value
+        when Array
+          value.each { |v| self.conditions = v }
         when Hash
           remove_conditions_from_protected_assignement(value).each do |condition, condition_value|
             next if [:conditions].include?(condition.to_sym) # protect sensitive methods
@@ -198,11 +204,19 @@ module Searchlogic
       
       private
         def association_objects
-          objects.select { |object| object.class < Base && object.class != self.class }
+          objects.select { |object| association?(object) }
+        end
+        
+        def association?(object)
+          object.class < Base && object.class != self.class
         end
         
         def condition_objects
-          objects.select { |object| object.class < Condition::Base }
+          objects.select { |object| condition?(object) }
+        end
+        
+        def condition?(object)
+          object.class < Condition::Base
         end
         
         def objects

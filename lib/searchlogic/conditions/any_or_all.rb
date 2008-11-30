@@ -2,7 +2,7 @@ module Searchlogic
   module Conditions
     # = Any or All
     #
-    # Adds the ability to join all conditions wth "ANY" or "ALL".
+    # Adds the ability to join all conditions wth "AND" or "OR".
     module AnyOrAll
       # Determines if we should join the conditions with "AND" or "OR".
       #
@@ -11,7 +11,7 @@ module Searchlogic
       #   search.conditions.any = true # will join all conditions with "or", you can also set this to "true", "1", or "yes"
       #   search.conditions.any = false # will join all conditions with "and"
       def any=(value)
-        objects.each { |object| object.any = value }
+        (association_objects + group_objects).each { |object| object.any = value }
         @any = value
       end
       

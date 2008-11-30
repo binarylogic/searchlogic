@@ -223,6 +223,8 @@ module Searchlogic
               def #{name}
                 #{name}_object.value
               end
+              alias_method :and_#{name}, :#{name}
+              alias_method :or_#{name}, :#{name}
             
               def #{name}=(value)
                 @conditions = nil
@@ -232,12 +234,12 @@ module Searchlogic
               end
             
               def and_#{name}=(value)
-                #{name}_object.any = false
+                #{name}_object.explicit_any = false
                 self.#{name} = value
               end
             
               def or_#{name}=(value)
-                #{name}_object.any = true
+                #{name}_object.explicit_any = true
                 self.#{name} = value
               end
             
