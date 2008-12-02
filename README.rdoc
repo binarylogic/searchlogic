@@ -18,6 +18,7 @@ These are just the basics of Searchlogic, it can do a lot more, including pagina
 *	<b>Documentation:</b> http://searchlogic.rubyforge.org
 *	<b>Easy pagination, ordering, and searching tutorial:</b> http://www.binarylogic.com/2008/9/7/tutorial-pagination-ordering-and-searching-with-searchlogic
 *	<b>Live example of the tutorial above (with source):</b> http://searchlogic_example.binarylogic.com
+* <b>Complex searching:</b> http://www.binarylogic.com/2008/11/30/searchlogic-1-5-7-complex-searching-no-longer-a-problem
 * <b>Bugs / feature suggestions:</b> http://binarylogic.lighthouseapp.com/projects/16601-searchlogic
 
 == Install and use

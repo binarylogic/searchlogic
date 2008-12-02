@@ -13,7 +13,7 @@ module Searchlogic
         # Creates virtual classes for the class passed to it. This is a neccesity for keeping dynamically created method
         # names specific to models. It provides caching and helps a lot with performance.
         def create_virtual_class(model_class)
-          class_search_name = "::Searchlogic::Cache::#{model_class.name}" + name.split(/::/)[1]
+          class_search_name = "::Searchlogic::Cache::#{model_class.name.gsub("::", "")}" + name.split(/::/)[1]
   
           begin
             eval(class_search_name)
