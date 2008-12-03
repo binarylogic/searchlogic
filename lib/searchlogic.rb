@@ -41,6 +41,7 @@ require "searchlogic/search/protection"
 require "searchlogic/conditions/any_or_all"
 require "searchlogic/conditions/groups"
 require "searchlogic/conditions/magic_methods"
+require "searchlogic/conditions/multiparameter_attributes"
 require "searchlogic/conditions/protection"
 require "searchlogic/conditions/base"
 
@@ -82,6 +83,7 @@ module Searchlogic
       include AnyOrAll
       include Groups
       include MagicMethods
+      include MultiparameterAttributes
       include Protection
     end
     

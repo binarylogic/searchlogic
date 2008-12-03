@@ -213,7 +213,7 @@ What if you want to mix and match?
   @search.conditions.or_last_name_contains = "Johnson"
   @search.conditions.and_id_gt = 5 # the and_ is optional, calling just id_gt is the same thing
   @search.all # will join conditions in the orders they were set with their specified join condition
-  # => age > 17 OR first_name like '%Ben%' OR lsat_name like '%Johnson%' AND id > 5
+  # => age > 18 OR first_name like '%Ben%' OR lsat_name like '%Johnson%' AND id > 5
 
 The order the conditions is set is relevant, as the SQL will be built in the same order.
 
@@ -226,9 +226,9 @@ Group off an object:
   search = User.new_search
   search.id_gt = 2
   group1 = search.conditions.group
-  group.first_name_like = "Ben"
+  group1.first_name_like = "Ben"
   group2 = search.conditions.group
-  group.last_name_like = "Johnson"
+  group2.last_name_like = "Johnson"
   group21 = group2.group
   group21.email_ends_with = "binarylogic.com"
   # => id > 2 AND (first_name like '%Ben%') AND (last_name like '%Johnson%' AND (email like '%binarylogic.com'))
@@ -264,7 +264,7 @@ I want to end this by saying Searchlogic was never meant to replace SQL, name_sc
 
   @search = User.my_awesome_scope.another_cool_scope.new_search
 
-You decide when a named scope makes the most sense. If you are creating a named scope that is specific to the search form you are building you should consider adding the conditions right into the form.
+You decide when a named scope makes the most sense. If you are creating a named scope that is specific to the search form you are building, you should consider adding the conditions right into the form. But if you are creating a named scope that you are using throughout your application, then it probably makes sense for it to be a named scope.
 
 == Scoped searching
 
@@ -280,7 +280,7 @@ Not only can you use searchlogic when searching, but you can use it when using s
   class User < ActiveRecord::Base
     named_scope :sexy, :conditions => {:first_name => "Ben", email_ends_with => "binarylogic.com"}, :per_page => 20
   end
-  
+
 or
 
   class User < ActiveRecord::Base

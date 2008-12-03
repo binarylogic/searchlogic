@@ -67,7 +67,7 @@ module Searchlogic
 
     MAJOR = 1
     MINOR = 5
-    TINY  = 7
+    TINY  = 8
 
     # The current version as a Version instance
     CURRENT = new(MAJOR, MINOR, TINY)

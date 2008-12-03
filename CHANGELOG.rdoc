@@ -2,6 +2,7 @@
 
 * Removed array support for groups, arrays will set conditions, not create multiple groups. If you need to create multiple groups you will have to pass an array with multiple {:group => my_groups} hashes.
 * Fixed issues with using name spaced models.
+* Added support for multiparameter conditions to support date_select helpers.
 
 == 1.5.7 released 2008-11-30
 
