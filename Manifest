@@ -33,6 +33,7 @@ lib/searchlogic/conditions/any_or_all.rb
 lib/searchlogic/conditions/base.rb
 lib/searchlogic/conditions/groups.rb
 lib/searchlogic/conditions/magic_methods.rb
+lib/searchlogic/conditions/multiparameter_attributes.rb
 lib/searchlogic/conditions/protection.rb
 lib/searchlogic/config/helpers.rb
 lib/searchlogic/config/search.rb
@@ -129,6 +130,7 @@ test/conditions_tests/any_or_all_test.rb
 test/conditions_tests/base_test.rb
 test/conditions_tests/groups_test.rb
 test/conditions_tests/magic_methods_test.rb
+test/conditions_tests/multiparameter_attributes_test.rb
 test/conditions_tests/protection_test.rb
 test/config_test.rb
 test/fixtures/accounts.yml

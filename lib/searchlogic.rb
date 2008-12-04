@@ -14,6 +14,7 @@ end
 
 # Core Ext
 require "searchlogic/core_ext/hash"
+require "searchlogic/core_ext/object"
 
 # Shared
 require "searchlogic/shared/utilities"
