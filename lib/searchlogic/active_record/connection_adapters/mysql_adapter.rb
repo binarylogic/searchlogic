@@ -93,6 +93,10 @@ module Searchlogic
           "ATAN(#{column_name})"
         end
         
+        def avg_sql(column_name)
+          "AVG(#{column_name})"
+        end
+        
         def ceil_sql(column_name)
           "CEIL(#{column_name})"
         end
@@ -103,6 +107,10 @@ module Searchlogic
         
         def cot_sql(column_name)
           "COT(#{column_name})"
+        end
+        
+        def count_sql(column_name)
+          "COUNT(#{colun_name})"
         end
         
         def degrees_sql(column_name)
@@ -159,6 +167,10 @@ module Searchlogic
         
         def square_root_sql(column_name)
           "SQRT(#{column_name})"
+        end
+        
+        def sum_sql(column_name)
+          "SUM(#{column_name})"
         end
         
         def tan_sql(column_name)

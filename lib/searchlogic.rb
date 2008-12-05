@@ -54,7 +54,7 @@ SEARCHLOGIC_CONDITIONS.each { |condition| require "searchlogic/condition/#{condi
 
 # Modifiers
 require "searchlogic/modifiers/base"
-SEARCHLOGIC_MODIFIERS = [:absolute, :acos, :asin, :atan, :ceil, :char_length, :cos, :cot, :day_of_month, :day_of_week, :day_of_year, :degrees, :exp, :floor, :hex, :hour, :log, :log10, :log2, :lower, :ltrim, :md5, :microseconds, :milliseconds, :minute, :month, :octal, :radians, :round, :rtrim, :second, :sign, :sin, :square_root, :tan, :trim, :upper, :week, :year]
+SEARCHLOGIC_MODIFIERS = [:absolute, :acos, :asin, :atan, :avg, :ceil, :char_length, :cos, :cot, :count, :day_of_month, :day_of_week, :day_of_year, :degrees, :exp, :floor, :hex, :hour, :log, :log10, :log2, :lower, :ltrim, :md5, :microseconds, :milliseconds, :minute, :month, :octal, :radians, :round, :rtrim, :second, :sign, :sin, :square_root, :sum, :tan, :trim, :upper, :week, :year]
 SEARCHLOGIC_MODIFIERS.each { |modifier| require "searchlogic/modifiers/#{modifier}" }
 
 # Helpers

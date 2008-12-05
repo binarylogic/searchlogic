@@ -84,7 +84,7 @@ Now your view:
   - form_for @search do |f|
     - f.fields_for @search.conditions do |users|
       = users.text_field :first_name_contains
-      = users.calendar_date_select :created_after # nice rails plugin for replacing date_select
+      = users.date_select :created_after
       - users.fields_for users.object.orders do |orders|
         = orders.select :total_gt, (1..100)
     = f.submit "Search"
@@ -390,9 +390,11 @@ Here are all of the available modifiers:
   :acos                                                         The arc cosine
   :asin                                                         The arc sine
   :atan                                                         The arc tangent
+  :avg              :average                                    The average
   :ceil             :round_up                                   Rounds up to the nearest int
   :cos              :cosine                                     The cosine
   :cot              :cotangent                                  The cotangent
+  :count                                                        The count
   :degrees                                                      Converts radians to degrees
   :exp              :exponential                                Returns the value of e (the base of natural logarithms) raised to the power of X
   :floor            :round_down                                 Rounds down to the nearest int
@@ -406,6 +408,7 @@ Here are all of the available modifiers:
   :sign                                                         The sign of the number
   :sin                                                          The sine of the number
   :square_root      :sqrt, :sq_rt                               The square root of the number
+  :sum                                                          The sum of the number
   :tan              :tangent                                    The tangent of the number
 
 === How to use modifiers
