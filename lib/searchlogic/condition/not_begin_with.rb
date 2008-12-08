@@ -8,7 +8,7 @@ module Searchlogic
       end
       
       def to_conditions(value)
-        begin_with = BeginWith.new(klass, options)
+        begin_with = BeginsWith.new(klass, options)
         begin_with.value = value
         conditions = being_with.sanitize
         return conditions if conditions.blank?

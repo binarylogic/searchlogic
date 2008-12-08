@@ -1,4 +1,10 @@
-== 1.5.10 released 2008-12-10
+== 1.6.0 released 2008-12-8
+
+* Converted all tree conditions to nested set conditions for performance reasons. A nested set data structure is now required instead of a tree
+* Added DISTINCT to select if you are not provided a select, searching, and have joins.
+* Included :not_like in the list of conditions to be required upon initialization.
+
+== 1.5.10 released 2008-12-8
 
 * Create class level conditions upon instantiation to avoid conflicts.
 
