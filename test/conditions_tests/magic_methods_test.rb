@@ -2,6 +2,17 @@ require File.dirname(__FILE__) + '/../test_helper.rb'
 
 module ConditionsTests
   class MagicMethodsTest < ActiveSupport::TestCase
+    def test_class_level_conditions
+      ben = users(:ben)
+      drew = users(:drew)
+      jennifer = users(:jennifer)
+      tren = users(:tren)
+      
+      conditions = Searchlogic::Cache::UserConditions.new
+      conditions.descendant_of = ben
+      assert_equal ["\"users\".\"id\" = ? OR \"users\".\"id\" = ? OR \"users\".\"id\" = ?", drew.id, tren.id, jennifer.id], conditions.sanitize
+    end
+    
     def test_virtual_columns
       search = Account.new_search
       conditions = search.conditions
@@ -15,10 +26,10 @@ module ConditionsTests
       assert_equal ["(strftime('%H', \"accounts\".\"created_at\") * 1) > ? AND (strftime('%w', \"accounts\".\"created_at\") * 1) <= ? AND (strftime('%m', \"accounts\".\"created_at\") * 1) IS NULL AND (strftime('%m', (strftime('%H', (strftime('%M', \"accounts\".\"created_at\") * 1)) * 1)) * 1) IS NULL", 2, 5], conditions.sanitize
       assert_nothing_raised { search.all }
     end
-  end
-  
-  def test_method_conflicts
-    conditions = Searchlogic::Cache::AccountConditions.new
-    assert_nil conditions.id
+    
+    def test_method_conflicts
+      conditions = Searchlogic::Cache::AccountConditions.new
+      assert_nil conditions.id
+    end
   end
 end

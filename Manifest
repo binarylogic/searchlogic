@@ -39,6 +39,7 @@ lib/searchlogic/config/helpers.rb
 lib/searchlogic/config/search.rb
 lib/searchlogic/config.rb
 lib/searchlogic/core_ext/hash.rb
+lib/searchlogic/core_ext/object.rb
 lib/searchlogic/helpers/control_types/link.rb
 lib/searchlogic/helpers/control_types/links.rb
 lib/searchlogic/helpers/control_types/remote_link.rb
@@ -51,11 +52,13 @@ lib/searchlogic/modifiers/absolute.rb
 lib/searchlogic/modifiers/acos.rb
 lib/searchlogic/modifiers/asin.rb
 lib/searchlogic/modifiers/atan.rb
+lib/searchlogic/modifiers/avg.rb
 lib/searchlogic/modifiers/base.rb
 lib/searchlogic/modifiers/ceil.rb
 lib/searchlogic/modifiers/char_length.rb
 lib/searchlogic/modifiers/cos.rb
 lib/searchlogic/modifiers/cot.rb
+lib/searchlogic/modifiers/count.rb
 lib/searchlogic/modifiers/day_of_month.rb
 lib/searchlogic/modifiers/day_of_week.rb
 lib/searchlogic/modifiers/day_of_year.rb
@@ -82,6 +85,7 @@ lib/searchlogic/modifiers/second.rb
 lib/searchlogic/modifiers/sign.rb
 lib/searchlogic/modifiers/sin.rb
 lib/searchlogic/modifiers/square_root.rb
+lib/searchlogic/modifiers/sum.rb
 lib/searchlogic/modifiers/tan.rb
 lib/searchlogic/modifiers/trim.rb
 lib/searchlogic/modifiers/upper.rb

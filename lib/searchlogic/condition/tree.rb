@@ -8,7 +8,7 @@ module Searchlogic
           []
         end
         
-        def condition_names_for_model(model)
+        def condition_names_for_model
           [condition_type_name]
         end
       end

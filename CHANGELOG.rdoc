@@ -1,3 +1,7 @@
+== 1.5.10 released 2008-12-10
+
+* Create class level conditions upon instantiation to avoid conflicts.
+
 == 1.5.9 released 2008-12-3
 
 * Added metaclass object extension for older version of ActiveSupport.

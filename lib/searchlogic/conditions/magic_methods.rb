@@ -7,7 +7,7 @@ module Searchlogic
       def self.included(klass)
         klass.metaclass.class_eval do
           include ClassMethods
-          attr_accessor :added_column_equals_conditions, :added_associations
+          attr_accessor :added_class_level_conditions, :added_column_equals_conditions, :added_associations
         end
         
         klass.class_eval do
@@ -45,6 +45,7 @@ module Searchlogic
         def initialize_with_magic_methods(*args)
           add_associations!
           add_column_equals_conditions!
+          add_class_level_conditions!
           initialize_without_magic_methods(*args)
         end
         
@@ -82,6 +83,21 @@ module Searchlogic
             return true if self.class.added_column_equals_conditions
             klass.column_names.each { |name| setup_condition(name) }
             self.class.added_column_equals_conditions = true
+          end
+          
+          def add_class_level_conditions!
+            return true if self.class.added_class_level_conditions
+            class_level_conditions = self.class.conditions.select { |condition_class| !condition_class.condition_names_for_model.blank? }
+            class_level_conditions.each do |condition_class|
+              condition_class.condition_names_for_model.each_with_index do |condition_name, index|
+                if index == 0
+                  add_condition!(condition_class, condition_name)
+                else
+                  add_condition_alias!(condition_name, condition_class.condition_names_for_model.first)
+                end
+              end
+            end
+            self.class.added_class_level_conditions = true
           end
         
           def sanitize_method_name(name)
@@ -209,7 +225,7 @@ module Searchlogic
           end
         
           def add_condition!(condition, name, options = {})
-            options[:column] = options[:column].name
+            options[:column] = options[:column].name if options[:column]
           
             self.class.class_eval <<-"end_eval", __FILE__, __LINE__
               def #{name}_object
