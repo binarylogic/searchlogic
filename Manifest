@@ -19,6 +19,7 @@ lib/searchlogic/condition/keywords.rb
 lib/searchlogic/condition/less_than.rb
 lib/searchlogic/condition/less_than_or_equal_to.rb
 lib/searchlogic/condition/like.rb
+lib/searchlogic/condition/nested_set.rb
 lib/searchlogic/condition/nil.rb
 lib/searchlogic/condition/not_begin_with.rb
 lib/searchlogic/condition/not_blank.rb
@@ -28,7 +29,6 @@ lib/searchlogic/condition/not_have_keywords.rb
 lib/searchlogic/condition/not_like.rb
 lib/searchlogic/condition/not_nil.rb
 lib/searchlogic/condition/sibling_of.rb
-lib/searchlogic/condition/tree.rb
 lib/searchlogic/conditions/any_or_all.rb
 lib/searchlogic/conditions/base.rb
 lib/searchlogic/conditions/groups.rb
@@ -142,7 +142,10 @@ test/fixtures/animals.yml
 test/fixtures/orders.yml
 test/fixtures/user_groups.yml
 test/fixtures/users.yml
-test/libs/acts_as_tree.rb
+test/libs/awesome_nested_set/compatability.rb
+test/libs/awesome_nested_set/helper.rb
+test/libs/awesome_nested_set/named_scope.rb
+test/libs/awesome_nested_set.rb
 test/libs/rexml_fix.rb
 test/modifier_tests/day_of_month_test.rb
 test/search_tests/base_test.rb
