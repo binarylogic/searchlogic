@@ -1,6 +1,6 @@
 module Searchlogic
   module Condition
-    class DescendantOf < Tree      
+    class DescendantOf < Tree
       def to_conditions(value)
         # Wish I knew how to do this in SQL
         root = (value.is_a?(klass) ? value : klass.find(value)) rescue return

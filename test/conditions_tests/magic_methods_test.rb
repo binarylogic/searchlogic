@@ -9,6 +9,10 @@ module ConditionsTests
       tren = users(:tren)
       
       conditions = Searchlogic::Cache::UserConditions.new
+      conditions.descendant_of = "21"
+      assert_equal 21, conditions.descendant_of
+      conditions.descendant_of = ["21", "22"]
+      assert_equal [21, 22], conditions.descendant_of
       conditions.descendant_of = ben
       assert_equal ["\"users\".\"id\" = ? OR \"users\".\"id\" = ? OR \"users\".\"id\" = ?", drew.id, tren.id, jennifer.id], conditions.sanitize
     end

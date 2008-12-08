@@ -91,7 +91,7 @@ module Searchlogic
             class_level_conditions.each do |condition_class|
               condition_class.condition_names_for_model.each_with_index do |condition_name, index|
                 if index == 0
-                  add_condition!(condition_class, condition_name)
+                  add_condition!(condition_class, condition_name, :column => klass.columns_hash[klass.primary_key])
                 else
                   add_condition_alias!(condition_name, condition_class.condition_names_for_model.first)
                 end
