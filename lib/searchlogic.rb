@@ -48,7 +48,7 @@ require "searchlogic/conditions/base"
 
 # Condition
 require "searchlogic/condition/base"
-require "searchlogic/condition/tree"
+require "searchlogic/condition/nested_set"
 SEARCHLOGIC_CONDITIONS = [:begins_with, :blank, :child_of, :descendant_of, :ends_with, :equals, :greater_than, :greater_than_or_equal_to, :inclusive_descendant_of, :like, :nil, :not_begin_with, :not_blank, :not_end_with, :not_equal, :not_have_keywords, :not_nil, :keywords, :less_than, :less_than_or_equal_to, :sibling_of]
 SEARCHLOGIC_CONDITIONS.each { |condition| require "searchlogic/condition/#{condition}" }
 

@@ -12,8 +12,8 @@ module ActiveRecordTests
       assert_equal User, search.klass
       assert_equal({:conditions => "\"users\".account_id = #{binary_logic.id}"}, search.scope)
       
-      assert_equal [jennifer, ben], search.all
-      assert_equal jennifer, search.first
+      assert_equal [ben, jennifer], search.all
+      assert_equal ben, search.first
       assert_equal ((ben.id + jennifer.id) / 2.0), search.average("id")
       assert_equal 2, search.count
     
@@ -70,10 +70,9 @@ module ActiveRecordTests
       assert_kind_of Searchlogic::Search::Base, search
       assert_equal User, search.klass
       assert_equal({:conditions => "\"user_groups_users\".user_group_id = #{neco.id} ", :joins => "INNER JOIN \"user_groups_users\" ON \"users\".id = \"user_groups_users\".user_id"}, search.scope)
+      assert_equal [drew, ben], search.all
       
-      assert_equal [ben, drew], search.all
-      
-      assert_equal ben, search.first
+      assert_equal drew, search.first
       assert_equal ((ben.id + drew.id) / 2.0).to_s, search.average("id").to_s
       assert_equal 2, search.count
     

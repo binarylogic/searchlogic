@@ -4,9 +4,6 @@ module ConditionsTests
   class MagicMethodsTest < ActiveSupport::TestCase
     def test_class_level_conditions
       ben = users(:ben)
-      drew = users(:drew)
-      jennifer = users(:jennifer)
-      tren = users(:tren)
       
       conditions = Searchlogic::Cache::UserConditions.new
       conditions.descendant_of = "21"
@@ -14,7 +11,7 @@ module ConditionsTests
       conditions.descendant_of = ["21", "22"]
       assert_equal [21, 22], conditions.descendant_of
       conditions.descendant_of = ben
-      assert_equal ["\"users\".\"id\" = ? OR \"users\".\"id\" = ? OR \"users\".\"id\" = ?", drew.id, tren.id, jennifer.id], conditions.sanitize
+      assert_equal ["\"users\".\"id\" != ? AND \"users\".\"lft\" >= ? AND \"users\".\"rgt\" <= ?", ben.id, ben.left, ben.right], conditions.sanitize
     end
     
     def test_virtual_columns

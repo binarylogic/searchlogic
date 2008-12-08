@@ -3,7 +3,7 @@ require "rubygems"
 require "ruby-debug"
 require "active_record"
 require "active_record/fixtures"
-require File.dirname(__FILE__) + '/libs/acts_as_tree'
+require File.dirname(__FILE__) + '/libs/awesome_nested_set'
 require File.dirname(__FILE__) + '/libs/rexml_fix'
 require File.dirname(__FILE__) + '/../lib/searchlogic' unless defined?(Searchlogic)
 
@@ -34,6 +34,8 @@ ActiveRecord::Schema.define(:version => 1) do
     t.datetime  :updated_at
     t.integer   :account_id
     t.integer   :parent_id
+    t.integer   :lft
+    t.integer   :rgt
     t.string    :first_name
     t.string    :last_name
     t.boolean   :active
@@ -78,7 +80,7 @@ class UserGroup < ActiveRecord::Base
 end
 
 class User < ActiveRecord::Base
-  acts_as_tree
+  acts_as_nested_set
   belongs_to :account
   has_many :orders, :dependent => :destroy
   has_many :cats, :dependent => :destroy

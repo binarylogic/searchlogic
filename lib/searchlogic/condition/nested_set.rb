@@ -1,6 +1,6 @@
 module Searchlogic
   module Condition
-    class Tree < Base # :nodoc:
+    class NestedSet < Base # :nodoc:
       self.join_arrays_with_or = true
       
       class << self
