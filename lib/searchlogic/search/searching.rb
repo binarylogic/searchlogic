@@ -22,7 +22,6 @@ module Searchlogic
               end
               args << options
               results = klass.#{method}(*args)
-              results.uniq! if #{SEARCH_METHODS.include?(method)} && results.is_a?(Array) && !joins.blank? && Config.search.remove_duplicates?
               results
             end
           end

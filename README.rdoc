@@ -347,6 +347,8 @@ Each model comes preloaded with class level conditions as well. The difference i
   :inclusive_descendant_of      Same as above but also includes the root
   :sibling_of                   Returns all records that have the same parent
 
+The above conditions are for a nested set data structure, *not* a tree. Since we need to traverse through the tree a nested set is required for performance reasons. Traversing through a large tree is very bad for performance, a nested set solves this problem.
+
 == Modifiers
 
 === What are modifiers?
