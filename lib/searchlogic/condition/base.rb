@@ -121,8 +121,7 @@ module Searchlogic
         def meaningless?(v)
           case v
           when Array
-            v.each { |i| return false unless meaningless?(i) }
-            true
+            false
           else
             !explicitly_set_value? || (self.class.ignore_meaningless_value? && v != false && v.blank?)
           end
