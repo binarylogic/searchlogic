@@ -6,7 +6,7 @@ module ConditionTests
       ben = users(:ben)
       condition = Searchlogic::Condition::DescendantOf.new(User)
       condition.value = ben
-      assert_equal ["\"users\".\"id\" != ? AND \"users\".\"lft\" >= ? AND \"users\".\"rgt\" <= ?", ben.id, ben.left, ben.right], condition.sanitize
+      assert_equal ["(\"users\".\"id\" != ? AND (\"users\".\"lft\" >= ? AND \"users\".\"rgt\" <= ?))", ben.id, ben.left, ben.right], condition.sanitize
     end
   end
 end

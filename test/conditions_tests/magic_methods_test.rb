@@ -11,7 +11,7 @@ module ConditionsTests
       conditions.descendant_of = ["21", "22"]
       assert_equal [21, 22], conditions.descendant_of
       conditions.descendant_of = ben
-      assert_equal ["\"users\".\"id\" != ? AND \"users\".\"lft\" >= ? AND \"users\".\"rgt\" <= ?", ben.id, ben.left, ben.right], conditions.sanitize
+      assert_equal ["(\"users\".\"id\" != ? AND (\"users\".\"lft\" >= ? AND \"users\".\"rgt\" <= ?))", ben.id, ben.left, ben.right], conditions.sanitize
     end
     
     def test_virtual_columns

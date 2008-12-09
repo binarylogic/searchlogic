@@ -11,9 +11,9 @@ module Searchlogic
       
       def to_conditions(value)
         if value == true
-          "#{column_sql} IS NULL or #{column_sql} = '' or #{column_sql} = false"
+          "(#{column_sql} IS NULL or #{column_sql} = '' or #{column_sql} = false)"
         elsif value == false
-          "#{column_sql} IS NOT NULL and #{column_sql} != '' and #{column_sql} != false"
+          "(#{column_sql} IS NOT NULL and #{column_sql} != '' and #{column_sql} != false)"
         end
       end
     end
