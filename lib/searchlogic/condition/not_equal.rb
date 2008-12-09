@@ -15,6 +15,7 @@ module Searchlogic
         condition = Equals.new(klass, options)
         condition.value = value
         conditions_array = condition.sanitize
+        return conditions_array if conditions_array.blank?
         conditions_array.first.gsub!(/ IS /, " IS NOT ")
         conditions_array.first.gsub!(/ BETWEEN /, " NOT BETWEEN ")
         conditions_array.first.gsub!(/ IN /, " NOT IN ")

@@ -10,6 +10,10 @@ module ConditionTests
       condition = Searchlogic::Condition::Equals.new(Account, :column => Account.columns_hash["id"])
       condition.value = [1,2,3,4]
       assert_equal ["\"accounts\".\"id\" IN (?)", [1, 2, 3, 4]], condition.sanitize
+      
+      condition = Searchlogic::Condition::Equals.new(Account, :column => Account.columns_hash["id"])
+      condition.value = []
+      assert_equal [], condition.sanitize
     
       condition = Searchlogic::Condition::Equals.new(Account, :column => Account.columns_hash["id"])
       condition.value = (1..10)

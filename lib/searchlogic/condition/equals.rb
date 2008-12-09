@@ -11,6 +11,8 @@ module Searchlogic
       end
       
       def to_conditions(value)
+        return value if value.is_a?(Array) && value.empty?
+        
         # Let ActiveRecord handle this
         args = []
         case value
