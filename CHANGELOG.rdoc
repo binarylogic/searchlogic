@@ -1,3 +1,8 @@
+== 1.6.1 released 2008-12-8
+
+* Group multi faceted conditions since we allow for the mix of "and" and "or"
+* Blank arrays are not meaningful values for conditions
+
 == 1.6.0 released 2008-12-8
 
 * Converted all tree conditions to nested set conditions for performance reasons. A nested set data structure is now required instead of a tree

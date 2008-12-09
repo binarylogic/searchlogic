@@ -245,7 +245,6 @@ module Searchlogic
               def #{name}=(value)
                 @conditions = nil
                 #{name}_object.value = value
-                reset_#{name}! if #{name}_object.value_is_meaningless?
                 value
               end
             

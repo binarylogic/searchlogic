@@ -90,7 +90,7 @@ module Searchlogic
         return if value_is_meaningless?
         v = alt_value || value
         if v.is_a?(Array) && !self.class.handle_array_value?
-          merge_conditions(*v.collect { |i| sanitize(i) } << {:any => self.class.join_arrays_with_or?})
+          scope_condition(merge_conditions(*v.collect { |i| sanitize(i) } << {:any => self.class.join_arrays_with_or?}))
         else
           v = v.utc if column && v.respond_to?(:utc) && [:time, :timestamp, :datetime].include?(column.type) && klass.time_zone_aware_attributes && !klass.skip_time_zone_conversion_for_attributes.include?(column.name.to_sym)
           to_conditions(v)
@@ -121,7 +121,8 @@ module Searchlogic
         def meaningless?(v)
           case v
           when Array
-            false
+            v.each { |i| return false unless meaningless?(i) }
+            true
           else
             !explicitly_set_value? || (self.class.ignore_meaningless_value? && v != false && v.blank?)
           end

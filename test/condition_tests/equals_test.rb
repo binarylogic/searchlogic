@@ -13,7 +13,12 @@ module ConditionTests
       
       condition = Searchlogic::Condition::Equals.new(Account, :column => Account.columns_hash["id"])
       condition.value = []
-      assert_equal [], condition.sanitize
+      assert_equal [], condition.value
+      assert_nil condition.sanitize
+      
+      search = User.new_search
+      search.conditions.id = []
+      assert_equal [], search.conditions.id
     
       condition = Searchlogic::Condition::Equals.new(Account, :column => Account.columns_hash["id"])
       condition.value = (1..10)
