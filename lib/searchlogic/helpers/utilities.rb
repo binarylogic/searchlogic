@@ -121,7 +121,7 @@ module Searchlogic
         # Adds default options for all helper methods.
         def add_searchlogic_defaults!(options)
           options[:params_scope] = :search unless options.has_key?(:params_scope)
-          options[:search_obj] ||= instance_variable_get("@#{options[:params_scope]}")
+          options[:search_obj] ||= instance_variable_get("@#{options[:params_scope]}") || instance_variable_get("@search")
           raise(ArgumentError, "@search object could not be inferred, please specify: :search_obj => @search or :params_scope => :search_obj_name") unless options[:search_obj].is_a?(Searchlogic::Search::Base)
           options
         end
