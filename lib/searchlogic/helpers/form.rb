@@ -93,9 +93,9 @@ module Searchlogic
                 
                 javascript = ""
                 javascript += "if(typeof(Prototype) != 'undefined') {" if Config.helpers.javascript_library.blank?
-                search_options[:hidden_fields].each { |field| javascript += "field = $('#{name}_#{field}'); if(field) { $('#{name}_#{field}_hidden').value = field.value; }" } if Config.helpers.javascript_library.blank? || Config.helpers.javascript_library == :prototype
+                search_options[:hidden_fields].each { |field| javascript += "field = $('#{name}_#{field}'); if(field) { $('#{name}_#{field}_#{options.object_id}').value = field.value; }" } if Config.helpers.javascript_library.blank? || Config.helpers.javascript_library == :prototype
                 javascript += "} else if(typeof(jQuery) != 'undefined') {" if Config.helpers.javascript_library.blank?
-                search_options[:hidden_fields].each { |field| javascript += "field = $('##{name}_#{field}'); if(field) { $('##{name}_#{field}_hidden').val(field.val()); }" } if Config.helpers.javascript_library.blank? || Config.helpers.javascript_library == :jquery
+                search_options[:hidden_fields].each { |field| javascript += "field = $('##{name}_#{field}'); if(field) { $('##{name}_#{field}_#{options.object_id}').val(field.val()); }" } if Config.helpers.javascript_library.blank? || Config.helpers.javascript_library == :jquery
                 javascript += "}" if Config.helpers.javascript_library.blank?
               
                 options[:html][:onsubmit] += javascript
@@ -123,7 +123,7 @@ module Searchlogic
             options = args.extract_options!
             options
             search_options[:hidden_fields].each do |field|
-              html = hidden_field(name, field, :object => search_object, :id => "#{name}_#{field}_hidden", :value => (field == :order_by ? searchlogic_base64_value(search_object.order_by) : search_object.send(field)))
+              html = hidden_field(name, field, :object => search_object, :id => "#{name}_#{field}_#{options.object_id}", :value => (field == :order_by ? searchlogic_base64_value(search_object.order_by) : search_object.send(field)))
               
               # For edge rails and older version compatibility, passing a binding to concat was deprecated
               begin

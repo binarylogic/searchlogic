@@ -2,7 +2,7 @@
 
 * Group multi faceted conditions since we allow for the mix of "and" and "or"
 * Blank arrays are not meaningful values for conditions
-* Check for instance variable name based off of the param scope, if not present, then check for the default @search object
+* Add in a unique identifier for the auto-generated hidden fields so that multiple forms do no present a problem.
 
 == 1.6.0 released 2008-12-8
 
