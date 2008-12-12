@@ -104,6 +104,47 @@ module Searchlogic
       end
     
       private
+        def construct_finder_sql_with_included_associations_with_searchlogic(*args)
+          sql = construct_finder_sql_with_included_associations_without_searchlogic(*args)
+          remove_duplicate_joins(sql)
+        end
+        
+        def construct_finder_sql_with_searchlogic(*args)
+          sql = construct_finder_sql_without_searchlogic(*args)
+          remove_duplicate_joins(sql)
+        end
+        
+        def construct_calculation_sql_with_searchlogic(*args)
+          sql = construct_calculation_sql_without_searchlogic(*args)
+          remove_duplicate_joins(sql)
+        end
+        
+        def remove_duplicate_joins(sql)
+          join_expr = /(LEFT OUTER JOIN|INNER JOIN)/i
+          sql_parts = sql.split(join_expr)
+          if !sql_parts.empty?
+            last_parts = sql_parts.pop.split(/ (?!ON|AS)([A-Z]+) /)
+            sql_parts += last_parts
+            is_join_statement = false
+            cleaned_parts = []
+            sql_parts.each do |part|
+              part = part.strip
+              if is_join_statement
+                if !cleaned_parts.include?(part)
+                  cleaned_parts << part
+                else
+                  cleaned_parts.pop
+                end
+              else
+                cleaned_parts << part
+              end
+              is_join_statement = part =~ join_expr
+            end
+            sql = cleaned_parts.join(" ")
+          end
+          sql
+        end
+        
         def filter_options_with_searchlogic(options = {}, searching = true)
           return options unless Searchlogic::Search::Base.needed?(self, options)
           search = Searchlogic::Search::Base.create_virtual_class(self).new # call explicitly to avoid merging the scopes into the search
@@ -153,6 +194,9 @@ module ActiveRecord #:nodoc: all
   class Base
     class << self
       alias_method_chain :calculate, :searchlogic
+      alias_method_chain :construct_finder_sql, :searchlogic
+      alias_method_chain :construct_finder_sql_with_included_associations, :searchlogic
+      alias_method_chain :construct_calculation_sql, :searchlogic
       alias_method_chain :find, :searchlogic
       alias_method_chain :with_scope, :searchlogic
       alias_method :new_search, :build_search
@@ -165,54 +209,6 @@ module ActiveRecord #:nodoc: all
       def valid_calculations_options
         Calculations::CALCULATIONS_OPTIONS
       end
-      
-      private
-        # This is copied over from 2 different versions of ActiveRecord. I have to do this in order to preserve the "auto joins"
-        # as symbols. Keeping them as symbols allows ActiveRecord to merge them properly. The problem is when they conflict with includes.
-        # Includes add joins also, and they add them before joins do. So if they already added them skip them. Now you can do queries like:
-        #
-        # User.all(:joins => {:orders => :line_items}, :include => :orders)
-        #
-        # Where as before, the only way to get the above query to work would be to include line_items also, which is not neccessarily what you want.
-        def add_joins!(sql, options_or_joins, scope = :auto) # :nodoc:
-          code_type = (respond_to?(:array_of_strings?, true) && :array_of_strings) || (respond_to?(:merge_joins, true) && :merge_joins)
-
-          case code_type
-          when :array_of_strings, :merge_joins
-            joins = options_or_joins
-            scope = scope(:find) if :auto == scope
-            merged_joins = scope && scope[:joins] && joins ? merge_joins(scope[:joins], joins) : (joins || scope && scope[:joins])
-            case merged_joins
-            when Symbol, Hash, Array
-              if code_type == :array_of_strings && array_of_strings?(merged_joins)
-                merged_joins.each { |merged_join| sql << " #{merged_join} " unless sql.include?(merged_join) }
-              else
-                join_dependency = ActiveRecord::Associations::ClassMethods::InnerJoinDependency.new(self, merged_joins, nil)
-                join_dependency.join_associations.each do |assoc|
-                  join_sql = assoc.association_join
-                  sql << " #{join_sql} " unless sql.include?(join_sql)
-                end
-              end
-            when String
-              sql << " #{merged_joins} " if merged_joins && !sql.include?(merged_joins)
-            end
-          else
-            options = options_or_joins
-            scope = scope(:find) if :auto == scope
-            [(scope && scope[:joins]), options[:joins]].each do |join|
-              case join
-              when Symbol, Hash, Array
-                join_dependency = ActiveRecord::Associations::ClassMethods::InnerJoinDependency.new(self, join, nil)
-                join_dependency.join_associations.each do |assoc|
-                  join_sql = assoc.association_join
-                  sql << " #{join_sql} " unless sql.include?(join_sql)
-                end
-              else
-                sql << " #{join} " if join && !sql.include?(join)
-              end
-            end
-          end
-        end
     end
   end
 end
