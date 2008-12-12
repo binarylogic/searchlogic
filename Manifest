@@ -101,7 +101,7 @@ lib/searchlogic/shared/utilities.rb
 lib/searchlogic/shared/virtual_classes.rb
 lib/searchlogic/version.rb
 lib/searchlogic.rb
-Manifest
+Manifest.txt
 MIT-LICENSE
 Rakefile
 README.rdoc
@@ -155,3 +155,4 @@ test/search_tests/pagination_test.rb
 test/search_tests/protection_test.rb
 test/test_helper.rb
 TODO.rdoc
+Manifest
