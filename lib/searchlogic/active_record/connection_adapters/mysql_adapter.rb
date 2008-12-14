@@ -110,7 +110,7 @@ module Searchlogic
         end
         
         def count_sql(column_name)
-          "COUNT(#{colun_name})"
+          "COUNT(#{column_name})"
         end
         
         def degrees_sql(column_name)

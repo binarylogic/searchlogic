@@ -121,7 +121,6 @@ module Searchlogic
             return unless search_object.is_a?(Search::Base)
             name = args.first
             options = args.extract_options!
-            options
             search_options[:hidden_fields].each do |field|
               html = hidden_field(name, field, :object => search_object, :id => "#{name}_#{field}_#{options.object_id}", :value => (field == :order_by ? searchlogic_base64_value(search_object.order_by) : search_object.send(field)))
               

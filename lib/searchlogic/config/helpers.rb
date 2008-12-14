@@ -11,7 +11,7 @@ module Searchlogic
       class << self
         # Which hidden fields to automatically include when creating a form with a Searchlogic object. See Searchlogic::Helpers::Form for more info.
         #
-        # * <tt>Default:</tt> [:order_by, :order_as, :per_page]
+        # * <tt>Default:</tt> [:order_by, :order_as, :priority_order_by, :priority_order_as, :per_page]
         # * <tt>Accepts:</tt> Array, nil, false
         def hidden_fields
           @hidden_fields ||= (Searchlogic::Search::Base::SPECIAL_FIND_OPTIONS - [:page, :priority_order])
