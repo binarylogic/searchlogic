@@ -120,8 +120,8 @@ module Searchlogic #:nodoc:
       end
       
       def select
-        return @select if klass.connection.adapter_name == "PostgreSQL" # Postgres needs ALL of the column names here, including association columns, etc. Which is very strange, so I disable this feature for Postgres all together.
-        @select ||= "DISTINCT #{klass.connection.quote_table_name(klass.table_name)}.*" if !joins.blank? && Config.search.remove_duplicates?
+        @select ||= "DISTINCT #{klass.connection.quote_table_name(klass.table_name)}.*" if !joins.blank? && Config.search.remove_duplicates? && klass.connection.adapter_name != "PostgreSQL"
+        @select
       end
       
       def scope
