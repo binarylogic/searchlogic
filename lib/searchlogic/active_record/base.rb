@@ -130,7 +130,7 @@ module Searchlogic
             sql_parts.each do |part|
               part = part.strip
               if is_join_statement
-                if !cleaned_parts.include?(part)
+                if !includes_join?(cleaned_parts, part)
                   cleaned_parts << part
                 else
                   cleaned_parts.pop
@@ -143,6 +143,16 @@ module Searchlogic
             sql = cleaned_parts.join(" ")
           end
           sql
+        end
+        
+        def includes_join?(cleaned_parts, part)
+          cleaned_parts.each do |cleaned_part|
+            a = cleaned_part.gsub("`", "")
+            b = part.gsub("`", "")
+            return true if a == b
+            return true if a == b.gsub(/([a-z\._]*) = ([a-z\._]*)/, '\2 = \1')
+          end
+          false
         end
         
         def filter_options_with_searchlogic(options = {}, searching = true)

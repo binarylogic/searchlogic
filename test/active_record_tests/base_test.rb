@@ -104,5 +104,12 @@ module ActiveRecordTests
     def test_includes
       assert_nothing_raised { Account.all(:conditions => {:users => {:first_name_like => "Ben"}}, :include => :users) }
     end
+    
+    def test_remove_duplicate_joins
+      query = "SELECT DISTINCT `ticket_groups`.* FROM `ticket_groups` INNER JOIN tickets ON ticket_groups.id = tickets.ticket_group_id     LEFT OUTER JOIN `tickets` ON tickets.ticket_group_id = ticket_groups.id  WHERE (`tickets`.`id` = 2) AND ((`tickets`.event_id = 810802042))  LIMIT 20"
+      cleaned_query = ActiveRecord::Base.send(:remove_duplicate_joins, query)
+      expected_query = "SELECT DISTINCT `ticket_groups`.* FROM `ticket_groups` INNER JOIN tickets ON ticket_groups.id = tickets.ticket_group_id WHERE (`tickets`.`id` = 2) AND ((`tickets`.event_id = 810802042)) LIMIT 20"
+      assert_equal expected_query, cleaned_query
+    end
   end
 end
