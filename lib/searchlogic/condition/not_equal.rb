@@ -6,7 +6,7 @@ module Searchlogic
       
       class << self
         def condition_names_for_column
-          super + ["does_not_equal", "not_equal", "is_not", "not"]
+          super + ["does_not_equal", "not_equal", "is_not", "not", "ne"]
         end
       end
       

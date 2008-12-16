@@ -11,7 +11,7 @@ module Searchlogic #:nodoc:
       AR_FIND_OPTIONS = ::ActiveRecord::Base.valid_find_options
       
       # Options ActiveRecord allows when performing calculations
-      AR_CALCULATIONS_OPTIONS = (::ActiveRecord::Base.valid_calculations_options - [:select, :limit, :offset, :order, :group])
+      AR_CALCULATIONS_OPTIONS = (::ActiveRecord::Base.valid_calculations_options - [:select, :limit, :offset, :order, :group, :include])
       
       AR_OPTIONS = (AR_FIND_OPTIONS + AR_CALCULATIONS_OPTIONS).uniq
       
