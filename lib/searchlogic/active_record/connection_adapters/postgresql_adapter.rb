@@ -109,10 +109,6 @@ module Searchlogic
           "cot(#{column_name})"
         end
         
-        def count_sql(column_name)
-          "COUNT(#{column_name})"
-        end
-        
         def degrees_sql(column_name)
           "degrees(#{column_name})"
         end
@@ -163,10 +159,6 @@ module Searchlogic
         
         def square_root_sql(column_name)
           "sqrt(#{column_name})"
-        end
-        
-        def sum_sql(column_name)
-          "SUM(#{column_name})"
         end
         
         def tan_sql(column_name)

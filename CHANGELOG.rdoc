@@ -3,6 +3,8 @@
 * Added in avg, count, and sum modifiers for SQLite and Postgres.
 * Added ne for not_equal condition.
 * Ignore :include option for calculations since we don't need it and AR throws an error for polymorphic relationships.
+* Removed sum and count since they can not be in the WHERE statement, but must be in the HAVING statement
+* Added in auto joins for groups so that the joins don't have to be manually specified.
 
 == 1.6.2 released 2008-12-13
 

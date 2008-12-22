@@ -52,14 +52,6 @@ module Searchlogic
           "AVG(#{column_name})"
         end
         
-        def count_sql(column_name)
-          "COUNT(#{column_name})"
-        end
-        
-        def sum_sql(column_name)
-          "SUM(#{column_name})"
-        end
-        
         # String functions
         def lower_sql(column_name)
           "lower(#{column_name})"

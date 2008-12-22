@@ -48,5 +48,21 @@ module ConditionsTests
       ])
       assert_equal ["\"accounts\".\"id\" > ? AND (\"accounts\".\"name\" LIKE ?) AND (\"accounts\".\"id\" > ? AND (\"accounts\".\"id\" < ? AND \"accounts\".\"created_at\" > ?))", 3, "%Binary%", 5, 20, now], conditions.sanitize
     end
+    
+    def test_auto_joins
+      conditions = Searchlogic::Cache::AccountConditions.new
+      conditions.group do |g|
+        g.users.first_name_like = "Ben"
+      end
+      assert_equal :users, conditions.auto_joins
+      
+      search = Searchlogic::Cache::AccountSearch.new
+      search.conditions.users.first_name_like = "Ben"
+      search.conditions.group do |g|
+        g.users.orders.id_gt = 5
+      end
+      assert_equal [:users, {:users => :orders}], search.conditions.auto_joins
+      assert_nothing_raised { search.all }
+    end
   end
 end
