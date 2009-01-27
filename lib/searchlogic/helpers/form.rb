@@ -121,15 +121,16 @@ module Searchlogic
             return unless search_object.is_a?(Search::Base)
             name = args.first
             options = args.extract_options!
+            html = ""
             search_options[:hidden_fields].each do |field|
-              html = hidden_field(name, field, :object => search_object, :id => "#{name}_#{field}_#{options.object_id}", :value => (field == :order_by ? searchlogic_base64_value(search_object.order_by) : search_object.send(field)))
+              html << hidden_field(name, field, :object => search_object, :id => "#{name}_#{field}_#{options.object_id}", :value => (field == :order_by ? searchlogic_base64_value(search_object.order_by) : search_object.send(field)))
+            end
               
-              # For edge rails and older version compatibility, passing a binding to concat was deprecated
-              begin
-                concat(html)
-              rescue ArgumentError, NameError
-                concat(html, block.binding)
-              end
+            # For edge rails and older version compatibility, passing a binding to concat was deprecated
+            begin
+              concat(content_tag(:div, html, :style => 'margin:0;padding:0'))
+            rescue ArgumentError, NameError
+              concat(content_tag(:div, html, :style => 'margin:0;padding:0'), block.binding)
             end
             args << options
           end
