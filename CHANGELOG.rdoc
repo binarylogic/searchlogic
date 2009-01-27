@@ -5,6 +5,7 @@
 * Ignore :include option for calculations since we don't need it and AR throws an error for polymorphic relationships.
 * Removed sum and count since they can not be in the WHERE statement, but must be in the HAVING statement
 * Added in auto joins for groups so that the joins don't have to be manually specified.
+* Use first column in column_names as the default column for calculations, since a column is required when using DISTINCT and some tables can have more than one primary key.
 
 == 1.6.2 released 2008-12-13
 

@@ -18,7 +18,7 @@ module Searchlogic
               options = sanitize(#{SEARCH_METHODS.include?(method)})
               if #{CALCULATION_METHODS.include?(method)}
                 options[:distinct] = true if #{method == :count} && !joins.blank? && Config.search.remove_duplicates?
-                args[0] = klass.primary_key if [nil, :all].include?(args[0])
+                args[0] = klass.column_names.first if [nil, :all].include?(args[0])
               end
               args << options
               results = klass.#{method}(*args)
