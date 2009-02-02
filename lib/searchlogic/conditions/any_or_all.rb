@@ -16,7 +16,7 @@ module Searchlogic
       end
       
       def any # :nodoc:
-        any?
+        @any
       end
       
       # Convenience method for determining if we should join the conditions with "AND" or "OR".

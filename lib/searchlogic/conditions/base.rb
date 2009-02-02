@@ -139,9 +139,8 @@ module Searchlogic
         return @conditions if @conditions # return the conditions if the user set them with a string, aka sql conditions
         joined_conditions = nil
         objects.each do |object|
-          any = !object.explicit_any.nil? && (condition?(object) || group?(object)) ? object.explicit_any? : any?
           sanitized_conditions = group?(object) ? scope_condition(object.sanitize) : object.sanitize
-          joined_conditions = merge_conditions(joined_conditions, sanitized_conditions, :any => any)
+          joined_conditions = merge_conditions(joined_conditions, sanitized_conditions, :any => join_object_with_any?(object))
         end
         joined_conditions
       end
@@ -221,6 +220,15 @@ module Searchlogic
         
         def objects
           @objects ||= []
+        end
+        
+        def join_object_with_any?(object)
+          return any? if !any.nil?
+          if condition?(object) || group?(object)
+            object.explicit_any?
+          elsif association?(object)
+            join_object_with_any?(object.send(:objects).first)
+          end
         end
         
         def remove_conditions_from_protected_assignement(conditions)
