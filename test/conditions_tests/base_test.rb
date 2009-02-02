@@ -174,5 +174,12 @@ module ConditionsTests
       conditions.reset!
       assert_equal [], conditions.send(:objects)
     end
+    
+    def test_join_with_or_with_association
+      conditions = Searchlogic::Cache::AccountConditions.new
+      conditions.name_ends_with = "Binary"
+      conditions.users.or_first_name_like = "whatever"
+      assert_equal ["\"accounts\".\"name\" LIKE ? OR \"users\".\"first_name\" LIKE ?", "%Binary", "%whatever%"], conditions.sanitize
+    end
   end
 end

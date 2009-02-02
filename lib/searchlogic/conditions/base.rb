@@ -227,7 +227,7 @@ module Searchlogic
           if condition?(object) || group?(object)
             object.explicit_any?
           elsif association?(object)
-            join_object_with_any?(object.send(:objects).first)
+            object.send(:join_object_with_any?, object.send(:objects).first)
           end
         end
         
