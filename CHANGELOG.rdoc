@@ -1,4 +1,4 @@
-== 1.6.4 released 2008-12-13
+== 1.6.4 released 2009-01-22
 
 * Fixed calling attribute_condition with newer versions of rails.
 

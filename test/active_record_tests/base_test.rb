@@ -73,7 +73,7 @@ module ActiveRecordTests
     def test_searchlogic_counting
       assert_equal 2, Account.count(:conditions => {:name_contains => "Binary"})
       assert_equal 1, Account.count(:conditions => {:name_contains => "Binary", :users => {:first_name_contains => "Ben"}})
-      assert_equal 1, Account.count(:conditions => {:name_contains => "Binary", :users => {:first_name_contains => "Ben"}}, :limit => 10, :offset => 10, :order_by => "id", :group => "id")
+      assert_equal 1, Account.count(:conditions => {:name_contains => "Binary", :users => {:first_name_contains => "Ben"}}, :limit => 10, :offset => 10, :order_by => "id", :group => "accounts.id")
     end
     
     def test_scoping
