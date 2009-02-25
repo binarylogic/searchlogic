@@ -82,7 +82,7 @@ module Searchlogic
         
         def frisk!(options)
           options.symbolize_keys.fast_assert_valid_keys(SAFE_OPTIONS)
-          raise(ArgumentError, ":order_by can only contain colum names in the string, hash, or array format") unless order_by_safe?(get_order_by_value(options[:order_by]))
+          raise(ArgumentError, ":order_by can only contain colum names and relationships in the string, hash, or array format. You are trying to pass a value that does not meet this criteria.") unless order_by_safe?(get_order_by_value(options[:order_by]))
         end
     end    
   end

@@ -54,6 +54,7 @@ module Searchlogic
             return true if self.class.added_associations
           
             klass.reflect_on_all_associations.each do |association|
+              next if !associations.options[:finder_sql].nil? # associations with finder_sql should not be added since conditions can not be chained to them, etc.
               self.class.class_eval <<-"end_eval", __FILE__, __LINE__
                 def #{association.name}
                   return @#{association.name} unless @#{association.name}.nil?

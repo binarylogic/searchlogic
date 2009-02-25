@@ -17,7 +17,7 @@ module Searchlogic
         strs = []
         subs = []
         
-        search_parts = value.gsub(/,/, " ").split(/ /)
+        search_parts = value.to_s.gsub(/,/, " ").split(/ /)
         replace_non_alnum_characters!(search_parts)
         search_parts.uniq!
         remove_blacklisted_words!(search_parts)
