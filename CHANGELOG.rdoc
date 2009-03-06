@@ -2,6 +2,7 @@
 
 * Skip all associations defined with the :finder_sql option, since conditions can not be chained to them, etc.
 * Fixed bug when using non string values for the keywords condition.
+* Fixed undefined methods link_options error.
 
 == 1.6.4 released 2009-01-22
 

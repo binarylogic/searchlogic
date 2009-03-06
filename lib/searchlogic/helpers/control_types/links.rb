@@ -20,7 +20,7 @@ module Searchlogic
           links_options.delete(:choices)
           html = ""
           options[:choices].each do |choice|
-            link_options = links_option.deep_dup
+            link_options = links_options.deep_dup
             text, value = option_text_and_value(choice)
             link_options[:text] ||= text
             html += order_by_link(value, link_options)
@@ -46,7 +46,7 @@ module Searchlogic
           links_options.delete(:choices)
           html = ""
           options[:choices].each do |choice|
-            link_options = links_option.deep_dup
+            link_options = links_options.deep_dup
             text, value = option_text_and_value(choice)
             link_options[:text] ||= text
             html += order_as_link(value, link_options)
