@@ -29,6 +29,7 @@ module Searchlogic
         end
         
         def scope_condition(condition)
+          return condition if condition.blank?
           arr_condition = condition.is_a?(Array) ? condition : [condition]
           arr_condition[0] = "(#{arr_condition[0]})"
           arr_condition.size == 1 ? arr_condition.first : arr_condition
