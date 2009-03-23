@@ -4,6 +4,7 @@
 * Fixed bug when using non string values for the keywords condition.
 * Fixed undefined methods link_options error.
 * Return blank conditions when trying to scope blank conditions. Fixes the issue with groups that return a blank SQL string.
+* Fixed issue with blank condition comparing boolean values to non boolean columns.
 
 == 1.6.4 released 2009-01-22
 

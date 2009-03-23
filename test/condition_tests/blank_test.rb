@@ -5,19 +5,19 @@ module ConditionTests
     def test_sanitize
       condition = Searchlogic::Condition::Blank.new(Account, :column => Account.columns_hash["id"])
       condition.value = "true"
-      assert_equal "(\"accounts\".\"id\" IS NULL or \"accounts\".\"id\" = '' or \"accounts\".\"id\" = false)", condition.sanitize
+      assert_equal "(\"accounts\".\"id\" IS NULL or \"accounts\".\"id\" = '')", condition.sanitize
     
       condition = Searchlogic::Condition::Blank.new(Account, :column => Account.columns_hash["id"])
       condition.value = "false"
-      assert_equal "(\"accounts\".\"id\" IS NOT NULL and \"accounts\".\"id\" != '' and \"accounts\".\"id\" != false)", condition.sanitize
+      assert_equal "(\"accounts\".\"id\" IS NOT NULL and \"accounts\".\"id\" != '')", condition.sanitize
     
-      condition = Searchlogic::Condition::Blank.new(Account, :column => Account.columns_hash["id"])
+      condition = Searchlogic::Condition::Blank.new(Account, :column => Account.columns_hash["active"])
       condition.value = true
-      assert_equal "(\"accounts\".\"id\" IS NULL or \"accounts\".\"id\" = '' or \"accounts\".\"id\" = false)", condition.sanitize
+      assert_equal "(\"accounts\".\"active\" IS NULL or \"accounts\".\"active\" = '' or \"accounts\".\"active\" = false)", condition.sanitize
     
-      condition = Searchlogic::Condition::Blank.new(Account, :column => Account.columns_hash["id"])
+      condition = Searchlogic::Condition::Blank.new(Account, :column => Account.columns_hash["active"])
       condition.value = false
-      assert_equal "(\"accounts\".\"id\" IS NOT NULL and \"accounts\".\"id\" != '' and \"accounts\".\"id\" != false)", condition.sanitize
+      assert_equal "(\"accounts\".\"active\" IS NOT NULL and \"accounts\".\"active\" != '' and \"accounts\".\"active\" != false)", condition.sanitize
     
       condition = Searchlogic::Condition::Blank.new(Account, :column => Account.columns_hash["id"])
       condition.value = nil
