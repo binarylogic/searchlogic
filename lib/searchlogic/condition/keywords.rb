@@ -1,3 +1,4 @@
+# coding: utf-8
 module Searchlogic
   module Condition
     class Keywords < Base
