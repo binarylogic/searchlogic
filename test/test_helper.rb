@@ -107,10 +107,11 @@ end
 class Cat < Animal
 end
 
-class Test::Unit::TestCase
+class ActiveSupport::TestCase
+  include ActiveRecord::TestFixtures
   self.fixture_path = File.dirname(__FILE__) + "/fixtures"
-  self.use_transactional_fixtures = true
+  self.use_transactional_fixtures = false
   self.use_instantiated_fixtures  = false
-  self.pre_loaded_fixtures = true
+  self.pre_loaded_fixtures = false
   fixtures :all
 end

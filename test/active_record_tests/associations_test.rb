@@ -38,7 +38,7 @@ module ActiveRecordTests
       search = binary_logic.orders.new_search
       assert_kind_of Searchlogic::Search::Base, search
       assert_equal Order, search.klass
-      assert_equal({:joins => "INNER JOIN users ON orders.user_id = users.id   ", :conditions => "(\"users\".account_id = #{binary_logic.id})"}, search.scope)
+      assert_equal({:conditions => "(\"users\".account_id = 431064614)", :joins => "INNER JOIN \"users\" ON \"orders\".user_id = \"users\".id   "}, search.scope)
       
       bens_order = orders(:bens_order)
       assert_equal [bens_order], search.all
