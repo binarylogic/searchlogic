@@ -49,6 +49,14 @@ module ConditionTests
   
     def test_value
       # This is tested thoroughly in test_condition_types
+    end 
+    
+    #http://binarylogic.lighthouseapp.com/projects/16601-searchlogic/tickets/60-text-dates-are-incorrectly-converted-into-utc#ticket-60-11
+    def test_string_to_date                     
+      condition = Searchlogic::Condition::GreaterThan.new(Account, :column => "created_at")
+      condition.value = "03/02/2009"   
+      assert_equal Time.parse("03/02/2009", 0), condition.value
     end
+
   end
 end
