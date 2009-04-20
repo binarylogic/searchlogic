@@ -1,3 +1,7 @@
+== 1.6.6
+
+* Fixed time zone issues when searching.
+
 == 1.6.5 released 2009-04-2
 
 * Skip all associations defined with the :finder_sql option, since conditions can not be chained to them, etc.
