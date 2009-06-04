@@ -4,7 +4,7 @@ module Searchlogic
   #
   # === Example
   #
-  #   # config/iniitializers/searchlogic.rb
+  #   # config/initializers/searchlogic.rb
   #   Searchlogic::Config.configure do |config|
   #     config.search.per_page = 25
   #     config.helpers.order_by_link_asc_indicator = "My indicator"
