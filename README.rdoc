@@ -122,6 +122,10 @@ Searchlogic utilizes method_missing to create all of these named scopes. When it
 
 That's about it, the named scope options are pretty bare bones and created just like you would manually.
 
+== Credit
+
+Thanks a lot to {Tyler Hunt}[http://github.com/tylerhunt] for helping plan, design, and start the project.
+
 == Copyright
 
 Copyright (c) 2009 {Ben Johnson of Binary Logic}[http://www.binarylogic.com], released under the MIT license
