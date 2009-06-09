@@ -4,6 +4,8 @@
 
 Searchlogic is a library that leverages named scopes to make searching in your application simple.
 
+== Search using conditions on columns
+
 Instead of explaining what Searchlogic can do, let me show you. Let's start at the top:
 
   # We have the following model
@@ -35,7 +37,7 @@ Keep in mind, these are just named scopes, you can chain them, call methods off 
   scope.count
   # etc...
 
-== Named scopes for associations
+== Search using conditions on association columns
 
 You also get named scopes for any of your associations:
 
@@ -111,6 +113,7 @@ What's great about this is that you can do just about anything you want. If Sear
 Instead of recreating the wheel with pagination, Searchlogic works great with will_paginate. All that Searchlogic is doing is creating named scopes, and will_paginate works great with named scopes:
 
   User.username_like("bjohnson").age_less_than(20).paginate(:page => params[:page])
+  User.search(:username_like => "bjohnson", :age_less_than => 20).paginate(:page => params[:page])
 
 If you don't like will_paginate, use another solution, or roll your own. Pagination really has nothing to do with searching, and the main goal for Searchlogic v2 was to keep it lean and simple. No reason to recreate the wheel and bloat the library.
 
@@ -124,7 +127,7 @@ That's about it, the named scope options are pretty bare bones and created just 
 
 == Credit
 
-Thanks a lot to {Tyler Hunt}[http://github.com/tylerhunt] for helping plan, design, and start the project.
+Thanks a lot to {Tyler Hunt}[http://github.com/tylerhunt] for helping plan, design, and start the project. He was a big help.
 
 == Copyright
 
