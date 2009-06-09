@@ -1,0 +1,127 @@
+= Searchlogic
+
+<b>Searchlogic has been <em>completely</em> rewritten for v2. It is much simpler and has taken an entirely new approach. To give you an idea, v1 had ~2300 lines of code, v2 has ~350 lines of code.</b>
+
+Searchlogic is a library that leverages named scopes to make searching in your application simple.
+
+Instead of explaining what Searchlogic can do, let me show you. Let's start at the top:
+
+  # We have the following model
+  User(id: integer, created_at: datetime, username: string, age: integer)
+  
+  # Searchlogic gives you a bunch of named scopes for free:
+  User.username_equals("bjohnson")
+  User.username_does_not_equal("bjohnson")
+  User.username_begins_with("bjohnson")
+  User.username_like("bjohnson")
+  User.username_ends_with("bjohnson")
+  User.age_greater_than(20)
+  User.age_greater_than_or_equal_to(20)
+  User.age_less_than(20)
+  User.age_less_than_or_equal_to(20)
+  User.username_null
+  User.username_blank
+  
+  # You can also order by columns
+  User.ascend_by_username
+  User.descend_by_username
+  User.order("ascend_by_username")
+
+Keep in mind, these are just named scopes, you can chain them, call methods off of them, etc:
+
+  scope = User.username_like("bjohnson").age_greater_than(20).ascend_by_username
+  scope.all
+  scope.first
+  scope.count
+  # etc...
+
+== Named scopes for associations
+
+You also get named scopes for any of your associations:
+
+  # We have the following relationships
+  User.has_many :orders
+  Order.has_many :line_items
+  LineItem
+  
+  # Set conditions on association columns
+  User.orders_total_greater_than(20)
+  User.orders_line_items_price_greater_than(20)
+  
+  # Order by association columns
+  User.ascend_by_order_total
+  User.descend_by_orders_line_items_price
+
+Again these are just named scopes. You can chain them together, call methods off of them, etc. What's great about these named scopes is that they do NOT use the :include option, making them much faster. Instead they create a LEFT OUTER JOIN and pass it to the :joins option, which is great for performance. If you want to use the :include option, just specify it:
+
+  User.orders_line_items_price_greater_than(20).all(:include => {:orders => :line_items})
+
+Now all of Searchlogic's goodness fits nicely into your app and you can use it with your custom named scopes. Nice and clean.
+
+== Make searching in your application trivial
+
+The above is great, but what about tying all of this in with a search form in your application? Just do this...
+
+  User.search(:username_like => "bjohnson", :age_less_than => 20)
+
+The above is equivalent to:
+
+  User.username_like("bjohnson").age_less_than(20)
+
+All that the search method does is chain named scopes together for you. What's so great about that? It keeps your controllers extremely simple:
+
+  class UsersController < ApplicationController
+    def index
+      @search = User.search(params[:search])
+      @users = @search.all
+    end
+  end
+
+It doesn't get any simpler than that. Adding a search condition is as simple as adding a condition to your form. Remember all of those named scopes above? Just create fields with the same names:
+
+  - form_for @search do |f|
+    = f.text_field :username_like
+    = f.select :age_greater_than, (0..100)
+    = f.text_field :orders_total_greater_than
+    = f.submit
+
+== Use your existing named scopes
+
+This is one of the big differences between Searchlogic v1 and v2. What about your existing named scopes? Let's say you have this:
+
+  User.named_scope :four_year_olds, :conditions => {:age => 4}
+
+Again, these are all just named scopes, use it in the same way:
+
+  User.search(:four_year_olds => true, :username_like => "bjohnson")
+
+Notice we pass true as the value. If a named scope does not accept any parameters (arity == 0) you can simply pass it true or false. If you pass false, the named scope will be ignored. If your named scope accepts a parameter, the value will be passed right to the named scope regardless of the value.
+
+Now just throw it in your form:
+
+  - form_for @search do |f|
+    = f.text_field :username_like
+    = f.check_box :four_year_olds
+    = f.submit
+
+What's great about this is that you can do just about anything you want. If Searchlogic doesn't provide a named scope for that crazy searching edge case that you need, just create your own named scope. The sky is the limit.
+
+== Pagination (leverage will_paginate)
+
+Instead of recreating the wheel with pagination, Searchlogic works great with will_paginate. All that Searchlogic is doing is creating named scopes, and will_paginate works great with named scopes:
+
+  User.username_like("bjohnson").age_less_than(20).paginate(:page => params[:page])
+
+If you don't like will_paginate, use another solution, or roll your own. Pagination really has nothing to do with searching, and the main goal for Searchlogic v2 was to keep it lean and simple. No reason to recreate the wheel and bloat the library.
+
+== Under the hood
+
+Before I use a library in my application I like to glance at the source and try to at least understand the basics of how it works. If you are like me, a nice little explanation from the author is always helpful:
+
+Searchlogic utilizes method_missing to create all of these named scopes. When it hits method_missing it creates a named scope to ensure it will never hit method missing for that named scope again. Sort of a caching mechanism. It works in the same fashion as ActiveRecord's "find_by_*" methods. This way only the named scopes you need are created and nothing more.
+
+That's about it, the named scope options are pretty bare bones and created just like you would manually.
+
+== Copyright
+
+Copyright (c) 2009 {Ben Johnson of Binary Logic}[http://www.binarylogic.com], released under the MIT license
