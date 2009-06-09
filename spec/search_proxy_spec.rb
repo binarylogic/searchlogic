@@ -12,24 +12,34 @@ describe "SearchProxy" do
     end
   end
   
-  context "setting conditions" do
+  context "conditions" do
     it "should set the conditions and be accessible individually" do
-      search = User.search(:username => "bjohnson")
+      search = User.search
+      search.conditions = {:username => "bjohnson"}
       search.username.should == "bjohnson"
     end
     
     it "should set the conditions and allow string keys" do
-      search = User.search("username" => "bjohnson")
+      search = User.search
+      search.conditions = {"username" => "bjohnson"}
       search.username.should == "bjohnson"
     end
     
-    it "should allow setting columns individually" do
+    it "should ignore blank values" do
+      search = User.search
+      search.conditions = {"username" => ""}
+      search.username.should be_nil
+    end
+  end
+  
+  context "condition accessors" do
+    it "should allow setting exact columns individually" do
       search = User.search
       search.username = "bjohnson"
       search.username.should == "bjohnson"
     end
     
-    it "should allow setting custom conditions individually" do
+    it "should allow setting conditions individually" do
       search = User.search
       search.username_gt = "bjohnson"
       search.username_gt.should == "bjohnson"
@@ -59,72 +69,86 @@ describe "SearchProxy" do
     
     context "type casting" do
       it "should be a Boolean given true" do
-        search = User.search(:id_nil => true)
+        search = User.search
+        search.id_nil = true
         search.id_nil.should == true
       end
       
       it "should be a Boolean given 'true'" do
-        search = User.search(:id_nil => "true")
+        search = User.search
+        search.id_nil = "true"
         search.id_nil.should == true
       end
       
       it "should be a Boolean given '1'" do
-        search = User.search(:id_nil => "1")
+        search = User.search
+        search.id_nil = "1"
         search.id_nil.should == true
       end
       
       it "should be a Boolean given false" do
-        search = User.search(:id_nil => false)
+        search = User.search
+        search.id_nil = false
         search.id_nil.should == false
       end
       
       it "should be a Boolean given 'false'" do
-        search = User.search(:id_nil => 'false')
+        search = User.search
+        search.id_nil = "false"
         search.id_nil.should == false
       end
       
       it "should be a Boolean given '0'" do
-        search = User.search(:id_nil => '0')
+        search = User.search
+        search.id_nil = "0"
         search.id_nil.should == false
       end
       
       it "should be an Integer given 1" do
-        search = User.search(:id_gt => 1)
+        search = User.search
+        search.id_gt = 1
         search.id_gt.should == 1
       end
       
       it "should be an Integer given '1'" do
-        search = User.search(:id_gt => '1')
+        search = User.search
+        search.id_gt = "1"
         search.id_gt.should == 1
       end
       
       it "should be a Float given 1.0" do
-        search = Order.search(:total_gt => 1.0)
+        search = Order.search
+        search.total_gt = 1.0
         search.total_gt.should == 1.0
       end
       
       it "should be a Float given '1'" do
-        search = Order.search(:total_gt => '1')
+        search = Order.search
+        search.total_gt = "1"
         search.total_gt.should == 1.0
       end
       
       it "should be a Float given '1.5'" do
-        search = Order.search(:total_gt => '1.5')
+        search = Order.search
+        search.total_gt = "1.5"
         search.total_gt.should == 1.5
       end
       
       it "should be a Date given 'Jan 1, 2009'" do
-        search = Order.search(:shipped_on_after => 'Jan 1, 2009')
+        search = Order.search
+        search.shipped_on_after = "Jan 1, 2009"
         search.shipped_on_after.should == Date.parse("Jan 1, 2009")
       end
       
       it "should be a Time given 'Jan 1, 2009'" do
-        search = Order.search(:created_at_after => 'Jan 1, 2009')
+        search = Order.search
+        search.created_at_after = "Jan 1, 2009"
         search.created_at_after.should == Time.parse("Jan 1, 2009")
       end
       
       it "should be a Time given 'Jan 1, 2009 9:33AM'" do
-        search = Order.search(:created_at_after => 'Jan 1, 2009 9:33AM')
+        search = Order.search
+        search.created_at_after = "Jan 1, 2009 9:33AM"
         search.created_at_after.should == Time.parse("Jan 1, 2009 9:33AM")
       end
     end

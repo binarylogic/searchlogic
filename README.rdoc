@@ -37,6 +37,8 @@ Keep in mind, these are just named scopes, you can chain them, call methods off 
   scope.count
   # etc...
 
+That's all pretty standard, but here's where Searchlogic starts to get interesting...
+
 == Search using conditions on association columns
 
 You also get named scopes for any of your associations:
@@ -54,11 +56,21 @@ You also get named scopes for any of your associations:
   User.ascend_by_order_total
   User.descend_by_orders_line_items_price
 
-Again these are just named scopes. You can chain them together, call methods off of them, etc. What's great about these named scopes is that they do NOT use the :include option, making them much faster. Instead they create a LEFT OUTER JOIN and pass it to the :joins option, which is great for performance. If you want to use the :include option, just specify it:
+Again these are just named scopes. You can chain them together, call methods off of them, etc. What's great about these named scopes is that they do NOT use the :include option, making them <em>much</em> faster. Instead they create a LEFT OUTER JOIN and pass it to the :joins option, which is great for performance. To prove my point here is a quick benchmark from an application I am working on:
+
+  Benchmark.bm do |x|
+    x.report { 10.times { Event.tickets_id_gt(10).all(:include => :tickets) } }
+    x.report { 10.times { Event.tickets_id_gt(20).all } }
+  end
+        user     system      total        real
+   10.120000   0.170000  10.290000 ( 12.625521)
+    2.630000   0.050000   2.680000 (  3.313754)
+
+If you want to use the :include option, just specify it:
 
   User.orders_line_items_price_greater_than(20).all(:include => {:orders => :line_items})
 
-Now all of Searchlogic's goodness fits nicely into your app and you can use it with your custom named scopes. Nice and clean.
+Obviously, only do this if you want to actually use the included objects.
 
 == Make searching in your application trivial
 
@@ -106,7 +118,7 @@ Now just throw it in your form:
     = f.check_box :four_year_olds
     = f.submit
 
-What's great about this is that you can do just about anything you want. If Searchlogic doesn't provide a named scope for that crazy searching edge case that you need, just create your own named scope. The sky is the limit.
+What's great about this is that you can do just about anything you want. If Searchlogic doesn't provide a named scope for that crazy edge case that you need, just create your own named scope. The sky is the limit.
 
 == Pagination (leverage will_paginate)
 

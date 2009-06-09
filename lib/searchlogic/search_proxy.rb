@@ -21,6 +21,7 @@ module Searchlogic
     
     def conditions=(values)
       values.each do |condition, value|
+        next if value.blank?
         send("#{condition}=", value)
       end
     end
