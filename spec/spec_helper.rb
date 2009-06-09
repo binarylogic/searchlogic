@@ -9,16 +9,23 @@ ActiveRecord::Base.configurations = true
 ActiveRecord::Schema.verbose = false
 ActiveRecord::Schema.define(:version => 1) do
   create_table :companies do |t|
+    t.datetime :created_at
+    t.datetime :updated_at
   end
   
   create_table :users do |t|
+    t.datetime :created_at
+    t.datetime :updated_at
     t.integer :company_id
     t.string :username
     t.integer :age
   end
   
   create_table :orders do |t|
+    t.datetime :created_at
+    t.datetime :updated_at
     t.integer :user_id
+    t.date :shipped_on
     t.float :taxes
     t.float :total
   end

@@ -31,7 +31,7 @@ module Searchlogic
           condition = $1.to_sym
           scope_name = normalize_scope_name($1)
           if scope?(scope_name)
-            conditions[condition] = args.first
+            conditions[condition] = type_cast(args.first, cast_type(scope_name))
           else
             raise UnknownConditionError.new(name)
           end
@@ -44,7 +44,7 @@ module Searchlogic
             klass.send(scope_name, value) if !klass.respond_to?(scope_name)
             arity = klass.named_scope_arity(scope_name)
             
-            if (!arity || arity == 0) && !true?(value)
+            if (!arity || arity == 0) && value != true
               scope
             else
               scope.send(scope_name, value)
@@ -62,8 +62,21 @@ module Searchlogic
         klass.scopes.key?(scope_name) || klass.condition?(scope_name)
       end
       
-      def true?(value)
-        value == true || value == 'true' || value == '1'
+      def cast_type(name)
+        klass.send(name, nil) if !klass.respond_to?(name) # We need to set up the named scope if it doesn't exist, so we can get a value for named_ssope_options
+        named_scope_options = klass.named_scope_options(name)
+        arity = klass.named_scope_arity(name)
+        if !arity || arity == 0
+          :boolean
+        else
+          named_scope_options.respond_to?(:searchlogic_arg_type) ? named_scope_options.searchlogic_arg_type : :string
+        end
+      end
+      
+      def type_cast(value, type)
+        column_for_type_cast = ActiveRecord::ConnectionAdapters::Column.new("", nil)
+        column_for_type_cast.instance_variable_set(:@type, type)
+        column_for_type_cast.type_cast(value)
       end
   end
 end

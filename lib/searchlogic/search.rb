@@ -31,5 +31,3 @@ module Searchlogic
     end
   end
 end
-
-ActiveRecord::Base.extend(Searchlogic::Search)

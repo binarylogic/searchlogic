@@ -53,25 +53,26 @@ module Searchlogic
         end
         
         def create_primary_condition(column, condition)
+          column_type = columns_hash[column].type
           scope = case condition.to_sym
           when :equals
-            lambda { |value| { :conditions => { column => value } } }
+            searchlogic_lambda(column_type) { |value| { :conditions => { column => value } } }
           when :does_not_equal
-            lambda { |value| { :conditions => { column => value } } }
+            searchlogic_lambda(column_type) { |value| { :conditions => { column => value } } }
           when :less_than
-            lambda { |value| { :conditions => ["#{table_name}.#{column} < ?", value] } }
+            searchlogic_lambda(column_type) { |value| { :conditions => ["#{table_name}.#{column} < ?", value] } }
           when:less_than_or_equal_to
-            lambda { |value| { :conditions => ["#{table_name}.#{column} <= ?", value] } }
+            searchlogic_lambda(column_type) { |value| { :conditions => ["#{table_name}.#{column} <= ?", value] } }
           when :greater_than
-            lambda { |value| { :conditions => ["#{table_name}.#{column} > ?", value] } }
+            searchlogic_lambda(column_type) { |value| { :conditions => ["#{table_name}.#{column} > ?", value] } }
           when :greater_than_or_equal_to
-            lambda { |value| { :conditions => ["#{table_name}.#{column} >= ?", value] } }
+            searchlogic_lambda(column_type) { |value| { :conditions => ["#{table_name}.#{column} >= ?", value] } }
           when :like
-            lambda { |value| { :conditions => ["#{table_name}.#{column} LIKE ?", "%#{value}%"] } }
+            searchlogic_lambda(column_type) { |value| { :conditions => ["#{table_name}.#{column} LIKE ?", "%#{value}%"] } }
           when :begins_with
-            lambda { |value| { :conditions => ["#{table_name}.#{column} LIKE ?", "#{value}%"] } }
+            searchlogic_lambda(column_type) { |value| { :conditions => ["#{table_name}.#{column} LIKE ?", "#{value}%"] } }
           when :ends_with
-            lambda { |value| { :conditions => ["#{table_name}.#{column} LIKE ?", "%#{value}"] } }
+            searchlogic_lambda(column_type) { |value| { :conditions => ["#{table_name}.#{column} LIKE ?", "%#{value}"] } }
           when :null
             { :conditions => "#{table_name}.#{column} IS NULL" }
           when :empty
@@ -97,5 +98,3 @@ module Searchlogic
     end
   end
 end
-
-ActiveRecord::Base.extend(Searchlogic::NamedScopes::Conditions)

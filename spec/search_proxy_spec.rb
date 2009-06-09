@@ -56,6 +56,78 @@ describe "SearchProxy" do
       search = User.search
       lambda { search.unknown = true }.should raise_error(Searchlogic::SearchProxy::UnknownConditionError)
     end
+    
+    context "type casting" do
+      it "should be a Boolean given true" do
+        search = User.search(:id_nil => true)
+        search.id_nil.should == true
+      end
+      
+      it "should be a Boolean given 'true'" do
+        search = User.search(:id_nil => "true")
+        search.id_nil.should == true
+      end
+      
+      it "should be a Boolean given '1'" do
+        search = User.search(:id_nil => "1")
+        search.id_nil.should == true
+      end
+      
+      it "should be a Boolean given false" do
+        search = User.search(:id_nil => false)
+        search.id_nil.should == false
+      end
+      
+      it "should be a Boolean given 'false'" do
+        search = User.search(:id_nil => 'false')
+        search.id_nil.should == false
+      end
+      
+      it "should be a Boolean given '0'" do
+        search = User.search(:id_nil => '0')
+        search.id_nil.should == false
+      end
+      
+      it "should be an Integer given 1" do
+        search = User.search(:id_gt => 1)
+        search.id_gt.should == 1
+      end
+      
+      it "should be an Integer given '1'" do
+        search = User.search(:id_gt => '1')
+        search.id_gt.should == 1
+      end
+      
+      it "should be a Float given 1.0" do
+        search = Order.search(:total_gt => 1.0)
+        search.total_gt.should == 1.0
+      end
+      
+      it "should be a Float given '1'" do
+        search = Order.search(:total_gt => '1')
+        search.total_gt.should == 1.0
+      end
+      
+      it "should be a Float given '1.5'" do
+        search = Order.search(:total_gt => '1.5')
+        search.total_gt.should == 1.5
+      end
+      
+      it "should be a Date given 'Jan 1, 2009'" do
+        search = Order.search(:shipped_on_after => 'Jan 1, 2009')
+        search.shipped_on_after.should == Date.parse("Jan 1, 2009")
+      end
+      
+      it "should be a Time given 'Jan 1, 2009'" do
+        search = Order.search(:created_at_after => 'Jan 1, 2009')
+        search.created_at_after.should == Time.parse("Jan 1, 2009")
+      end
+      
+      it "should be a Time given 'Jan 1, 2009 9:33AM'" do
+        search = Order.search(:created_at_after => 'Jan 1, 2009 9:33AM')
+        search.created_at_after.should == Time.parse("Jan 1, 2009 9:33AM")
+      end
+    end
   end
   
   context "taking action" do
@@ -94,23 +166,11 @@ describe "SearchProxy" do
       User.search(:username_nil => true).proxy_options.should == User.username_nil.proxy_options
     end
     
-    it "should recognize conditions with a value of 'true' where the named scope has an arity of 0" do
-      User.search(:username_nil => "true").proxy_options.should == User.username_nil.proxy_options
-    end
-  
-      it "should recognize conditions with a value of '1' where the named scope has an arity of 0" do
-      User.search(:username_nil => "1").proxy_options.should == User.username_nil.proxy_options
-    end
-  
     it "should ignore conditions with a value of false where the named scope has an arity of 0" do
       User.search(:username_nil => false).proxy_options.should == {}
     end
-  
-    it "should ignore conditions with a value of 'false' where the named scope has an arity of 0" do
-      User.search(:username_nil => false).proxy_options.should == {}
-    end
     
-    it "should recognize the order conditio" do
+    it "should recognize the order condition" do
       User.search(:order => "ascend_by_username").proxy_options.should == User.ascend_by_username.proxy_options
     end
   end
