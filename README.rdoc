@@ -2,7 +2,22 @@
 
 <b>Searchlogic has been <em>completely</em> rewritten for v2. It is much simpler and has taken an entirely new approach. To give you an idea, v1 had ~2300 lines of code, v2 has ~350 lines of code.</b>
 
+<b>Attention v1 users. v2 breaks backwards compatibility. Please make sure your gem declaration for searchlogic looks like this so that you app does not break when the gem is updated: config.gem "searchlogic", :version => "~> 1.6.6"</b>
+
 Searchlogic is a library that leverages named scopes to make searching in your application simple.
+
+== Install & use
+
+In your console:
+
+  sudo gem install searchlogic
+
+In your rails project:
+
+  # config/environment.rb
+  config.gem "searchlogic"
+
+That's it, you are ready to go. See below for usage examples.
 
 == Search using conditions on columns
 
