@@ -1,6 +1,18 @@
 module Searchlogic
   module NamedScopes
     module Associations
+      def condition?(name)
+        super || association_condition?(name) || association_alias_condition?(name)
+      end
+      
+      def association_condition?(name)
+        !association_condition_details(name).nil?
+      end
+      
+      def association_alias_condition?(name)
+        !association_alias_condition_details(name).nil?
+      end
+      
       private
         def method_missing(name, *args, &block)
           if details = association_condition_details(name)
@@ -57,6 +69,7 @@ module Searchlogic
         def association_condition_options(association_name, association_condition, args)
           association = reflect_on_association(association_name.to_sym)
           scope = association.klass.send(association_condition, *args)
+          scope_options = association.klass.named_scope_options(association_condition)
           arity = association.klass.named_scope_arity(association_condition)
           
           if !arity || arity == 0
@@ -72,7 +85,7 @@ module Searchlogic
             proc_args = []
             arity.times { |i| proc_args << "arg#{i}"}
             eval <<-"end_eval"
-              lambda { |#{proc_args.join(",")}|
+              searchlogic_lambda(:#{scope_options.searchlogic_arg_type}) { |#{proc_args.join(",")}|
                 options = association.klass.named_scope_options(association_condition).call(#{proc_args.join(",")})
                 add_left_outer_join(options, association)
                 options

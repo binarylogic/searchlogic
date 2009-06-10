@@ -39,10 +39,24 @@ describe "SearchProxy" do
       search.username.should == "bjohnson"
     end
     
-    it "should allow setting conditions individually" do
+    it "should allow setting local column conditions individually" do
       search = User.search
       search.username_gt = "bjohnson"
       search.username_gt.should == "bjohnson"
+    end
+    
+    it "should allow setting association conditions" do
+      search = User.search
+      search.orders_total_gt = 10
+      search.orders_total_gt.should == 10
+    end
+    
+    it "should allow using custom conditions" do
+      User.named_scope(:four_year_olds, { :conditions => { :age => 4 } })
+      search = User.search
+      search.four_year_olds = true
+      search.four_year_olds.should == true
+      search.proxy_options.should == User.four_year_olds.proxy_options
     end
     
     it "should not merge conflicting conditions into one value" do
@@ -157,6 +171,18 @@ describe "SearchProxy" do
         search.id_equals_any = ["1", "2", "3"]
         search.id_equals_any.should == [1, 2, 3]
       end
+      
+      it "should type cast association conditions" do
+        search = User.search
+        search.orders_total_gt = "10"
+        search.orders_total_gt.should == 10
+      end
+      
+      it "should type cast deep association conditions" do
+        search = Company.search
+        search.users_orders_total_gt = "10"
+        search.users_orders_total_gt.should == 10
+      end
     end
   end
   
@@ -185,11 +211,6 @@ describe "SearchProxy" do
     
     it "should alias exact column names to use equals" do
       User.search(:username => "joe").proxy_options.should == User.username_equals("joe").proxy_options
-    end
-    
-    it "should recognize existing named scopes" do
-      User.named_scope(:four_year_olds, { :conditions => { :age => 4 } })
-      User.search(:four_year_olds => true).proxy_options.should == User.four_year_olds.proxy_options
     end
     
     it "should recognize conditions with a value of true where the named scope has an arity of 0" do
