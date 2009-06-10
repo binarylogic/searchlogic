@@ -29,7 +29,7 @@ Instead of explaining what Searchlogic can do, let me show you. Let's start at t
   User.descend_by_username
   User.order("ascend_by_username")
 
-Keep in mind, these are just named scopes, you can chain them, call methods off of them, etc:
+Any named scope Searchlogic creates is dynamic and created via method_missing. Meaning it will only create what you need. Also, keep in mind, these are just named scopes, you can chain them, call methods off of them, etc:
 
   scope = User.username_like("bjohnson").age_greater_than(20).ascend_by_username
   scope.all
@@ -119,6 +119,16 @@ Now just throw it in your form:
     = f.submit
 
 What's great about this is that you can do just about anything you want. If Searchlogic doesn't provide a named scope for that crazy edge case that you need, just create your own named scope. The sky is the limit.
+
+== Use any or all
+
+Every condition you've seen in this readme also has 2 related conditions that you can use. Example:
+
+  User.username_like_any("bjohnson", "thunt")   # will return any users that have either of those strings in their username
+  User.username_like_all("bjohnson", "thunt")   # will return any users that have all of those string in their username
+  User.username_like_any(["bjohnson", "thunt"]) # also accept an array
+
+This is great for checkbox filters, etc. Where you can pass an array right from your form to this condition.
 
 == Pagination (leverage will_paginate)
 
