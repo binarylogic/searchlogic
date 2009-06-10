@@ -152,8 +152,11 @@ describe "SearchProxy" do
         search.created_at_after.should == Time.parse("Jan 1, 2009 9:33AM")
       end
       
-      #it "should be an Array and cast it's values given ['1', '2', '3']" do
-      #  search
+      it "should be an Array and cast it's values given ['1', '2', '3']" do
+        search = Order.search
+        search.id_equals_any = ["1", "2", "3"]
+        search.id_equals_any.should == [1, 2, 3]
+      end
     end
   end
   

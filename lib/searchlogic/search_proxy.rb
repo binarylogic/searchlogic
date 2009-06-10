@@ -75,9 +75,14 @@ module Searchlogic
       end
       
       def type_cast(value, type)
-        column_for_type_cast = ActiveRecord::ConnectionAdapters::Column.new("", nil)
-        column_for_type_cast.instance_variable_set(:@type, type)
-        column_for_type_cast.type_cast(value)
+        case value
+        when Array
+          value.collect { |v| type_cast(v, type) }
+        else
+          column_for_type_cast = ActiveRecord::ConnectionAdapters::Column.new("", nil)
+          column_for_type_cast.instance_variable_set(:@type, type)
+          column_for_type_cast.type_cast(value)
+        end
       end
   end
 end
