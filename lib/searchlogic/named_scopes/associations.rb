@@ -5,6 +5,18 @@ module Searchlogic
         super || association_condition?(name) || association_alias_condition?(name)
       end
       
+      def primary_condition_name(name)
+        if result = super
+          result
+        elsif association_condition?(name)
+          name.to_sym
+        elsif details = association_alias_condition_details(name)
+          "#{details[:association]}_#{details[:column]}_#{primary_condition(details[:condition])}".to_sym
+        else
+          nil
+        end
+      end
+      
       def association_condition?(name)
         !association_condition_details(name).nil?
       end
@@ -83,7 +95,18 @@ module Searchlogic
             # and pass those onto the named scope. We can't use proxy_options because that returns the
             # result after a value has been passed.
             proc_args = []
-            arity.times { |i| proc_args << "arg#{i}"}
+            if arity > 0
+              arity.times { |i| proc_args << "arg#{i}"}
+            else
+              positive_arity = arity * -1
+              positive_arity.times do |i|
+                if i == (positive_arity - 1)
+                  proc_args << "*arg#{i}"
+                else
+                  proc_args << "arg#{i}"
+                end
+              end
+            end
             eval <<-"end_eval"
               searchlogic_lambda(:#{scope_options.searchlogic_arg_type}) { |#{proc_args.join(",")}|
                 options = association.klass.named_scope_options(association_condition).call(#{proc_args.join(",")})

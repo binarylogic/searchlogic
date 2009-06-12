@@ -7,6 +7,10 @@ describe "Conditions" do
     User.should respond_to(:age_less_than)
   end
   
+  it "should not allow conditions on non columns" do
+    lambda { User.whatever_equals(2) }.should raise_error(NoMethodError)
+  end
+  
   context "comparison conditions" do
     it "should have equals" do
       (5..7).each { |age| User.create(:age => age) }
@@ -69,6 +73,10 @@ describe "Conditions" do
   end
   
   context "any and all conditions" do
+    it "should do nothing if no arguments are passed" do
+      User.username_equals_any.proxy_options.should == {}
+    end
+    
     it "should have equals any" do
       %w(bjohnson thunt dgainor).each { |username| User.create(:username => username) }
       User.username_equals_any("bjohnson", "thunt").all == User.find_all_by_username(["bjohnson", "thunt"])

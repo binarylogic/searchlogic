@@ -3,7 +3,7 @@ module Searchlogic
     # Contains extensions for the Object class that Searchlogic uses.
     module Object
       # Searchlogic needs to know the expected type of the condition value so that it can properly cast
-      # the value in the Searchlogic::SearchProxy object. For example:
+      # the value in the Searchlogic::Search object. For example:
       #
       #   search = User.search(:id_gt => "1")
       #

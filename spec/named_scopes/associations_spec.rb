@@ -14,6 +14,14 @@ describe "Associations" do
     Company.users_orders_total_greater_than(10).proxy_options.should == Order.total_greater_than(10).proxy_options.merge(:joins => @orders_join_sql)
   end
   
+  it "should not allowed named scopes on non existent association columns" do
+    lambda { User.users_whatever_like("bjohnson") }.should raise_error(NoMethodError)
+  end
+  
+  it "should not allowed named scopes on non existent deep association columns" do
+    lambda { User.users_orders_whatever_like("bjohnson") }.should raise_error(NoMethodError)
+  end
+  
   it "should allow named scopes to be called multiple times and reflect the value passed" do
     Company.users_username_like("bjohnson").proxy_options.should == User.username_like("bjohnson").proxy_options.merge(:joins => @users_join_sql)
     Company.users_username_like("thunt").proxy_options.should == User.username_like("thunt").proxy_options.merge(:joins => @users_join_sql)
@@ -32,6 +40,11 @@ describe "Associations" do
   it "should have an arity of nil if the underlying scope has an arity of nil" do
     Company.users_orders_total_null
     Company.named_scope_arity("users_orders_total_null").should == Order.named_scope_arity("total_null")
+  end
+  
+  it "should have an arity of -1 if the underlying scope has an arity of -1" do
+    Company.users_id_equals_any
+    Company.named_scope_arity("users_id_equals_any").should == User.named_scope_arity("id_equals_any")
   end
   
   it "should allow aliases" do

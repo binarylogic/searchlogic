@@ -5,6 +5,16 @@ module Searchlogic
         super || order_condition?(name)
       end
       
+      def primary_condition_name(name)
+        if result = super
+          result
+        elsif order_condition?(name)
+          name.to_sym
+        else
+          nil
+        end
+      end
+      
       def order_condition?(name)
         !order_condition_details(name).nil?
       end
