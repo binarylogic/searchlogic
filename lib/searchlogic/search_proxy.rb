@@ -45,8 +45,12 @@ module Searchlogic
             klass.send(scope_name, value) if !klass.respond_to?(scope_name)
             arity = klass.named_scope_arity(scope_name)
             
-            if (!arity || arity == 0) && value != true
-              scope
+            if !arity || arity == 0
+              if value == true
+                scope.send(scope_name)
+              else
+                scope
+              end
             else
               scope.send(scope_name, value)
             end

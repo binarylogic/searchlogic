@@ -75,7 +75,7 @@ Again these are just named scopes. You can chain them together, call methods off
 
   Benchmark.bm do |x|
     x.report { 10.times { Event.tickets_id_gt(10).all(:include => :tickets) } }
-    x.report { 10.times { Event.tickets_id_gt(20).all } }
+    x.report { 10.times { Event.tickets_id_gt(10).all } }
   end
         user     system      total        real
    10.120000   0.170000  10.290000 ( 12.625521)
