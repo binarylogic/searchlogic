@@ -27,6 +27,7 @@ module Searchlogic
     
     def conditions=(values)
       values.each do |condition, value|
+        value.delete_if { |v| v.blank? } if value.is_a?(Array)
         next if value.blank?
         send("#{condition}=", value)
       end

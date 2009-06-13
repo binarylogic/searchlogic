@@ -47,6 +47,12 @@ describe "Search" do
       search.conditions = {"username" => ""}
       search.username.should be_nil
     end
+    
+    it "should ignore blank values in arrays" do
+      search = User.search
+      search.conditions = {"username_equals_any" => [""]}
+      search.username_equals_any.should be_blank
+    end
   end
   
   context "condition accessors" do
