@@ -2,8 +2,8 @@ require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe "Associations" do
   before(:each) do
-    @users_join_sql = "LEFT OUTER JOIN \"users\" ON users.company_id = companies.id"
-    @orders_join_sql = "LEFT OUTER JOIN \"users\" ON users.company_id = companies.id LEFT OUTER JOIN \"orders\" ON orders.user_id = users.id"
+    @users_join_sql = ["LEFT OUTER JOIN \"users\" ON users.company_id = companies.id"]
+    @orders_join_sql = ["LEFT OUTER JOIN \"users\" ON users.company_id = companies.id", "LEFT OUTER JOIN \"orders\" ON orders.user_id = users.id"]
   end
   
   it "should create a named scope" do
@@ -86,6 +86,14 @@ describe "Associations" do
     Company.users_orders_total_gt(10).users_orders_taxes_lt(5).ascend_by_users_orders_total.all.should == Company.all
   end
   
+  it "should not create the same join twice when traveling through the duplicate join" do
+    Company.users_username_like("bjohnson").users_orders_total_gt(100).all.should == Company.all
+  end
+  
+  it "should not create the same join twice when traveling through the duplicate join 2" do
+    Company.users_orders_total_gt(100).users_orders_line_items_price_gt(20).all.should == Company.all
+  end
+  
   it "should allow the use of :include when a join was created" do
     company = Company.create
     user = company.users.create
@@ -98,5 +106,19 @@ describe "Associations" do
     user = company.users.create
     order = user.orders.create(:total => 20, :taxes => 3)
     Company.users_orders_total_gt(10).users_orders_taxes_lt(5).ascend_by_users_orders_total.all(:include => {:users => :orders}).should == Company.all
+  end
+  
+  it "should allow the use of :include when traveling through the duplicate join" do
+    company = Company.create
+    user = company.users.create(:username => "bjohnson")
+    order = user.orders.create(:total => 20, :taxes => 3)
+    Company.users_username_like("bjohnson").users_orders_taxes_lt(5).ascend_by_users_orders_total.all(:include => :users).should == Company.all
+  end
+  
+  it "should allow the use of deep :include when traveling through the duplicate join" do
+    company = Company.create
+    user = company.users.create(:username => "bjohnson")
+    order = user.orders.create(:total => 20, :taxes => 3)
+    Company.ascend_by_users_orders_total.users_orders_taxes_lt(50).all(:include => {:users => :orders}).should == Company.all
   end
 end

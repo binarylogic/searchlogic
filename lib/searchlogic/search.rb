@@ -89,6 +89,8 @@ module Searchlogic
         when Array
           value.collect { |v| type_cast(v, type) }
         else
+          # Let's leverage ActiveRecord's type casting, so that casting is consistent
+          # with the other models.
           column_for_type_cast = ActiveRecord::ConnectionAdapters::Column.new("", nil)
           column_for_type_cast.instance_variable_set(:@type, type)
           column_for_type_cast.type_cast(value)

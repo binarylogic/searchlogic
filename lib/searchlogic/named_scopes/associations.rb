@@ -88,7 +88,7 @@ module Searchlogic
             # The underlying condition doesn't require any parameters, so let's just create a simple
             # named scope that is based on a hash.
             options = scope.proxy_options
-            add_left_outer_join(options, association)
+            add_left_outer_joins(options, association)
             options
           else
             # The underlying condition requires parameters, let's match the parameters it requires
@@ -110,7 +110,7 @@ module Searchlogic
             eval <<-"end_eval"
               searchlogic_lambda(:#{scope_options.searchlogic_arg_type}) { |#{proc_args.join(",")}|
                 options = association.klass.named_scope_options(association_condition).call(#{proc_args.join(",")})
-                add_left_outer_join(options, association)
+                add_left_outer_joins(options, association)
                 options
               }
             end_eval
@@ -130,11 +130,10 @@ module Searchlogic
         # JoinDependency which creates a LEFT OUTER JOIN, which is what we want.
         #
         # The code below was extracted out of AR's add_joins! method and then modified.
-        def add_left_outer_join(options, association)
-          join = ActiveRecord::Associations::ClassMethods::JoinDependency.new(self, association.name, nil).join_associations.collect { |assoc| assoc.association_join }.join
-          options[:joins] ||= ""
-          next if options[:joins].include?(join)
-          options[:joins] = join.strip + (options[:joins].blank? ? "" : " #{options[:joins]}")
+        def add_left_outer_joins(options, association)
+          join = ActiveRecord::Associations::ClassMethods::JoinDependency.new(self, association.name, nil).join_associations.collect { |assoc| assoc.association_join }.join.strip
+          options[:joins] ||= []
+          options[:joins].unshift(join)
         end
     end
   end

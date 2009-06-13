@@ -29,6 +29,13 @@ ActiveRecord::Schema.define(:version => 1) do
     t.float :taxes
     t.float :total
   end
+  
+  create_table :line_items do |t|
+    t.datetime :created_at
+    t.datetime :updated_at
+    t.integer :order_id
+    t.float :price
+  end
 end
 
 $LOAD_PATH.unshift(File.dirname(__FILE__))
@@ -48,16 +55,23 @@ Spec::Runner.configure do |config|
     
     class Order < ActiveRecord::Base
       belongs_to :user
+      has_many :line_items, :dependent => :destroy
+    end
+    
+    class LineItem < ActiveRecord::Base
+      belongs_to :order
     end
     
     Company.destroy_all
     User.destroy_all
     Order.destroy_all
+    LineItem.destroy_all
   end
   
   config.after(:each) do
     Object.send(:remove_const, :Company)
     Object.send(:remove_const, :User)
     Object.send(:remove_const, :Order)
+    Object.send(:remove_const, :LineItem)
   end
 end
