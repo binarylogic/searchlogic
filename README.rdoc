@@ -1,10 +1,10 @@
 = Searchlogic
 
-<b>Searchlogic has been <em>completely</em> rewritten for v2. It is much simpler and has taken an entirely new approach. To give you an idea, v1 had ~2300 lines of code, v2 has ~350 lines of code.</b>
+<b>Searchlogic has been <em>completely</em> rewritten for v2. It is much simpler and has taken an entirely new approach. To give you an idea, v1 had ~2300 lines of code, v2 has ~420 lines of code.</b>
 
-<b>Attention v1 users. v2 breaks backwards compatibility. Please make sure your gem declaration for searchlogic looks like this so that you app does not break when the gem is updated: config.gem "searchlogic", :version => "~> 1.6.6"</b>
+<b>Attention v1 users. To start using v2 you must use the binarylogic-searchlogic gem. I have decided to start using github to host my gems. See below for installation instructions.</b>
 
-Searchlogic provides common named scopes and object based searching.
+Searchlogic provides common named scopes and object based searching for ActiveRecord.
 
 == Helpful links
 
@@ -25,7 +25,7 @@ In your rails project:
   config.gem "binarylogic-searchlogic", 
     :lib     => 'searchlogic', 
     :source  => 'http://gems.github.com', 
-    :version => '0.6.6'
+    :version => '~> 2.0.0'
 
 Then install the gem:
 
