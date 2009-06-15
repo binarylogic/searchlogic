@@ -87,7 +87,7 @@ If you want to use the :include option, just specify it:
 
 Obviously, only do this if you want to actually use the included objects.
 
-== Make searching in your application trivial
+== Make searching and ordering data in your application trivial
 
 The above is great, but what about tying all of this in with a search form in your application? Just do this...
 
