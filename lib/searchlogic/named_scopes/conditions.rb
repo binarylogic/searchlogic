@@ -1,5 +1,6 @@
 module Searchlogic
   module NamedScopes
+    # Handles dynamically creating named scopes for columns.
     module Conditions
       COMPARISON_CONDITIONS = {
         :equals => [:is, :eq],
@@ -92,14 +93,19 @@ module Searchlogic
         end
       end
       
+      # Is the name of the method a valid condition that can be dynamically created?
       def condition?(name)
         primary_condition?(name) || alias_condition?(name)
       end
       
+      # Is the name of the method a valid condition that can be dynamically created,
+      # AND is it a primary condition (not an alias). "greater_than" not "gt".
       def primary_condition?(name)
         !primary_condition_details(name).nil?
       end
       
+      # Is the name of the method a valid condition that can be dynamically created,
+      # AND is it an alias condition. "gt" not "greater_than".
       def alias_condition?(name)
         !alias_condition_details(name).nil?
       end

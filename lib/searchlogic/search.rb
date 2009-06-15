@@ -1,11 +1,33 @@
 module Searchlogic
+  # A class that acts like a model, creates attr_accessors for named_scopes, and then
+  # chains together everything when an "action" method is called. It basically makes
+  # implementing search forms in your application effortless:
+  #
+  #   search = User.search
+  #   search.username_like = "bjohnson"
+  #   search.all
+  #
+  # Is equivalent to:
+  #
+  #   User.search(:username_like => "bjohnson").all
+  #
+  # Is equivalent to:
+  #
+  #   User.username_like("bjohnson").all
   class Search
+    # Responsible for adding a "search" method into your models.
     module Implementation
+      # Returns a new Search object for the given model.
       def search(conditions = {})
         Search.new(self, scope(:find), conditions)
       end
     end
     
+    # Is an invalid condition is used this error will be raised. Ex:
+    #
+    #   User.search(:unkown => true)
+    #
+    # Where unknown is not a valid named scope for the User model.
     class UnknownConditionError < StandardError
       def initialize(condition)
         msg = "The #{condition} is not a valid condition. You may only use conditions that map to a named scope"
@@ -15,16 +37,21 @@ module Searchlogic
     
     attr_accessor :klass, :current_scope, :conditions
     
+    # Creates a new search object for the given class. Ex:
+    #
+    #   Searchlogic::Search.new(User, {}, {:username_like => "bjohnson"})
     def initialize(klass, current_scope, conditions = {})
       self.klass = klass
       self.current_scope = current_scope
       self.conditions = conditions if conditions.is_a?(Hash)
     end
     
+    # Returns a hash of the current conditions set.
     def conditions
       @conditions ||= {}
     end
     
+    # Accepts a hash of conditions.
     def conditions=(values)
       values.each do |condition, value|
         value.delete_if { |v| v.blank? } if value.is_a?(Array)

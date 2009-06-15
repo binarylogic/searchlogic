@@ -1,11 +1,12 @@
 module Searchlogic
   module NamedScopes
+    # Handles dynamically creating named scopes for associations.
     module Associations
-      def condition?(name)
+      def condition?(name) # :nodoc:
         super || association_condition?(name) || association_alias_condition?(name)
       end
       
-      def primary_condition_name(name)
+      def primary_condition_name(name) # :nodoc:
         if result = super
           result
         elsif association_condition?(name)
@@ -17,10 +18,13 @@ module Searchlogic
         end
       end
       
+      # Is the name of the method a valid name for an association condition?
       def association_condition?(name)
         !association_condition_details(name).nil?
       end
       
+      # Is the ane of the method a valie name for an association alias condition?
+      # An alias being "gt" for "greater_than", etc.
       def association_alias_condition?(name)
         !association_alias_condition_details(name).nil?
       end
