@@ -114,6 +114,12 @@ It doesn't get any simpler than that. Adding a search condition is as simple as 
     = f.text_field :orders_total_greater_than
     = f.submit
 
+When a Searchlogic::Search object is passed to form_for it will add a hidden field for the "order" condition, to preserve the order of the data. If you want to order your search with a link, just specify the name of the column. Ex:
+
+  = order @search, :by => :age
+
+This will create a link that alternates between calling "ascend_by_age" and "descend_by_age". If you wanted to order your data by more than just a column, create your own named scopes: "ascend_by_*" and "descend_by_*". The "order" helper is a very straight forward helper, checkout the docs for some of the options.
+
 == Use your existing named scopes
 
 This is one of the big differences between Searchlogic v1 and v2. What about your existing named scopes? Let's say you have this:
