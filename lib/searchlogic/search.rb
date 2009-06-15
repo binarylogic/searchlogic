@@ -1,0 +1,128 @@
+module Searchlogic
+  # A class that acts like a model, creates attr_accessors for named_scopes, and then
+  # chains together everything when an "action" method is called. It basically makes
+  # implementing search forms in your application effortless:
+  #
+  #   search = User.search
+  #   search.username_like = "bjohnson"
+  #   search.all
+  #
+  # Is equivalent to:
+  #
+  #   User.search(:username_like => "bjohnson").all
+  #
+  # Is equivalent to:
+  #
+  #   User.username_like("bjohnson").all
+  class Search
+    # Responsible for adding a "search" method into your models.
+    module Implementation
+      # Returns a new Search object for the given model.
+      def search(conditions = {})
+        Search.new(self, scope(:find), conditions)
+      end
+    end
+    
+    # Is an invalid condition is used this error will be raised. Ex:
+    #
+    #   User.search(:unkown => true)
+    #
+    # Where unknown is not a valid named scope for the User model.
+    class UnknownConditionError < StandardError
+      def initialize(condition)
+        msg = "The #{condition} is not a valid condition. You may only use conditions that map to a named scope"
+        super(msg)
+      end
+    end
+    
+    attr_accessor :klass, :current_scope, :conditions
+    
+    # Creates a new search object for the given class. Ex:
+    #
+    #   Searchlogic::Search.new(User, {}, {:username_like => "bjohnson"})
+    def initialize(klass, current_scope, conditions = {})
+      self.klass = klass
+      self.current_scope = current_scope
+      self.conditions = conditions if conditions.is_a?(Hash)
+    end
+    
+    # Returns a hash of the current conditions set.
+    def conditions
+      @conditions ||= {}
+    end
+    
+    # Accepts a hash of conditions.
+    def conditions=(values)
+      values.each do |condition, value|
+        value.delete_if { |v| v.blank? } if value.is_a?(Array)
+        next if value.blank?
+        send("#{condition}=", value)
+      end
+    end
+    
+    private
+      def method_missing(name, *args, &block)
+        if name.to_s =~ /(\w+)=$/
+          condition = $1.to_sym
+          scope_name = normalize_scope_name($1)
+          if scope?(scope_name)
+            conditions[condition] = type_cast(args.first, cast_type(scope_name))
+          else
+            raise UnknownConditionError.new(name)
+          end
+        elsif scope?(normalize_scope_name(name))
+          conditions[name]
+        else
+          scope = conditions.inject(klass.scoped(current_scope)) do |scope, condition|
+            scope_name, value = condition
+            scope_name = normalize_scope_name(scope_name)
+            klass.send(scope_name, value) if !klass.respond_to?(scope_name)
+            arity = klass.named_scope_arity(scope_name)
+            
+            if !arity || arity == 0
+              if value == true
+                scope.send(scope_name)
+              else
+                scope
+              end
+            else
+              scope.send(scope_name, value)
+            end
+          end
+          scope.send(name, *args, &block)
+        end
+      end
+      
+      def normalize_scope_name(scope_name)
+        klass.column_names.include?(scope_name.to_s) ? "#{scope_name}_equals".to_sym : scope_name.to_sym
+      end
+      
+      def scope?(scope_name)
+        klass.scopes.key?(scope_name) || klass.condition?(scope_name)
+      end
+      
+      def cast_type(name)
+        klass.send(name, nil) if !klass.respond_to?(name) # We need to set up the named scope if it doesn't exist, so we can get a value for named_ssope_options
+        named_scope_options = klass.named_scope_options(name)
+        arity = klass.named_scope_arity(name)
+        if !arity || arity == 0
+          :boolean
+        else
+          named_scope_options.respond_to?(:searchlogic_arg_type) ? named_scope_options.searchlogic_arg_type : :string
+        end
+      end
+      
+      def type_cast(value, type)
+        case value
+        when Array
+          value.collect { |v| type_cast(v, type) }
+        else
+          # Let's leverage ActiveRecord's type casting, so that casting is consistent
+          # with the other models.
+          column_for_type_cast = ActiveRecord::ConnectionAdapters::Column.new("", nil)
+          column_for_type_cast.instance_variable_set(:@type, type)
+          column_for_type_cast.type_cast(value)
+        end
+      end
+  end
+end

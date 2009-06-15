@@ -1,20 +1,48 @@
-ENV['RDOCOPT'] = "-S -f html -T hanna"
+require 'rubygems'
+require 'rake'
 
-require "rubygems"
-require "hoe"
-require File.dirname(__FILE__) << "/lib/searchlogic/version"
+begin
+  require 'jeweler'
+  Jeweler::Tasks.new do |gem|
+    gem.name = "search"
+    gem.summary = %Q{TODO}
+    gem.email = "bjohnson@binarylogic.com"
+    gem.homepage = "http://github.com/binarylogic/search"
+    gem.authors = ["binarylogic"]
+    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+  end
 
-Hoe.new("Searchlogic", Searchlogic::Version::STRING) do |p|
-  p.name = "searchlogic"
-  p.author = "Ben Johnson of Binary Logic"
-  p.email  = 'bjohnson@binarylogic.com'
-  p.summary = "Object based ActiveRecord searching, ordering, pagination, and more!"
-  p.description = "Object based ActiveRecord searching, ordering, pagination, and more!"
-  p.url = "http://github.com/binarylogic/searchlogic"
-  p.history_file = "CHANGELOG.rdoc"
-  p.readme_file = "README.rdoc"
-  p.extra_rdoc_files = ["CHANGELOG.rdoc", "README.rdoc"]
-  p.remote_rdoc_dir = ''
-  p.test_globs = ["test/*/test_*.rb", "test/*_test.rb", "test/*/*_test.rb"]
-  p.extra_deps = %w(activesupport activerecord)
+rescue LoadError
+  puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
 end
+
+require 'spec/rake/spectask'
+Spec::Rake::SpecTask.new(:spec) do |spec|
+  spec.libs << 'lib' << 'spec'
+  spec.spec_files = FileList['spec/**/*_spec.rb']
+end
+
+Spec::Rake::SpecTask.new(:rcov) do |spec|
+  spec.libs << 'lib' << 'spec'
+  spec.pattern = 'spec/**/*_spec.rb'
+  spec.rcov = true
+end
+
+
+task :default => :spec
+
+require 'rake/rdoctask'
+Rake::RDocTask.new do |rdoc|
+  if File.exist?('VERSION.yml')
+    config = YAML.load(File.read('VERSION.yml'))
+    version = "#{config[:major]}.#{config[:minor]}.#{config[:patch]}"
+  else
+    version = ""
+  end
+
+  rdoc.rdoc_dir = 'rdoc'
+  rdoc.title = "search #{version}"
+  rdoc.rdoc_files.include('README*')
+  rdoc.rdoc_files.include('lib/**/*.rb')
+end
+
