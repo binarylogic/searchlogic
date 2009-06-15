@@ -9,6 +9,7 @@ begin
     gem.email = "bjohnson@binarylogic.com"
     gem.homepage = "http://github.com/binarylogic/search"
     gem.authors = ["binarylogic"]
+    gem.rubyforge_project = "test"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
 

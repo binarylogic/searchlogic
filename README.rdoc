@@ -4,18 +4,32 @@
 
 <b>Attention v1 users. v2 breaks backwards compatibility. Please make sure your gem declaration for searchlogic looks like this so that you app does not break when the gem is updated: config.gem "searchlogic", :version => "~> 1.6.6"</b>
 
-Searchlogic is a library that leverages named scopes to make searching in your application simple.
+Searchlogic provides common named scopes and object based searching.
+
+== Helpful links
+
+* <b>Documentation:</b> http://rdoc.info/projects/binarylogic/searchlogic
+* <b>Repository:</b> http://github.com/binarylogic/searchlogic/tree/master
+* <b>Bugs / feature suggestions:</b> http://binarylogic.lighthouseapp.com/projects/16601-searchlogic
+* <b>Google group:</b> http://groups.google.com/group/searchlogic
+
+<b>Before contacting me directly, please read:</b>
+
+If you find a bug or a problem please post it on lighthouse. If you need help with something, please use google groups. I check both regularly and get emails when anything happens, so that is the best place to get help. This also benefits other people in the future with the same questions / problems. Thank you.
 
 == Install & use
-
-In your console:
-
-  sudo gem install searchlogic
 
 In your rails project:
 
   # config/environment.rb
-  config.gem "searchlogic"
+  config.gem "binarylogic-searchlogic", 
+    :lib     => 'searchlogic', 
+    :source  => 'http://gems.github.com', 
+    :version => '0.6.6'
+
+Then install the gem:
+
+  rake gems:install
 
 That's it, you are ready to go. See below for usage examples.
 
