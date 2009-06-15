@@ -4,12 +4,11 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "search"
-    gem.summary = %Q{TODO}
+    gem.name = "searchlogic"
+    gem.summary = "Searchlogic provides common named scopes and object based searching."
     gem.email = "bjohnson@binarylogic.com"
     gem.homepage = "http://github.com/binarylogic/search"
-    gem.authors = ["binarylogic"]
-    gem.rubyforge_project = "test"
+    gem.authors = ["Ben Johnson of Binary Logic"]
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
 
