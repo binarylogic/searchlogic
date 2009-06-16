@@ -135,9 +135,24 @@ module Searchlogic
         #
         # The code below was extracted out of AR's add_joins! method and then modified.
         def add_left_outer_joins(options, association)
-          join = ActiveRecord::Associations::ClassMethods::JoinDependency.new(self, association.name, nil).join_associations.collect { |assoc| assoc.association_join }.join.strip
+          joins = left_outer_joins(association.name)
           options[:joins] ||= []
-          options[:joins].unshift(join)
+          options[:joins] = joins + options[:joins]
+        end
+        
+        # Leverages ActiveRecord's JoinDependency class to create a left outer join. Searchlogic uses left outer joins so that
+        # records with no associations are included in the result when the association is optional. You can use this method
+        # internally when creating your own named scopes that need joins. You need to do this because then ActiveRecord will
+        # remove any duplicate joins for you when you chain named scopes that require the same join. If you are using a
+        # LEFT OUTER JOIN and an INNER JOIN, ActiveRecord will add both to the query, causing SQL errors.
+        #
+        # Bottom line, this is convenience method that you can use when creating your own named scopes. Ex:
+        #
+        #   named_scope :orders_line_items_price_expensive, :joins => left_out_joins(:orders => :line_items), :conditions => "line_items.price > 100"
+        #
+        # Now your joins are consistent with Searchlogic allowing you to avoid SQL errors with duplicate joins.
+        def left_outer_joins(association_name)
+          ActiveRecord::Associations::ClassMethods::JoinDependency.new(self, association_name, nil).join_associations.collect { |assoc| assoc.association_join.strip }
         end
     end
   end

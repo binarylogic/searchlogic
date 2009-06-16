@@ -103,13 +103,23 @@ Obviously, only do this if you want to actually use the included objects.
 
 == Make searching and ordering data in your application trivial
 
-The above is great, but what about tying all of this in with a search form in your application? Just do this...
+The above is great, but what about tying all of this in with a search form in your application? What would be really nice is if we could use an object that represented a single search. Like this...
 
-  User.search(:username_like => "bjohnson", :age_less_than => 20)
+  search = User.search(:username_like => "bjohnson", :age_less_than => 20)
+  search.all
 
 The above is equivalent to:
 
-  User.username_like("bjohnson").age_less_than(20)
+  User.username_like("bjohnson").age_less_than(20).all
+
+You can set, read, and chain conditions off of your search too:
+
+  search.username_like                              => "bjohnson"
+  search.age_gt = 2                                 => 2
+  search.id_gt(10).email_begins_with("bjohnson")    => <#Searchlogic::Search...>
+  search.all                                        => An array of users
+  search.count                                      => integer
+  # .. etc
 
 All that the search method does is chain named scopes together for you. What's so great about that? It keeps your controllers extremely simple:
 
