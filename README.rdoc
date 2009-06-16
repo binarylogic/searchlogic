@@ -68,7 +68,7 @@ Any named scope Searchlogic creates is dynamic and created via method_missing. M
 
 That's all pretty standard, but here's where Searchlogic starts to get interesting...
 
-== Search using conditions on association columns
+== Search using conditions on associated columns
 
 You also get named scopes for any of your associations:
 
@@ -159,9 +159,9 @@ What's great about this is that you can do just about anything you want. If Sear
 
 Every condition you've seen in this readme also has 2 related conditions that you can use. Example:
 
-  User.username_like_any("bjohnson", "thunt")   # will return any users that have either of those strings in their username
-  User.username_like_all("bjohnson", "thunt")   # will return any users that have all of those string in their username
-  User.username_like_any(["bjohnson", "thunt"]) # also accept an array
+  User.username_like_any("bjohnson", "thunt")   # will return any users that have either of the strings in their username
+  User.username_like_all("bjohnson", "thunt")   # will return any users that have all of the strings in their username
+  User.username_like_any(["bjohnson", "thunt"]) # also accepts an array
 
 This is great for checkbox filters, etc. Where you can pass an array right from your form to this condition.
 

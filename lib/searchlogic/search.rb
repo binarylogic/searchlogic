@@ -71,7 +71,12 @@ module Searchlogic
             raise UnknownConditionError.new(name)
           end
         elsif scope?(normalize_scope_name(name))
-          conditions[name]
+          if args.size > 0
+            send("#{name}=", *args)
+            self
+          else
+            conditions[name]
+          end
         else
           scope = conditions.inject(klass.scoped(current_scope)) do |scope, condition|
             scope_name, value = condition

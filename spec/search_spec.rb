@@ -68,6 +68,14 @@ describe "Search" do
       search.username_gt.should == "bjohnson"
     end
     
+    it "should allow chainging conditions" do
+      user = User.create(:username => "bjohnson", :age => 20)
+      User.create(:username => "bjohnson", :age => 5)
+      search = User.search
+      search.username_equals("bjohnson").age_gt(10)
+      search.all.should == [user]
+    end
+    
     it "should allow setting association conditions" do
       search = User.search
       search.orders_total_gt = 10
