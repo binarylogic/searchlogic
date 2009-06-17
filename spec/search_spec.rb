@@ -29,6 +29,17 @@ describe "Search" do
     end
   end
   
+  it "should clone properly" do
+    company = Company.create
+    user1 = company.users.create(:age => 5)
+    user2 = company.users.create(:age => 25)
+    search1 = company.users.search(:age_gt => 10)
+    search2 = search1.clone
+    search2.age_gt = 1
+    search2.all.should == User.all
+    search1.all.should == [user2]
+  end
+  
   context "conditions" do
     it "should set the conditions and be accessible individually" do
       search = User.search

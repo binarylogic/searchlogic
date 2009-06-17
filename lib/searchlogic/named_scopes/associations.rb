@@ -152,7 +152,10 @@ module Searchlogic
         #
         # Now your joins are consistent with Searchlogic allowing you to avoid SQL errors with duplicate joins.
         def left_outer_joins(association_name)
-          ActiveRecord::Associations::ClassMethods::JoinDependency.new(self, association_name, nil).join_associations.collect { |assoc| assoc.association_join.strip }
+          ActiveRecord::Associations::ClassMethods::JoinDependency.new(self, association_name, nil).join_associations.collect do |assoc|
+            sql = assoc.association_join.strip
+            sql.split(/LEFT OUTER JOIN/).delete_if { |join| join.strip.blank? }.collect { |join| "LEFT OUTER JOIN #{join.strip}"}
+          end.flatten
         end
     end
   end

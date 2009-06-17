@@ -46,6 +46,10 @@ module Searchlogic
       self.conditions = conditions if conditions.is_a?(Hash)
     end
     
+    def clone
+      self.class.new(klass, current_scope.clone, conditions.clone)
+    end
+    
     # Returns a hash of the current conditions set.
     def conditions
       @conditions ||= {}
