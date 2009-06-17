@@ -111,11 +111,18 @@ describe "Search" do
       search.username_gt.should == "bjohnson2"
     end
     
-    it "should allow setting custom conditions individually" do
+    it "should allow setting custom conditions individually with an arity of 0" do
       User.named_scope(:four_year_olds, :conditions => {:age => 4})
       search = User.search
       search.four_year_olds = true
       search.four_year_olds.should == true
+    end
+    
+    it "should allow setting custom conditions individually with an arity of 1" do
+      User.named_scope(:username_should_be, lambda { |u| {:conditions => {:username => u}} })
+      search = User.search
+      search.username_should_be = "bjohnson"
+      search.username_should_be.should == "bjohnson"
     end
     
     it "should not allow setting conditions that are not scopes" do

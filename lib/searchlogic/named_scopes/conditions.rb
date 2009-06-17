@@ -46,7 +46,7 @@ module Searchlogic
       # ActiveRecord hides this internally, so we have to try and pull it out with this
       # method.
       def named_scope_options(name)
-        key = primary_condition_name(name)
+        key = scopes.key?(name.to_sym) ? name.to_sym : primary_condition_name(name)
         
         if key
           eval("options", scopes[key])

@@ -3,6 +3,7 @@
 * Allow the chaining of conditions off of a search object. Ex: search.username_like("bjohnson").age_gt(20).all
 * Split out left outer join creation into its own method, allowing you to use it in your own named scopes.
 * Make sure the search objects clone properly.
+* named_scope_options should return the proper options for existing named scopes with an arity greater than 0
 
 == 2.0.0
 
