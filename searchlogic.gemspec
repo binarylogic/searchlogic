@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{searchlogic}
-  s.version = "2.0.0"
+  s.version = "2.0.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["binarylogic"]
-  s.date = %q{2009-06-15}
+  s.authors = ["Ben Johnson of Binary Logic"]
+  s.date = %q{2009-06-20}
   s.email = %q{bjohnson@binarylogic.com}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   ]
   s.files = [
     ".gitignore",
+     "CHANGELOG.rdoc",
      "LICENSE",
      "README.rdoc",
      "Rakefile",
@@ -28,6 +29,7 @@ Gem::Specification.new do |s|
      "lib/searchlogic/rails_helpers.rb",
      "lib/searchlogic/search.rb",
      "rails/init.rb",
+     "searchlogic.gemspec",
      "spec/core_ext/object_spec.rb",
      "spec/core_ext/proc_spec.rb",
      "spec/named_scopes/associations_spec.rb",
@@ -39,9 +41,8 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/binarylogic/searchlogic}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubyforge_project = %q{test}
   s.rubygems_version = %q{1.3.4}
-  s.summary = %q{TODO}
+  s.summary = %q{Searchlogic provides common named scopes and object based searching for ActiveRecord.}
   s.test_files = [
     "spec/core_ext/object_spec.rb",
      "spec/core_ext/proc_spec.rb",
