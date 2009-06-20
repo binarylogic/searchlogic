@@ -119,6 +119,6 @@ describe "Associations" do
     company = Company.create
     user = company.users.create(:username => "bjohnson")
     order = user.orders.create(:total => 20, :taxes => 3)
-    Company.ascend_by_users_orders_total.users_orders_taxes_lt(50).all(:include => {:users => :orders}).should == Company.all
+    Company.users_orders_taxes_lt(50).ascend_by_users_orders_total.all(:include => {:users => :orders}).should == Company.all
   end
 end
