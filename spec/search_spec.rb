@@ -40,6 +40,12 @@ describe "Search" do
     search1.all.should == [user2]
   end
   
+  it "should delete the condition" do
+    search = User.search(:username_like => "bjohnson")
+    search.delete("username_like")
+    search.username_like.should be_nil
+  end
+  
   context "conditions" do
     it "should set the conditions and be accessible individually" do
       search = User.search

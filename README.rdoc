@@ -101,7 +101,7 @@ If you want to use the :include option, just specify it:
 
 Obviously, only do this if you want to actually use the included objects.
 
-Lastly, because we are using ActiveRecord, named scopes, combining conditions, and ordering based on associated columns, the decision was made to use left outer joins instead of inner joins. This allows us to be consistent, include optional associations when ordering, and avoid duplicate joins when eager loading associations. If we use an inner join and combine any of these things we will get an "ambiguous name" sql error for the table being joined twice. Just like anything, be mindful of the SQL being produced in your application. If you are joining beyond 4 or 5 levels deep then you might consider looking at the query and optimizing it. Part of that optimization may require the use of inner joins depending on the query.
+Lastly, because we are using ActiveRecord, named scopes, combining conditions, and ordering based on associated columns, the decision was made to use left outer joins instead of inner joins. This allows us to be consistent, include optional associations when ordering, and avoid duplicate joins when eager loading associations. If we use an inner join and combine any of these things we will get an "ambiguous name" sql error for the table being joined twice. Just like anything, be mindful of the SQL being produced in your application. If you are joining beyond 4 or 5 levels deep then you might consider looking at the query and optimizing it. Part of that optimization may require the use of inner joins instead of left outer joins depending on the query.
 
 == Make searching and ordering data in your application trivial
 
