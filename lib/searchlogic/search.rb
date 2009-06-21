@@ -70,6 +70,7 @@ module Searchlogic
     # to that scope.
     def delete(name)
       @conditions.delete(name.to_sym)
+      self
     end
     
     private
