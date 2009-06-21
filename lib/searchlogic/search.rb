@@ -68,8 +68,8 @@ module Searchlogic
     # if a named scope accepts a parameter there is no way to actually delete
     # the scope if you do not want it anymore. A nil value might be meaningful
     # to that scope.
-    def delete(name)
-      @conditions.delete(name.to_sym)
+    def delete(*names)
+      names.each { |name| @conditions.delete(name.to_sym) }
       self
     end
     
