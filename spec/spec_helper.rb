@@ -51,6 +51,7 @@ Spec::Runner.configure do |config|
     class User < ActiveRecord::Base
       belongs_to :company
       has_many :orders, :dependent => :destroy
+      alias_scope :username_has, lambda { |value| username_like(value) }
     end
     
     class Order < ActiveRecord::Base
