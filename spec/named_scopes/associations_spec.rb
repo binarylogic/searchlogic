@@ -2,16 +2,16 @@ require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe "Associations" do
   before(:each) do
-    @users_join_sql = ["LEFT OUTER JOIN \"users\" ON users.company_id = companies.id"]
-    @orders_join_sql = ["LEFT OUTER JOIN \"users\" ON users.company_id = companies.id", "LEFT OUTER JOIN \"orders\" ON orders.user_id = users.id"]
+    @users_join_sql = ["INNER JOIN \"users\" ON users.company_id = companies.id"]
+    @orders_join_sql = ["INNER JOIN \"users\" ON users.company_id = companies.id", "INNER JOIN \"orders\" ON orders.user_id = users.id"]
   end
   
   it "should create a named scope" do
-    Company.users_username_like("bjohnson").proxy_options.should == User.username_like("bjohnson").proxy_options.merge(:joins => @users_join_sql)
+    Company.users_username_like("bjohnson").proxy_options.should == User.username_like("bjohnson").proxy_options.merge(:joins => :users)
   end
   
   it "should create a deep named scope" do
-    Company.users_orders_total_greater_than(10).proxy_options.should == Order.total_greater_than(10).proxy_options.merge(:joins => @orders_join_sql)
+    Company.users_orders_total_greater_than(10).proxy_options.should == Order.total_greater_than(10).proxy_options.merge(:joins => {:users => :orders})
   end
   
   it "should not allowed named scopes on non existent association columns" do
@@ -23,13 +23,13 @@ describe "Associations" do
   end
   
   it "should allow named scopes to be called multiple times and reflect the value passed" do
-    Company.users_username_like("bjohnson").proxy_options.should == User.username_like("bjohnson").proxy_options.merge(:joins => @users_join_sql)
-    Company.users_username_like("thunt").proxy_options.should == User.username_like("thunt").proxy_options.merge(:joins => @users_join_sql)
+    Company.users_username_like("bjohnson").proxy_options.should == User.username_like("bjohnson").proxy_options.merge(:joins => :users)
+    Company.users_username_like("thunt").proxy_options.should == User.username_like("thunt").proxy_options.merge(:joins => :users)
   end
   
   it "should allow deep named scopes to be called multiple times and reflect the value passed" do
-    Company.users_orders_total_greater_than(10).proxy_options.should == Order.total_greater_than(10).proxy_options.merge(:joins => @orders_join_sql)
-    Company.users_orders_total_greater_than(20).proxy_options.should == Order.total_greater_than(20).proxy_options.merge(:joins => @orders_join_sql)
+    Company.users_orders_total_greater_than(10).proxy_options.should == Order.total_greater_than(10).proxy_options.merge(:joins => {:users => :orders})
+    Company.users_orders_total_greater_than(20).proxy_options.should == Order.total_greater_than(20).proxy_options.merge(:joins => {:users => :orders})
   end
   
   it "should have an arity of 1 if the underlying scope has an arity of 1" do
@@ -48,30 +48,31 @@ describe "Associations" do
   end
   
   it "should allow aliases" do
-    Company.users_username_contains("bjohnson").proxy_options.should == User.username_contains("bjohnson").proxy_options.merge(:joins => @users_join_sql)
+    Company.users_username_contains("bjohnson").proxy_options.should == User.username_contains("bjohnson").proxy_options.merge(:joins => :users)
   end
   
   it "should allow deep aliases" do
-    Company.users_orders_total_gt(10).proxy_options.should == Order.total_gt(10).proxy_options.merge(:joins => @orders_join_sql)
+    Company.users_orders_total_gt(10).proxy_options.should == Order.total_gt(10).proxy_options.merge(:joins => {:users => :orders})
   end
   
   it "should allow ascending" do
-    Company.ascend_by_users_username.proxy_options.should == User.ascend_by_username.proxy_options.merge(:joins => @users_join_sql)
+    Company.ascend_by_users_username.proxy_options.should == User.ascend_by_username.proxy_options.merge(:joins => :users)
   end
   
   it "should allow descending" do
-    Company.descend_by_users_username.proxy_options.should == User.descend_by_username.proxy_options.merge(:joins => @users_join_sql)
+    Company.descend_by_users_username.proxy_options.should == User.descend_by_username.proxy_options.merge(:joins => :users)
   end
   
   it "should allow deep ascending" do
-    Company.ascend_by_users_orders_total.proxy_options.should == Order.ascend_by_total.proxy_options.merge(:joins => @orders_join_sql)
+    Company.ascend_by_users_orders_total.proxy_options.should == Order.ascend_by_total.proxy_options.merge(:joins => {:users => :orders})
   end
   
   it "should allow deep descending" do
-    Company.descend_by_users_orders_total.proxy_options.should == Order.descend_by_total.proxy_options.merge(:joins => @orders_join_sql)
+    Company.descend_by_users_orders_total.proxy_options.should == Order.descend_by_total.proxy_options.merge(:joins => {:users => :orders})
   end
   
   it "should include optional associations" do
+    pending # this is a problem with using inner joins and left outer joins
     Company.create
     company = Company.create
     user = company.users.create

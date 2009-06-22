@@ -85,7 +85,7 @@ You also get named scopes for any of your associations:
   User.ascend_by_order_total
   User.descend_by_orders_line_items_price
 
-Again these are just named scopes. You can chain them together, call methods off of them, etc. What's great about these named scopes is that they do NOT use the :include option, making them <em>much</em> faster. Instead they create a LEFT OUTER JOIN and pass it to the :joins option, which is great for performance. To prove my point here is a quick benchmark from an application I am working on:
+Again these are just named scopes. You can chain them together, call methods off of them, etc. What's great about these named scopes is that they do NOT use the :include option, making them <em>much</em> faster. Instead they create a INNER JOIN and pass it to the :joins option, which is great for performance. To prove my point here is a quick benchmark from an application I am working on:
 
   Benchmark.bm do |x|
     x.report { 10.times { Event.tickets_id_gt(10).all(:include => :tickets) } }
@@ -100,8 +100,6 @@ If you want to use the :include option, just specify it:
   User.orders_line_items_price_greater_than(20).all(:include => {:orders => :line_items})
 
 Obviously, only do this if you want to actually use the included objects.
-
-Lastly, because we are using ActiveRecord, named scopes, combining conditions, and ordering based on associated columns, the decision was made to use left outer joins instead of inner joins. This allows us to be consistent, include optional associations when ordering, and avoid duplicate joins when eager loading associations. If we use an inner join and combine any of these things we will get an "ambiguous name" sql error for the table being joined twice. Just like anything, be mindful of the SQL being produced in your application. If you are joining beyond 4 or 5 levels deep then you might consider looking at the query and optimizing it. Part of that optimization may require the use of inner joins instead of left outer joins depending on the query.
 
 == Make searching and ordering data in your application trivial
 
@@ -192,7 +190,7 @@ Before I use a library in my application I like to glance at the source and try 
 
 Searchlogic utilizes method_missing to create all of these named scopes. When it hits method_missing it creates a named scope to ensure it will never hit method missing for that named scope again. Sort of a caching mechanism. It works in the same fashion as ActiveRecord's "find_by_*" methods. This way only the named scopes you need are created and nothing more.
 
-That's about it, the named scope options are pretty bare bones and created just like you would manually. The only big difference being the use of LEFT OUTER JOINS on associated conditions instead of INNER JOINS.
+That's about it, the named scope options are pretty bare bones and created just like you would manually.
 
 == Credit
 
