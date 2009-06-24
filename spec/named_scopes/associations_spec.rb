@@ -1,11 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe "Associations" do
-  before(:each) do
-    @users_join_sql = ["INNER JOIN \"users\" ON users.company_id = companies.id"]
-    @orders_join_sql = ["INNER JOIN \"users\" ON users.company_id = companies.id", "INNER JOIN \"orders\" ON orders.user_id = users.id"]
-  end
-  
   it "should create a named scope" do
     Company.users_username_like("bjohnson").proxy_options.should == User.username_like("bjohnson").proxy_options.merge(:joins => :users)
   end

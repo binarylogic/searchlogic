@@ -6,6 +6,11 @@ module Searchlogic
     # By default Searchlogic gives you these named scopes for all of your columns, but
     # if you wanted to create your own, it will work with those too.
     #
+    # Examples:
+    #
+    #   order @search, :by => :username
+    #   order @search, :by => :created_at, :as => "Created"
+    #
     # This helper accepts the following options:
     #
     # * <tt>:by</tt> - the name of the named scope. This helper will prepend this value with "ascend_by_" and "descend_by_"
@@ -42,6 +47,7 @@ module Searchlogic
         options = args.extract_options!
         options[:html] ||= {}
         options[:html][:method] ||= :get
+        options[:url] ||= url_for
         args.unshift(:search) if args.first == search_obj
         args << options
       end
