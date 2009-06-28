@@ -7,6 +7,7 @@
 * Added a delete method to the Search class to allow the deleting of conditions off of the object.
 * Add alias_scope feature, lets your create "named scopes" that represent a procedure of named scopes, while at the same time telling Searchlogic it is safe to use in the Search class.
 * Use url_for as the default with form_for since rails does some magic to determine the url to use.
+* Switched to using inner joins instead of left outer joins.
 
 == 2.0.1 released 2009-06-20
 
