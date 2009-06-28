@@ -43,6 +43,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/binarylogic/searchlogic}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
+  s.rubyforge_project = %q{searchlogic}
   s.rubygems_version = %q{1.3.4}
   s.summary = %q{Searchlogic provides common named scopes and object based searching for ActiveRecord.}
   s.test_files = [

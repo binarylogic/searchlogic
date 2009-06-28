@@ -29,6 +29,12 @@ module Searchlogic
         !association_alias_condition_details(name).nil?
       end
       
+      # A convenience method for creating inner join sql to that your inner joins
+      # are consistent with how Active Record creates them.
+      def inner_joins(association_name)
+        ActiveRecord::Associations::ClassMethods::InnerJoinDependency.new(self, association_name, nil).join_associations.collect { |assoc| assoc.association_join }
+      end
+      
       private
         def method_missing(name, *args, &block)
           if details = association_condition_details(name)
@@ -93,7 +99,6 @@ module Searchlogic
             # named scope that is based on a hash.
             options = scope.proxy_options
             options[:joins] = options[:joins].blank? ? association.name : {association.name => options[:joins]}
-            #add_left_outer_joins(options, association)
             options
           else
             # The underlying condition requires parameters, let's match the parameters it requires

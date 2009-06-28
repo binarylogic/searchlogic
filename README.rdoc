@@ -2,8 +2,6 @@
 
 <b>Searchlogic has been <em>completely</em> rewritten for v2. It is much simpler and has taken an entirely new approach. To give you an idea, v1 had ~2300 lines of code, v2 has ~420 lines of code.</b>
 
-<b>Attention v1 users. To start using v2 you must use the binarylogic-searchlogic gem. I have decided to start using github to host my gems. See below for installation instructions.</b>
-
 Searchlogic provides common named scopes and object based searching for ActiveRecord.
 
 == Helpful links
@@ -19,19 +17,21 @@ If you find a bug or a problem please post it on lighthouse. If you need help wi
 
 == Install & use
 
-In your rails project:
+Install the gem from rubyforge:
 
-  # config/environment.rb
-  config.gem "binarylogic-searchlogic", 
-    :lib     => 'searchlogic', 
-    :source  => 'http://gems.github.com', 
-    :version => '~> 2.0.0'
+  sudo gem install searchlogic
 
-Then install the gem:
+Or from github:
 
-  rake gems:install
+  sudo gem install binarylogic-searchlogic
 
-That's it, you are ready to go. See below for usage examples.
+Now just include it in your project and you are ready to go.
+
+You can also install this as a plugin:
+
+  script/plugin install git://github.com/binarylogic/searchlogic.git
+
+See below for usage examples.
 
 == Search using conditions on columns
 
@@ -121,7 +121,11 @@ You can set, read, and chain conditions off of your search too:
   search.count                                      => integer
   # .. etc
 
-All that the search method does is chain named scopes together for you. What's so great about that? It keeps your controllers extremely simple:
+So let's start with the controller...
+
+=== Your controller
+
+The search class just chains named scopes together for you. What's so great about that? It keeps your controllers extremely simple:
 
   class UsersController < ApplicationController
     def index
@@ -130,7 +134,11 @@ All that the search method does is chain named scopes together for you. What's s
     end
   end
 
-It doesn't get any simpler than that. Adding a search condition is as simple as adding a condition to your form. Remember all of those named scopes above? Just create fields with the same names:
+It doesn't get any simpler than that.
+
+=== Your form
+
+Adding a search condition is as simple as adding a condition to your form. Remember all of those named scopes above? Just create fields with the same names:
 
   - form_for @search do |f|
     = f.text_field :username_like
@@ -138,11 +146,18 @@ It doesn't get any simpler than that. Adding a search condition is as simple as 
     = f.text_field :orders_total_greater_than
     = f.submit
 
-When a Searchlogic::Search object is passed to form_for it will add a hidden field for the "order" condition, to preserve the order of the data. If you want to order your search with a link, just specify the name of the column. Ex:
+When a Searchlogic::Search object is passed to form_for it will add a hidden field for the "order" condition, to preserve the order of the data.
+
+=== Additional helpers
+
+There really isn't a big need for helpers in searchlogic, other than helping you order data. If you want to order your search with a link, just specify the name of the column. Ex:
 
   = order @search, :by => :age
+  = order @search, :by => :created_at, :as => "Created date"
 
-This will create a link that alternates between calling "ascend_by_age" and "descend_by_age". If you wanted to order your data by more than just a column, create your own named scopes: "ascend_by_*" and "descend_by_*". The "order" helper is a very straight forward helper, checkout the docs for some of the options.
+The first one will create a link that alternates between calling "ascend_by_age" and "descend_by_age". If you wanted to order your data by more than just a column, create your own named scopes: "ascend_by_*" and "descend_by_*". The "order" helper is a very straight forward helper, checkout the docs for some of the options.
+
+<b>This helper is just a convenience method. It's extremely simple and there is nothing wrong with creating your own. If it doesn't do what you want, copy the code, modify it, and create your own. You could even fork the project, modify it there, and use your own gem.</b>
 
 == Use your existing named scopes
 
