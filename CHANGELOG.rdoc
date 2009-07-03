@@ -1,3 +1,7 @@
+== 2.1.2
+
+* Undefine the id method for the Search class, so that it acts like a condition.
+
 == 2.1.1 released 2009-06-28
 
 * Added inner_join convenience method.

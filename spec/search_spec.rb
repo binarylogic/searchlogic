@@ -136,6 +136,11 @@ describe "Search" do
       lambda { search.unknown = true }.should raise_error(Searchlogic::Search::UnknownConditionError)
     end
     
+    it "should not use the ruby implementation of the id method" do
+      search = User.search
+      search.id.should be_nil
+    end
+    
     context "type casting" do
       it "should be a Boolean given true" do
         search = User.search
