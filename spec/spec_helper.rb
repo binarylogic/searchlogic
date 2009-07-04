@@ -18,6 +18,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.datetime :updated_at
     t.integer :company_id
     t.string :username
+    t.string :name
     t.integer :age
   end
   

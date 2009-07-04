@@ -1,4 +1,4 @@
-== 2.1.2
+== 2.1.2 released 2009-07-04
 
 * Undefine the id method for the Search class, so that it acts like a condition.
 
