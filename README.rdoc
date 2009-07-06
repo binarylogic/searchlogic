@@ -199,6 +199,16 @@ Instead of recreating the wheel with pagination, Searchlogic works great with wi
 
 If you don't like will_paginate, use another solution, or roll your own. Pagination really has nothing to do with searching, and the main goal for Searchlogic v2 was to keep it lean and simple. No reason to recreate the wheel and bloat the library.
 
+== Conflicts with other gems
+
+You will notice searchlogic wants to create a method called "search". So do other libraries like thinking sphinx, etc. So searchlogic has a no conflict resolution. If the "search" method is already taken the method will be called "searchlogic" instead. So instead of
+
+  User.search
+
+You would do:
+
+  User.searchlogic
+
 == Under the hood
 
 Before I use a library in my application I like to glance at the source and try to at least understand the basics of how it works. If you are like me, a nice little explanation from the author is always helpful:

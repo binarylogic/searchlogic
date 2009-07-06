@@ -17,8 +17,11 @@ module Searchlogic
   class Search
     # Responsible for adding a "search" method into your models.
     module Implementation
-      # Returns a new Search object for the given model.
-      def search(conditions = {})
+      # Additional method, gets aliases as "search" if that method
+      # is available. A lot of other libraries like to use "search"
+      # as well, so if you have a conflict like this, you can use
+      # this method directly.
+      def searchlogic(conditions = {})
         Search.new(self, scope(:find), conditions)
       end
     end

@@ -14,6 +14,16 @@ ActiveRecord::Base.extend(Searchlogic::NamedScopes::Associations)
 ActiveRecord::Base.extend(Searchlogic::NamedScopes::AliasScope)
 ActiveRecord::Base.extend(Searchlogic::Search::Implementation)
 
+# Try to use the search method, if it's available. Thinking sphinx and other plugins
+# like to use that method as well.
+if !ActiveRecord::Base.respond_to?(:search)
+  ActiveRecord::Base.class_eval do
+    class << self
+      alias_method :search, :searchlogic
+    end
+  end
+end
+
 if defined?(ActionController)
   require "searchlogic/rails_helpers"
   ActionController::Base.helper(Searchlogic::RailsHelpers)
