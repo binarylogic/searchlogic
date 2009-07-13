@@ -95,6 +95,11 @@ module Searchlogic
       
       # Is the name of the method a valid condition that can be dynamically created?
       def condition?(name)
+        local_condition?(name)
+      end
+      
+      # Is the condition for a local column, not an association
+      def local_condition?(name)
         primary_condition?(name) || alias_condition?(name)
       end
       

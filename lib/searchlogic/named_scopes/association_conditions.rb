@@ -1,7 +1,7 @@
 module Searchlogic
   module NamedScopes
     # Handles dynamically creating named scopes for associations.
-    module Associations
+    module AssociationConditions
       def condition?(name) # :nodoc:
         super || association_condition?(name) || association_alias_condition?(name)
       end
@@ -43,9 +43,6 @@ module Searchlogic
           elsif details = association_alias_condition_details(name)
             create_association_alias_condition(details[:association], details[:column], details[:condition], args)
             send(name, *args)
-          elsif details = association_ordering_condition_details(name)
-            create_association_ordering_condition(details[:association], details[:order_as], details[:column], args)
-            send(name, *args)
           else
             super
           end
@@ -53,7 +50,7 @@ module Searchlogic
         
         def association_condition_details(name)
           associations = reflect_on_all_associations.collect { |assoc| assoc.name }
-          if name.to_s =~ /^(#{associations.join("|")})_(\w+)_(#{Conditions::PRIMARY_CONDITIONS.join("|")})$/
+          if !local_condition?(name) && name.to_s =~ /^(#{associations.join("|")})_(\w+)_(#{Conditions::PRIMARY_CONDITIONS.join("|")})$/
             {:association => $1, :column => $2, :condition => $3}
           end
         end
@@ -64,7 +61,7 @@ module Searchlogic
         
         def association_alias_condition_details(name)
           associations = reflect_on_all_associations.collect { |assoc| assoc.name }
-          if name.to_s =~ /^(#{associations.join("|")})_(\w+)_(#{Conditions::ALIAS_CONDITIONS.join("|")})$/
+          if !local_condition?(name) && name.to_s =~ /^(#{associations.join("|")})_(\w+)_(#{Conditions::ALIAS_CONDITIONS.join("|")})$/
             {:association => $1, :column => $2, :condition => $3}
           end
         end
@@ -75,17 +72,6 @@ module Searchlogic
           primary_name = "#{association}_#{column}_#{primary_condition}"
           send(primary_name, *args) # go back to method_missing and make sure we create the method
           (class << self; self; end).class_eval { alias_method alias_name, primary_name }
-        end
-        
-        def association_ordering_condition_details(name)
-          associations = reflect_on_all_associations.collect { |assoc| assoc.name }
-          if name.to_s =~ /^(ascend|descend)_by_(#{associations.join("|")})_(\w+)$/
-            {:order_as => $1, :association => $2, :column => $3}
-          end
-        end
-        
-        def create_association_ordering_condition(association_name, order_as, column, args)
-          named_scope("#{order_as}_by_#{association_name}_#{column}", association_condition_options(association_name, "#{order_as}_by_#{column}", args))
         end
         
         def association_condition_options(association_name, association_condition, args)

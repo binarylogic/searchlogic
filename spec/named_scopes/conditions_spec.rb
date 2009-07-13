@@ -250,4 +250,8 @@ describe "Conditions" do
       Order.named_scope_options(:total_gt).searchlogic_arg_type.should == :float
     end
   end
+  
+  it "should have priorty to columns over conflicting association conditions" do
+    Company.users_count_gt(10)
+  end
 end

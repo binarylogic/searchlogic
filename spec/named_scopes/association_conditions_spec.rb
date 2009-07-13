@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
-describe "Associations" do
+describe "Association Conditions" do
   it "should create a named scope" do
     Company.users_username_like("bjohnson").proxy_options.should == User.username_like("bjohnson").proxy_options.merge(:joins => :users)
   end
@@ -48,22 +48,6 @@ describe "Associations" do
   
   it "should allow deep aliases" do
     Company.users_orders_total_gt(10).proxy_options.should == Order.total_gt(10).proxy_options.merge(:joins => {:users => :orders})
-  end
-  
-  it "should allow ascending" do
-    Company.ascend_by_users_username.proxy_options.should == User.ascend_by_username.proxy_options.merge(:joins => :users)
-  end
-  
-  it "should allow descending" do
-    Company.descend_by_users_username.proxy_options.should == User.descend_by_username.proxy_options.merge(:joins => :users)
-  end
-  
-  it "should allow deep ascending" do
-    Company.ascend_by_users_orders_total.proxy_options.should == Order.ascend_by_total.proxy_options.merge(:joins => {:users => :orders})
-  end
-  
-  it "should allow deep descending" do
-    Company.descend_by_users_orders_total.proxy_options.should == Order.descend_by_total.proxy_options.merge(:joins => {:users => :orders})
   end
   
   it "should include optional associations" do

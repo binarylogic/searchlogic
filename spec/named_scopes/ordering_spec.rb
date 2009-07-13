@@ -20,4 +20,8 @@ describe "Ordering" do
   it "should have order" do
     User.order("ascend_by_username").proxy_options.should == User.ascend_by_username.proxy_options
   end
+  
+  it "should have priorty to columns over conflicting association columns" do
+    Company.ascend_by_users_count
+  end
 end

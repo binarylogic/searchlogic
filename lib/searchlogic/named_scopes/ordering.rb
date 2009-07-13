@@ -2,7 +2,7 @@ module Searchlogic
   module NamedScopes
     # Handles dynamically creating named scopes for orderin by columns.
     module Ordering
-      def condition?(name) # :nodoc:
+      def local_condition?(name) # :nodoc:
         super || order_condition?(name)
       end
       
@@ -37,7 +37,7 @@ module Searchlogic
         end
         
         def order_condition_details(name)
-          if name.to_s =~ /^(ascend|descend)_by_(\w+)$/
+          if name.to_s =~ /^(ascend|descend)_by_(#{column_names.join("|")})$/
             {:order_as => $1, :column => $2}
           elsif name.to_s =~ /^order$/
             {}
