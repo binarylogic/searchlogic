@@ -1,5 +1,6 @@
 require "searchlogic/core_ext/proc"
 require "searchlogic/core_ext/object"
+require "searchlogic/active_record_consistency"
 require "searchlogic/named_scopes/conditions"
 require "searchlogic/named_scopes/ordering"
 require "searchlogic/named_scopes/associations"

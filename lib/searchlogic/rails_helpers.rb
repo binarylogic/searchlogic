@@ -59,7 +59,7 @@ module Searchlogic
     def fields_for(*args, &block)
       if search_obj = args.find { |arg| arg.is_a?(Searchlogic::Search) }
         args.unshift(:search) if args.first == search_obj
-        concat(hidden_field_tag("#{args.first}[order]", search_obj.order) + "\n")
+        concat(content_tag("div", hidden_field_tag("#{args.first}[order]", search_obj.order)) + "\n")
         super
       else
         super
