@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{searchlogic}
-  s.version = "2.1.5"
+  s.version = "2.1.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ben Johnson of Binary Logic"]
-  s.date = %q{2009-07-12}
+  s.date = %q{2009-07-13}
   s.email = %q{bjohnson@binarylogic.com}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -25,7 +25,8 @@ Gem::Specification.new do |s|
      "lib/searchlogic/core_ext/object.rb",
      "lib/searchlogic/core_ext/proc.rb",
      "lib/searchlogic/named_scopes/alias_scope.rb",
-     "lib/searchlogic/named_scopes/associations.rb",
+     "lib/searchlogic/named_scopes/association_conditions.rb",
+     "lib/searchlogic/named_scopes/association_ordering.rb",
      "lib/searchlogic/named_scopes/conditions.rb",
      "lib/searchlogic/named_scopes/ordering.rb",
      "lib/searchlogic/rails_helpers.rb",
@@ -35,7 +36,8 @@ Gem::Specification.new do |s|
      "spec/core_ext/object_spec.rb",
      "spec/core_ext/proc_spec.rb",
      "spec/named_scopes/alias_scope_spec.rb",
-     "spec/named_scopes/associations_spec.rb",
+     "spec/named_scopes/association_conditions_spec.rb",
+     "spec/named_scopes/association_ordering_spec.rb",
      "spec/named_scopes/conditions_spec.rb",
      "spec/named_scopes/ordering_spec.rb",
      "spec/search_spec.rb",
@@ -51,7 +53,8 @@ Gem::Specification.new do |s|
     "spec/core_ext/object_spec.rb",
      "spec/core_ext/proc_spec.rb",
      "spec/named_scopes/alias_scope_spec.rb",
-     "spec/named_scopes/associations_spec.rb",
+     "spec/named_scopes/association_conditions_spec.rb",
+     "spec/named_scopes/association_ordering_spec.rb",
      "spec/named_scopes/conditions_spec.rb",
      "spec/named_scopes/ordering_spec.rb",
      "spec/search_spec.rb",
