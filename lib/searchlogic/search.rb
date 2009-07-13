@@ -39,7 +39,7 @@ module Searchlogic
     end
     
     attr_accessor :klass, :current_scope, :conditions
-    undef :id
+    undef :id if respond_to?(:id)
     
     # Creates a new search object for the given class. Ex:
     #

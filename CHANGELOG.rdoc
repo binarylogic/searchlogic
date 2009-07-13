@@ -1,4 +1,8 @@
-== 2.1.3
+== 2.1.4
+
+* Check for the existence of id before undefining it.
+
+== 2.1.3 released 2009-07-12
 
 * Added a no conflic resolution for other libraries already using the "search" method. If you have a conflict, use "searchlogic".
 * Put the hidden order field in a div, to be valid XHTML.

@@ -13,7 +13,7 @@ module Searchlogic
     # This fixes that problem.
     def merge_joins_with_searchlogic(*args)
       joins = merge_joins_without_searchlogic(*args)
-      joins.collect { |j| j.split("  ") }.flatten.uniq
+      joins.collect { |j| j.is_a?(String) ? j.split("  ") : j }.flatten.uniq
     end
   end
 end
