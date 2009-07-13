@@ -2,6 +2,7 @@
 
 * Added a no conflic resolution for other libraries already using the "search" method. If you have a conflict, use "searchlogic".
 * Put the hidden order field in a div, to be valid XHTML.
+* Add ActiveRecordConsistency module to help AR remove duplicate joins easier.
 
 == 2.1.2 released 2009-07-04
 
