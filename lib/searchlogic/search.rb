@@ -143,7 +143,8 @@ module Searchlogic
           # with the other models.
           column_for_type_cast = ActiveRecord::ConnectionAdapters::Column.new("", nil)
           column_for_type_cast.instance_variable_set(:@type, type)
-          column_for_type_cast.type_cast(value)
+          value = column_for_type_cast.type_cast(value)
+          Time.zone && value.is_a?(Time) ? value.in_time_zone : value
         end
       end
   end

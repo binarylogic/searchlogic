@@ -226,6 +226,13 @@ describe "Search" do
         search.created_at_after.should == Time.parse("Jan 1, 2009 9:33AM")
       end
       
+      it "should convert the time to the current zone" do
+        search = Order.search
+        now = Time.now
+        search.created_at_after = now
+        search.created_at_after.should == now.in_time_zone
+      end
+      
       it "should be an Array and cast it's values given ['1', '2', '3']" do
         search = Order.search
         search.id_equals_any = ["1", "2", "3"]
