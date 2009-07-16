@@ -13,12 +13,16 @@ module Searchlogic
       
       WILDCARD_CONDITIONS = {
         :like => [:contains, :includes],
+        :not_like => [],
         :begins_with => [:bw],
+        :not_begin_with => [:does_not_begin_with],
         :ends_with => [:ew],
+        :not_end_with => [:does_not_end_with]
       }
       
       BOOLEAN_CONDITIONS = {
         :null => [:nil],
+        :not_null => [:not_nil],
         :empty => []
       }
       
@@ -151,12 +155,20 @@ module Searchlogic
             scope_options(condition, column_type, "#{table_name}.#{column} > ?")
           when /^like/
             scope_options(condition, column_type, "#{table_name}.#{column} LIKE ?", :like)
+          when /^not_like/
+            scope_options(condition, column_type, "#{table_name}.#{column} NOT LIKE ?", :like)
           when /^begins_with/
             scope_options(condition, column_type, "#{table_name}.#{column} LIKE ?", :begins_with)
+          when /^not_begin_with/
+            scope_options(condition, column_type, "#{table_name}.#{column} NOT LIKE ?", :begins_with)
           when /^ends_with/
             scope_options(condition, column_type, "#{table_name}.#{column} LIKE ?", :ends_with)
+          when /^not_end_with/
+            scope_options(condition, column_type, "#{table_name}.#{column} NOT LIKE ?", :ends_with)
           when "null"
             {:conditions => "#{table_name}.#{column} IS NULL"}
+          when "not_null"
+            {:conditions => "#{table_name}.#{column} IS NOT NULL"}
           when "empty"
             {:conditions => "#{table_name}.#{column} = ''"}
           end

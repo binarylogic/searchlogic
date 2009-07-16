@@ -49,14 +49,29 @@ describe "Conditions" do
       User.username_like("john").all.should == User.find_all_by_username("bjohnson")
     end
     
+    it "should have not like" do
+      %w(bjohnson thunt).each { |username| User.create(:username => username) }
+      User.username_not_like("john").all.should == User.find_all_by_username("thunt")
+    end
+    
     it "should have begins with" do
       %w(bjohnson thunt).each { |username| User.create(:username => username) }
       User.username_begins_with("bj").all.should == User.find_all_by_username("bjohnson")
     end
     
+    it "should have not begin with" do
+      %w(bjohnson thunt).each { |username| User.create(:username => username) }
+      User.username_not_begin_with("bj").all.should == User.find_all_by_username("thunt")
+    end
+    
     it "should have ends with" do
       %w(bjohnson thunt).each { |username| User.create(:username => username) }
       User.username_ends_with("son").all.should == User.find_all_by_username("bjohnson")
+    end
+    
+    it "should have not end with" do
+      %w(bjohnson thunt).each { |username| User.create(:username => username) }
+      User.username_not_end_with("son").all.should == User.find_all_by_username("thunt")
     end
   end
   
@@ -64,6 +79,11 @@ describe "Conditions" do
     it "should have null" do
       ["bjohnson", nil].each { |username| User.create(:username => username) }
       User.username_null.all.should == User.find_all_by_username(nil)
+    end
+    
+    it "should have not null" do
+      ["bjohnson", nil].each { |username| User.create(:username => username) }
+      User.username_not_null.all.should == User.find_all_by_username("bjohnson")
     end
     
     it "should have empty" do

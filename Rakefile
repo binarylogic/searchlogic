@@ -6,6 +6,7 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = "searchlogic"
     gem.summary = "Searchlogic provides common named scopes and object based searching for ActiveRecord."
+    gem.description = "Searchlogic provides common named scopes and object based searching for ActiveRecord."
     gem.email = "bjohnson@binarylogic.com"
     gem.homepage = "http://github.com/binarylogic/searchlogic"
     gem.authors = ["Ben Johnson of Binary Logic"]

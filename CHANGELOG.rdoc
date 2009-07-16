@@ -1,4 +1,8 @@
-== 2.1.7
+== 2.1.8
+
+* Added support for not_like, not_begin_with, not_end_with, and not_null
+
+== 2.1.7 released 2009-07-14
 
 * Add support for time zones in the Search class when type casting to Time objects.
 
