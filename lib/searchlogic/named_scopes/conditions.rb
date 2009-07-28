@@ -140,8 +140,8 @@ module Searchlogic
         
         def create_primary_condition(column, condition)
           column_type = columns_hash[column.to_s].type
-          match_keyword = 
-            ActiveRecord::Base.connection.adapter_name == "PostgreSQL" ? "ILIKE" : "LIKE"
+          match_keyword = ActiveRecord::Base.connection.adapter_name == "PostgreSQL" ? "ILIKE" : "LIKE"
+          
           scope_options = case condition.to_s
           when /^equals/
             scope_options(condition, column_type, "#{table_name}.#{column} = ?")

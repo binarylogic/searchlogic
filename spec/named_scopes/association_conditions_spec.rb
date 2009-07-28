@@ -13,6 +13,10 @@ describe "Association Conditions" do
     Company.users_uname("bjohnson").proxy_options.should == User.uname("bjohnson").proxy_options.merge(:joins => :users)
   end
   
+  it "should allow the use of foreign pre-existing alias scopes" do
+    Company.users_username_has("bjohnson").proxy_options.should == User.username_has("bjohnson").proxy_options.merge(:joins => :users)
+  end
+  
   it "should ignore polymorphic associations" do
     lambda { Fee.owner_created_at_gt(Time.now) }.should raise_error(NoMethodError)
   end

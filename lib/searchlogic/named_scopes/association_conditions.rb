@@ -52,7 +52,13 @@ module Searchlogic
           assocs = non_polymorphic_associations
           return nil if assocs.empty?
           regexes = [association_searchlogic_regex(assocs, Conditions::PRIMARY_CONDITIONS)]
-          assocs.each { |assoc| regexes << /^(#{assoc.name})_(#{assoc.klass.scopes.keys.join("|")})$/ }
+          assocs.each do |assoc|
+            scope_names = assoc.klass.scopes.keys + assoc.klass.alias_scopes.keys
+            scope_names.uniq!
+            scope_names.delete(:scoped)
+            next if scope_names.empty?
+            regexes << /^(#{assoc.name})_(#{scope_names.join("|")})$/
+          end
           
           if !local_condition?(name) && regexes.any? { |regex| name.to_s =~ regex }
             {:association => $1, :column => $2, :condition => $3}
@@ -66,7 +72,10 @@ module Searchlogic
         end
         
         def association_alias_condition_details(name)
-          if !local_condition?(name) && name.to_s =~ association_searchlogic_regex(non_polymorphic_associations, Conditions::ALIAS_CONDITIONS)
+          assocs = non_polymorphic_associations
+          return nil if assocs.empty?
+          
+          if !local_condition?(name) && name.to_s =~ association_searchlogic_regex(assocs, Conditions::ALIAS_CONDITIONS)
             {:association => $1, :column => $2, :condition => $3}
           end
         end
@@ -96,7 +105,8 @@ module Searchlogic
           if !arity || arity == 0
             # The underlying condition doesn't require any parameters, so let's just create a simple
             # named scope that is based on a hash.
-            options = scope.proxy_options
+            options = scope.scope(:find)
+            options.delete(:readonly)
             options[:joins] = options[:joins].blank? ? association.name : {association.name => options[:joins]}
             options
           else
@@ -121,7 +131,8 @@ module Searchlogic
             
             eval <<-"end_eval"
               searchlogic_lambda(:#{arg_type}) { |#{proc_args.join(",")}|
-                options = association.klass.named_scope_options(association_condition).call(#{proc_args.join(",")})
+                options = association.klass.send(association_condition, #{proc_args.join(",")}).scope(:find)
+                options.delete(:readonly)
                 options[:joins] = options[:joins].blank? ? association.name : {association.name => options[:joins]}
                 options
               }

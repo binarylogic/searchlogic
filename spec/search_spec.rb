@@ -109,6 +109,12 @@ describe "Search" do
       search.orders_total_gt.should == 10
     end
     
+    it "should allow setting pre-existing association conditions" do
+      search = Company.search
+      search.users_uname = "bjohnson"
+      search.users_uname.should == "bjohnson"
+    end
+    
     it "should allow using custom conditions" do
       User.named_scope(:four_year_olds, { :conditions => { :age => 4 } })
       search = User.search
