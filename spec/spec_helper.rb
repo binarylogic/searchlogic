@@ -14,6 +14,7 @@ ActiveRecord::Schema.define(:version => 1) do
   create_table :companies do |t|
     t.datetime :created_at
     t.datetime :updated_at
+    t.string :name
     t.integer :users_count, :default => 0
   end
   
@@ -56,6 +57,7 @@ Spec::Runner.configure do |config|
     class User < ActiveRecord::Base
       belongs_to :company, :counter_cache => true
       has_many :orders, :dependent => :destroy
+      named_scope :uname, lambda { |value| {:conditions => ["users.username = ?", value]} }
       alias_scope :username_has, lambda { |value| username_like(value) }
     end
     

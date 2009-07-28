@@ -9,11 +9,15 @@ describe "Association Conditions" do
     Company.users_orders_total_greater_than(10).proxy_options.should == Order.total_greater_than(10).proxy_options.merge(:joins => {:users => :orders})
   end
   
-  it "should not allowed named scopes on non existent association columns" do
+  it "should allow the use of foreign pre-existing named scopes" do
+    Company.users_uname("bjohnson").proxy_options.should == User.uname("bjohnson").proxy_options.merge(:joins => :users)
+  end
+  
+  it "should not allow named scopes on non existent association columns" do
     lambda { User.users_whatever_like("bjohnson") }.should raise_error(NoMethodError)
   end
   
-  it "should not allowed named scopes on non existent deep association columns" do
+  it "should not allow named scopes on non existent deep association columns" do
     lambda { User.users_orders_whatever_like("bjohnson") }.should raise_error(NoMethodError)
   end
   

@@ -49,14 +49,21 @@ module Searchlogic
         end
         
         def association_condition_details(name)
-          associations = reflect_on_all_associations.collect { |assoc| assoc.name }
-          if !local_condition?(name) && name.to_s =~ /^(#{associations.join("|")})_(\w+)_(#{Conditions::PRIMARY_CONDITIONS.join("|")})$/
+          regexes = [/^(#{reflect_on_all_associations.collect(&:name).join("|")})_(\w+)_(#{Conditions::PRIMARY_CONDITIONS.join("|")})$/]
+          reflect_on_all_associations.each do |assoc|
+            regexes << /^(#{assoc.name})_(#{assoc.klass.scopes.keys.join("|")})$/
+          end
+          
+          
+          if !local_condition?(name) && regexes.any? { |regex| name.to_s =~ regex }
             {:association => $1, :column => $2, :condition => $3}
           end
         end
         
         def create_association_condition(association_name, column, condition, args)
-          named_scope("#{association_name}_#{column}_#{condition}", association_condition_options(association_name, "#{column}_#{condition}", args))
+          name_parts = [column, condition].compact
+          condition_name = name_parts.join("_")
+          named_scope("#{association_name}_#{condition_name}", association_condition_options(association_name, condition_name, args))
         end
         
         def association_alias_condition_details(name)
@@ -103,8 +110,11 @@ module Searchlogic
                 end
               end
             end
+            
+            arg_type = (scope_options.respond_to?(:searchlogic_arg_type) && scope_options.searchlogic_arg_type) || :string
+            
             eval <<-"end_eval"
-              searchlogic_lambda(:#{scope_options.searchlogic_arg_type}) { |#{proc_args.join(",")}|
+              searchlogic_lambda(:#{arg_type}) { |#{proc_args.join(",")}|
                 options = association.klass.named_scope_options(association_condition).call(#{proc_args.join(",")})
                 options[:joins] = options[:joins].blank? ? association.name : {association.name => options[:joins]}
                 options
