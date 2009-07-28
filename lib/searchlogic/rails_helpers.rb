@@ -17,6 +17,7 @@ module Searchlogic
     # * <tt>:as</tt> - the text used in the link, defaults to whatever is passed to :by
     # * <tt>:ascend_scope</tt> - what scope to call for ascending the data, defaults to "ascend_by_:by"
     # * <tt>:descend_scope</tt> - what scope to call for descending the data, defaults to "descend_by_:by"
+    # * <tt>:params</tt> - hash with additional params which will be added to generated url
     # * <tt>:params_scope</tt> - the name of the params key to scope the order condition by, defaults to :search
     def order(search, options = {}, html_options = {})
       options[:params_scope] ||= :search
@@ -37,7 +38,10 @@ module Searchlogic
         end
         html_options[:class] = css_classes.join(" ")
       end
-      link_to options[:as], url_for(options[:params_scope] => search.conditions.merge( { :order => new_scope } ) ), html_options
+      url_options = {
+        options[:params_scope] => search.conditions.merge( { :order => new_scope } )
+      }.deep_merge(options[:params] || {})
+      link_to options[:as], url_for(url_options), html_options
     end
 
     # Automatically makes the form method :get if a Searchlogic::Search and sets
