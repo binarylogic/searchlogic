@@ -2,6 +2,10 @@ module Searchlogic
   module NamedScopes
     # Handles dynamically creating named scopes for associations.
     module AssociationOrdering
+      def association_ordering_condition?(name)
+        !association_ordering_condition_details(name).nil?
+      end
+      
       private
         def method_missing(name, *args, &block)
           if details = association_ordering_condition_details(name)

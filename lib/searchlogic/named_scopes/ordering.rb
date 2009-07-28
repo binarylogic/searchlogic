@@ -24,7 +24,7 @@ module Searchlogic
         def method_missing(name, *args, &block)
           if name == :order
             named_scope name, lambda { |scope_name|
-              return {} if !order_condition?(scope_name)
+              return {} if !order_condition?(scope_name) && !association_ordering_condition?(scope_name)
               send(scope_name).proxy_options
             }
             send(name, *args)

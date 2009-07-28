@@ -20,4 +20,8 @@ describe "Association Ordering" do
   it "should ascend with a belongs to" do
     User.ascend_by_company_name.proxy_options.should == Company.ascend_by_name.proxy_options.merge(:joins => :company)
   end
+  
+  it "should work through #order" do
+    Company.order('ascend_by_users_username').proxy_options.should == Company.ascend_by_users_username.proxy_options
+  end
 end
