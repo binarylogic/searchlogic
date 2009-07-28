@@ -51,7 +51,7 @@ module Searchlogic
     end
     
     def clone
-      self.class.new(klass, current_scope.clone, conditions.clone)
+      self.class.new(klass, current_scope && current_scope.clone, conditions.clone)
     end
     
     # Returns a hash of the current conditions set.

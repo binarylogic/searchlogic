@@ -40,6 +40,16 @@ describe "Search" do
     search1.all.should == [user2]
   end
   
+  it "should clone properly without scope" do
+    user1 = User.create(:age => 5)
+    user2 = User.create(:age => 25)
+    search1 = User.search(:age_gt => 10)
+    search2 = search1.clone
+    search2.age_gt = 1
+    search2.all.should == User.all
+    search1.all.should == [user2]
+  end
+  
   it "should delete the condition" do
     search = User.search(:username_like => "bjohnson")
     search.delete("username_like")
