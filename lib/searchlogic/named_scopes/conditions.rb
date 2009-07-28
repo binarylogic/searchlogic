@@ -140,6 +140,8 @@ module Searchlogic
         
         def create_primary_condition(column, condition)
           column_type = columns_hash[column.to_s].type
+          match_keyword = 
+            ActiveRecord::Base.connection.adapter_name == "PostgreSQL" ? "ILIKE" : "LIKE"
           scope_options = case condition.to_s
           when /^equals/
             scope_options(condition, column_type, "#{table_name}.#{column} = ?")
@@ -154,17 +156,17 @@ module Searchlogic
           when /^greater_than/
             scope_options(condition, column_type, "#{table_name}.#{column} > ?")
           when /^like/
-            scope_options(condition, column_type, "#{table_name}.#{column} LIKE ?", :like)
+            scope_options(condition, column_type, "#{table_name}.#{column} #{match_keyword} ?", :like)
           when /^not_like/
-            scope_options(condition, column_type, "#{table_name}.#{column} NOT LIKE ?", :like)
+            scope_options(condition, column_type, "#{table_name}.#{column} NOT #{match_keyword} ?", :like)
           when /^begins_with/
-            scope_options(condition, column_type, "#{table_name}.#{column} LIKE ?", :begins_with)
+            scope_options(condition, column_type, "#{table_name}.#{column} #{match_keyword} ?", :begins_with)
           when /^not_begin_with/
-            scope_options(condition, column_type, "#{table_name}.#{column} NOT LIKE ?", :begins_with)
+            scope_options(condition, column_type, "#{table_name}.#{column} NOT #{match_keyword} ?", :begins_with)
           when /^ends_with/
-            scope_options(condition, column_type, "#{table_name}.#{column} LIKE ?", :ends_with)
+            scope_options(condition, column_type, "#{table_name}.#{column} #{match_keyword} ?", :ends_with)
           when /^not_end_with/
-            scope_options(condition, column_type, "#{table_name}.#{column} NOT LIKE ?", :ends_with)
+            scope_options(condition, column_type, "#{table_name}.#{column} NOT #{match_keyword} ?", :ends_with)
           when "null"
             {:conditions => "#{table_name}.#{column} IS NULL"}
           when "not_null"
