@@ -115,6 +115,12 @@ describe "Search" do
       search.users_uname.should == "bjohnson"
     end
     
+    it "should allow setting pre-existing association alias conditions" do
+      search = Company.search
+      search.users_username_has = "bjohnson"
+      search.users_username_has.should == "bjohnson"
+    end
+    
     it "should allow using custom conditions" do
       User.named_scope(:four_year_olds, { :conditions => { :age => 4 } })
       search = User.search

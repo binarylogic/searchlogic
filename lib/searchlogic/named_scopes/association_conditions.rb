@@ -131,7 +131,8 @@ module Searchlogic
             
             eval <<-"end_eval"
               searchlogic_lambda(:#{arg_type}) { |#{proc_args.join(",")}|
-                options = association.klass.send(association_condition, #{proc_args.join(",")}).scope(:find)
+                scope = association.klass.send(association_condition, #{proc_args.join(",")})
+                options = scope ? scope.scope(:find) : {}
                 options.delete(:readonly)
                 options[:joins] = options[:joins].blank? ? association.name : {association.name => options[:joins]}
                 options

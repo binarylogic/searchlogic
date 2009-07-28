@@ -17,6 +17,10 @@ describe "Association Conditions" do
     Company.users_username_has("bjohnson").proxy_options.should == User.username_has("bjohnson").proxy_options.merge(:joins => :users)
   end
   
+  it "should not raise errors for scopes that don't return anything" do
+    Company.users_blank_scope("bjohnson").proxy_options.should == {:joins => :users}
+  end
+  
   it "should ignore polymorphic associations" do
     lambda { Fee.owner_created_at_gt(Time.now) }.should raise_error(NoMethodError)
   end
