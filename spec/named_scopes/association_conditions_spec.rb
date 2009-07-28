@@ -13,6 +13,10 @@ describe "Association Conditions" do
     Company.users_uname("bjohnson").proxy_options.should == User.uname("bjohnson").proxy_options.merge(:joins => :users)
   end
   
+  it "should ignore polymorphic associations" do
+    lambda { Fee.owner_created_at_gt(Time.now) }.should raise_error(NoMethodError)
+  end
+  
   it "should not allow named scopes on non existent association columns" do
     lambda { User.users_whatever_like("bjohnson") }.should raise_error(NoMethodError)
   end

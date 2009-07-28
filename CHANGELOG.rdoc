@@ -1,3 +1,7 @@
+== 2.1.10 released 2009-07-28
+
+* Ignore polymorphic associations when dynamically creating conditions on associations.
+
 == 2.1.9 released 2009-07-28
 
 * Fixed bug when cloning with no scope

@@ -49,11 +49,10 @@ module Searchlogic
         end
         
         def association_condition_details(name)
-          regexes = [/^(#{reflect_on_all_associations.collect(&:name).join("|")})_(\w+)_(#{Conditions::PRIMARY_CONDITIONS.join("|")})$/]
-          reflect_on_all_associations.each do |assoc|
-            regexes << /^(#{assoc.name})_(#{assoc.klass.scopes.keys.join("|")})$/
-          end
-          
+          assocs = non_polymorphic_associations
+          return nil if assocs.empty?
+          regexes = [association_searchlogic_regex(assocs, Conditions::PRIMARY_CONDITIONS)]
+          assocs.each { |assoc| regexes << /^(#{assoc.name})_(#{assoc.klass.scopes.keys.join("|")})$/ }
           
           if !local_condition?(name) && regexes.any? { |regex| name.to_s =~ regex }
             {:association => $1, :column => $2, :condition => $3}
@@ -67,10 +66,17 @@ module Searchlogic
         end
         
         def association_alias_condition_details(name)
-          associations = reflect_on_all_associations.collect { |assoc| assoc.name }
-          if !local_condition?(name) && name.to_s =~ /^(#{associations.join("|")})_(\w+)_(#{Conditions::ALIAS_CONDITIONS.join("|")})$/
+          if !local_condition?(name) && name.to_s =~ association_searchlogic_regex(non_polymorphic_associations, Conditions::ALIAS_CONDITIONS)
             {:association => $1, :column => $2, :condition => $3}
           end
+        end
+        
+        def non_polymorphic_associations
+          reflect_on_all_associations.reject { |assoc| assoc.options[:polymorphic] }
+        end
+        
+        def association_searchlogic_regex(assocs, condition_names)
+          /^(#{assocs.collect(&:name).join("|")})_(\w+)_(#{condition_names.join("|")})$/
         end
         
         def create_association_alias_condition(association, column, condition, args)
