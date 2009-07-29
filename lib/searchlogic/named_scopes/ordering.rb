@@ -19,12 +19,16 @@ module Searchlogic
       def order_condition?(name) # :nodoc:
         !order_condition_details(name).nil?
       end
+
+      def custom_order_condition?(name) # :nodoc:
+        !custom_order_condition_details(name).nil?
+      end
       
       private
         def method_missing(name, *args, &block)
           if name == :order
             named_scope name, lambda { |scope_name|
-              return {} if !order_condition?(scope_name) && !association_ordering_condition?(scope_name)
+              return {} if !order_condition?(scope_name) && !custom_order_condition?(scope_name) && !association_ordering_condition?(scope_name)
               send(scope_name).proxy_options
             }
             send(name, *args)
@@ -41,6 +45,12 @@ module Searchlogic
             {:order_as => $1, :column => $2}
           elsif name.to_s =~ /^order$/
             {}
+          end
+        end
+
+        def custom_order_condition_details(name)
+          if name.to_s =~ /^(ascend|descend)_by_(.+)$/
+            {:order_as => $1, :scope => name.to_sym}
           end
         end
         
