@@ -28,6 +28,7 @@ module Searchlogic
       
       CONDITIONS = {}
       
+      # Add any / all variations to every comparison and wildcard condition
       COMPARISON_CONDITIONS.merge(WILDCARD_CONDITIONS).each do |condition, aliases|
         CONDITIONS[condition] = aliases
         CONDITIONS["#{condition}_any".to_sym] = aliases.collect { |a| "#{a}_any".to_sym }
@@ -47,7 +48,7 @@ module Searchlogic
       #
       #   :conditions => {:column => value}
       #
-      # ActiveRecord hides this internally, so we have to try and pull it out with this
+      # ActiveRecord hides this internally in a Proc, so we have to try and pull it out with this
       # method.
       def named_scope_options(name)
         key = scopes.key?(name.to_sym) ? name.to_sym : primary_condition_name(name)
@@ -68,7 +69,8 @@ module Searchlogic
       #   User.search(:age_is_4 => true) == User.all(:conditions => {:age => 4})
       #
       # We also use it when trying to "copy" the underlying named scope for association
-      # conditions.
+      # conditions. This way our aliased scope accepts the same number of parameters for
+      # the underlying scope.
       def named_scope_arity(name)
         options = named_scope_options(name)
         options.respond_to?(:arity) ? options.arity : nil

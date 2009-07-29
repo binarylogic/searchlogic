@@ -1,6 +1,7 @@
-== 2.1.13
+== 2.1.13 released 2009-07-29
 
 * Applied bug fix from http://github.com/skanev/searchlogic to make #order work with association ordering.
+* Applied bug fix to allow for custom ordering conditions.
 
 == 2.1.12 released 2009-07-28
 

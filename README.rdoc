@@ -1,7 +1,5 @@
 = Searchlogic
 
-<b>Searchlogic has been <em>completely</em> rewritten for v2. It is much simpler and has taken an entirely new approach. To give you an idea, v1 had ~2300 lines of code, v2 has ~420 lines of code.</b>
-
 Searchlogic provides common named scopes and object based searching for ActiveRecord.
 
 == Helpful links

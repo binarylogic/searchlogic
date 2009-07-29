@@ -27,8 +27,10 @@ module Searchlogic
       #
       #   named_scope :id_gt, searchlogic_lambda(:integer) { |value| {:conditions => ["id > ?", value]} }
       #
-      # If you are wanting a string, you don't have to do anything, because Searchlogic assumes you are want a string.
-      # If you want something else, you need to specify it as I did in the above example.
+      # If you are wanting a string, you don't have to do anything, because Searchlogic assumes you want a string.
+      # If you want something else, you need to specify it as I did in the above example. Comments are appreciated
+      # on this, if you know of a better solution please let me know. But this is the best I could come up with,
+      # without being intrusive and altering default behavior.
       def searchlogic_lambda(type = :string, &block)
         proc = lambda(&block)
         proc.searchlogic_arg_type = type

@@ -23,14 +23,17 @@ module Searchlogic
         !association_condition_details(name).nil?
       end
       
-      # Is the ane of the method a valie name for an association alias condition?
+      # Is the named of the method a valid name for an association alias condition?
       # An alias being "gt" for "greater_than", etc.
       def association_alias_condition?(name)
         !association_alias_condition_details(name).nil?
       end
       
       # A convenience method for creating inner join sql to that your inner joins
-      # are consistent with how Active Record creates them.
+      # are consistent with how Active Record creates them. Basically a tool for
+      # you to use when writing your own named scopes. This way you know for sure
+      # that duplicate joins will be removed when chaining scopes together that
+      # use the same join.
       def inner_joins(association_name)
         ActiveRecord::Associations::ClassMethods::InnerJoinDependency.new(self, association_name, nil).join_associations.collect { |assoc| assoc.association_join }
       end
