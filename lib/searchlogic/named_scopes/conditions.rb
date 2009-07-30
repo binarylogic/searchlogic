@@ -54,7 +54,7 @@ module Searchlogic
         key = scopes.key?(name.to_sym) ? name.to_sym : primary_condition_name(name)
         
         if key
-          eval("options", scopes[key])
+          eval("options", scopes[key].binding)
         else
           nil
         end
