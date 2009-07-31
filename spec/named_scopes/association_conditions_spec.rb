@@ -125,4 +125,9 @@ describe "Association Conditions" do
     order = user.orders.create(:total => 20, :taxes => 3)
     Company.users_orders_taxes_lt(50).ascend_by_users_orders_total.all(:include => {:users => :orders}).should == Company.all
   end
+  
+  it "should automatically add string joins if the association condition is using strings" do
+    User.named_scope(:orders_big_id, :joins => User.inner_joins(:orders))
+    Company.users_orders_big_id.proxy_options.should == {:joins=>[" INNER JOIN \"users\" ON users.company_id = companies.id ", " INNER JOIN \"orders\" ON orders.user_id = users.id "]}
+  end
 end

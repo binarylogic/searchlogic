@@ -61,8 +61,7 @@ module Searchlogic
             # The underlying condition doesn't require any parameters, so let's just create a simple
             # named scope that is based on a hash.
             options = scope.scope(:find)
-            options.delete(:readonly)
-            options[:joins] = options[:joins].blank? ? association.name : {association.name => options[:joins]}
+            prepare_named_scope_options(options, association)
             options
           else
             # The underlying condition requires parameters, let's match the parameters it requires
@@ -88,11 +87,20 @@ module Searchlogic
               searchlogic_lambda(:#{arg_type}) { |#{proc_args.join(",")}|
                 scope = association.klass.send(association_condition, #{proc_args.join(",")})
                 options = scope ? scope.scope(:find) : {}
-                options.delete(:readonly)
-                options[:joins] = options[:joins].blank? ? association.name : {association.name => options[:joins]}
+                prepare_named_scope_options(options, association)
                 options
               }
             end_eval
+          end
+        end
+        
+        def prepare_named_scope_options(options, association)
+          options.delete(:readonly)
+          
+          if options[:joins].is_a?(String) || array_of_strings?(options[:joins])
+            options[:joins] = [inner_joins(association.name), options[:joins]].flatten
+          else
+            options[:joins] = options[:joins].blank? ? association.name : {association.name => options[:joins]}
           end
         end
     end
