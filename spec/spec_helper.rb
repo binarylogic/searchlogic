@@ -71,9 +71,6 @@ Spec::Runner.configure do |config|
     class User < ActiveRecord::Base
       belongs_to :company, :counter_cache => true
       has_many :orders, :dependent => :destroy
-      named_scope :uname, lambda { |value| {:conditions => ["users.username = ?", value]} }
-      alias_scope :username_has, lambda { |value| username_like(value) }
-      alias_scope :blank_scope, lambda { |value| }
     end
     
     class Order < ActiveRecord::Base

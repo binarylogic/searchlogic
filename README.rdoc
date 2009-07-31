@@ -83,7 +83,7 @@ You also get named scopes for any of your associations:
   User.ascend_by_order_total
   User.descend_by_orders_line_items_price
 
-Again these are just named scopes. You can chain them together, call methods off of them, etc. What's great about these named scopes is that they do NOT use the :include option, making them <em>much</em> faster. Instead they create a INNER JOIN and pass it to the :joins option, which is great for performance. To prove my point here is a quick benchmark from an application I am working on:
+Again these are just named scopes. You can chain them together, call methods off of them, etc. What's great about these named scopes is that they do NOT use the :include option, making them <em>much</em> faster. Instead they leverage the :joins option, which is great for performance. To prove my point here is a quick benchmark from an application I am working on:
 
   Benchmark.bm do |x|
     x.report { 10.times { Event.tickets_id_gt(10).all(:include => :tickets) } }
@@ -97,7 +97,7 @@ If you want to use the :include option, just specify it:
 
   User.orders_line_items_price_greater_than(20).all(:include => {:orders => :line_items})
 
-Obviously, only do this if you want to actually use the included objects.
+Obviously, only do this if you want to actually use the included objects. Including objects into a query can be helpful with performance, especially when solving an N+1 query problem.
 
 == Make searching and ordering data in your application trivial
 
@@ -176,7 +176,7 @@ Now just throw it in your form:
     = f.check_box :four_year_olds
     = f.submit
 
-What's great about this is that you can do just about anything you want. If Searchlogic doesn't provide a named scope for that crazy edge case that you need, just create your own named scope. The sky is the limit.
+This really allows Searchlogic to extend beyond what it provides internally. If Searchlogic doesn't provide a named scope for that crazy edge case that you need, just create your own named scope and use it. The sky is the limit.
 
 == Use any or all
 
@@ -199,7 +199,7 @@ If you don't like will_paginate, use another solution, or roll your own. Paginat
 
 == Conflicts with other gems
 
-You will notice searchlogic wants to create a method called "search". So do other libraries like thinking sphinx, etc. So searchlogic has a no conflict resolution. If the "search" method is already taken the method will be called "searchlogic" instead. So instead of
+You will notice searchlogic wants to create a method called "search". So do other libraries like thinking-sphinx, etc. So searchlogic has a no conflict resolution. If the "search" method is already taken the method will be called "searchlogic" instead. So instead of
 
   User.search
 

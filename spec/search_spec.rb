@@ -110,12 +110,14 @@ describe "Search" do
     end
     
     it "should allow setting pre-existing association conditions" do
+      User.named_scope :uname, lambda { |value| {:conditions => ["users.username = ?", value]} }
       search = Company.search
       search.users_uname = "bjohnson"
       search.users_uname.should == "bjohnson"
     end
     
     it "should allow setting pre-existing association alias conditions" do
+      User.alias_scope :username_has, lambda { |value| User.username_like(value) }
       search = Company.search
       search.users_username_has = "bjohnson"
       search.users_username_has.should == "bjohnson"
@@ -156,6 +158,11 @@ describe "Search" do
     it "should not allow setting conditions that are not scopes" do
       search = User.search
       lambda { search.unknown = true }.should raise_error(Searchlogic::Search::UnknownConditionError)
+    end
+    
+    it "should not allow setting conditions on sensitive methods" do
+      search = User.search
+      lambda { search.destroy = true }.should raise_error(Searchlogic::Search::UnknownConditionError)
     end
     
     it "should not use the ruby implementation of the id method" do

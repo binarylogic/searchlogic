@@ -203,9 +203,6 @@ describe "Conditions" do
     end
     
     it "should have is_not" do
-      # This is matching "not" first. How do you give priority in a regex? Because it's matching the
-      # 'not' condition and thinking the column is 'age_is'.
-      pending
       User.age_is_not(5).proxy_options.should == User.age_does_not_equal(5).proxy_options
     end
     

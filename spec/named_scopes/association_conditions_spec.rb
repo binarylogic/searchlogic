@@ -10,14 +10,22 @@ describe "Association Conditions" do
   end
   
   it "should allow the use of foreign pre-existing named scopes" do
+    User.named_scope :uname, lambda { |value| {:conditions => ["users.username = ?", value]} }
     Company.users_uname("bjohnson").proxy_options.should == User.uname("bjohnson").proxy_options.merge(:joins => :users)
   end
   
+  it "should allow the use of deep foreign pre-existing named scopes" do
+    Order.named_scope :big_id, :conditions => "orders.id > 100"
+    Company.users_orders_big_id.proxy_options.should == Order.big_id.proxy_options.merge(:joins => {:users => :orders})
+  end
+  
   it "should allow the use of foreign pre-existing alias scopes" do
+    User.alias_scope :username_has, lambda { |value| User.username_like(value) }
     Company.users_username_has("bjohnson").proxy_options.should == User.username_has("bjohnson").proxy_options.merge(:joins => :users)
   end
   
   it "should not raise errors for scopes that don't return anything" do
+    User.alias_scope :blank_scope, lambda { |value| }
     Company.users_blank_scope("bjohnson").proxy_options.should == {:joins => :users}
   end
   

@@ -17,7 +17,7 @@ module Searchlogic
   class Search
     # Responsible for adding a "search" method into your models.
     module Implementation
-      # Additional method, gets aliases as "search" if that method
+      # Additional method, gets aliased as "search" if that method
       # is available. A lot of other libraries like to use "search"
       # as well, so if you have a conflict like this, you can use
       # this method directly.
@@ -141,7 +141,7 @@ module Searchlogic
         else
           # Let's leverage ActiveRecord's type casting, so that casting is consistent
           # with the other models.
-          column_for_type_cast = ActiveRecord::ConnectionAdapters::Column.new("", nil)
+          column_for_type_cast = ::ActiveRecord::ConnectionAdapters::Column.new("", nil)
           column_for_type_cast.instance_variable_set(:@type, type)
           value = column_for_type_cast.type_cast(value)
           Time.zone && value.is_a?(Time) ? value.in_time_zone : value

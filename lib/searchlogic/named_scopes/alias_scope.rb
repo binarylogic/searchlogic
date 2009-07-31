@@ -48,6 +48,7 @@ module Searchlogic
       end
       
       def alias_scope?(name) # :nodoc:
+        return false if name.blank?
         alias_scopes.key?(name.to_sym)
       end
       

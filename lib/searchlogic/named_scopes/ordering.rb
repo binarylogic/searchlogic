@@ -2,59 +2,49 @@ module Searchlogic
   module NamedScopes
     # Handles dynamically creating named scopes for orderin by columns.
     module Ordering
-      def local_condition?(name) # :nodoc:
-        super || order_condition?(name)
+      def condition?(name) # :nodoc:
+        super || ordering_condition?(name)
       end
       
       def primary_condition_name(name) # :nodoc
         if result = super
           result
-        elsif order_condition?(name)
+        elsif ordering_condition?(name)
           name.to_sym
         else
           nil
         end
       end
       
-      def order_condition?(name) # :nodoc:
-        !order_condition_details(name).nil?
-      end
-
-      def custom_order_condition?(name) # :nodoc:
-        !custom_order_condition_details(name).nil?
-      end
-      
       private
+        def ordering_condition?(name) # :nodoc:
+          !ordering_condition_details(name).nil?
+        end
+        
         def method_missing(name, *args, &block)
           if name == :order
             named_scope name, lambda { |scope_name|
-              return {} if !order_condition?(scope_name) && !custom_order_condition?(scope_name) && !association_ordering_condition?(scope_name)
+              return {} if !condition?(scope_name)
               send(scope_name).proxy_options
             }
             send(name, *args)
-          elsif details = order_condition_details(name)
-            create_order_conditions(details[:column])
+          elsif details = ordering_condition_details(name)
+            create_ordering_conditions(details[:column])
             send(name, *args)
           else
             super
           end
         end
         
-        def order_condition_details(name)
+        def ordering_condition_details(name)
           if name.to_s =~ /^(ascend|descend)_by_(#{column_names.join("|")})$/
             {:order_as => $1, :column => $2}
           elsif name.to_s =~ /^order$/
             {}
           end
         end
-
-        def custom_order_condition_details(name)
-          if name.to_s =~ /^(ascend|descend)_by_(.+)$/
-            {:order_as => $1, :scope => name.to_sym}
-          end
-        end
         
-        def create_order_conditions(column)
+        def create_ordering_conditions(column)
           named_scope("ascend_by_#{column}".to_sym, {:order => "#{table_name}.#{column} ASC"})
           named_scope("descend_by_#{column}".to_sym, {:order => "#{table_name}.#{column} DESC"})
         end

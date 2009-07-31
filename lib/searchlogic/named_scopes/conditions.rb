@@ -40,42 +40,6 @@ module Searchlogic
       PRIMARY_CONDITIONS = CONDITIONS.keys
       ALIAS_CONDITIONS = CONDITIONS.values.flatten
       
-      # Retrieves the options passed when creating the respective named scope. Ex:
-      #
-      #   named_scope :whatever, :conditions => {:column => value}
-      #
-      # This method will return:
-      #
-      #   :conditions => {:column => value}
-      #
-      # ActiveRecord hides this internally in a Proc, so we have to try and pull it out with this
-      # method.
-      def named_scope_options(name)
-        key = scopes.key?(name.to_sym) ? name.to_sym : primary_condition_name(name)
-        
-        if key
-          eval("options", scopes[key].binding)
-        else
-          nil
-        end
-      end
-      
-      # The arity for a named scope's proc is important, because we use the arity
-      # to determine if the condition should be ignored when calling the search method.
-      # If the condition is false and the arity is 0, then we skip it all together. Ex:
-      #
-      #   User.named_scope :age_is_4, :conditions => {:age => 4}
-      #   User.search(:age_is_4 => false) == User.all
-      #   User.search(:age_is_4 => true) == User.all(:conditions => {:age => 4})
-      #
-      # We also use it when trying to "copy" the underlying named scope for association
-      # conditions. This way our aliased scope accepts the same number of parameters for
-      # the underlying scope.
-      def named_scope_arity(name)
-        options = named_scope_options(name)
-        options.respond_to?(:arity) ? options.arity : nil
-      end
-      
       # Returns the primary condition for the given alias. Ex:
       #
       #   primary_condition(:gt) => :greater_than
@@ -90,10 +54,12 @@ module Searchlogic
       #   primary_condition_name(:id_gt) => :id_greater_than
       #   primary_condition_name(:id_greater_than) => :id_greater_than
       def primary_condition_name(name)
-        if primary_condition?(name)
-          name.to_sym
-        elsif details = alias_condition_details(name)
-          "#{details[:column]}_#{primary_condition(details[:condition])}".to_sym
+        if details = condition_details(name)
+          if PRIMARY_CONDITIONS.include?(name.to_sym)
+            name
+          else
+            "#{details[:column]}_#{primary_condition(details[:condition])}".to_sym
+          end
         else
           nil
         end
@@ -101,48 +67,38 @@ module Searchlogic
       
       # Is the name of the method a valid condition that can be dynamically created?
       def condition?(name)
-        local_condition?(name)
-      end
-      
-      # Is the condition for a local column, not an association
-      def local_condition?(name)
-        primary_condition?(name) || alias_condition?(name)
-      end
-      
-      # Is the name of the method a valid condition that can be dynamically created,
-      # AND is it a primary condition (not an alias). "greater_than" not "gt".
-      def primary_condition?(name)
-        !primary_condition_details(name).nil?
-      end
-      
-      # Is the name of the method a valid condition that can be dynamically created,
-      # AND is it an alias condition. "gt" not "greater_than".
-      def alias_condition?(name)
-        !alias_condition_details(name).nil?
+        return false if name.blank?
+        scope_names = scopes.keys.reject { |k| k == :scoped }
+        scope_names.include?(name.to_sym) || !condition_details(name).nil?
       end
       
       private
         def method_missing(name, *args, &block)
-          if details = primary_condition_details(name)
-            create_primary_condition(details[:column], details[:condition])
-            send(name, *args)
-          elsif details = alias_condition_details(name)
-            create_alias_condition(details[:column], details[:condition], args)
+          if details = condition_details(name)
+            create_condition(details[:column], details[:condition], args)
             send(name, *args)
           else
             super
           end
         end
         
-        def primary_condition_details(name)
-          if name.to_s =~ /^(#{column_names.join("|")})_(#{PRIMARY_CONDITIONS.join("|")})$/
+        def condition_details(name)
+          if name.to_s =~ /^(#{column_names.join("|")})_(#{(PRIMARY_CONDITIONS + ALIAS_CONDITIONS).join("|")})$/
             {:column => $1, :condition => $2}
+          end
+        end
+        
+        def create_condition(column, condition, args)
+          if PRIMARY_CONDITIONS.include?(condition.to_sym)
+            create_primary_condition(column, condition)
+          elsif ALIAS_CONDITIONS.include?(condition.to_sym)
+            create_alias_condition(column, condition, args)
           end
         end
         
         def create_primary_condition(column, condition)
           column_type = columns_hash[column.to_s].type
-          match_keyword = ActiveRecord::Base.connection.adapter_name == "PostgreSQL" ? "ILIKE" : "LIKE"
+          match_keyword = ::ActiveRecord::Base.connection.adapter_name == "PostgreSQL" ? "ILIKE" : "LIKE"
           
           scope_options = case condition.to_s
           when /^equals/
@@ -215,12 +171,6 @@ module Searchlogic
             "%#{value}"
           else
             value
-          end
-        end
-        
-        def alias_condition_details(name)
-          if name.to_s =~ /^(#{column_names.join("|")})_(#{ALIAS_CONDITIONS.join("|")})$/
-            {:column => $1, :condition => $2}
           end
         end
         
