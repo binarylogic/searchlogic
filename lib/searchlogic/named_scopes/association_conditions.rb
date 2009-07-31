@@ -22,7 +22,7 @@ module Searchlogic
         end
         
         def method_missing(name, *args, &block)
-          if details = association_condition_details(name)
+          if !local_condition?(name) && details = association_condition_details(name)
             create_association_condition(details[:association], details[:condition], args)
             send(name, *args)
           else

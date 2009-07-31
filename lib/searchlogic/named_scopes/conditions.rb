@@ -67,12 +67,16 @@ module Searchlogic
       
       # Is the name of the method a valid condition that can be dynamically created?
       def condition?(name)
-        return false if name.blank?
-        scope_names = scopes.keys.reject { |k| k == :scoped }
-        scope_names.include?(name.to_sym) || !condition_details(name).nil?
+        local_condition?(name)
       end
       
       private
+        def local_condition?(name)
+          return false if name.blank?
+          scope_names = scopes.keys.reject { |k| k == :scoped }
+          scope_names.include?(name.to_sym) || !condition_details(name).nil?
+        end
+        
         def method_missing(name, *args, &block)
           if details = condition_details(name)
             create_condition(details[:column], details[:condition], args)

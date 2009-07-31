@@ -270,5 +270,8 @@ describe "Conditions" do
   
   it "should have priorty to columns over conflicting association conditions" do
     Company.users_count_gt(10)
+    User.create
+    User.company_id_null.count.should == 1
+    User.company_id_not_null.count.should == 0
   end
 end
