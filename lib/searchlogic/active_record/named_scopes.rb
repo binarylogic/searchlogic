@@ -44,7 +44,7 @@ module Searchlogic
       # that duplicate joins will be removed when chaining scopes together that
       # use the same join.
       def inner_joins(association_name)
-        ActiveRecord::Associations::ClassMethods::InnerJoinDependency.new(self, association_name, nil).join_associations.collect { |assoc| assoc.association_join }
+        ::ActiveRecord::Associations::ClassMethods::InnerJoinDependency.new(self, association_name, nil).join_associations.collect { |assoc| assoc.association_join }
       end
     end
   end
