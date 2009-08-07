@@ -6,12 +6,12 @@ Searchlogic provides common named scopes and object based searching for ActiveRe
 
 * <b>Documentation:</b> http://rdoc.info/projects/binarylogic/searchlogic
 * <b>Repository:</b> http://github.com/binarylogic/searchlogic/tree/master
-* <b>Bugs / feature suggestions:</b> http://binarylogic.lighthouseapp.com/projects/16601-searchlogic
+* <b>Issues:</b> http://github.com/binarylogic/authlogic/issues
 * <b>Google group:</b> http://groups.google.com/group/searchlogic
 
 <b>Before contacting me directly, please read:</b>
 
-If you find a bug or a problem please post it on lighthouse. If you need help with something, please use google groups. I check both regularly and get emails when anything happens, so that is the best place to get help. This also benefits other people in the future with the same questions / problems. Thank you.
+If you find a bug or a problem please post it in the issues section. If you need help with something, please use google groups. I check both regularly and get emails when anything happens, so that is the best place to get help. This also benefits other people in the future with the same questions / problems. Thank you.
 
 == Install & use
 

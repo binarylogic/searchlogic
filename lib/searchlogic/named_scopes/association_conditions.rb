@@ -31,7 +31,7 @@ module Searchlogic
         end
         
         def association_condition_details(name)
-          assocs = reflect_on_all_associations.reject { |assoc| assoc.options[:polymorphic] }
+          assocs = reflect_on_all_associations.reject { |assoc| assoc.options[:polymorphic] }.sort { |a, b| b.name.to_s.size <=> a.name.to_s.size }
           return nil if assocs.empty?
           
           if name.to_s =~ /^(#{assocs.collect(&:name).join("|")})_(\w+)$/

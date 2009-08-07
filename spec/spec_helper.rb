@@ -71,6 +71,7 @@ Spec::Runner.configure do |config|
     class User < ActiveRecord::Base
       belongs_to :company, :counter_cache => true
       has_many :orders, :dependent => :destroy
+      has_many :orders_big, :class_name => 'Order', :conditions => 'total > 100'
     end
     
     class Order < ActiveRecord::Base

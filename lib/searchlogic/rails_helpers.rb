@@ -21,7 +21,10 @@ module Searchlogic
     # * <tt>:params_scope</tt> - the name of the params key to scope the order condition by, defaults to :search
     def order(search, options = {}, html_options = {})
       options[:params_scope] ||= :search
-      options[:as] ||= options[:by].to_s.humanize
+      if !options[:as]
+        id = options[:by].to_s.downcase == "id"
+        options[:as] = id ? options[:by].to_s.upcase : options[:by].to_s.humanize
+      end
       options[:ascend_scope] ||= "ascend_by_#{options[:by]}"
       options[:descend_scope] ||= "descend_by_#{options[:by]}"
       ascending = search.order.to_s == options[:ascend_scope]
