@@ -6,7 +6,7 @@ Searchlogic provides common named scopes and object based searching for ActiveRe
 
 * <b>Documentation:</b> http://rdoc.info/projects/binarylogic/searchlogic
 * <b>Repository:</b> http://github.com/binarylogic/searchlogic/tree/master
-* <b>Issues:</b> http://github.com/binarylogic/authlogic/issues
+* <b>Issues:</b> http://github.com/binarylogic/searchlogic/issues
 * <b>Google group:</b> http://groups.google.com/group/searchlogic
 
 <b>Before contacting me directly, please read:</b>
