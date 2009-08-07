@@ -63,9 +63,18 @@ module Searchlogic
     def conditions=(values)
       values.each do |condition, value|
         value.delete_if { |v| v.blank? } if value.is_a?(Array)
+        next if extract_multiparameter_conditions(condition, value)
         next if value.blank?
         send("#{condition}=", value)
       end
+      
+      @multi_parameters_conditions.try(:each) { |condition, values| ;send("#{condition}=", *values) }
+    end
+    
+    def extract_multiparameter_conditions(condition, value)
+      return unless condition.to_s =~ /(\w+)\((\d)(\w)\)/ # ? value.send("to_" + $1) : value§
+      @multi_parameters_conditions ||= Hash.new{|h,k| h[k] = []}
+      @multi_parameters_conditions[$1][$2.to_i-1] = value.send("to_#{$3}") # first parameter is 1 ("(1i)") 
     end
     
     # Delete a condition from the search. Since conditions map to named scopes,
@@ -83,7 +92,18 @@ module Searchlogic
           condition = $1.to_sym
           scope_name = normalize_scope_name($1)
           if scope?(scope_name)
-            conditions[condition] = type_cast(args.first, cast_type(scope_name))
+            if args.length == 1
+              conditions[condition] = type_cast(args.first, cast_type(scope_name))
+            else
+               case cast_type(scope_name)
+                when :time
+                  raise 'NotImplemented'
+                when :date
+                  conditions[condition] = Date.new(*args)
+                else
+                  raise 'NotImplemented'
+                end
+            end
           else
             raise UnknownConditionError.new(name)
           end
