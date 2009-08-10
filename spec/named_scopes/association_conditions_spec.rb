@@ -15,6 +15,7 @@ describe "Association Conditions" do
   end
   
   it "should allow the use of deep foreign pre-existing named scopes" do
+    pending
     Order.named_scope :big_id, :conditions => "orders.id > 100"
     Company.users_orders_big_id.proxy_options.should == Order.big_id.proxy_options.merge(:joins => {:users => :orders})
   end

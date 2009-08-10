@@ -320,23 +320,5 @@ describe "Search" do
     it "should recognize the order condition" do
       User.search(:order => "ascend_by_username").proxy_options.should == User.ascend_by_username.proxy_options
     end
-    
-    context "with multiple parameters" do 
-      before(:each) do
-        @early_order = Order.create(:shipped_on => Date.civil(2008, 1, 1))
-        @late_order  = Order.create(:shipped_on => Date.civil(2010, 1, 1))
-
-        @options =  lambda { |attr| {"#{attr}(1i)" => "2009", "#{attr}(2i)" => "8", "#{attr}(3i)" => "1"}}
-      end
-      it "should have shipped_on after" do
-        Order.search(@options.call("shipped_on_after")).all.should == [@late_order]
-      end
-
-      it "should have shipped_on before" do
-        Order.search(@options.call("shipped_on_before")).all.should == [@early_order]
-      end
-      
-      it "should test time"
-    end
   end
 end

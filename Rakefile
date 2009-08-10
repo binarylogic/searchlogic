@@ -13,6 +13,7 @@ begin
     gem.rubyforge_project = "searchlogic"
     gem.add_dependency "activerecord", ">= 2.0.0"
   end
+  Jeweler::RubyforgeTasks.new
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
 end
@@ -31,13 +32,3 @@ end
 
 
 task :default => :spec
-
-begin
-  require 'rake/contrib/sshpublisher'
-  namespace :rubyforge do
-    desc "Release gem to RubyForge"
-    task :release => ["rubyforge:release:gem"]
-  end
-rescue LoadError
-  puts "Rake SshDirPublisher is unavailable or your rubyforge environment is not configured."
-end

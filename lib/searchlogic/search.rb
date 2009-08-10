@@ -63,18 +63,9 @@ module Searchlogic
     def conditions=(values)
       values.each do |condition, value|
         value.delete_if { |v| v.blank? } if value.is_a?(Array)
-        next if extract_multiparameter_conditions(condition, value)
         next if value.blank?
         send("#{condition}=", value)
       end
-      
-      @multi_parameters_conditions.try(:each) { |condition, values| ;send("#{condition}=", *values) }
-    end
-    
-    def extract_multiparameter_conditions(condition, value)
-      return unless condition.to_s =~ /(\w+)\((\d)(\w)\)/ # ? value.send("to_" + $1) : value§
-      @multi_parameters_conditions ||= Hash.new{|h,k| h[k] = []}
-      @multi_parameters_conditions[$1][$2.to_i-1] = value.send("to_#{$3}") # first parameter is 1 ("(1i)") 
     end
     
     # Delete a condition from the search. Since conditions map to named scopes,
@@ -88,26 +79,16 @@ module Searchlogic
     
     private
       def method_missing(name, *args, &block)
-        if name.to_s =~ /(\w+)=$/
-          condition = $1.to_sym
-          scope_name = normalize_scope_name($1)
+        condition_name = condition_name(name)
+        scope_name = scope_name(condition_name)
+        
+        if setter?(name)
           if scope?(scope_name)
-            if args.length == 1
-              conditions[condition] = type_cast(args.first, cast_type(scope_name))
-            else
-               case cast_type(scope_name)
-                when :time
-                  raise 'NotImplemented'
-                when :date
-                  conditions[condition] = Date.new(*args)
-                else
-                  raise 'NotImplemented'
-                end
-            end
+            conditions[condition_name] = type_cast(args.first, cast_type(scope_name))
           else
             raise UnknownConditionError.new(name)
           end
-        elsif scope?(normalize_scope_name(name))
+        elsif scope?(scope_name)
           if args.size > 0
             send("#{name}=", *args)
             self
@@ -137,6 +118,19 @@ module Searchlogic
       
       def normalize_scope_name(scope_name)
         klass.column_names.include?(scope_name.to_s) ? "#{scope_name}_equals".to_sym : scope_name.to_sym
+      end
+      
+      def setter?(name)
+        !(name.to_s =~ /=$/).nil?
+      end
+      
+      def condition_name(name)
+        condition = name.to_s.match(/(\w+)=?$/)[1]
+        condition ? condition.to_sym : nil
+      end
+      
+      def scope_name(condition_name)
+        condition_name && normalize_scope_name(condition_name)
       end
       
       def scope?(scope_name)
