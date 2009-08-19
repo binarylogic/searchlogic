@@ -106,7 +106,7 @@ module Searchlogic
           
           scope_options = case condition.to_s
           when /^equals/
-            scope_options(condition, column_type, lambda{|a| attribute_condition(column, a) })
+            scope_options(condition, column_type, lambda{|a| attribute_condition("#{table_name}.#{column}", a) })
           when /^does_not_equal/
             scope_options(condition, column_type, "#{table_name}.#{column} != ?")
           when /^less_than_or_equal_to/
