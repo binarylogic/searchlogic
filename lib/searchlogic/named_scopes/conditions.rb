@@ -154,15 +154,15 @@ module Searchlogic
               join = $1 == "any" ? " OR " : " AND "
               scope_sql = values.collect { |value| sql.is_a?(Proc) ? sql.call(value) : sql }.join(join)
               
-              {:conditions => [scope_sql, *values]}
+              {:conditions => [scope_sql, *expand_range_bind_variables(values)]}
             }
           else
-            searchlogic_lambda(column_type) { |value|
-              value = value_with_modifier(value, value_modifier)
+            searchlogic_lambda(column_type) { |*values|
+              values.collect! { |value| value_with_modifier(value, value_modifier) }
               
-              scope_sql = sql.is_a?(Proc) ? sql.call(value) : sql
+              scope_sql = sql.is_a?(Proc) ? sql.call(*values) : sql
               
-              {:conditions => [scope_sql, value]}
+              {:conditions => [scope_sql, *expand_range_bind_variables(values)]}
             }
           end
         end
