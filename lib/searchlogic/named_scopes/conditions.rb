@@ -106,7 +106,7 @@ module Searchlogic
           
           scope_options = case condition.to_s
           when /^equals/
-            scope_options(condition, column_type, "#{table_name}.#{column} = ?")
+            scope_options(condition, column_type, lambda{|a| attribute_condition(column, a) })
           when /^does_not_equal/
             scope_options(condition, column_type, "#{table_name}.#{column} != ?")
           when /^less_than_or_equal_to/
@@ -150,11 +150,21 @@ module Searchlogic
               return {} if values.empty?
               values.flatten!
               
+              values.collect! { |value| value_with_modifier(value, value_modifier) }
+              
               join = $1 == "any" ? " OR " : " AND "
-              {:conditions => [values.collect { |value| sql }.join(join), *values.collect { |value| value_with_modifier(value, value_modifier) }]}
+              scope_sql = values.collect { |value| sql.is_a?(Proc) ? sql.call(value) : sql }.join(join)
+              
+              {:conditions => [scope_sql, *values]}
             }
           else
-            searchlogic_lambda(column_type) { |value| {:conditions => [sql, value_with_modifier(value, value_modifier)]} }
+            searchlogic_lambda(column_type) { |value|
+              value = value_with_modifier(value, value_modifier)
+              
+              scope_sql = sql.is_a?(Proc) ? sql.call(value) : sql
+              
+              {:conditions => [scope_sql, value]}
+            }
           end
         end
         
