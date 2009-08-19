@@ -148,17 +148,12 @@ module Searchlogic
           when /_(any|all)$/
             searchlogic_lambda(column_type) { |*values|
               return {} if values.empty?
-              values = values.flatten
+              values.flatten!
               
-              values_to_sub = nil
-              if value_modifier.nil?
-                values_to_sub = values
-              else
-                values_to_sub = values.collect { |value| value_with_modifier(value, value_modifier) }
-              end
+              values.collect! { |value| value_with_modifier(value, value_modifier) }
               
               join = $1 == "any" ? " OR " : " AND "
-              {:conditions => [values.collect { |value| sql }.join(join), *values_to_sub]}
+              {:conditions => [values.collect { |value| sql }.join(join), *values]}
             }
           else
             searchlogic_lambda(column_type) { |value| {:conditions => [sql, value_with_modifier(value, value_modifier)]} }
