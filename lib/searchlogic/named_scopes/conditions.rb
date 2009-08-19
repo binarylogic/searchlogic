@@ -150,10 +150,8 @@ module Searchlogic
               return {} if values.empty?
               values.flatten!
               
-              values.collect! { |value| value_with_modifier(value, value_modifier) }
-              
               join = $1 == "any" ? " OR " : " AND "
-              {:conditions => [values.collect { |value| sql }.join(join), *values]}
+              {:conditions => [values.collect { |value| sql }.join(join), *values.collect { |value| value_with_modifier(value, value_modifier) }]}
             }
           else
             searchlogic_lambda(column_type) { |value| {:conditions => [sql, value_with_modifier(value, value_modifier)]} }
