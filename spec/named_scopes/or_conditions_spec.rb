@@ -17,6 +17,18 @@ describe "Or conditions" do
     lambda { User.usernme_begins_with_or_name_like("ben") }.should raise_error(Searchlogic::NamedScopes::OrConditions::UnknownConditionError)
   end
   
+  it "should work well with _or_equal_to" do
+    User.id_less_than_or_equal_to_or_age_gt(10).proxy_options.should == {:conditions => "(users.age > 10) OR (users.id <= 10)"}
+  end
+  
+  it "should work well with _or_equal_to_any" do
+    User.id_less_than_or_equal_to_all_or_age_gt(10).proxy_options.should == {:conditions => "(users.age > 10) OR (users.id <= 10)"}
+  end
+  
+  it "should work well with _or_equal_to_all" do
+    User.id_less_than_or_equal_to_any_or_age_gt(10).proxy_options.should == {:conditions => "(users.age > 10) OR (users.id <= 10)"}
+  end
+  
   it "should play nice with other scopes" do
     User.username_begins_with("ben").id_gt(10).age_not_nil.username_or_name_ends_with("ben").scope(:find).should ==
       {:conditions => "((users.name LIKE '%ben') OR (users.username LIKE '%ben')) AND ((users.age IS NOT NULL) AND ((users.id > 10) AND (users.username LIKE 'ben%')))"}
