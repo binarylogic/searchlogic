@@ -43,8 +43,17 @@ module Searchlogic
       # you to use when writing your own named scopes. This way you know for sure
       # that duplicate joins will be removed when chaining scopes together that
       # use the same join.
+      #
+      # Also, don't worry about breaking up the joins or retriving multiple joins.
+      # ActiveRecord will remove dupilicate joins and Searchlogic assists ActiveRecord in
+      # breaking up your joins so that they are unique.
       def inner_joins(association_name)
         ::ActiveRecord::Associations::ClassMethods::InnerJoinDependency.new(self, association_name, nil).join_associations.collect { |assoc| assoc.association_join }
+      end
+      
+      # See inner_joins, except this creates LEFT OUTER joins.
+      def left_outer_joins(association_name)
+        ::ActiveRecord::Associations::ClassMethods::JoinDependency.new(self, association_name, nil).join_associations.collect { |assoc| assoc.association_join }
       end
     end
   end

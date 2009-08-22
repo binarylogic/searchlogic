@@ -1,6 +1,13 @@
 module Searchlogic
   module NamedScopes
-    # Handles dynamically creating named scopes for columns.
+    # Handles dynamically creating named scopes for columns. It allows you to do things like:
+    #
+    #   User.first_name_like("ben")
+    #   User.id_lt(10)
+    #
+    # Notice the constants in this class, they define which conditions Searchlogic provides.
+    #
+    # See the README for a more detailed explanation.
     module Conditions
       COMPARISON_CONDITIONS = {
         :equals => [:is, :eq],
@@ -39,31 +46,6 @@ module Searchlogic
       
       PRIMARY_CONDITIONS = CONDITIONS.keys
       ALIAS_CONDITIONS = CONDITIONS.values.flatten
-      
-      # Returns the primary condition for the given alias. Ex:
-      #
-      #   primary_condition(:gt) => :greater_than
-      def primary_condition(alias_condition)
-        CONDITIONS.find { |k, v| k == alias_condition.to_sym || v.include?(alias_condition.to_sym) }.first
-      end
-      
-      # Returns the primary name for any condition on a column. You can pass it
-      # a primary condition, alias condition, etc, and it will return the proper
-      # primary condition name. This helps simply logic throughout Searchlogic. Ex:
-      #
-      #   primary_condition_name(:id_gt) => :id_greater_than
-      #   primary_condition_name(:id_greater_than) => :id_greater_than
-      def primary_condition_name(name)
-        if details = condition_details(name)
-          if PRIMARY_CONDITIONS.include?(name.to_sym)
-            name
-          else
-            "#{details[:column]}_#{primary_condition(details[:condition])}".to_sym
-          end
-        else
-          nil
-        end
-      end
       
       # Is the name of the method a valid condition that can be dynamically created?
       def condition?(name)
@@ -106,7 +88,7 @@ module Searchlogic
           
           scope_options = case condition.to_s
           when /^equals/
-            scope_options(condition, column_type, lambda{|a| attribute_condition("#{table_name}.#{column}", a) })
+            scope_options(condition, column_type, lambda { |a| attribute_condition("#{table_name}.#{column}", a) })
           when /^does_not_equal/
             scope_options(condition, column_type, "#{table_name}.#{column} != ?")
           when /^less_than_or_equal_to/
@@ -186,6 +168,31 @@ module Searchlogic
           primary_name = "#{column}_#{primary_condition}"
           send(primary_name, *args) # go back to method_missing and make sure we create the method
           (class << self; self; end).class_eval { alias_method alias_name, primary_name }
+        end
+        
+        # Returns the primary condition for the given alias. Ex:
+        #
+        #   primary_condition(:gt) => :greater_than
+        def primary_condition(alias_condition)
+          CONDITIONS.find { |k, v| k == alias_condition.to_sym || v.include?(alias_condition.to_sym) }.first
+        end
+
+        # Returns the primary name for any condition on a column. You can pass it
+        # a primary condition, alias condition, etc, and it will return the proper
+        # primary condition name. This helps simply logic throughout Searchlogic. Ex:
+        #
+        #   primary_condition_name(:id_gt) => :id_greater_than
+        #   primary_condition_name(:id_greater_than) => :id_greater_than
+        def primary_condition_name(name)
+          if details = condition_details(name)
+            if PRIMARY_CONDITIONS.include?(name.to_sym)
+              name
+            else
+              "#{details[:column]}_#{primary_condition(details[:condition])}".to_sym
+            end
+          else
+            nil
+          end
         end
     end
   end

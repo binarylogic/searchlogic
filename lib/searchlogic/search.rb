@@ -86,14 +86,14 @@ module Searchlogic
           if scope?(scope_name)
             conditions[condition_name] = type_cast(args.first, cast_type(scope_name))
           else
-            raise UnknownConditionError.new(name)
+            raise UnknownConditionError.new(condition_name)
           end
         elsif scope?(scope_name)
           if args.size > 0
-            send("#{name}=", *args)
+            send("#{condition_name}=", *args)
             self
           else
-            conditions[name]
+            conditions[condition_name]
           end
         else
           scope = conditions.inject(klass.scoped(current_scope)) do |scope, condition|

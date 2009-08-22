@@ -8,7 +8,7 @@ module Searchlogic
           alias_method_chain :merge_joins, :searchlogic
         end
       end
-    
+      
       # In AR multiple joins are sometimes in a single join query, and other times they
       # are not. The merge_joins method in AR should account for this, but it doesn't.
       # This fixes that problem. This way there is one join per string, which allows

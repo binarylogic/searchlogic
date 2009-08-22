@@ -1,20 +1,11 @@
 module Searchlogic
   module NamedScopes
     # Adds the ability to create alias scopes that allow you to alias a named
-    # scope or create a named scope procedure, while at the same time letting
-    # Searchlogic know that this is a safe method.
+    # scope or create a named scope procedure. See the alias_scope method for a more
+    # detailed explanation.
     module AliasScope
-      # The searchlogic Search class takes a hash and chains the values together as named scopes.
-      # For security reasons the only hash keys that are allowed must be mapped to named scopes.
-      # You can not pass the name of a class method and expect that to be called. In some instances
-      # you might create a class method that essentially aliases a named scope or represents a
-      # named scope procedure. Ex:
-      #
-      #   User.named_scope :teenager, :conditions => ["age >= ? AND age <= ?", 13, 19]
-      #
-      # This is obviously a very basic example, but there is logic that is duplicated here. For
-      # more complicated named scopes this might make more sense, but to make my point you could
-      # do something like this instead
+      # In some instances you might create a class method that essentially aliases a named scope
+      # or represents a named scope procedure. Ex:
       #
       #   class User
       #     def teenager
@@ -22,13 +13,24 @@ module Searchlogic
       #     end
       #   end
       #
-      # As I stated above, you could not use this method with the Searchlogic::Search class because
-      # there is no way to tell that this is actually a named scope. Instead, Searchlogic lets you
-      # do something like this:
+      # This is obviously a very basic example, but notice how we are utilizing already existing named
+      # scopes so that we do not have to repeat ourself. This method makes a lot more sense when you are
+      # dealing with complicated named scope.
+      #
+      # There is a problem though. What if you want to use this in your controller's via the 'search' method:
+      #
+      #   User.search(:teenager => true)
+      #
+      # You would expect that to work, but how does Searchlogic::Search tell the difference between your
+      # 'teenager' method and the 'destroy_all' method. It can't, there is no way to tell unless we actually
+      # call the method, which we obviously can not do.
+      #
+      # The being said, we need a way to tell searchlogic that this is method is safe. Here's how you do that:
       #
       #   User.alias_scope :teenager, lambda { age_gte(13).age_lte(19) }
       #
-      # It fits in better, at the same time Searchlogic will know this is an acceptable named scope.
+      # This feels better, it feels like our other scopes, and it provides a way to tell Searchlogic that this
+      # is a safe method.
       def alias_scope(name, options = nil)
         alias_scopes[name.to_sym] = options
         (class << self; self end).instance_eval do

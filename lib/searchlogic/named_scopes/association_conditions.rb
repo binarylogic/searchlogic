@@ -1,19 +1,9 @@
 module Searchlogic
   module NamedScopes
-    # Handles dynamically creating named scopes for associations.
+    # Handles dynamically creating named scopes for associations. See the README for a detailed explanation.
     module AssociationConditions
       def condition?(name) # :nodoc:
         super || association_condition?(name)
-      end
-      
-      def primary_condition_name(name) # :nodoc:
-        if result = super
-          result
-        elsif association_condition?(name)
-          name.to_sym
-        else
-          nil
-        end
       end
       
       private
@@ -64,23 +54,7 @@ module Searchlogic
             prepare_named_scope_options(options, association)
             options
           else
-            # The underlying condition requires parameters, let's match the parameters it requires
-            # and pass those onto the named scope. We can't use proxy_options because that returns the
-            # result after a value has been passed.
-            proc_args = []
-            if arity > 0
-              arity.times { |i| proc_args << "arg#{i}"}
-            else
-              positive_arity = arity * -1
-              positive_arity.times do |i|
-                if i == (positive_arity - 1)
-                  proc_args << "*arg#{i}"
-                else
-                  proc_args << "arg#{i}"
-                end
-              end
-            end
-            
+            proc_args = arity_args(arity)
             arg_type = (scope_options.respond_to?(:searchlogic_arg_type) && scope_options.searchlogic_arg_type) || :string
             
             eval <<-"end_eval"
@@ -94,8 +68,27 @@ module Searchlogic
           end
         end
         
+        # Used to match the new scopes parameters to the underlying scope. This way we can disguise the
+        # new scope as best as possible instead of taking the easy way out and using *args.
+        def arity_args(arity)
+          args = []
+          if arity > 0
+            arity.times { |i| args << "arg#{i}" }
+          else
+            positive_arity = arity * -1
+            positive_arity.times do |i|
+              if i == (positive_arity - 1)
+                args << "*arg#{i}"
+              else
+                args << "arg#{i}"
+              end
+            end
+          end
+          args
+        end
+        
         def prepare_named_scope_options(options, association)
-          options.delete(:readonly)
+          options.delete(:readonly) # AR likes to set :readonly to true when using the :joins option, we don't want that
           
           if options[:joins].is_a?(String) || array_of_strings?(options[:joins])
             options[:joins] = [inner_joins(association.name), options[:joins]].flatten

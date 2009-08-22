@@ -1,19 +1,17 @@
 module Searchlogic
   module NamedScopes
-    # Handles dynamically creating named scopes for associations.
+    # Handles dynamically creating order named scopes for associations:
+    #
+    #   User.has_many :orders
+    #   Order.has_many :line_items
+    #   LineItem
+    #
+    #   User.ascend_by_orders_line_items_id
+    #
+    # See the README for a more detailed explanation.
     module AssociationOrdering
       def condition?(name) # :nodoc:
         super || association_ordering_condition?(name)
-      end
-      
-      def primary_condition_name(name) # :nodoc
-        if result = super
-          result
-        elsif association_ordering_condition?(name)
-          name.to_sym
-        else
-          nil
-        end
       end
       
       private

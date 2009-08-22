@@ -1,19 +1,14 @@
 module Searchlogic
   module NamedScopes
-    # Handles dynamically creating named scopes for orderin by columns.
+    # Handles dynamically creating named scopes for ordering by columns. Example:
+    #
+    #   User.ascend_by_id
+    #   User.descend_by_username
+    #
+    # See the README for a more detailed explanation.
     module Ordering
       def condition?(name) # :nodoc:
         super || ordering_condition?(name)
-      end
-      
-      def primary_condition_name(name) # :nodoc
-        if result = super
-          result
-        elsif ordering_condition?(name)
-          name.to_sym
-        else
-          nil
-        end
       end
       
       private

@@ -1,3 +1,7 @@
+== 2.2.4
+
+* Thanks to laserlemon for support of ranges and arrays in the equals condition.
+
 == 2.2.3 released 2009-07-31
 
 * Fixed bug when an associations named scope joins is a string or an array of strings, the joins we add in automatically should also be a string, not a symbol.
