@@ -1,6 +1,7 @@
-== 2.2.4
+== 2.3.0 released 2009-08-22
 
 * Thanks to laserlemon for support of ranges and arrays in the equals condition.
+* Added feature to combine condition with 'or'.
 
 == 2.2.3 released 2009-07-31
 
