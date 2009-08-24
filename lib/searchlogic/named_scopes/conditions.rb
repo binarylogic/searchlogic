@@ -136,7 +136,7 @@ module Searchlogic
           when /_(any|all)$/
             searchlogic_lambda(column_type) { |*values|
               return {} if values.empty?
-              
+              values.flatten!
               values.collect! { |value| value_with_modifier(value, value_modifier) }
               
               join = $1 == "any" ? " OR " : " AND "

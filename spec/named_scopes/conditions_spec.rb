@@ -110,6 +110,11 @@ describe "Conditions" do
       User.username_equals_any.proxy_options.should == {}
     end
     
+    it "should treat an array and multiple arguments the same" do
+      %w(bjohnson thunt dgainor).each { |username| User.create(:username => username) }
+      User.username_like_any("bjohnson", "thunt").should == User.username_like_any(["bjohnson", "thunt"])
+    end
+    
     it "should have equals any" do
       %w(bjohnson thunt dgainor).each { |username| User.create(:username => username) }
       User.username_equals_any("bjohnson", "thunt").all == User.find_all_by_username(["bjohnson", "thunt"])
