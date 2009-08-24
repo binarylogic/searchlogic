@@ -30,7 +30,9 @@ module Searchlogic
       BOOLEAN_CONDITIONS = {
         :null => [:nil],
         :not_null => [:not_nil],
-        :empty => []
+        :empty => [],
+        :blank => [],
+        :not_blank => [:present]
       }
       
       CONDITIONS = {}
@@ -117,6 +119,10 @@ module Searchlogic
             {:conditions => "#{table_name}.#{column} IS NOT NULL"}
           when "empty"
             {:conditions => "#{table_name}.#{column} = ''"}
+          when "blank"
+            {:conditions => "#{table_name}.#{column} = '' OR #{table_name}.#{column} IS NULL"}
+          when "not_blank"
+            {:conditions => "#{table_name}.#{column} != '' OR #{table_name}.#{column} IS NOT NULL"}
           end
           
           named_scope("#{column}_#{condition}".to_sym, scope_options)

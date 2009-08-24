@@ -1,3 +1,7 @@
+== 2.3.0
+
+* Added blank and not_blank conditions.
+
 == 2.3.0 released 2009-08-22
 
 * Thanks to laserlemon for support of ranges and arrays in the equals condition.

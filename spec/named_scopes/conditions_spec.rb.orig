@@ -93,16 +93,6 @@ describe "Conditions" do
       ["bjohnson", ""].each { |username| User.create(:username => username) }
       User.username_empty.all.should == User.find_all_by_username("")
     end
-    
-    it "should have blank" do
-      ["bjohnson", "", nil].each { |username| User.create(:username => username) }
-      User.username_blank.all.should == User.all(:conditions => "username IS NULL OR username = ''")
-    end
-    
-    it "should have not blank" do
-      ["bjohnson", "", nil].each { |username| User.create(:username => username) }
-      User.username_not_blank.all.should == User.all(:conditions => "username IS NOT NULL OR username != ''")      
-    end
   end
   
   context "any and all conditions" do
