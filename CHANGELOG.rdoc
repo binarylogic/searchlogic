@@ -1,4 +1,4 @@
-== 2.3.0
+== 2.3.1 released 2009-08-24
 
 * Added blank and not_blank conditions.
 * Made User.whatever_like_any("val1", "val2") consistent with User.whatever_like_any(["val1", "val2"])
