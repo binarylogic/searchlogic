@@ -1,6 +1,6 @@
 = Searchlogic
 
-Searchlogic provides tools that make using ActiveRecord named scopes easier and less repetitive. It helps keep your code DRY, clean, and simple.
+Searchlogic makes using ActiveRecord named scopes easier and less repetitive. It helps keep your code DRY, clean, and simple.
 
 == Helpful links
 
@@ -71,17 +71,19 @@ For a complete list of conditions please see the constants in Searchlogic::Named
 
 Typing out 'greater_than_or_equal_to' is not fun. Instead Searchlogic provides various aliases for the conditions. For a complete list please see Searchlogic::NamedScopes::Conditions. But they are pretty straightforward:
 
-  User.username_is(10)
-  User.username_eq(10)
-  User.id_lt(10)
-  User.id_lte(10)
+  User.username_is(10)  # equals
+  User.username_eq(10)  # equals
+  User.id_lt(10)        # less than
+  User.id_lte(10)       # less than or equal to
+  User.id_gt(10)        # greater than
+  User.id_gte(10)       # greater than or equal to
   # etc...
 
 == Search using scopes in associated classes
 
 This is my favorite part of Searchlogic. You can dynamically call scopes on associated classes and Searchlogic will take care of creating the necessary joins for you. This is REALY nice for keeping your code DRY. The best way to explain this is to show you:
 
-Let's take some basic scopes that Searchlogic provides:
+Let's take some basic scopes that Searchlogic provides for every model:
 
   # We have the following relationships
   User.has_many :orders

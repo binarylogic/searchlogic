@@ -5,8 +5,8 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "searchlogic"
-    gem.summary = "Searchlogic provides tools that make using ActiveRecord named scopes easier and less repetitive."
-    gem.description = "Searchlogic provides tools that make using ActiveRecord named scopes easier and less repetitive."
+    gem.summary = "Searchlogic makes using ActiveRecord named scopes easier and less repetitive."
+    gem.description = "Searchlogic makes using ActiveRecord named scopes easier and less repetitive."
     gem.email = "bjohnson@binarylogic.com"
     gem.homepage = "http://github.com/binarylogic/searchlogic"
     gem.authors = ["Ben Johnson of Binary Logic"]
