@@ -84,6 +84,8 @@ Typing out 'greater_than_or_equal_to' is not fun. Instead Searchlogic provides v
 
 This is my favorite part of Searchlogic. You can dynamically call scopes on associated classes and Searchlogic will take care of creating the necessary joins for you. This is REALY nice for keeping your code DRY. The best way to explain this is to show you:
 
+=== Searchlogic provided scopes
+
 Let's take some basic scopes that Searchlogic provides for every model:
 
   # We have the following relationships
@@ -101,13 +103,17 @@ Let's take some basic scopes that Searchlogic provides for every model:
 
 This is recursive, you can travel through your associations simply by typing it in the name of the method. Again these are just named scopes. You can chain them together, call methods off of them, etc.
 
+=== Custom associated scopes
+
 Also, these conditions aren't limited to the scopes Searchlogic provides. You can use your own scopes. Like this:
 
   LineItem.named_scope :expensive, :conditions => "line_items.price > 500"
   
-  User.orders_line_items_expensive(true)
+  User.orders_line_items_expensive
 
 As I stated above, Searchlogic will take care of creating the necessary joins for you. This is REALLY nice when trying to keep your code DRY, because if you wanted to use a scope like this in your User model you would have to copy over the conditions. Now you have 2 named scopes that are essentially doing the same thing. Why do that when you can dynamically access that scope using this feature?
+
+=== Uses :joins not :include
 
 Another thing to note is that the joins created by Searchlogic do NOT use the :include option, making them <em>much</em> faster. Instead they leverage the :joins option, which is great for performance. To prove my point here is a quick benchmark from an application I am working on:
 
