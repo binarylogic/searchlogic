@@ -122,7 +122,7 @@ module Searchlogic
           when "blank"
             {:conditions => "#{table_name}.#{column} = '' OR #{table_name}.#{column} IS NULL"}
           when "not_blank"
-            {:conditions => "#{table_name}.#{column} != '' OR #{table_name}.#{column} IS NOT NULL"}
+            {:conditions => "#{table_name}.#{column} != '' AND #{table_name}.#{column} IS NOT NULL"}
           end
           
           named_scope("#{column}_#{condition}".to_sym, scope_options)
