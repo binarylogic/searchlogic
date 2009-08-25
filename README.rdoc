@@ -8,6 +8,7 @@ Searchlogic makes using ActiveRecord named scopes easier and less repetitive. It
 * <b>Repository:</b> http://github.com/binarylogic/searchlogic/tree/master
 * <b>Issues:</b> http://github.com/binarylogic/searchlogic/issues
 * <b>Google group:</b> http://groups.google.com/group/searchlogic
+* <b>Railscast:</b> http://railscasts.com/episodes/176-searchlogic
 
 <b>Before contacting me directly, please read:</b>
 
