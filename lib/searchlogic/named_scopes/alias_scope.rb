@@ -44,6 +44,7 @@ module Searchlogic
           end
         end
       end
+      alias_method :scope_procedure, :alias_scope
       
       def alias_scopes # :nodoc:
         @alias_scopes ||= {}

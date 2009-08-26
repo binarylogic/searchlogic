@@ -1,3 +1,8 @@
+== 2.3.2 relased 2009-08-26
+
+* Add in scope_procedure as an alias for alias_scope.
+* Fixed bug with not_blank condition.
+
 == 2.3.1 released 2009-08-24
 
 * Added blank and not_blank conditions.

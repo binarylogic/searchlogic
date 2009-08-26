@@ -170,6 +170,18 @@ You can do:
 
 Again, these just map to named scopes. Use Searchlogic's dynamic scopes, use scopes on associations, use your own custom scopes. As long as it maps to a named scope it will join the conditions with 'OR'. There are no limitations.
 
+== Create scope procedures
+
+Sometimes you notice a pattern in your application where you are constantly combining certain named scopes. You want to keep the flexibility of being able to mix and match small named scopes, while at the same time being able to call a single scope for a common task. User searchlogic's scpe procedure:
+
+  User.scope_procedure :awesome, lambda { first_name_begins_with("ben").last_name_begins_with("johnson").website_equals("binarylogic.com") }
+
+All that this is doing is creating a class level method, but what is nice about this method is that is more inline with your other named scopes. It also tells searchlogic that this method is 'safe' to use when using the search method. Ex:
+
+  User.search(:awesome => true)
+
+Otherwise searchlogic will ignore the 'awesome' condition because there is no way to tell that its a valid scope. This is a security measure to keep users from passing in a scope with a named like 'destroy_all'.
+
 == Make searching and ordering data in your application trivial
 
 The above is great, but what about tying all of this in with a search form in your application? What would be really nice is if we could use an object that represented a single search. Like this...
@@ -273,6 +285,8 @@ You would do:
 Before I use a library in my application I like to glance at the source and try to at least understand the basics of how it works. If you are like me, a nice little explanation from the author is always helpful:
 
 Searchlogic utilizes method_missing to create all of these named scopes. When it hits method_missing it creates a named scope to ensure it will never hit method missing for that named scope again. Sort of a caching mechanism. It works in the same fashion as ActiveRecord's "find_by_*" methods. This way only the named scopes you need are created and nothing more.
+
+The search object is just a proxy to your model that only delegates calls that map to named scopes and nothing more. This is obviously done for security reasons. It also helps make form integration easier, by type casting values, and playing nice with form_for. This class is pretty simple as well.
 
 That's about it, the named scope options are pretty bare bones and created just like you would manually.
 
