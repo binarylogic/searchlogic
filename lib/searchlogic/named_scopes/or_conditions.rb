@@ -96,10 +96,20 @@ module Searchlogic
         
         def create_or_condition(scopes, args)
           named_scope scopes.join("_or_"), lambda { |*args|
-            scopes_options = scopes.collect { |scope| send(scope, *args).proxy_options }
-            conditions = scopes_options.reject { |o| o[:conditions].nil? }.collect { |o| sanitize_sql(o[:conditions]) }
-            scopes.inject(scoped({})) { |scope, scope_name| scope.send(scope_name, *args) }.scope(:find).merge(:conditions => "(" + conditions.join(") OR (") + ")")
+            merge_scopes_with_or(scopes.collect { |scope| [scope, *args] })
           }
+        end
+        
+        def merge_scopes_with_or(scopes)
+          scopes_options = scopes.collect { |scope, *args| send(scope, *args).proxy_options }
+          conditions = scopes_options.reject { |o| o[:conditions].nil? }.collect { |o| sanitize_sql(o[:conditions]) }
+          
+          scope = scopes.inject(scoped({})) do |scope, info|
+            scope_name, *args = info
+            scope.send(scope_name, *args)
+          end
+          
+          scope.scope(:find).merge(:conditions => "(" + conditions.join(") OR (") + ")")
         end
     end
   end

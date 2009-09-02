@@ -1,4 +1,8 @@
-== 2.3.2 relased 2009-08-26
+== 2.3.3 released 2009-09-02
+
+* Split out merging scopes with 'or' into a convenient method.
+
+== 2.3.2 released 2009-08-26
 
 * Add in scope_procedure as an alias for alias_scope.
 * Fixed bug with not_blank condition.
