@@ -16,16 +16,16 @@ module Searchlogic
       def merge_joins_with_searchlogic(*args)
         joins = merge_joins_without_searchlogic(*args)
         joins = joins.collect { |j| j.is_a?(String) ? j.split("  ") : j }.flatten.uniq
-				joins = joins.collect do |j|
-					if j.is_a?(String)
-						j.gsub(/(.*) ON (.*) = (.*)/) do |m|
-							sorted = [$2,$3].sort
-							"#{$1} ON #{sorted[0]} = #{sorted[1]}"
-						end
-					else
-						j
-					end
-				end
+        joins = joins.collect do |j|
+          if j.is_a?(String)
+            j.gsub(/(.*) ON (.*) = (.*)/) do |m|
+              sorted = [$2,$3].sort
+              "#{$1} ON #{sorted[0]} = #{sorted[1]}"
+            end
+          else
+            j
+          end
+        end
       end
     end
   end
