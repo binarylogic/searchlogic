@@ -131,4 +131,11 @@ describe "Association Conditions" do
     User.named_scope(:orders_big_id, :joins => User.inner_joins(:orders))
     Company.users_orders_big_id.proxy_options.should == {:joins=>[" INNER JOIN \"users\" ON users.company_id = companies.id ", " INNER JOIN \"orders\" ON orders.user_id = users.id "]}
   end
+
+  it "should order the join statements ascending by the fieldnames so that we don't get double joins where the only difference is that the order of the fields is different" do
+    company = Company.create
+    user = company.users.create(:company_id => company.id)
+    company.users.company_id_eq(company.id).should == [user]
+  end
+
 end
