@@ -292,4 +292,10 @@ describe "Conditions" do
     User.company_id_null.count.should == 1
     User.company_id_not_null.count.should == 0
   end
+  
+  it "should fix bug for issue 26" do
+    count1 = User.id_ne(10).username_not_like("root").count
+    count2 = User.id_ne(10).username_not_like("root").count
+    count1.should == count2
+  end
 end
