@@ -17,7 +17,7 @@ module Searchlogic
         joins = merge_joins_without_searchlogic(*args)
         joins = joins.collect { |j| j.is_a?(String) ? j.split("  ") : j }.flatten.uniq
         joins = joins.collect do |j|
-          if j.is_a?(String)
+          if j.is_a?(String) && !j =~ / (AND|OR) /i
             j.gsub(/(.*) ON (.*) = (.*)/) do |m|
               sorted = [$2,$3].sort
               "#{$1} ON #{sorted[0]} = #{sorted[1]}"
