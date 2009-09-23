@@ -96,7 +96,7 @@ module Searchlogic
             conditions[condition_name]
           end
         else
-          scope = conditions.inject(klass.scoped(current_scope)) do |scope, condition|
+          scope = conditions.inject(klass.scoped(current_scope) || {}) do |scope, condition|
             scope_name, value = condition
             scope_name = normalize_scope_name(scope_name)
             klass.send(scope_name, value) if !klass.respond_to?(scope_name)
