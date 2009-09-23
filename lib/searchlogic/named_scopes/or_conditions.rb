@@ -91,7 +91,7 @@ module Searchlogic
             end
           end
           
-          conditions
+          conditions.reverse
         end
         
         def create_or_condition(scopes, args)
