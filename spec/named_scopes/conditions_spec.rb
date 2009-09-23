@@ -269,6 +269,18 @@ describe "Conditions" do
     end
   end
   
+  context "group conditions" do
+    it "should have in" do
+      (5..7).each { |age| User.create(:age => age) }
+      User.age_in([5,6]).all == User.find(:all, :conditions => ["users.age IN (?)", [5, 6]])
+    end
+    
+    it "should have not_in" do
+      (5..7).each { |age| User.create(:age => age) }
+      User.age_not_in([5,6]).all == User.find(:all, :conditions => ["users.age NOT IN (?)", [5, 6]])
+    end
+  end
+  
   context "searchlogic lambda" do
     it "should be a string" do
       User.username_like("test")

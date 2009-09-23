@@ -35,6 +35,11 @@ module Searchlogic
         :not_blank => [:present]
       }
       
+      GROUP_CONDITIONS = {
+        :in => [],
+        :not_in => []
+      }
+      
       CONDITIONS = {}
       
       # Add any / all variations to every comparison and wildcard condition
@@ -45,6 +50,8 @@ module Searchlogic
       end
       
       BOOLEAN_CONDITIONS.each { |condition, aliases| CONDITIONS[condition] = aliases }
+      
+      GROUP_CONDITIONS.each { |condition, aliases| CONDITIONS[condition] = aliases }
       
       PRIMARY_CONDITIONS = CONDITIONS.keys
       ALIAS_CONDITIONS = CONDITIONS.values.flatten
@@ -123,6 +130,10 @@ module Searchlogic
             {:conditions => "#{table_name}.#{column} = '' OR #{table_name}.#{column} IS NULL"}
           when "not_blank"
             {:conditions => "#{table_name}.#{column} != '' AND #{table_name}.#{column} IS NOT NULL"}
+          when "in"
+            scope_options(condition, column_type, "#{table_name}.#{column} IN (?)")
+          when "not_in"
+            scope_options(condition, column_type, "#{table_name}.#{column} NOT IN (?)")
           end
           
           named_scope("#{column}_#{condition}".to_sym, scope_options)
