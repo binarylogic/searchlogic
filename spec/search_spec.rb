@@ -75,6 +75,15 @@ describe "Search" do
       search.username.should be_nil
     end
     
+    it "should use custom scopes before normalizing" do
+      User.create(:username => "bjohnson")
+      User.named_scope :username, lambda { |value| {:conditions => {:username => value.reverse}} }
+      search1 = User.search(:username => "bjohnson")
+      search2 = User.search(:username => "nosnhojb")
+      search1.count.should == 0
+      search2.count.should == 1
+    end
+    
     it "should ignore blank values in arrays" do
       search = User.search
       search.conditions = {"username_equals_any" => [""]}
