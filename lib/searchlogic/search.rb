@@ -117,7 +117,11 @@ module Searchlogic
       end
       
       def normalize_scope_name(scope_name)
-        klass.column_names.include?(scope_name.to_s) ? "#{scope_name}_equals".to_sym : scope_name.to_sym
+        case
+        when klass.scopes.key?(scope_name.to_sym) then scope_name.to_sym
+        when klass.column_names.include?(scope_name.to_s) then "#{scope_name}_equals".to_sym
+        else scope_name.to_sym
+        end
       end
       
       def setter?(name)
