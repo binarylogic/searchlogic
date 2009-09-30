@@ -138,7 +138,7 @@ module Searchlogic
       end
       
       def cast_type(name)
-        klass.send(name, nil) if !klass.respond_to?(name) # We need to set up the named scope if it doesn't exist, so we can get a value for named_ssope_options
+        klass.send(name, nil) if !klass.respond_to?(name) # We need to set up the named scope if it doesn't exist, so we can get a value for named_scope_options
         named_scope_options = klass.named_scope_options(name)
         arity = klass.named_scope_arity(name)
         if !arity || arity == 0
