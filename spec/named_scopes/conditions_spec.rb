@@ -15,7 +15,6 @@ describe "Conditions" do
     it "should have equals" do
       (5..7).each { |age| User.create(:age => age) }
       User.age_equals(6).all.should == User.find_all_by_age(6)
-      User.age_equals(nil).all.should == User.find_all_by_age(nil)
       User.age_equals(5..6).all.should == User.find_all_by_age(5..6)
       User.age_equals([5, 7]).all.should == User.find_all_by_age([5, 7])
     end
