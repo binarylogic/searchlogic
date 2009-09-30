@@ -152,6 +152,8 @@ module Searchlogic
         case value
         when Array
           value.collect { |v| type_cast(v, type) }
+        when Range
+          Range.new(type_cast(value.first, type), type_cast(value.last, type))
         else
           # Let's leverage ActiveRecord's type casting, so that casting is consistent
           # with the other models.
