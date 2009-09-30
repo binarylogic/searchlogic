@@ -237,6 +237,12 @@ describe "Search" do
         search.total_gt.should == 1.5
       end
       
+      it "should be a Range given 1..3" do
+        search = Order.search
+        search.total_eq = (1..3)
+        search.total_eq.should == (1..3)
+      end
+      
       it "should be a Date given 'Jan 1, 2009'" do
         search = Order.search
         search.shipped_on_after = "Jan 1, 2009"
