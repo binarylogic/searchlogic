@@ -73,8 +73,11 @@ module Searchlogic
               # We are a searchlogic defined scope
               conditions << "#{details[:column]}_#{details[:condition]}"
               last_condition = details[:condition]
-            elsif details = association_condition_details(part)
-              # pending, need to find the last condition
+            elsif association_details = association_condition_details(part)
+              if details = condition_details(association_details[:condition])
+                conditions << "#{association_details[:association]}_#{details[:column]}_#{details[:condition]}"
+                last_condition = details[:condition]
+              end
             elsif local_condition?(part)
               # We are a custom scope
               conditions << part
@@ -109,7 +112,9 @@ module Searchlogic
             scope.send(scope_name, *args)
           end
           
-          scope.scope(:find).merge(:conditions => "(" + conditions.join(") OR (") + ")")
+          options = scope.scope(:find)
+          options.delete(:readonly) unless scope.proxy_options.key?(:readonly)
+          options.merge(:conditions => "(" + conditions.join(") OR (") + ")")
         end
     end
   end
