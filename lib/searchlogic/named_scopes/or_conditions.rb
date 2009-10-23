@@ -74,9 +74,9 @@ module Searchlogic
               conditions << "#{details[:column]}_#{details[:condition]}"
               last_condition = details[:condition]
             elsif association_details = association_condition_details(part, last_condition)
-              path = full_association_path(part, last_condition).join("_")
-              if details = condition_details(association_details[:condition], path.empty? ? nil : path.to_sym )
-                conditions << "#{path.to_sym}_#{details[:column]}_#{details[:condition]}"
+              klass = reflect_on_association(association_details[:association].to_sym).klass
+              if details = klass.send(:condition_details, association_details[:condition])
+                conditions << "#{association_details[:association]}_#{details[:column]}_#{details[:condition]}"
                 last_condition = details[:condition]
               end
             elsif local_condition?(part)
@@ -96,15 +96,6 @@ module Searchlogic
           end
           
           conditions.reverse
-        end
-
-        def full_association_path(assoc, last_condition)
-            path = []
-            while details = association_condition_details(assoc, last_condition)
-              path << details[:association]
-              assoc = details[:condition]
-            end
-            path
         end
         
         def create_or_condition(scopes, args)

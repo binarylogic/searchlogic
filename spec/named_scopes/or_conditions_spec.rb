@@ -43,6 +43,11 @@ describe "Or conditions" do
     lambda { User.name_or_company_name_like("ben") }.should_not raise_error(Searchlogic::NamedScopes::OrConditions::NoConditionSpecifiedError)
     User.name_or_company_name_like("ben").proxy_options.should == {:joins => :company, :conditions => "(users.name LIKE '%ben%') OR (companies.name LIKE '%ben%')"}
     User.company_name_or_name_like("ben").proxy_options.should == {:joins => :company, :conditions => "(companies.name LIKE '%ben%') OR (users.name LIKE '%ben%')"}
-    User.company_name_or_company_description_like("ben").proxy_options.should == {:joins => :company, :conditions => "(companies.name LIKE '%ben%') OR (companies.description LIKE '%ben%')"}
+    User.company_name_or_company_description_like("ben").proxy_options.should == {:joins =>[:company], :conditions => "(companies.name LIKE '%ben%') OR (companies.description LIKE '%ben%')"}
+  end
+
+  it "should play nice with n-depth scopes on associations" do
+    User.company_conglomerate_name_or_company_conglomerate_description_like("ben").proxy_options.should ==
+      {:joins =>[:company, :conglomerate], :conditions => "(conglomerate.name LIKE '%ben%') OR ( conglomerate.description LIKE '%ben%')"}
   end
 end
