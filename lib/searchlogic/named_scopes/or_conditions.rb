@@ -73,7 +73,7 @@ module Searchlogic
               # We are a searchlogic defined scope
               conditions << "#{details[:column]}_#{details[:condition]}"
               last_condition = details[:condition]
-            elsif association_details = association_condition_details(part)
+            elsif association_details = association_condition_details(part, last_condition)
               if details = condition_details(association_details[:condition])
                 conditions << "#{association_details[:association]}_#{details[:column]}_#{details[:condition]}"
                 last_condition = details[:condition]

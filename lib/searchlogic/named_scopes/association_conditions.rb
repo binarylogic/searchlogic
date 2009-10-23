@@ -20,21 +20,24 @@ module Searchlogic
           end
         end
         
-        def association_condition_details(name)
+        def association_condition_details(name, last_condition = nil)
           assocs = reflect_on_all_associations.reject { |assoc| assoc.options[:polymorphic] }.sort { |a, b| b.name.to_s.size <=> a.name.to_s.size }
           return nil if assocs.empty?
           
-          if name.to_s =~ /^(#{assocs.collect(&:name).join("|")})_(\w+)$/
-            association_name = $1
-            condition = $2
-            association = reflect_on_association(association_name.to_sym)
-            klass = association.klass
-            if klass.condition?(condition)
-              {:association => $1, :condition => $2}
-            else
-              nil
+          [nil, last_condition].uniq.map do |condition|
+            name_with_condition = [name, condition].compact.join('_')
+            if name_with_condition.to_s =~ /^(#{assocs.collect(&:name).join("|")})_(\w+)$/
+              association_name = $1
+              condition = $2
+              association = reflect_on_association(association_name.to_sym)
+              klass = association.klass
+              if klass.condition?(condition)
+                {:association => $1, :condition => $2}
+              else
+                nil
+              end
             end
-          end
+          end.detect{ |details| !details.nil? }
         end
         
         def create_association_condition(association, condition, args)
