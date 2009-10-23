@@ -77,8 +77,13 @@ module Searchlogic
           end
         end
         
-        def condition_details(name)
-          if name.to_s =~ /^(#{column_names.join("|")})_(#{(PRIMARY_CONDITIONS + ALIAS_CONDITIONS).join("|")})$/
+        def condition_details(name, *args)
+          if args.size > 0 and !args.first.nil?
+            assoc = reflect_on_association(args.first.to_sym)
+            klass = assoc.klass
+            name.to_s =~ /^(#{klass.column_names.join("|")})_(#{(PRIMARY_CONDITIONS + ALIAS_CONDITIONS).join("|")})$/
+            {:column => $1, :condition => $2}
+          elsif name.to_s =~ /^(#{column_names.join("|")})_(#{(PRIMARY_CONDITIONS + ALIAS_CONDITIONS).join("|")})$/
             {:column => $1, :condition => $2}
           end
         end
