@@ -67,18 +67,16 @@ module Searchlogic
         def interpolate_or_conditions(parts)
           conditions = []
           last_condition = nil
-          
+
           parts.reverse.each do |part|
             if details = condition_details(part)
               # We are a searchlogic defined scope
               conditions << "#{details[:column]}_#{details[:condition]}"
               last_condition = details[:condition]
             elsif association_details = association_condition_details(part, last_condition)
-              klass = reflect_on_association(association_details[:association].to_sym).klass
-              if details = klass.send(:condition_details, association_details[:condition])
-                conditions << "#{association_details[:association]}_#{details[:column]}_#{details[:condition]}"
-                last_condition = details[:condition]
-              end
+              path = full_association_path(part, last_condition, association_details[:association])
+              conditions << "#{path[:path].join("_").to_sym}_#{path[:column]}_#{path[:condition]}"
+              last_condition = path[:condition] || nil
             elsif local_condition?(part)
               # We are a custom scope
               conditions << part
@@ -96,6 +94,23 @@ module Searchlogic
           end
           
           conditions.reverse
+        end
+
+        def full_association_path(part, last_condition, given_assoc)
+            path = [given_assoc.to_sym]
+            part.sub!(/^#{given_assoc}_/, "")
+            klass = self
+            while klass = klass.send(:reflect_on_association, given_assoc.to_sym)
+              klass = klass.klass
+              if details = klass.send(:association_condition_details, part, last_condition)
+                path << details[:association]
+                part = details[:condition]
+                given_assoc = details[:association]
+              elsif details = klass.send(:condition_details, part, nil)
+                return { :path => path, :column => details[:column], :condition => details[:condition] }
+              end
+            end
+            { :path => path, :column => part, :condition => last_condition }
         end
         
         def create_or_condition(scopes, args)

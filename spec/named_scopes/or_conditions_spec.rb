@@ -48,6 +48,6 @@ describe "Or conditions" do
 
   it "should play nice with n-depth scopes on associations" do
     User.company_conglomerate_name_or_company_conglomerate_description_like("ben").proxy_options.should ==
-      {:joins =>[:company, :conglomerate], :conditions => "(conglomerate.name LIKE '%ben%') OR ( conglomerate.description LIKE '%ben%')"}
+      {:joins =>[{:company, :conglomerate}], :conditions => "(conglomerates.name LIKE '%ben%') OR (conglomerates.description LIKE '%ben%')"}
   end
 end
