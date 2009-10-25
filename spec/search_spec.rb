@@ -104,7 +104,7 @@ describe "Search" do
       search.username_gt.should == "bjohnson"
     end
     
-    it "should allow chainging conditions" do
+    it "should allow chaining conditions" do
       user = User.create(:username => "bjohnson", :age => 20)
       User.create(:username => "bjohnson", :age => 5)
       search = User.search
@@ -112,6 +112,12 @@ describe "Search" do
       search.all.should == [user]
     end
     
+    it "should allow chaining conditions with n-depth associations" do
+      search = User.search
+      search.company_conglomerate_name_or_company_conglomerate_description_like("ben")
+      search.proxy_options.should == User.company_conglomerate_name_or_company_conglomerate_description_like("ben").proxy_options
+    end
+
     it "should allow setting association conditions" do
       search = User.search
       search.orders_total_gt = 10

@@ -76,6 +76,12 @@ module Searchlogic
             super
           end
         end
+
+        def find_applied_condition(name)
+          if name.to_s =~ /(#{(PRIMARY_CONDITIONS + ALIAS_CONDITIONS).join("|")})$/
+            $1
+          end
+        end
         
         def condition_details(name, *args)
           if args.size > 0 and !args.first.nil?
