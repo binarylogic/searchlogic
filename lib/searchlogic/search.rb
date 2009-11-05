@@ -129,8 +129,8 @@ module Searchlogic
       end
       
       def condition_name(name)
-        condition = name.to_s.match(/(\w+)=?$/)[1]
-        condition ? condition.to_sym : nil
+        condition = name.to_s.match(/(\w+)=?$/)
+        condition ? condition[1].to_sym : nil
       end
       
       def scope_name(condition_name)
