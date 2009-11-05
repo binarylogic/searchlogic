@@ -342,4 +342,22 @@ describe "Search" do
       User.search(:order => "ascend_by_username").proxy_options.should == User.ascend_by_username.proxy_options
     end
   end
+  
+  context "method delegation" do
+    it "should respond to count" do
+      User.create(:username => "bjohnson")
+      search1 = User.search(:username => "bjohnson")
+      search2 = User.search(:username => "nosnhojb")
+      search1.count.should == 1
+      search2.count.should == 0
+    end
+    
+    it "should respond to empty?" do
+      User.create(:username => "bjohnson")
+      search1 = User.search(:username => "bjohnson")
+      search2 = User.search(:username => "nosnhojb")
+      search1.empty?.should == false
+      search2.empty?.should == true
+    end
+  end
 end
