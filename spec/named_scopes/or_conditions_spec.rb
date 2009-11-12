@@ -50,4 +50,15 @@ describe "Or conditions" do
     User.company_conglomerate_name_or_company_conglomerate_description_like("ben").proxy_options.should ==
       {:joins =>[{:company, :conglomerate}], :conditions => "(conglomerates.name LIKE '%ben%') OR (conglomerates.description LIKE '%ben%')"}
   end
+  
+  it "should not get confused by the 'or' in find_or_create_by_* methods" do
+    User.create(:name => "Fred")
+    User.find_or_create_by_name("Fred").should be_a_kind_of User
+  end
+
+  it "should not get confused by the 'or' in compound find_or_create_by_* methods" do
+    User.create(:name => "Fred", :username => "fredb")
+    User.find_or_create_by_name_and_username("Fred", "fredb").should be_a_kind_of User
+  end
+  
 end
