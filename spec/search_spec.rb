@@ -338,6 +338,10 @@ describe "Search" do
       User.search(:username_nil => false).proxy_options.should == {}
     end
     
+    it "should not ignore conditions with a value of false where the named scope does not have an arity of 0" do
+      User.search(:username_is => false).proxy_options.should == User.username_is(false).proxy_options
+    end
+    
     it "should recognize the order condition" do
       User.search(:order => "ascend_by_username").proxy_options.should == User.ascend_by_username.proxy_options
     end
