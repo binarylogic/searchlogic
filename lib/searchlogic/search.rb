@@ -62,8 +62,8 @@ module Searchlogic
     # Accepts a hash of conditions.
     def conditions=(values)
       values.each do |condition, value|
-        value.delete_if { |v| v.blank? } if value.is_a?(Array)
-        next if value.is_a?(String) && value.blank?
+        value.delete_if { |v| ignore_value?(v) } if value.is_a?(Array)
+        next if ignore_value?(value)
         send("#{condition}=", value)
       end
     end
@@ -166,6 +166,10 @@ module Searchlogic
           value = column_for_type_cast.type_cast(value)
           Time.zone && value.is_a?(Time) ? value.in_time_zone : value
         end
+      end
+      
+      def ignore_value?(value)
+        (value.is_a?(String) && value.blank?) || (value.is_a?(Array) && value.empty?)
       end
   end
 end

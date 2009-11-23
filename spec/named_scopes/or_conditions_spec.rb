@@ -45,11 +45,6 @@ describe "Or conditions" do
     User.company_name_or_name_like("ben").proxy_options.should == {:joins => :company, :conditions => "(companies.name LIKE '%ben%') OR (users.name LIKE '%ben%')"}
     User.company_name_or_company_description_like("ben").proxy_options.should == {:joins =>[:company], :conditions => "(companies.name LIKE '%ben%') OR (companies.description LIKE '%ben%')"}
   end
-
-  it "should play nice with n-depth scopes on associations" do
-    User.company_conglomerate_name_or_company_conglomerate_description_like("ben").proxy_options.should ==
-      {:joins =>[{:company, :conglomerate}], :conditions => "(conglomerates.name LIKE '%ben%') OR (conglomerates.description LIKE '%ben%')"}
-  end
   
   it "should not get confused by the 'or' in find_or_create_by_* methods" do
     User.create(:name => "Fred")

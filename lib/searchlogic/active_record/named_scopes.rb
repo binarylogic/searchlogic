@@ -13,15 +13,10 @@ module Searchlogic
       # ActiveRecord hides this internally in a Proc, so we have to try and pull it out with this
       # method.
       def named_scope_options(name)
-
-        key = scopes.key?(name.to_sym) ? name.to_sym : primary_condition_name(name)
+        key = scopes.key?(name.to_sym) ? name.to_sym : condition_scope_name(name)
         
         if key
           eval("options", scopes[key].binding)
-        elsif name.to_s.downcase.match("_or_")
-          condition = find_applied_condition(name)
-          newname = name.to_s.gsub(/_or_/, "_#{condition}_or_").to_sym
-          named_scope_options(newname) unless name == newname
         else
           nil
         end

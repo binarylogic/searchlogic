@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string :username
     t.string :name
     t.integer :age
+    t.boolean :male
   end
   
   create_table :carts do |t|
@@ -57,13 +58,6 @@ ActiveRecord::Schema.define(:version => 1) do
     t.integer :order_id
     t.float :price
   end
-
-  create_table :conglomerates do |t|
-    t.datetime :created_at
-    t.datetime :updated_at
-    t.string :name
-    t.string :description
-  end
 end
 
 $LOAD_PATH.unshift(File.dirname(__FILE__))
@@ -73,7 +67,6 @@ require 'searchlogic'
 Spec::Runner.configure do |config|
   config.before(:each) do
     class Company < ActiveRecord::Base
-      belongs_to :conglomerate
       has_many :users, :dependent => :destroy
     end
     
@@ -94,10 +87,6 @@ Spec::Runner.configure do |config|
     
     class LineItem < ActiveRecord::Base
       belongs_to :order
-    end
-
-    class Conglomerate < ActiveRecord::Base
-      has_many :companies, :dependent => :destroy
     end
     
     Company.destroy_all

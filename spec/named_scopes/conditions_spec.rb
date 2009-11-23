@@ -19,6 +19,12 @@ describe "Conditions" do
       User.age_equals([5, 7]).all.should == User.find_all_by_age([5, 7])
     end
     
+    it "should have equals for boolean columns" do
+      female = User.create(:male => false)
+      male = User.create(:male => true)
+      User.male.should == [male]
+    end
+    
     it "should have does not equal" do
       (5..7).each { |age| User.create(:age => age) }
       User.age_does_not_equal(6).all.should == User.find_all_by_age([5,7])

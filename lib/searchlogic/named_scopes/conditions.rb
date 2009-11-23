@@ -49,6 +49,9 @@ module Searchlogic
         CONDITIONS["#{condition}_all".to_sym] = aliases.collect { |a| "#{a}_all".to_sym }
       end
       
+      CONDITIONS[:equals_any] = CONDITIONS[:equals_any] + [:in]
+      CONDITIONS[:does_not_equal_any] = CONDITIONS[:equals_any] + [:not_in]
+      
       BOOLEAN_CONDITIONS.each { |condition, aliases| CONDITIONS[condition] = aliases }
       
       GROUP_CONDITIONS.each { |condition, aliases| CONDITIONS[condition] = aliases }
@@ -65,21 +68,22 @@ module Searchlogic
         def local_condition?(name)
           return false if name.blank?
           scope_names = scopes.keys.reject { |k| k == :scoped }
-          scope_names.include?(name.to_sym) || !condition_details(name).nil?
+          scope_names.include?(name.to_sym) || !condition_details(name).nil? || boolean_condition?(name)
+        end
+        
+        def boolean_condition?(name)
+          columns_hash.key?(name.to_s) && columns_hash[name.to_s].type == :boolean
         end
         
         def method_missing(name, *args, &block)
           if details = condition_details(name)
             create_condition(details[:column], details[:condition], args)
             send(name, *args)
+          elsif boolean_condition?(name)
+            named_scope name, :conditions => {name => true}
+            send(name)
           else
             super
-          end
-        end
-
-        def find_applied_condition(name)
-          if name.to_s =~ /(#{(PRIMARY_CONDITIONS + ALIAS_CONDITIONS).join("|")})$/
-            $1
           end
         end
         
@@ -141,10 +145,6 @@ module Searchlogic
             {:conditions => "#{table_name}.#{column} = '' OR #{table_name}.#{column} IS NULL"}
           when "not_blank"
             {:conditions => "#{table_name}.#{column} != '' AND #{table_name}.#{column} IS NOT NULL"}
-          when "in"
-            scope_options(condition, column_type, "#{table_name}.#{column} IN (?)")
-          when "not_in"
-            scope_options(condition, column_type, "#{table_name}.#{column} NOT IN (?)")
           end
           
           named_scope("#{column}_#{condition}".to_sym, scope_options)
@@ -209,9 +209,9 @@ module Searchlogic
         # a primary condition, alias condition, etc, and it will return the proper
         # primary condition name. This helps simply logic throughout Searchlogic. Ex:
         #
-        #   primary_condition_name(:id_gt) => :id_greater_than
-        #   primary_condition_name(:id_greater_than) => :id_greater_than
-        def primary_condition_name(name)
+        #   condition_scope_name(:id_gt) => :id_greater_than
+        #   condition_scope_name(:id_greater_than) => :id_greater_than
+        def condition_scope_name(name)
           if details = condition_details(name)
             if PRIMARY_CONDITIONS.include?(name.to_sym)
               name

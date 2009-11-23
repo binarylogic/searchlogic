@@ -5,11 +5,11 @@ describe "Search" do
     it "should create a search proxy" do
       User.search(:username => "joe").should be_kind_of(Searchlogic::Search)
     end
-
+    
     it "should create a search proxy using the same class" do
       User.search.klass.should == User
     end
-
+    
     it "should pass on the current scope to the proxy" do
       company = Company.create
       user = company.users.create
@@ -112,12 +112,6 @@ describe "Search" do
       search.all.should == [user]
     end
     
-    it "should allow chaining conditions with n-depth associations" do
-      search = User.search
-      search.company_conglomerate_name_or_company_conglomerate_description_like("ben")
-      search.proxy_options.should == User.company_conglomerate_name_or_company_conglomerate_description_like("ben").proxy_options
-    end
-
     it "should allow setting association conditions" do
       search = User.search
       search.orders_total_gt = 10
