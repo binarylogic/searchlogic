@@ -365,5 +365,13 @@ describe "Search" do
       search1.empty?.should == false
       search2.empty?.should == true
     end
+
+		it "should delegate to named scopes with arity > 1" do
+		  User.named_scope :paged, lambda {|start, limit| { :limit => limit, :offset => start }}
+			User.create(:username => "bjohnson")
+			search = User.search(:username => "bjohnson")
+			search.paged(0, 1).count.should == 1
+			search.paged(0, 0).count.should == 0
+	  end
   end
 end
