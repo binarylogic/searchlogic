@@ -72,7 +72,8 @@ module Searchlogic
         end
         
         def boolean_condition?(name)
-          columns_hash.key?(name.to_s) && columns_hash[name.to_s].type == :boolean
+          column = columns_hash[name.to_s] || columns_hash[name.to_s.gsub(/^not_/, "")]
+          column && column.type == :boolean
         end
         
         def method_missing(name, *args, &block)
@@ -80,7 +81,8 @@ module Searchlogic
             create_condition(details[:column], details[:condition], args)
             send(name, *args)
           elsif boolean_condition?(name)
-            named_scope name, :conditions => {name => true}
+            column = name.to_s.gsub(/^not_/, "")
+            named_scope name, :conditions => {column => (name.to_s =~ /^not_/).nil?}
             send(name)
           else
             super
