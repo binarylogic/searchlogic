@@ -109,7 +109,11 @@ module Searchlogic
                 scope
               end
             else
-              scope.send(scope_name, value)
+              if value.is_a?(Array)
+                scope.send(scope_name, *value)
+              else
+                scope.send(scope_name, value)
+              end
             end
           end
           scope.send(name, *args, &block)

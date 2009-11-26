@@ -339,6 +339,14 @@ describe "Search" do
     it "should recognize the order condition" do
       User.search(:order => "ascend_by_username").proxy_options.should == User.ascend_by_username.proxy_options
     end
+    
+    it "should pass array values as multiple arguments" do
+      User.named_scope(:multiple_args, lambda { |*args|
+        raise "This should not be an array, it should be 1" if args.first.is_a?(Array)
+        {:conditions => ["id IN (?)", args]}
+      })
+      User.search(:multiple_args => [1,2]).proxy_options.should == User.multiple_args(1,2).proxy_options
+    end
   end
   
   context "method delegation" do
