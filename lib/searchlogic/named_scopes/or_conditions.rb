@@ -106,7 +106,7 @@ module Searchlogic
                 path << details[:association]
                 part = details[:condition]
                 given_assoc = details[:association]
-              elsif details = klass.send(:condition_details, part, nil)
+              elsif details = klass.send(:condition_details, part)
                 return { :path => path, :column => details[:column], :condition => details[:condition] }
               end
             end

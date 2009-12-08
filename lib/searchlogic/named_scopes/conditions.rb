@@ -89,13 +89,11 @@ module Searchlogic
           end
         end
         
-        def condition_details(name, *args)
-          if args.size > 0 and !args.first.nil?
-            assoc = reflect_on_association(args.first.to_sym)
-            klass = assoc.klass
-            name.to_s =~ /^(#{klass.column_names.join("|")})_(#{(PRIMARY_CONDITIONS + ALIAS_CONDITIONS).join("|")})$/
-            {:column => $1, :condition => $2}
-          elsif name.to_s =~ /^(#{column_names.join("|")})_(#{(PRIMARY_CONDITIONS + ALIAS_CONDITIONS).join("|")})$/
+        def condition_details(method_name)
+          column_name_matcher = column_names.join("|")
+          conditions_matcher = (PRIMARY_CONDITIONS + ALIAS_CONDITIONS).join("|")
+
+          if method_name.to_s =~ /^(#{column_name_matcher})_(#{conditions_matcher})$/
             {:column => $1, :condition => $2}
           end
         end
