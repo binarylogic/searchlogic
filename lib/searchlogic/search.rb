@@ -84,7 +84,11 @@ module Searchlogic
         
         if setter?(name)
           if scope?(scope_name)
-            conditions[condition_name] = type_cast(args.first, cast_type(scope_name))
+            if args.size == 1
+              conditions[condition_name] = type_cast(args.first, cast_type(scope_name))
+            else
+              conditions[condition_name] = args
+            end
           else
             raise UnknownConditionError.new(condition_name)
           end
@@ -109,11 +113,7 @@ module Searchlogic
                 scope
               end
             else
-              if value.is_a?(Array)
-                scope.send(scope_name, *value)
-              else
-                scope.send(scope_name, value)
-              end
+              scope.send(scope_name, *value)
             end
           end
           scope.send(name, *args, &block)
