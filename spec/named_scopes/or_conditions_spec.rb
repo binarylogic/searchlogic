@@ -56,4 +56,11 @@ describe "Or conditions" do
     User.find_or_create_by_name_and_username("Fred", "fredb").should be_a_kind_of User
   end
   
+  it "should work with User.search(conditions) method" do
+    User.search(:username_or_name_like => 'ben').proxy_options.should == {:conditions => "(users.username LIKE '%ben%') OR (users.name LIKE '%ben%')"}
+  end
+
+  it "should convert types properly when used with User.search(conditions) method" do
+    User.search(:id_or_age_lte => '10').proxy_options.should == {:conditions => "(users.id <= 10) OR (users.age <= 10)"}
+  end
 end
