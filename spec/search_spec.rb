@@ -340,12 +340,26 @@ describe "Search" do
       User.search(:order => "ascend_by_username").proxy_options.should == User.ascend_by_username.proxy_options
     end
     
-    it "should pass array values as multiple arguments" do
+    it "should pass array values as multiple arguments with arity -1" do
       User.named_scope(:multiple_args, lambda { |*args|
         raise "This should not be an array, it should be 1" if args.first.is_a?(Array)
         {:conditions => ["id IN (?)", args]}
       })
       User.search(:multiple_args => [1,2]).proxy_options.should == User.multiple_args(1,2).proxy_options
+    end
+    
+    it "should pass array as a single value with arity >= 0" do
+      User.named_scope(:multiple_args, lambda { |args|
+        raise "This should be an array" if !args.is_a?(Array)
+        {:conditions => ["id IN (?)", args]}
+      })
+      User.search(:multiple_args => [1,2]).proxy_options.should == User.multiple_args(1,2).proxy_options
+    end
+    
+    it "should not split out dates or times (big fix)" do
+      s = User.search
+      s.created_at_after = Time.now
+      lambda { s.count }.should_not raise_error
     end
   end
   
@@ -366,12 +380,12 @@ describe "Search" do
       search2.empty?.should == true
     end
 
-		it "should delegate to named scopes with arity > 1" do
-		  User.named_scope :paged, lambda {|start, limit| { :limit => limit, :offset => start }}
-			User.create(:username => "bjohnson")
-			search = User.search(:username => "bjohnson")
-			search.paged(0, 1).count.should == 1
-			search.paged(0, 0).count.should == 0
-	  end
+    it "should delegate to named scopes with arity > 1" do
+      User.named_scope :paged, lambda {|start, limit| { :limit => limit, :offset => start }}
+      User.create(:username => "bjohnson")
+      search = User.search(:username => "bjohnson")
+      search.paged(0, 1).count.should == 1
+      search.paged(0, 0).count.should == 0
+    end
   end
 end

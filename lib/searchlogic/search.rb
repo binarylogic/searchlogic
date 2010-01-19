@@ -92,12 +92,12 @@ module Searchlogic
           else
             raise UnknownConditionError.new(condition_name)
           end
-        elsif scope?(scope_name)
-          if args.size > 0
+        elsif scope?(scope_name) && args.size <= 1
+          if args.size == 0
+            conditions[condition_name]
+          else
             send("#{condition_name}=", *args)
             self
-          else
-            conditions[condition_name]
           end
         else
           scope = conditions.inject(klass.scoped(current_scope) || {}) do |scope, condition|
@@ -112,8 +112,10 @@ module Searchlogic
               else
                 scope
               end
+            elsif arity == -1
+              scope.send(scope_name, *(value.is_a?(Array) ? value : [value]))
             else
-              scope.send(scope_name, *value)
+              scope.send(scope_name, value)
             end
           end
           scope.send(name, *args, &block)
