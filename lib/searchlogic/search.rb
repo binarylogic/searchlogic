@@ -169,8 +169,17 @@ module Searchlogic
           # with the other models.
           column_for_type_cast = ::ActiveRecord::ConnectionAdapters::Column.new("", nil)
           column_for_type_cast.instance_variable_set(:@type, type)
-          value = column_for_type_cast.type_cast(value)
-          Time.zone && value.is_a?(Time) ? value.in_time_zone : value
+          casted_value = column_for_type_cast.type_cast(value)
+          
+          if Time.zone && casted_value.is_a?(Time)
+            if value.is_a?(String)
+              (casted_value + (Time.zone.utc_offset * -1)).in_time_zone
+            else
+              casted_value.in_time_zone
+            end
+          else
+            casted_value
+          end
         end
       end
       

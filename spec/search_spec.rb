@@ -261,13 +261,13 @@ describe "Search" do
       it "should be a Time given 'Jan 1, 2009'" do
         search = Order.search
         search.created_at_after = "Jan 1, 2009"
-        search.created_at_after.should == Time.parse("Jan 1, 2009")
+        search.created_at_after.should == Time.zone.parse("Jan 1, 2009")
       end
       
       it "should be a Time given 'Jan 1, 2009 9:33AM'" do
         search = Order.search
         search.created_at_after = "Jan 1, 2009 9:33AM"
-        search.created_at_after.should == Time.parse("Jan 1, 2009 9:33AM")
+        search.created_at_after.should == Time.zone.parse("Jan 1, 2009 9:33AM")
       end
       
       it "should convert the time to the current zone" do
