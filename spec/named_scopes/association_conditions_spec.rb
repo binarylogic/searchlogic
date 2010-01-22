@@ -140,6 +140,6 @@ describe "Association Conditions" do
   
   it "should sanitize the scope on a foreign model instead of passing the raw options back to the original" do
     Company.named_scope(:users_count_10, :conditions => {:users_count => 10})
-    User.company_users_count_10.proxy_options.should == {:conditions => "\"users\".\"users_count\" = 10", :joins => :company}
+    User.company_users_count_10.proxy_options.should == {:conditions => "\"companies\".\"users_count\" = 10", :joins => :company}
   end
 end
