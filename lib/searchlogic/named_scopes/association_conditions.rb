@@ -91,7 +91,7 @@ module Searchlogic
         def prepare_named_scope_options(options, association)
           options.delete(:readonly) # AR likes to set :readonly to true when using the :joins option, we don't want that
           
-          options[:conditions] = sanitize_sql_for_conditions(options[:conditions]) if options[:conditions].is_a?(Hash)
+          options[:conditions] = association.klass.sanitize_sql_for_conditions(options[:conditions]) if options[:conditions].is_a?(Hash)
           
           if options[:joins].is_a?(String) || array_of_strings?(options[:joins])
             options[:joins] = [inner_joins(association.name), options[:joins]].flatten
