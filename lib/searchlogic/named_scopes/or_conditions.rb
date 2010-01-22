@@ -123,19 +123,14 @@ module Searchlogic
           scope = named_scope_options(scopes.first)
           column_type = scope.respond_to?(:searchlogic_arg_type) ? scope.searchlogic_arg_type : :string
           named_scope scopes.join("_or_"), searchlogic_lambda(column_type) { |*args|
-            merge_scopes_with_or(scopes.collect { |scope| [scope, *args] })
+            merge_scopes_with_or(scopes.collect { |scope| send(scope, *args) })
           }
         end
         
         def merge_scopes_with_or(scopes)
-          scopes_options = scopes.collect { |scope, *args| send(scope, *args).proxy_options }
+          scopes_options = scopes.collect { |scope| scope.proxy_options }
           conditions = scopes_options.reject { |o| o[:conditions].nil? }.collect { |o| sanitize_sql(o[:conditions]) }
-          
-          scope = scopes.inject(scoped({})) do |scope, info|
-            scope_name, *args = info
-            scope.send(scope_name, *args)
-          end
-          
+          scope = scopes_options.inject(scoped({})) { |current_scope, options| current_scope.scoped(options) }
           options = scope.scope(:find)
           options.delete(:readonly) unless scope.proxy_options.key?(:readonly)
           options.merge(:conditions => "(" + conditions.join(") OR (") + ")")
