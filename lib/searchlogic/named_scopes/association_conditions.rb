@@ -114,7 +114,7 @@ module Searchlogic
           if options[:joins].is_a?(String) || array_of_strings?(options[:joins])
             options[:joins] = [poly_class ? poly_join : inner_joins(association.name), options[:joins]].flatten
           elsif poly_class
-            options[:joins] = options[:joins].blank? ? poly_join : [poly_join, inner_joins(options[:joins])]
+            options[:joins] = options[:joins].blank? ? poly_join : ([poly_join] + klass.inner_joins(options[:joins]))
           else
             options[:joins] = options[:joins].blank? ? association.name : {association.name => options[:joins]}
           end
