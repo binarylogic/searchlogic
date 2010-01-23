@@ -13,7 +13,7 @@ module Searchlogic
         
         def method_missing(name, *args, &block)
           if !local_condition?(name) && details = association_condition_details(name)
-            create_association_condition(details[:association], details[:condition], args)
+            create_association_condition(details[:association], details[:condition], args, details[:poly_class])
             send(name, *args)
           else
             super
@@ -21,38 +21,52 @@ module Searchlogic
         end
         
         def association_condition_details(name, last_condition = nil)
-          assocs = reflect_on_all_associations.reject { |assoc| assoc.options[:polymorphic] }.sort { |a, b| b.name.to_s.size <=> a.name.to_s.size }
-          return nil if assocs.empty?
-          
+          non_poly_assocs = reflect_on_all_associations.reject { |assoc| assoc.options[:polymorphic] }.sort { |a, b| b.name.to_s.size <=> a.name.to_s.size }
+          poly_assocs = reflect_on_all_associations.reject { |assoc| !assoc.options[:polymorphic] }.sort { |a, b| b.name.to_s.size <=> a.name.to_s.size }
+          return nil if non_poly_assocs.empty? && poly_assocs.empty?
+        
           name_with_condition = [name, last_condition].compact.join('_')
-          if name_with_condition.to_s =~ /^(#{assocs.collect(&:name).join("|")})_(\w+)$/
+          
+          association_name = nil
+          poly_type = nil
+          condition = nil
+          
+          if name_with_condition.to_s =~ /^(#{non_poly_assocs.collect(&:name).join("|")})_(\w+)$/
             association_name = $1
             condition = $2
+          elsif name_with_condition.to_s =~ /^(#{poly_assocs.collect(&:name).join("|")})_(\w+)_type_(\w+)$/
+            association_name = $1
+            poly_type = $2
+            condition = $3
+          end
+          
+          if association_name && condition
             association = reflect_on_association(association_name.to_sym)
-            klass = association.klass
+            klass = poly_type ? poly_type.camelcase.constantize : association.klass
             if klass.condition?(condition)
-              {:association => $1, :condition => $2}
+              {:association => association, :poly_class => poly_type && klass, :condition => condition}
             else
               nil
             end
           end
         end
         
-        def create_association_condition(association, condition, args)
-          named_scope("#{association}_#{condition}", association_condition_options(association, condition, args))
+        def create_association_condition(association, condition_name, args, poly_class = nil)
+          name = [association.name, poly_class && "#{poly_class.name.underscore}_type", condition_name].compact.join("_")
+          named_scope(name, association_condition_options(association, condition_name, args, poly_class))
         end
         
-        def association_condition_options(association_name, association_condition, args)
-          association = reflect_on_association(association_name.to_sym)
-          scope = association.klass.send(association_condition, *args)
-          scope_options = association.klass.named_scope_options(association_condition)
-          arity = association.klass.named_scope_arity(association_condition)
+        def association_condition_options(association, association_condition, args, poly_class = nil)
+          klass = poly_class ? poly_class : association.klass
+          scope = klass.send(association_condition, *args)
+          scope_options = klass.named_scope_options(association_condition)
+          arity = klass.named_scope_arity(association_condition)
           
           if !arity || arity == 0
             # The underlying condition doesn't require any parameters, so let's just create a simple
             # named scope that is based on a hash.
             options = scope.scope(:find)
-            prepare_named_scope_options(options, association)
+            prepare_named_scope_options(options, association, poly_class)
             options
           else
             proc_args = arity_args(arity)
@@ -60,9 +74,9 @@ module Searchlogic
             
             eval <<-"end_eval"
               searchlogic_lambda(:#{arg_type}) { |#{proc_args.join(",")}|
-                scope = association.klass.send(association_condition, #{proc_args.join(",")})
+                scope = klass.send(association_condition, #{proc_args.join(",")})
                 options = scope ? scope.scope(:find) : {}
-                prepare_named_scope_options(options, association)
+                prepare_named_scope_options(options, association, poly_class)
                 options
               }
             end_eval
@@ -88,13 +102,19 @@ module Searchlogic
           args
         end
         
-        def prepare_named_scope_options(options, association)
+        def prepare_named_scope_options(options, association, poly_class = nil)
           options.delete(:readonly) # AR likes to set :readonly to true when using the :joins option, we don't want that
           
-          options[:conditions] = association.klass.sanitize_sql_for_conditions(options[:conditions]) if options[:conditions].is_a?(Hash)
+          klass = poly_class || association.klass
+          # sanitize the conditions locally so we get the right table name, otherwise the conditions will be evaluated on the original model
+          options[:conditions] = klass.sanitize_sql_for_conditions(options[:conditions]) if options[:conditions].is_a?(Hash)
+          
+          poly_join = poly_class && inner_polymorphic_join(poly_class.name.underscore, :as => association.name)
           
           if options[:joins].is_a?(String) || array_of_strings?(options[:joins])
-            options[:joins] = [inner_joins(association.name), options[:joins]].flatten
+            options[:joins] = [poly_class ? poly_join : inner_joins(association.name), options[:joins]].flatten
+          elsif poly_class
+            options[:joins] = options[:joins].blank? ? poly_join : [poly_join, inner_joins(options[:joins])]
           else
             options[:joins] = options[:joins].blank? ? association.name : {association.name => options[:joins]}
           end

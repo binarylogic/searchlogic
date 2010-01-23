@@ -142,4 +142,11 @@ describe "Association Conditions" do
     Company.named_scope(:users_count_10, :conditions => {:users_count => 10})
     User.company_users_count_10.proxy_options.should == {:conditions => "\"companies\".\"users_count\" = 10", :joins => :company}
   end
+  
+  it "should polymorph" do
+    Audit.auditable_user_type_name_like("ben").proxy_options.should == {
+      :conditions => ["users.name LIKE ?", "%ben%"],
+      :joins => "INNER JOIN \"users\" ON \"users\".id = \"audits\".auditable_id AND \"audits\".auditable_type = 'User'"
+    }
+  end
 end

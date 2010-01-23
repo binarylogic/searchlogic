@@ -101,10 +101,10 @@ module Searchlogic
         end
 
         def full_association_path(part, last_condition, given_assoc)
-            path = [given_assoc.to_sym]
-            part.sub!(/^#{given_assoc}_/, "")
+            path = [given_assoc.name]
+            part.sub!(/^#{given_assoc.name}_/, "")
             klass = self
-            while klass = klass.send(:reflect_on_association, given_assoc.to_sym)
+            while klass = klass.send(:reflect_on_association, given_assoc.name)
               klass = klass.klass
               if details = klass.send(:association_condition_details, part, last_condition)
                 path << details[:association]

@@ -51,7 +51,27 @@ module Searchlogic
         ::ActiveRecord::Associations::ClassMethods::InnerJoinDependency.new(self, association_name, nil).join_associations.collect { |assoc| assoc.association_join }
       end
       
-      # See inner_joins, except this creates LEFT OUTER joins.
+      # A convenience methods to create a join on a polymorphic associations target.
+      # Ex:
+      #
+      # Audit.belong_to :auditable, :polymorphic => true
+      # User.has_many :audits, :as => :auditable
+      #
+      # Audit.inner_polymorphic_join(:user, :as => :auditable) # =>
+      #   "INNER JOINER users ON users.id = audits.auditable_id AND audits.auditable_type = 'User'"
+      #
+      # This is used internally by searchlogic to handle accessing conditions on polymorphic associations.
+      def inner_polymorphic_join(target, options = {})
+        options[:on] ||= table_name
+        options[:on_table_name] ||= connection.quote_table_name(options[:on])
+        options[:target_table] ||= connection.quote_table_name(target.to_s.pluralize)
+        options[:as] ||= "owner"
+        postgres = ::ActiveRecord::Base.connection.adapter_name == "PostgreSQL"
+        "INNER JOIN #{options[:target_table]} ON #{options[:target_table]}.id = #{options[:on_table_name]}.#{options[:as]}_id AND " +
+          "#{options[:on_table_name]}.#{options[:as]}_type = #{postgres ? "E" : ""}'#{target.to_s.camelize}'"
+      end
+      
+      # See inner_joins. Does the same thing except creates LEFT OUTER joins.
       def left_outer_joins(association_name)
         ::ActiveRecord::Associations::ClassMethods::JoinDependency.new(self, association_name, nil).join_associations.collect { |assoc| assoc.association_join }
       end

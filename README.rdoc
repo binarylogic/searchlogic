@@ -113,6 +113,19 @@ Also, these conditions aren't limited to the scopes Searchlogic provides. You ca
 
 As I stated above, Searchlogic will take care of creating the necessary joins for you. This is REALLY nice when trying to keep your code DRY, because if you wanted to use a scope like this in your User model you would have to copy over the conditions. Now you have 2 named scopes that are essentially doing the same thing. Why do that when you can dynamically access that scope using this feature?
 
+=== Polymorphic associations
+
+Polymorphic associations are tough because ActiveRecord doesn't support them with the :joins or :include options. Searchlogic checks for a specific syntax and takes care of this for you. Ex:
+
+  Audit.belongs_to :auditable, :polymorphic => true
+  User.has_many :audits, :as => :auditable
+  
+  Audit.auditable_user_type_username_equals("ben")
+
+The above will take care of creating the inner join on the polymorphic association so that it only looks for type 'User'. On the surface it works the same as a non polymorphic association. The syntax difference being that you need to call the association and then specify the type:
+  
+  [polymorphic association name]_[association type]_type
+
 === Uses :joins not :include
 
 Another thing to note is that the joins created by Searchlogic do NOT use the :include option, making them <em>much</em> faster. Instead they leverage the :joins option, which is great for performance. To prove my point here is a quick benchmark from an application I am working on:

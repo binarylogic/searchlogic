@@ -29,14 +29,15 @@ module Searchlogic
         end
         
         def association_ordering_condition_details(name)
-          associations = reflect_on_all_associations.collect { |assoc| assoc.name }
-          if name.to_s =~ /^(ascend|descend)_by_(#{associations.join("|")})_(\w+)$/
-            {:order_as => $1, :association => $2, :condition => $3}
+          associations = reflect_on_all_associations
+          association_names = associations.collect { |assoc| assoc.name }
+          if name.to_s =~ /^(ascend|descend)_by_(#{association_names.join("|")})_(\w+)$/
+            {:order_as => $1, :association => associations.find { |a| a.name == $2.to_sym }, :condition => $3}
           end
         end
         
         def create_association_ordering_condition(association, order_as, condition, args)
-          named_scope("#{order_as}_by_#{association}_#{condition}", association_condition_options(association, "#{order_as}_by_#{condition}", args))
+          named_scope("#{order_as}_by_#{association.name}_#{condition}", association_condition_options(association, "#{order_as}_by_#{condition}", args))
         end
     end
   end

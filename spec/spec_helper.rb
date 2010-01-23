@@ -11,6 +11,11 @@ ActiveRecord::Base.configurations = true
 
 ActiveRecord::Schema.verbose = false
 ActiveRecord::Schema.define(:version => 1) do
+  create_table :audits do |t|
+    t.string :auditable_type
+    t.integer :auditable_id
+  end
+  
   create_table :companies do |t|
     t.datetime :created_at
     t.datetime :updated_at
@@ -66,6 +71,10 @@ require 'searchlogic'
 
 Spec::Runner.configure do |config|
   config.before(:each) do
+    class Audit < ActiveRecord::Base
+      belongs_to :auditable, :polymorphic => true
+    end
+    
     class Company < ActiveRecord::Base
       has_many :users, :dependent => :destroy
     end
