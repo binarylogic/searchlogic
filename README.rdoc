@@ -20,10 +20,6 @@ Install the gem from rubyforge:
 
   sudo gem install searchlogic
 
-Or from github:
-
-  sudo gem install binarylogic-searchlogic
-
 Now just include it in your project and you are ready to go.
 
 You can also install this as a plugin:
