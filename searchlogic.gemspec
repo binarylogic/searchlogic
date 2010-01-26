@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{searchlogic}
-  s.version = "2.4.1"
+  s.version = "2.4.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ben Johnson of Binary Logic"]
-  s.date = %q{2010-01-23}
+  s.date = %q{2010-01-26}
   s.description = %q{Searchlogic makes using ActiveRecord named scopes easier and less repetitive.}
   s.email = %q{bjohnson@binarylogic.com}
   s.extra_rdoc_files = [
@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
      "init.rb",
      "lib/searchlogic.rb",
      "lib/searchlogic/active_record/consistency.rb",
-     "lib/searchlogic/active_record/named_scopes.rb",
+     "lib/searchlogic/active_record/named_scope_tools.rb",
      "lib/searchlogic/core_ext/object.rb",
      "lib/searchlogic/core_ext/proc.rb",
      "lib/searchlogic/named_scopes/alias_scope.rb",
