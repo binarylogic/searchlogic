@@ -100,7 +100,7 @@ module Searchlogic
             self
           end
         else
-          scope = conditions.inject(klass.scoped(current_scope) || {}) do |scope, condition|
+          scope = conditions_array.inject(klass.scoped(current_scope) || {}) do |scope, condition|
             scope_name, value = condition
             scope_name = normalize_scope_name(scope_name)
             klass.send(scope_name, value) if !klass.respond_to?(scope_name)
@@ -120,6 +120,11 @@ module Searchlogic
           end
           scope.send(name, *args, &block)
         end
+      end
+      
+      # This is here as a hook to allow people to modify the order in which the conditions are called, for whatever reason.
+      def conditions_array
+        conditions.to_a
       end
       
       def normalize_scope_name(scope_name)

@@ -1,7 +1,7 @@
 module Searchlogic
   module ActiveRecord
     # Adds methods that give extra information about a classes named scopes.
-    module NamedScopes
+    module NamedScopeTools
       # Retrieves the options passed when creating the respective named scope. Ex:
       #
       #   named_scope :whatever, :conditions => {:column => value}

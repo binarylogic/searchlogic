@@ -20,7 +20,7 @@ Install the gem from rubyforge:
 
   sudo gem install searchlogic
 
-Now just include it in your project and you are ready to go.
+Now just set it as a dependency in your project and you are ready to go.
 
 You can also install this as a plugin:
 
