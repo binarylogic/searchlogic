@@ -69,6 +69,15 @@ describe "Search" do
       search.username.should == "bjohnson"
     end
     
+    it "should use custom scopes before normalizing" do
+      User.create(:username => "bjohnson")
+      User.named_scope :username, lambda { |value| {:conditions => {:username => value.reverse}} }
+      search1 = User.search(:username => "bjohnson")
+      search2 = User.search(:username => "nosnhojb")
+      search1.count.should == 0
+      search2.count.should == 1
+    end
+    
     # We ignore them upon execution. But we still want to accept the condition so that returning the conditions
     # preserves the values.
     it "should not ignore blank values" do
@@ -77,13 +86,10 @@ describe "Search" do
       search.username.should == ""
     end
     
-    it "should use custom scopes before normalizing" do
-      User.create(:username => "bjohnson")
-      User.named_scope :username, lambda { |value| {:conditions => {:username => value.reverse}} }
-      search1 = User.search(:username => "bjohnson")
-      search2 = User.search(:username => "nosnhojb")
-      search1.count.should == 0
-      search2.count.should == 1
+    it "should not ignore blank values and should not cast them" do
+      search = User.search
+      search.conditions = {"id_equals" => ""}
+      search.id_equals.should == ""
     end
     
     it "should ignore blank values in arrays" do

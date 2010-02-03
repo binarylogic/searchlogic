@@ -87,6 +87,7 @@ module Searchlogic
         if setter?(name)
           if scope?(scope_name)
             mass_conditions.delete(scope_name.to_sym) if !setting_mass_conditions?
+            
             if args.size == 1
               conditions[condition_name] = type_cast(args.first, cast_type(scope_name))
             else
@@ -106,8 +107,11 @@ module Searchlogic
           scope = conditions_array.inject(klass.scoped(current_scope) || {}) do |scope, condition|
             scope_name, value = condition
             
-            value.delete_if { |v| ignore_value?(scope_name, v) } if value.is_a?(Array)
-            if !ignore_value?(scope_name, value)
+            value.delete_if { |v| ignore_value?(v) } if mass_conditions.key?(scope_name.to_sym) && value.is_a?(Array)
+            
+            if mass_conditions.key?(scope_name.to_sym) && ignore_value?(value)
+              klass.scoped({})
+            else
               scope_name = normalize_scope_name(scope_name)
               klass.send(scope_name, value) if !klass.respond_to?(scope_name)
               arity = klass.named_scope_arity(scope_name)
@@ -123,8 +127,6 @@ module Searchlogic
               else
                 scope.send(scope_name, value)
               end
-            else
-              klass.scoped({})
             end
           end
           scope.send(name, *args, &block)
@@ -187,26 +189,30 @@ module Searchlogic
         when Range
           Range.new(type_cast(value.first, type), type_cast(value.last, type))
         else
-          # Let's leverage ActiveRecord's type casting, so that casting is consistent
-          # with the other models.
-          column_for_type_cast = ::ActiveRecord::ConnectionAdapters::Column.new("", nil)
-          column_for_type_cast.instance_variable_set(:@type, type)
-          casted_value = column_for_type_cast.type_cast(value)
-          
-          if Time.zone && casted_value.is_a?(Time)
-            if value.is_a?(String)
-              (casted_value + (Time.zone.utc_offset * -1)).in_time_zone
-            else
-              casted_value.in_time_zone
-            end
+          if ignore_value?(value)
+            value
           else
-            casted_value
+            # Let's leverage ActiveRecord's type casting, so that casting is consistent
+            # with the other models.
+            column_for_type_cast = ::ActiveRecord::ConnectionAdapters::Column.new("", nil)
+            column_for_type_cast.instance_variable_set(:@type, type)
+            casted_value = column_for_type_cast.type_cast(value)
+          
+            if Time.zone && casted_value.is_a?(Time)
+              if value.is_a?(String)
+                (casted_value + (Time.zone.utc_offset * -1)).in_time_zone
+              else
+                casted_value.in_time_zone
+              end
+            else
+              casted_value
+            end
           end
         end
       end
       
-      def ignore_value?(scope_name, value)
-        mass_conditions.key?(scope_name.to_sym) && (value.is_a?(String) && value.blank?) || (value.is_a?(Array) && value.empty?)
+      def ignore_value?(value)
+        (value.is_a?(String) && value.blank?) || (value.is_a?(Array) && value.empty?)
       end
   end
 end
