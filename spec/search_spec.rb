@@ -224,6 +224,12 @@ describe "Search" do
         search.id_nil.should == false
       end
       
+      it "should be an Integer given ''" do
+        search = User.search
+        search.id_gt = ''
+        search.id_gt.should == 0
+      end
+      
       it "should be an Integer given 1" do
         search = User.search
         search.id_gt = 1

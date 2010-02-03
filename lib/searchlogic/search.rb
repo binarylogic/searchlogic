@@ -189,7 +189,7 @@ module Searchlogic
         when Range
           Range.new(type_cast(value.first, type), type_cast(value.last, type))
         else
-          if ignore_value?(value)
+          if setting_mass_conditions? && ignore_value?(value)
             value
           else
             # Let's leverage ActiveRecord's type casting, so that casting is consistent
