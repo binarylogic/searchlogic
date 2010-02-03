@@ -380,6 +380,12 @@ describe "Search" do
       s.created_at_after = Time.now
       lambda { s.count }.should_not raise_error
     end
+    
+    it "should not include blank values" do
+      s = User.search
+      s.conditions = {"id_equals" => ""}
+      s.proxy_options.should == {}
+    end
   end
   
   context "method delegation" do

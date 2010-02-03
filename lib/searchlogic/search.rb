@@ -126,7 +126,7 @@ module Searchlogic
       
       # This is here as a hook to allow people to modify the order in which the conditions are called, for whatever reason.
       def conditions_array
-        conditions.to_a
+        @conditions.to_a
       end
       
       def normalize_scope_name(scope_name)
