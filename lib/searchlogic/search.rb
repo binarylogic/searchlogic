@@ -47,6 +47,7 @@ module Searchlogic
     def initialize(klass, current_scope, conditions = {})
       self.klass = klass
       self.current_scope = current_scope
+      @conditions ||= {}
       self.conditions = conditions if conditions.is_a?(Hash)
     end
     
@@ -56,18 +57,17 @@ module Searchlogic
     
     # Returns a hash of the current conditions set.
     def conditions
-      @conditions ||= {}
+      mass_conditions.clone.merge(@conditions)
     end
     
     # Accepts a hash of conditions.
     def conditions=(values)
-      @setting_mass_conditions = true
-      result = values.each do |condition, value|
+      values.each do |condition, value|
         mass_conditions[condition.to_sym] = value
+        value.delete_if { |v| ignore_value?(v) } if value.is_a?(Array)
+        next if ignore_value?(value)
         send("#{condition}=", value)
       end
-      @setting_mass_conditions = false
-      result
     end
     
     # Delete a condition from the search. Since conditions map to named scopes,
@@ -86,19 +86,17 @@ module Searchlogic
         
         if setter?(name)
           if scope?(scope_name)
-            mass_conditions.delete(scope_name.to_sym) if !setting_mass_conditions?
-            
             if args.size == 1
-              conditions[condition_name] = type_cast(args.first, cast_type(scope_name))
+              write_condition(condition_name, type_cast(args.first, cast_type(scope_name)))
             else
-              conditions[condition_name] = args
+              write_condition(condition_name, args)
             end
           else
             raise UnknownConditionError.new(condition_name)
           end
         elsif scope?(scope_name) && args.size <= 1
           if args.size == 0
-            conditions[condition_name]
+            read_condition(condition_name)
           else
             send("#{condition_name}=", *args)
             self
@@ -106,27 +104,20 @@ module Searchlogic
         else
           scope = conditions_array.inject(klass.scoped(current_scope) || {}) do |scope, condition|
             scope_name, value = condition
+            scope_name = normalize_scope_name(scope_name)
+            klass.send(scope_name, value) if !klass.respond_to?(scope_name)
+            arity = klass.named_scope_arity(scope_name)
             
-            value.delete_if { |v| ignore_value?(v) } if mass_conditions.key?(scope_name.to_sym) && value.is_a?(Array)
-            
-            if mass_conditions.key?(scope_name.to_sym) && ignore_value?(value)
-              klass.scoped({})
-            else
-              scope_name = normalize_scope_name(scope_name)
-              klass.send(scope_name, value) if !klass.respond_to?(scope_name)
-              arity = klass.named_scope_arity(scope_name)
-            
-              if !arity || arity == 0
-                if value == true
-                  scope.send(scope_name)
-                else
-                  scope
-                end
-              elsif arity == -1
-                scope.send(scope_name, *(value.is_a?(Array) ? value : [value]))
+            if !arity || arity == 0
+              if value == true
+                scope.send(scope_name)
               else
-                scope.send(scope_name, value)
+                scope
               end
+            elsif arity == -1
+              scope.send(scope_name, *(value.is_a?(Array) ? value : [value]))
+            else
+              scope.send(scope_name, value)
             end
           end
           scope.send(name, *args, &block)
@@ -155,6 +146,18 @@ module Searchlogic
         condition ? condition[1].to_sym : nil
       end
       
+      def write_condition(name, value)
+        @conditions[name] = value
+      end
+      
+      def read_condition(name)
+        @conditions[name]
+      end
+      
+      def mass_conditions
+        @mass_conditions ||= {}
+      end
+      
       def scope_name(condition_name)
         condition_name && normalize_scope_name(condition_name)
       end
@@ -174,14 +177,6 @@ module Searchlogic
         end
       end
       
-      def mass_conditions
-        @mass_conditions ||= {}
-      end
-      
-      def setting_mass_conditions?
-        @setting_mass_conditions == true
-      end
-      
       def type_cast(value, type)
         case value
         when Array
@@ -189,24 +184,20 @@ module Searchlogic
         when Range
           Range.new(type_cast(value.first, type), type_cast(value.last, type))
         else
-          if setting_mass_conditions? && ignore_value?(value)
-            value
-          else
-            # Let's leverage ActiveRecord's type casting, so that casting is consistent
-            # with the other models.
-            column_for_type_cast = ::ActiveRecord::ConnectionAdapters::Column.new("", nil)
-            column_for_type_cast.instance_variable_set(:@type, type)
-            casted_value = column_for_type_cast.type_cast(value)
+          # Let's leverage ActiveRecord's type casting, so that casting is consistent
+          # with the other models.
+          column_for_type_cast = ::ActiveRecord::ConnectionAdapters::Column.new("", nil)
+          column_for_type_cast.instance_variable_set(:@type, type)
+          casted_value = column_for_type_cast.type_cast(value)
           
-            if Time.zone && casted_value.is_a?(Time)
-              if value.is_a?(String)
-                (casted_value + (Time.zone.utc_offset * -1)).in_time_zone
-              else
-                casted_value.in_time_zone
-              end
+          if Time.zone && casted_value.is_a?(Time)
+            if value.is_a?(String)
+              (casted_value + (Time.zone.utc_offset * -1)).in_time_zone
             else
-              casted_value
+              casted_value.in_time_zone
             end
+          else
+            casted_value
           end
         end
       end
