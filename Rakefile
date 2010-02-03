@@ -14,7 +14,6 @@ begin
     gem.add_dependency "activerecord", ">= 2.0.0"
   end
   Jeweler::GemcutterTasks.new
-  Jeweler::RubyforgeTasks.new
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
 end

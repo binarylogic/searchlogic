@@ -61,11 +61,13 @@ module Searchlogic
     
     # Accepts a hash of conditions.
     def conditions=(values)
-      values.each do |condition, value|
-        value.delete_if { |v| ignore_value?(v) } if value.is_a?(Array)
-        next if ignore_value?(value)
+      @setting_mass_conditions = true
+      result = values.each do |condition, value|
+        mass_conditions[condition.to_sym] = value
         send("#{condition}=", value)
       end
+      @setting_mass_conditions = false
+      result
     end
     
     # Delete a condition from the search. Since conditions map to named scopes,
@@ -84,6 +86,7 @@ module Searchlogic
         
         if setter?(name)
           if scope?(scope_name)
+            mass_conditions.delete(scope_name.to_sym) if !setting_mass_conditions?
             if args.size == 1
               conditions[condition_name] = type_cast(args.first, cast_type(scope_name))
             else
@@ -102,20 +105,26 @@ module Searchlogic
         else
           scope = conditions_array.inject(klass.scoped(current_scope) || {}) do |scope, condition|
             scope_name, value = condition
-            scope_name = normalize_scope_name(scope_name)
-            klass.send(scope_name, value) if !klass.respond_to?(scope_name)
-            arity = klass.named_scope_arity(scope_name)
             
-            if !arity || arity == 0
-              if value == true
-                scope.send(scope_name)
+            value.delete_if { |v| ignore_value?(scope_name, v) } if value.is_a?(Array)
+            if !ignore_value?(scope_name, value)
+              scope_name = normalize_scope_name(scope_name)
+              klass.send(scope_name, value) if !klass.respond_to?(scope_name)
+              arity = klass.named_scope_arity(scope_name)
+            
+              if !arity || arity == 0
+                if value == true
+                  scope.send(scope_name)
+                else
+                  scope
+                end
+              elsif arity == -1
+                scope.send(scope_name, *(value.is_a?(Array) ? value : [value]))
               else
-                scope
+                scope.send(scope_name, value)
               end
-            elsif arity == -1
-              scope.send(scope_name, *(value.is_a?(Array) ? value : [value]))
             else
-              scope.send(scope_name, value)
+              klass.scoped({})
             end
           end
           scope.send(name, *args, &block)
@@ -163,6 +172,14 @@ module Searchlogic
         end
       end
       
+      def mass_conditions
+        @mass_conditions ||= {}
+      end
+      
+      def setting_mass_conditions?
+        @setting_mass_conditions == true
+      end
+      
       def type_cast(value, type)
         case value
         when Array
@@ -188,8 +205,8 @@ module Searchlogic
         end
       end
       
-      def ignore_value?(value)
-        (value.is_a?(String) && value.blank?) || (value.is_a?(Array) && value.empty?)
+      def ignore_value?(scope_name, value)
+        mass_conditions.key?(scope_name.to_sym) && (value.is_a?(String) && value.blank?) || (value.is_a?(Array) && value.empty?)
       end
   end
 end

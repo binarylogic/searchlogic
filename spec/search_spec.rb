@@ -69,10 +69,12 @@ describe "Search" do
       search.username.should == "bjohnson"
     end
     
-    it "should ignore blank values" do
+    # We ignore them upon execution. But we still want to accept the condition so that returning the conditions
+    # preserves the values.
+    it "should not ignore blank values" do
       search = User.search
       search.conditions = {"username" => ""}
-      search.username.should be_nil
+      search.username.should == ""
     end
     
     it "should use custom scopes before normalizing" do
@@ -87,7 +89,7 @@ describe "Search" do
     it "should ignore blank values in arrays" do
       search = User.search
       search.conditions = {"username_equals_any" => [""]}
-      search.username_equals_any.should be_blank
+      search.username_equals_any.first.should be_blank
     end
   end
   
@@ -360,6 +362,24 @@ describe "Search" do
       s = User.search
       s.created_at_after = Time.now
       lambda { s.count }.should_not raise_error
+    end
+    
+    it "should ignore blank values" do
+      search = User.search
+      search.conditions = {"username_equals" => ""}
+      search.proxy_options.should == {}
+    end
+    
+    it "should not ignore blank values when explicitly set" do
+      search = User.search
+      search.username_equals = ""
+      search.proxy_options.should == {:conditions => ["users.username = ?", ""]}
+    end
+    
+    it "should ignore blank values in arrays" do
+      search = User.search
+      search.conditions = {"username_equals_any" => [""]}
+      search.proxy_options.should == {}
     end
   end
   
