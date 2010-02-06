@@ -66,9 +66,7 @@ module Searchlogic
             # The underlying condition doesn't require any parameters, so let's just create a simple
             # named scope that is based on a hash.
             options = {}
-            with_exclusive_scope do
-              options = scope.scope(:find)
-            end
+            in_searchlogic_delegation { options = scope.scope(:find) }
             prepare_named_scope_options(options, association, poly_class)
             options
           else
@@ -78,10 +76,13 @@ module Searchlogic
             eval <<-"end_eval"
               searchlogic_lambda(:#{arg_type}) { |#{proc_args.join(",")}|
                 options = {}
-                with_exclusive_scope do
+                
+                in_searchlogic_delegation do
                   scope = klass.send(association_condition, #{proc_args.join(",")})
-                  options = scope ? scope.scope(:find) : {}
+                  options = scope.scope(:find) if scope
                 end
+                
+                
                 prepare_named_scope_options(options, association, poly_class)
                 options
               }

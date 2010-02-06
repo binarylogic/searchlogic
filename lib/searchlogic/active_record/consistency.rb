@@ -40,7 +40,7 @@ module Searchlogic
       
       
       def merge_joins_with_merged_duplicates(*args)
-        args << ""
+        args << "" if !Thread.current["searchlogic_delegation"]
         joins = merge_joins_without_merged_duplicates(*args)
       end
     end

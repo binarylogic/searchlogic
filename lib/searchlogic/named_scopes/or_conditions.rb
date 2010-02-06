@@ -131,7 +131,8 @@ module Searchlogic
           scopes_options = scopes.collect { |scope| scope.scope(:find) }
           conditions = scopes_options.reject { |o| o[:conditions].nil? }.collect { |o| sanitize_sql(o[:conditions]) }
           scope = scopes_options.inject(scoped({})) { |current_scope, options| current_scope.scoped(options) }
-          options = scope.scope(:find)
+          options = {}
+          in_searchlogic_delegation { options = scope.scope(:find) }
           options.delete(:readonly) unless scopes.any? { |scope| scope.proxy_options.key?(:readonly) }
           options.merge(:conditions => "(" + conditions.join(") OR (") + ")")
         end

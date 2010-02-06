@@ -86,25 +86,38 @@ describe "Association Conditions" do
   
   it "should implement exclusive scoping" do
     scope = Company.users_company_name_like("name").users_company_description_like("description")
-    scope.scope(:find)[:joins].should == [{:users => :company}]
+    scope.scope(:find)[:joins].should == [
+      "INNER JOIN \"users\" ON companies.id = users.company_id",
+      "INNER JOIN \"companies\" companies_users ON \"companies_users\".id = \"users\".company_id"
+    ]
     lambda { scope.all }.should_not raise_error
   end
   
   it "should not create the same join twice" do
     scope = Company.users_orders_total_gt(10).users_orders_taxes_lt(5).ascend_by_users_orders_total
-    scope.scope(:find)[:joins].should == [{:users => :orders}]
+    scope.scope(:find)[:joins].should == [
+      "INNER JOIN \"users\" ON companies.id = users.company_id",
+      "INNER JOIN \"orders\" ON orders.user_id = users.id"
+    ]
     lambda { scope.count }.should_not raise_error
   end
   
   it "should not create the same join twice when traveling through the duplicate join" do
     scope = Company.users_username_like("bjohnson").users_orders_total_gt(100)
-    scope.scope(:find)[:joins].should == [{:users => :orders}, :users]
+    scope.scope(:find)[:joins].should == [
+      "INNER JOIN \"users\" ON companies.id = users.company_id",
+      "INNER JOIN \"orders\" ON orders.user_id = users.id"
+    ]
     lambda { scope.count }.should_not raise_error
   end
   
   it "should not create the same join twice when traveling through the deep duplicate join" do
     scope = Company.users_orders_total_gt(100).users_orders_line_items_price_gt(20)
-    scope.scope(:find)[:joins].should == [{:users => {:orders => :line_items}}, {:users => :orders}]
+    scope.scope(:find)[:joins].should == [
+      "INNER JOIN \"users\" ON companies.id = users.company_id",
+      "INNER JOIN \"orders\" ON orders.user_id = users.id",
+      "INNER JOIN \"line_items\" ON line_items.order_id = orders.id"
+    ]
     lambda { scope.all }.should_not raise_error
   end
   
