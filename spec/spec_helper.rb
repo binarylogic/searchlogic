@@ -24,6 +24,15 @@ ActiveRecord::Schema.define(:version => 1) do
     t.integer :users_count, :default => 0
   end
   
+  create_table :user_groups do |t|
+    t.string :name
+  end
+  
+  create_table :user_groups_users, :id => false do |t|
+    t.integer :user_group_id, :null => false
+    t.integer :user_id, :null => false
+  end
+  
   create_table :users do |t|
     t.datetime :created_at
     t.datetime :updated_at
@@ -76,13 +85,19 @@ Spec::Runner.configure do |config|
     end
     
     class Company < ActiveRecord::Base
+      has_many :orders, :through => :users
       has_many :users, :dependent => :destroy
+    end
+    
+    class UserGroup < ActiveRecord::Base
+      has_and_belongs_to_many :users
     end
     
     class User < ActiveRecord::Base
       belongs_to :company, :counter_cache => true
       has_many :orders, :dependent => :destroy
       has_many :orders_big, :class_name => 'Order', :conditions => 'total > 100'
+      has_and_belongs_to_many :user_groups
     end
     
     class Order < ActiveRecord::Base

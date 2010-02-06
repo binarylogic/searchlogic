@@ -84,19 +84,28 @@ describe "Association Conditions" do
     Company.ascend_by_users_orders_total.all.should == Company.all
   end
   
+  it "should implement exclusive scoping" do
+    scope = Company.users_company_name_like("name").users_company_description_like("description")
+    scope.scope(:find)[:joins].should == [{:users => :company}]
+    lambda { scope.all }.should_not raise_error
+  end
+  
   it "should not create the same join twice" do
-    company = Company.create
-    user = company.users.create
-    order = user.orders.create(:total => 20, :taxes => 3)
-    Company.users_orders_total_gt(10).users_orders_taxes_lt(5).ascend_by_users_orders_total.all.should == Company.all
+    scope = Company.users_orders_total_gt(10).users_orders_taxes_lt(5).ascend_by_users_orders_total
+    scope.scope(:find)[:joins].should == [{:users => :orders}]
+    lambda { scope.count }.should_not raise_error
   end
   
   it "should not create the same join twice when traveling through the duplicate join" do
-    Company.users_username_like("bjohnson").users_orders_total_gt(100).all.should == Company.all
+    scope = Company.users_username_like("bjohnson").users_orders_total_gt(100)
+    scope.scope(:find)[:joins].should == [{:users => :orders}, :users]
+    lambda { scope.count }.should_not raise_error
   end
   
-  it "should not create the same join twice when traveling through the duplicate join 2" do
-    Company.users_orders_total_gt(100).users_orders_line_items_price_gt(20).all.should == Company.all
+  it "should not create the same join twice when traveling through the deep duplicate join" do
+    scope = Company.users_orders_total_gt(100).users_orders_line_items_price_gt(20)
+    scope.scope(:find)[:joins].should == [{:users => {:orders => :line_items}}, {:users => :orders}]
+    lambda { scope.all }.should_not raise_error
   end
   
   it "should allow the use of :include when a join was created" do
