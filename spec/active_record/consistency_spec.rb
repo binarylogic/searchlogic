@@ -9,15 +9,15 @@ describe "Consistency" do
     ]
   end
   
-  it "should limit join iterations to each scope and merge the joins if duplicates exist" do
-    pending
-    #Company.named_scope :name_like, lambda { |a| {:conditions => ["companies.name = ?", a], :joins => {:users => :company}} }
-    #Company.named_scope :name1_like, lambda { |a| {:conditions => ["companies.description = ?", a], :joins => {:users => :company}} }
-    #Company.named_scope :name2_like, lambda { |a| User.company_id_equals(2).proxy_options }
-    
-    #Company.name_like("a").name1_like("b").name2_like("c").count
-    
-    Company.users_company_name_like("name").users_company_description_like("description").users_company_created_at_after(Time.now).scope(:find).should == {}
+  it "should respect parenthesis when reordering conditions" do
+    joins = [
+      "INNER JOIN \"table\" ON (\"b\".user_id = \"a\".id)",
+      "INNER JOIN \"table\" ON (\"b\".id = \"a\".user_group_id)"
+    ]
+    ActiveRecord::Base.send(:merge_joins, joins).should == [
+      "INNER JOIN \"table\" ON \"a\".id = \"b\".user_id",
+      "INNER JOIN \"table\" ON \"a\".user_group_id = \"b\".id"
+    ]
   end
   
   it "shuold not convert joins to strings when delegating via associations" do

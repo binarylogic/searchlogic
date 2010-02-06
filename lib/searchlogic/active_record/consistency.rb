@@ -29,8 +29,9 @@ module Searchlogic
         joins.collect do |j|
           if j.is_a?(String) && (j =~ / (AND|OR) /i).nil?
             j.gsub(/(.*) ON (.*) = (.*)/) do |m|
-              sorted = [$2,$3].sort
-              "#{$1} ON #{sorted[0]} = #{sorted[1]}"
+              join, cond1, cond2 = $1, $2, $3
+              sorted = [cond1.gsub(/\(|\)/, ""), cond2.gsub(/\(|\)/, "")].sort
+              "#{join} ON #{sorted[0]} = #{sorted[1]}"
             end
           else
             j
