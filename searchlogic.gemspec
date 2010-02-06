@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{searchlogic}
-  s.version = "2.4.9"
+  s.version = "2.4.10"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ben Johnson of Binary Logic"]
@@ -18,7 +18,6 @@ Gem::Specification.new do |s|
   ]
   s.files = [
     ".gitignore",
-     "CHANGELOG.rdoc",
      "LICENSE",
      "README.rdoc",
      "Rakefile",
