@@ -41,6 +41,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string :name
     t.integer :age
     t.boolean :male
+    t.string :some_type_id
   end
   
   create_table :carts do |t|

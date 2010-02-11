@@ -172,6 +172,13 @@ describe "Association Conditions" do
     }
   end
   
+  it "should delegate to polymorphic relationships (with a lazy split on _type_)" do
+    Audit.auditable_user_type_some_type_id_like("ben").proxy_options.should == {
+      :conditions => ["users.some_type_id LIKE ?", "%ben%"],
+      :joins => "INNER JOIN \"users\" ON \"users\".id = \"audits\".auditable_id AND \"audits\".auditable_type = 'User'"
+    }
+  end
+  
   it "should deep delegate to polymorphic relationships" do
     Audit.auditable_user_type_company_name_like("company").proxy_options.should == {
       :conditions => ["companies.name LIKE ?", "%company%"],
