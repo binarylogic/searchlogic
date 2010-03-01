@@ -320,6 +320,12 @@ describe "Search" do
         search.users_orders_total_gt = "10"
         search.users_orders_total_gt.should == 10
       end
+
+      it "should support Rails' date_select and datetime_select out of the box" do
+        search = Company.search('created_at_after(1i)' => 2000, 'created_at_after(2i)' => 1, 'created_at_after(3i)' => 1)
+        search.created_at_after.should_not be_nil
+        search.created_at_after.should == Time.zone.local(2000, 1, 1)
+      end
     end
   end
   

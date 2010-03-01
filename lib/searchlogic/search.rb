@@ -63,6 +63,21 @@ module Searchlogic
     # Accepts a hash of conditions.
     def conditions=(values)
       values.each do |condition, value|
+        # if a condition name ends with "(1i)", assume it's date / datetime
+        if condition =~ /(.*)\(1i\)$/
+          date_scope_name = $1
+          date_parts = (1..6).to_a.map do |idx|
+            values.delete("#{ date_scope_name }(#{ idx }i)")
+          end.reject{|s| s.blank? }.map{|s| s.to_i }
+
+          # did we get enough info to build a time?
+          if date_parts.length >= 3
+            values[date_scope_name] = Time.zone.local(*date_parts)
+          end
+        end
+      end
+
+      values.each do |condition, value|
         mass_conditions[condition.to_sym] = value
         value.delete_if { |v| ignore_value?(v) } if value.is_a?(Array)
         next if ignore_value?(value)
