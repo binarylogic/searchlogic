@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{searchlogic}
-  s.version = "2.4.11"
+  s.version = "2.4.12"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ben Johnson of Binary Logic"]
-  s.date = %q{2010-02-11}
+  s.date = %q{2010-03-09}
   s.description = %q{Searchlogic makes using ActiveRecord named scopes easier and less repetitive.}
   s.email = %q{bjohnson@binarylogic.com}
   s.extra_rdoc_files = [
@@ -54,7 +54,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{searchlogic}
-  s.rubygems_version = %q{1.3.5}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{Searchlogic makes using ActiveRecord named scopes easier and less repetitive.}
   s.test_files = [
     "spec/active_record/consistency_spec.rb",
