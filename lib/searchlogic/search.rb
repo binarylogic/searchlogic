@@ -75,7 +75,10 @@ module Searchlogic
     # the scope if you do not want it anymore. A nil value might be meaningful
     # to that scope.
     def delete(*names)
-      names.each { |name| @conditions.delete(name.to_sym) }
+      names.each do |name|
+        @conditions.delete(name.to_sym)
+        mass_conditions.delete(name)
+      end
       self
     end
     
