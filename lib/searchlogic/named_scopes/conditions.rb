@@ -50,7 +50,7 @@ module Searchlogic
       end
       
       CONDITIONS[:equals_any] = CONDITIONS[:equals_any] + [:in]
-      CONDITIONS[:does_not_equal_any] = CONDITIONS[:equals_any] + [:not_in]
+      CONDITIONS[:does_not_equal_any] = CONDITIONS[:does_not_equal_any] + [:not_in]
       
       BOOLEAN_CONDITIONS.each { |condition, aliases| CONDITIONS[condition] = aliases }
       
