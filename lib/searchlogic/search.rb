@@ -90,7 +90,14 @@ module Searchlogic
         if setter?(name)
           if scope?(scope_name)
             if args.size == 1
-              write_condition(condition_name, type_cast(args.first, cast_type(scope_name)))
+              write_condition(
+                condition_name,
+                type_cast(
+                  args.first,
+                  cast_type(scope_name),
+                  scope_options(scope_name).respond_to?(:searchlogic_options) ? scope_options(scope_name).searchlogic_options : {}
+                )
+              )
             else
               write_condition(condition_name, args)
             end
@@ -169,18 +176,22 @@ module Searchlogic
         klass.scopes.key?(scope_name) || klass.condition?(scope_name)
       end
       
-      def cast_type(name)
+      def scope_options(name)
         klass.send(name, nil) if !klass.respond_to?(name) # We need to set up the named scope if it doesn't exist, so we can get a value for named_scope_options
-        named_scope_options = klass.named_scope_options(name)
+        klass.named_scope_options(name)
+      end
+      
+      def cast_type(name)
+        named_scope_options = scope_options(name)
         arity = klass.named_scope_arity(name)
         if !arity || arity == 0
           :boolean
         else
-          named_scope_options.respond_to?(:searchlogic_arg_type) ? named_scope_options.searchlogic_arg_type : :string
+          named_scope_options.respond_to?(:searchlogic_options) ? named_scope_options.searchlogic_options[:type] : :string
         end
       end
       
-      def type_cast(value, type)
+      def type_cast(value, type, options = {})
         case value
         when Array
           value.collect { |v| type_cast(v, type) }
@@ -195,7 +206,11 @@ module Searchlogic
           
           if Time.zone && casted_value.is_a?(Time)
             if value.is_a?(String)
-              (casted_value + (Time.zone.utc_offset * -1)).in_time_zone
+              if options[:skip_conversion]
+                casted_value.utc
+              else
+                (casted_value + (Time.zone.utc_offset * -1)).in_time_zone
+              end
             else
               casted_value.in_time_zone
             end

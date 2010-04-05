@@ -290,6 +290,12 @@ describe "Search" do
         search.created_at_after.should == Time.zone.parse("Jan 1, 2009 9:33AM")
       end
       
+      it "should skip time zone conversion for attributes skipped" do
+        search = User.search
+        search.whatever_at_after = "Jan 1, 2009 9:33AM"
+        search.whatever_at_after.should == Time.parse("Jan 1, 2009 9:33AM").utc
+      end
+      
       it "should convert the time to the current zone" do
         search = Order.search
         now = Time.now

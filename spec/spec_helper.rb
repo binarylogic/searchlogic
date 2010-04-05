@@ -42,6 +42,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.integer :age
     t.boolean :male
     t.string :some_type_id
+    t.datetime :whatever_at
   end
   
   create_table :carts do |t|
@@ -99,6 +100,8 @@ Spec::Runner.configure do |config|
       has_many :orders, :dependent => :destroy
       has_many :orders_big, :class_name => 'Order', :conditions => 'total > 100'
       has_and_belongs_to_many :user_groups
+      
+      self.skip_time_zone_conversion_for_attributes = [:whatever_at]
     end
     
     class Order < ActiveRecord::Base

@@ -121,7 +121,7 @@ module Searchlogic
           scopes_options = scopes.collect { |scope, *args| send(scope, *args).proxy_options }
           # We're using first scope to determine column's type
           scope = named_scope_options(scopes.first)
-          column_type = scope.respond_to?(:searchlogic_arg_type) ? scope.searchlogic_arg_type : :string
+          column_type = scope.respond_to?(:searchlogic_options) ? scope.searchlogic_options[:type] : :string
           named_scope scopes.join("_or_"), searchlogic_lambda(column_type) { |*args|
             merge_scopes_with_or(scopes.collect { |scope| clone.send(scope, *args) })
           }
