@@ -212,7 +212,11 @@ module Searchlogic
                 (casted_value + (Time.zone.utc_offset * -1)).in_time_zone
               end
             else
-              casted_value.in_time_zone
+              if options[:skip_conversion]
+                casted_value.utc
+              else
+                casted_value.in_time_zone
+              end
             end
           else
             casted_value
