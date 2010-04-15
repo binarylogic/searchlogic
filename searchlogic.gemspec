@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{searchlogic}
-  s.version = "2.4.14"
+  s.version = "2.4.15"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ben Johnson of Binary Logic"]
-  s.date = %q{2010-04-04}
+  s.date = %q{2010-04-15}
   s.description = %q{Searchlogic makes using ActiveRecord named scopes easier and less repetitive.}
   s.email = %q{bjohnson@binarylogic.com}
   s.extra_rdoc_files = [
@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
      "VERSION.yml",
      "init.rb",
      "lib/searchlogic.rb",
+     "lib/searchlogic/active_record/association_proxy.rb",
      "lib/searchlogic/active_record/consistency.rb",
      "lib/searchlogic/active_record/named_scope_tools.rb",
      "lib/searchlogic/core_ext/object.rb",
@@ -38,16 +39,17 @@ Gem::Specification.new do |s|
      "lib/searchlogic/search.rb",
      "rails/init.rb",
      "searchlogic.gemspec",
-     "spec/active_record/consistency_spec.rb",
-     "spec/core_ext/object_spec.rb",
-     "spec/core_ext/proc_spec.rb",
-     "spec/named_scopes/alias_scope_spec.rb",
-     "spec/named_scopes/association_conditions_spec.rb",
-     "spec/named_scopes/association_ordering_spec.rb",
-     "spec/named_scopes/conditions_spec.rb",
-     "spec/named_scopes/or_conditions_spec.rb",
-     "spec/named_scopes/ordering_spec.rb",
-     "spec/search_spec.rb",
+     "spec/searchlogic/active_record/association_proxy_spec.rb",
+     "spec/searchlogic/active_record/consistency_spec.rb",
+     "spec/searchlogic/core_ext/object_spec.rb",
+     "spec/searchlogic/core_ext/proc_spec.rb",
+     "spec/searchlogic/named_scopes/alias_scope_spec.rb",
+     "spec/searchlogic/named_scopes/association_conditions_spec.rb",
+     "spec/searchlogic/named_scopes/association_ordering_spec.rb",
+     "spec/searchlogic/named_scopes/conditions_spec.rb",
+     "spec/searchlogic/named_scopes/or_conditions_spec.rb",
+     "spec/searchlogic/named_scopes/ordering_spec.rb",
+     "spec/searchlogic/search_spec.rb",
      "spec/spec_helper.rb"
   ]
   s.homepage = %q{http://github.com/binarylogic/searchlogic}
@@ -57,16 +59,17 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.6}
   s.summary = %q{Searchlogic makes using ActiveRecord named scopes easier and less repetitive.}
   s.test_files = [
-    "spec/active_record/consistency_spec.rb",
-     "spec/core_ext/object_spec.rb",
-     "spec/core_ext/proc_spec.rb",
-     "spec/named_scopes/alias_scope_spec.rb",
-     "spec/named_scopes/association_conditions_spec.rb",
-     "spec/named_scopes/association_ordering_spec.rb",
-     "spec/named_scopes/conditions_spec.rb",
-     "spec/named_scopes/or_conditions_spec.rb",
-     "spec/named_scopes/ordering_spec.rb",
-     "spec/search_spec.rb",
+    "spec/searchlogic/active_record/association_proxy_spec.rb",
+     "spec/searchlogic/active_record/consistency_spec.rb",
+     "spec/searchlogic/core_ext/object_spec.rb",
+     "spec/searchlogic/core_ext/proc_spec.rb",
+     "spec/searchlogic/named_scopes/alias_scope_spec.rb",
+     "spec/searchlogic/named_scopes/association_conditions_spec.rb",
+     "spec/searchlogic/named_scopes/association_ordering_spec.rb",
+     "spec/searchlogic/named_scopes/conditions_spec.rb",
+     "spec/searchlogic/named_scopes/or_conditions_spec.rb",
+     "spec/searchlogic/named_scopes/ordering_spec.rb",
+     "spec/searchlogic/search_spec.rb",
      "spec/spec_helper.rb"
   ]
 
