@@ -1,6 +1,6 @@
-require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
-describe "AliasScope" do
+describe Searchlogic::NamedScopes::AliasScope do
   before(:each) do
     User.alias_scope :username_has, lambda { |value| User.username_like(value) }
   end

@@ -1,6 +1,6 @@
-require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
-describe "Consistency" do
+describe Searchlogic::ActiveRecord::Consistency do
   it "should merge joins with consistent conditions" do
     user_group = UserGroup.create
     user_group.users.user_groups_name_like("name").user_groups_id_gt(10).scope(:find)[:joins].should == [

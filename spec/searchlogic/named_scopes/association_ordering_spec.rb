@@ -1,6 +1,6 @@
-require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
-describe "Association Ordering" do
+describe Searchlogic::NamedScopes::Ordering do
   it "should allow ascending" do
     Company.ascend_by_users_username.proxy_options.should == User.ascend_by_username.proxy_options.merge(:joins => :users)
   end

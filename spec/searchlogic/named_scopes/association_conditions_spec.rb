@@ -1,6 +1,6 @@
-require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
-describe "Association Conditions" do
+describe Searchlogic::NamedScopes::AssociationConditions do
   it "should create a named scope" do
     Company.users_username_like("bjohnson").proxy_options.should == User.username_like("bjohnson").proxy_options.merge(:joins => :users)
   end

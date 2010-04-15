@@ -1,6 +1,6 @@
-require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
-describe "Conditions" do
+describe Searchlogic::NamedScopes::Conditions do
   it "should be dynamically created and then cached" do
     User.should_not respond_to(:age_less_than)
     User.age_less_than(5)

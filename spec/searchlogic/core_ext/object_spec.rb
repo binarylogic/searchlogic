@@ -1,6 +1,6 @@
-require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
-describe "Object" do
+describe Searchlogic::CoreExt::Object do
   it "should accept and pass the argument to the searchlogic_options" do
     proc = searchlogic_lambda(:integer, :test => :value) {}
     proc.searchlogic_options[:type].should == :integer

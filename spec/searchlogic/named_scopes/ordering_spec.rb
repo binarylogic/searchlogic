@@ -1,6 +1,6 @@
-require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
-describe "Ordering" do
+describe Searchlogic::NamedScopes::Ordering do
   it "should be dynamically created and then cached" do
     User.should_not respond_to(:ascend_by_username)
     User.ascend_by_username

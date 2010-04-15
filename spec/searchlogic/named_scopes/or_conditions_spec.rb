@@ -1,6 +1,6 @@
-require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
-describe "Or conditions" do
+describe Searchlogic::NamedScopes::OrConditions do
   it "should define a scope by the exact same name as requested by the code" do
     User.name_or_username_like('Test')
     User.respond_to?(:name_or_username_like).should be_true

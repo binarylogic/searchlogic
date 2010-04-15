@@ -1,24 +1,26 @@
-require File.expand_path(File.dirname(__FILE__) + "/spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
-describe "Search" do
-  context "implementation" do
-    it "should create a search proxy" do
-      User.search(:username => "joe").should be_kind_of(Searchlogic::Search)
-    end
+describe Searchlogic::Search do
+  describe "Implementation" do
+    context "#searchlogic" do
+      it "should create a search proxy" do
+        User.search(:username => "joe").should be_kind_of(Searchlogic::Search)
+      end
     
-    it "should create a search proxy using the same class" do
-      User.search.klass.should == User
-    end
+      it "should create a search proxy using the same class" do
+        User.search.klass.should == User
+      end
     
-    it "should pass on the current scope to the proxy" do
-      company = Company.create
-      user = company.users.create
-      search = company.users.search
-      search.current_scope.should == company.users.scope(:find)
+      it "should pass on the current scope to the proxy" do
+        company = Company.create
+        user = company.users.create
+        search = company.users.search
+        search.current_scope.should == company.users.scope(:find)
+      end
     end
   end
   
-  context "initialization" do
+  context "#initialize" do
     it "should require a class" do
       lambda { Searchlogic::Search.new }.should raise_error(ArgumentError)
     end
@@ -29,35 +31,30 @@ describe "Search" do
     end
   end
   
-  it "should clone properly" do
-    company = Company.create
-    user1 = company.users.create(:age => 5)
-    user2 = company.users.create(:age => 25)
-    search1 = company.users.search(:age_gt => 10)
-    search2 = search1.clone
-    search2.age_gt = 1
-    search2.all.should == User.all
-    search1.all.should == [user2]
+  context "#clone" do
+    it "should clone properly" do
+      company = Company.create
+      user1 = company.users.create(:age => 5)
+      user2 = company.users.create(:age => 25)
+      search1 = company.users.search(:age_gt => 10)
+      search2 = search1.clone
+      search2.age_gt = 1
+      search2.all.should == User.all
+      search1.all.should == [user2]
+    end
+  
+    it "should clone properly without scope" do
+      user1 = User.create(:age => 5)
+      user2 = User.create(:age => 25)
+      search1 = User.search(:age_gt => 10)
+      search2 = search1.clone
+      search2.age_gt = 1
+      search2.all.should == User.all
+      search1.all.should == [user2]
+    end
   end
   
-  it "should clone properly without scope" do
-    user1 = User.create(:age => 5)
-    user2 = User.create(:age => 25)
-    search1 = User.search(:age_gt => 10)
-    search2 = search1.clone
-    search2.age_gt = 1
-    search2.all.should == User.all
-    search1.all.should == [user2]
-  end
-  
-  it "should delete the condition" do
-    search = User.search(:username_like => "bjohnson")
-    search.delete("username_like")
-    search.username_like.should be_nil
-    search.conditions["username_like"].should be_nil
-  end
-  
-  context "conditions" do
+  context "#conditions" do
     it "should set the conditions and be accessible individually" do
       search = User.search
       search.conditions = {:username => "bjohnson"}
@@ -329,7 +326,72 @@ describe "Search" do
     end
   end
   
-  context "taking action" do
+  context "#delete" do
+    it "should delete the condition" do
+      search = User.search(:username_like => "bjohnson")
+      search.delete("username_like")
+      search.username_like.should be_nil
+      search.conditions["username_like"].should be_nil
+    end
+  end
+  
+  context "#method_missing" do
+    context "setting" do
+      it "should call named scopes for conditions" do
+        User.search(:age_less_than => 5).proxy_options.should == User.age_less_than(5).proxy_options
+      end
+    
+      it "should alias exact column names to use equals" do
+        User.search(:username => "joe").proxy_options.should == User.username_equals("joe").proxy_options
+      end
+    
+      it "should recognize conditions with a value of true where the named scope has an arity of 0" do
+        User.search(:username_nil => true).proxy_options.should == User.username_nil.proxy_options
+      end
+    
+      it "should ignore conditions with a value of false where the named scope has an arity of 0" do
+        User.search(:username_nil => false).proxy_options.should == {}
+      end
+    
+      it "should not ignore conditions with a value of false where the named scope does not have an arity of 0" do
+        User.search(:username_is => false).proxy_options.should == User.username_is(false).proxy_options
+      end
+    
+      it "should recognize the order condition" do
+        User.search(:order => "ascend_by_username").proxy_options.should == User.ascend_by_username.proxy_options
+      end
+    
+      it "should pass array values as multiple arguments with arity -1" do
+        User.named_scope(:multiple_args, lambda { |*args|
+          raise "This should not be an array, it should be 1" if args.first.is_a?(Array)
+          {:conditions => ["id IN (?)", args]}
+        })
+        User.search(:multiple_args => [1,2]).proxy_options.should == User.multiple_args(1,2).proxy_options
+      end
+    
+      it "should pass array as a single value with arity >= 0" do
+        User.named_scope(:multiple_args, lambda { |args|
+          raise "This should be an array" if !args.is_a?(Array)
+          {:conditions => ["id IN (?)", args]}
+        })
+        User.search(:multiple_args => [1,2]).proxy_options.should == User.multiple_args(1,2).proxy_options
+      end
+    
+      it "should not split out dates or times (big fix)" do
+        s = User.search
+        s.created_at_after = Time.now
+        lambda { s.count }.should_not raise_error
+      end
+    
+      it "should not include blank values" do
+        s = User.search
+        s.conditions = {"id_equals" => ""}
+        s.proxy_options.should == {}
+      end
+    end
+  end
+  
+  context "delegation" do
     it "should return all when not given any conditions" do
       3.times { User.create }
       User.search.all.length.should == 3
@@ -348,60 +410,6 @@ describe "Search" do
       User.four_year_olds.search.all.should == User.find_all_by_age(4)
     end
     
-    it "should call named scopes for conditions" do
-      User.search(:age_less_than => 5).proxy_options.should == User.age_less_than(5).proxy_options
-    end
-    
-    it "should alias exact column names to use equals" do
-      User.search(:username => "joe").proxy_options.should == User.username_equals("joe").proxy_options
-    end
-    
-    it "should recognize conditions with a value of true where the named scope has an arity of 0" do
-      User.search(:username_nil => true).proxy_options.should == User.username_nil.proxy_options
-    end
-    
-    it "should ignore conditions with a value of false where the named scope has an arity of 0" do
-      User.search(:username_nil => false).proxy_options.should == {}
-    end
-    
-    it "should not ignore conditions with a value of false where the named scope does not have an arity of 0" do
-      User.search(:username_is => false).proxy_options.should == User.username_is(false).proxy_options
-    end
-    
-    it "should recognize the order condition" do
-      User.search(:order => "ascend_by_username").proxy_options.should == User.ascend_by_username.proxy_options
-    end
-    
-    it "should pass array values as multiple arguments with arity -1" do
-      User.named_scope(:multiple_args, lambda { |*args|
-        raise "This should not be an array, it should be 1" if args.first.is_a?(Array)
-        {:conditions => ["id IN (?)", args]}
-      })
-      User.search(:multiple_args => [1,2]).proxy_options.should == User.multiple_args(1,2).proxy_options
-    end
-    
-    it "should pass array as a single value with arity >= 0" do
-      User.named_scope(:multiple_args, lambda { |args|
-        raise "This should be an array" if !args.is_a?(Array)
-        {:conditions => ["id IN (?)", args]}
-      })
-      User.search(:multiple_args => [1,2]).proxy_options.should == User.multiple_args(1,2).proxy_options
-    end
-    
-    it "should not split out dates or times (big fix)" do
-      s = User.search
-      s.created_at_after = Time.now
-      lambda { s.count }.should_not raise_error
-    end
-    
-    it "should not include blank values" do
-      s = User.search
-      s.conditions = {"id_equals" => ""}
-      s.proxy_options.should == {}
-    end
-  end
-  
-  context "method delegation" do
     it "should respond to count" do
       User.create(:username => "bjohnson")
       search1 = User.search(:username => "bjohnson")
