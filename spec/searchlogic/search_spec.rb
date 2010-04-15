@@ -374,7 +374,7 @@ describe Searchlogic::Search do
           raise "This should be an array" if !args.is_a?(Array)
           {:conditions => ["id IN (?)", args]}
         })
-        User.search(:multiple_args => [1,2]).proxy_options.should == User.multiple_args(1,2).proxy_options
+        User.search(:multiple_args => [1,2]).proxy_options.should == User.multiple_args([1,2]).proxy_options
       end
     
       it "should not split out dates or times (big fix)" do
