@@ -97,6 +97,11 @@ module Searchlogic
       self
     end
     
+    # Returns the column we are currently ordering by
+    def ordering_by
+      order && order.gsub(/^(ascend|descend)_by_/, '')
+    end
+    
     private
       def method_missing(name, *args, &block)
         condition_name = condition_name(name)
