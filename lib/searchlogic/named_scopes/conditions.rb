@@ -20,7 +20,7 @@ module Searchlogic
       
       WILDCARD_CONDITIONS = {
         :like => [:contains, :includes],
-        :not_like => [],
+        :not_like => [:does_not_include],
         :begins_with => [:bw],
         :not_begin_with => [:does_not_begin_with],
         :ends_with => [:ew],
