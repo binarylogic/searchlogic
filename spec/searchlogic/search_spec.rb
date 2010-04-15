@@ -350,6 +350,11 @@ describe Searchlogic::Search do
       search = User.search(:order => "descend_by_first_name")
       search.ordering_by.should == "first_name"
     end
+    
+    it "should handle symbols" do
+      search = User.search(:order => :descend_by_first_name)
+      search.ordering_by.should == "first_name"
+    end
   end
   
   context "#method_missing" do
