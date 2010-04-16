@@ -185,4 +185,14 @@ describe Searchlogic::NamedScopes::AssociationConditions do
       :joins => ["INNER JOIN \"users\" ON \"users\".id = \"audits\".auditable_id AND \"audits\".auditable_type = 'User'", " INNER JOIN \"companies\" ON \"companies\".id = \"users\".company_id "]
     }
   end
+  
+  it "should allow any on a has_many relationship" do
+    company1 = Company.create
+    user1 = company1.users.create
+    company2 = Company.create
+    user2 = company2.users.create
+    user3 = company2.users.create
+    
+    Company.users_id_equals_any([user2.id, user3.id]).all(:select => "DISTINCT companies.*").should == [company2]
+  end
 end

@@ -123,93 +123,93 @@ describe Searchlogic::NamedScopes::Conditions do
     
     it "should have equals any" do
       %w(bjohnson thunt dgainor).each { |username| User.create(:username => username) }
-      User.username_equals_any("bjohnson", "thunt").all == User.find_all_by_username(["bjohnson", "thunt"])
+      User.username_equals_any("bjohnson", "thunt").all.should == User.find_all_by_username(["bjohnson", "thunt"])
     end
     
     it "should have equals all" do
       %w(bjohnson thunt dainor).each { |username| User.create(:username => username) }
-      User.username_equals_all("bjohnson", "thunt").all == []
+      User.username_equals_all("bjohnson", "thunt").all.should == []
     end
     
     it "should have does not equal any" do
       %w(bjohnson thunt dgainor).each { |username| User.create(:username => username) }
-      User.username_does_not_equal_any("bjohnson", "thunt").all == User.find_all_by_username("dgainor")
+      User.username_does_not_equal_any("bjohnson", "thunt").all.should == User.find_all_by_username(["bjohnson", "thunt", "dgainor"])
     end
     
     it "should have does not equal all" do
       %w(bjohnson thunt dgainor).each { |username| User.create(:username => username) }
-      User.username_does_not_equal_all("bjohnson", "thunt").all == User.find_all_by_username("dgainor")
+      User.username_does_not_equal_all("bjohnson", "thunt").all.should == User.find_all_by_username("dgainor")
     end
     
     it "should have less than any" do
       (5..7).each { |age| User.create(:age => age) }
-      User.age_less_than_any(7,6).all == User.find_all_by_age([5, 6])
+      User.age_less_than_any(7,6).all.should == User.find_all_by_age([5, 6])
     end
     
     it "should have less than all" do
       (5..7).each { |age| User.create(:age => age) }
-      User.age_less_than_all(7,6).all == User.find_all_by_age(5)
+      User.age_less_than_all(7,6).all.should == User.find_all_by_age(5)
     end
     
     it "should have less than or equal to any" do
       (5..7).each { |age| User.create(:age => age) }
-      User.age_less_than_or_equal_to_any(7,6).all == User.find_all_by_age([5, 6, 7])
+      User.age_less_than_or_equal_to_any(7,6).all.should == User.find_all_by_age([5, 6, 7])
     end
     
     it "should have less than or equal to all" do
       (5..7).each { |age| User.create(:age => age) }
-      User.age_less_than_or_equal_to_all(7,6).all == User.find_all_by_age([5, 6])
+      User.age_less_than_or_equal_to_all(7,6).all.should == User.find_all_by_age([5, 6])
     end
     
     it "should have less than any" do
       (5..7).each { |age| User.create(:age => age) }
-      User.age_greater_than_any(5,6).all == User.find_all_by_age([6, 7])
+      User.age_greater_than_any(5,6).all.should == User.find_all_by_age([6, 7])
     end
     
     it "should have greater than all" do
       (5..7).each { |age| User.create(:age => age) }
-      User.age_greater_than_all(5,6).all == User.find_all_by_age(7)
+      User.age_greater_than_all(5,6).all.should == User.find_all_by_age(7)
     end
     
     it "should have greater than or equal to any" do
       (5..7).each { |age| User.create(:age => age) }
-      User.age_greater_than_or_equal_to_any(5,6).all == User.find_all_by_age([5, 6, 7])
+      User.age_greater_than_or_equal_to_any(5,6).all.should == User.find_all_by_age([5, 6, 7])
     end
     
     it "should have greater than or equal to all" do
       (5..7).each { |age| User.create(:age => age) }
-      User.age_greater_than_or_equal_to_all(5,6).all == User.find_all_by_age([6, 7])
+      User.age_greater_than_or_equal_to_all(5,6).all.should == User.find_all_by_age([6, 7])
     end
     
     it "should have like all" do
       %w(bjohnson thunt dgainor).each { |username| User.create(:username => username) }
-      User.username_like_all("bjohnson", "thunt").all == []
-      User.username_like_all("n", "o").all == User.find_all_by_username(["bjohnson", "thunt"])
+      User.username_like_all("bjohnson", "thunt").all.should == []
+      User.username_like_all("n", "o").all.should == User.find_all_by_username(["bjohnson", "dgainor"])
     end
     
     it "should have like any" do
       %w(bjohnson thunt dgainor).each { |username| User.create(:username => username) }
-      User.username_like_all("bjohnson", "thunt").all == User.find_all_by_username(["bjohnson", "thunt"])
+      User.username_like_any("bjohnson", "thunt").all.should == User.find_all_by_username(["bjohnson", "thunt"])
     end
     
     it "should have begins with all" do
       %w(bjohnson thunt dgainor).each { |username| User.create(:username => username) }
-      User.username_begins_with_all("bjohnson", "thunt").all == []
+      User.username_begins_with_all("bjohnson", "thunt").all.should == []
     end
     
     it "should have begins with any" do
       %w(bjohnson thunt dgainor).each { |username| User.create(:username => username) }
-      User.username_begins_with_any("bj", "th").all == User.find_all_by_username(["bjohnson", "thunt"])
+      User.username_begins_with_any("bj", "th").all.should == User.find_all_by_username(["bjohnson", "thunt"])
     end
     
     it "should have ends with all" do
       %w(bjohnson thunt dgainor).each { |username| User.create(:username => username) }
-      User.username_ends_with_all("n", "r").all == []
+      User.username_ends_with_all("n", "r").all.should == []
     end
     
     it "should have ends with any" do
       %w(bjohnson thunt dgainor).each { |username| User.create(:username => username) }
-      User.username_ends_with_any("n", "r").all == User.find_all_by_username(["bjohnson", "dgainor"])
+      User.username_ends_with_any("n", "r").all.should == User.find_all_by_username(["bjohnson", "dgainor"])
     end
   end
   
@@ -278,12 +278,12 @@ describe Searchlogic::NamedScopes::Conditions do
   context "group conditions" do
     it "should have in" do
       (5..7).each { |age| User.create(:age => age) }
-      User.age_in([5,6]).all == User.find(:all, :conditions => ["users.age IN (?)", [5, 6]])
+      User.age_in([5,6]).all.should == User.find(:all, :conditions => ["users.age IN (?)", [5, 6]])
     end
     
     it "should have not_in" do
       (5..7).each { |age| User.create(:age => age) }
-      User.age_not_in([5,6]).all == User.find(:all, :conditions => ["users.age NOT IN (?)", [5, 6]])
+      User.age_not_in([5,6]).all.should == User.find(:all, :conditions => ["users.age NOT IN (?)", [5, 6]])
     end
   end
   

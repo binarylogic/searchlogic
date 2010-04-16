@@ -35,11 +35,6 @@ module Searchlogic
         :not_blank => [:present]
       }
       
-      GROUP_CONDITIONS = {
-        :in => [],
-        :not_in => []
-      }
-      
       CONDITIONS = {}
       
       # Add any / all variations to every comparison and wildcard condition
@@ -50,11 +45,9 @@ module Searchlogic
       end
       
       CONDITIONS[:equals_any] = CONDITIONS[:equals_any] + [:in]
-      CONDITIONS[:does_not_equal_any] = CONDITIONS[:does_not_equal_any] + [:not_in]
+      CONDITIONS[:does_not_equal_all] = CONDITIONS[:does_not_equal_all] + [:not_in]
       
       BOOLEAN_CONDITIONS.each { |condition, aliases| CONDITIONS[condition] = aliases }
-      
-      GROUP_CONDITIONS.each { |condition, aliases| CONDITIONS[condition] = aliases }
       
       PRIMARY_CONDITIONS = CONDITIONS.keys
       ALIAS_CONDITIONS = CONDITIONS.values.flatten
@@ -158,33 +151,26 @@ module Searchlogic
         def scope_options(condition, column_type, sql, options = {})
           case condition.to_s
           when /_(any|all)$/
-            any_or_all_scope_options(column_type, sql, options)
+            searchlogic_lambda(column_type, :skip_conversion => options[:skip_conversion]) { |*values|
+              return {} if values.empty?
+              values.flatten!
+              values.collect! { |value| value_with_modifier(value, options[:value_modifier]) }
+
+              join = $1 == "any" ? " OR " : " AND "
+
+              scope_sql = values.collect { |value| sql.is_a?(Proc) ? sql.call(value) : sql }.join(join)
+
+              {:conditions => [scope_sql, *expand_range_bind_variables(values)]}
+            }
           else
-            general_scope_options(column_type, sql, options)
+            searchlogic_lambda(column_type, :skip_conversion => options[:skip_conversion]) { |*values|
+              values.collect! { |value| value_with_modifier(value, options[:value_modifier]) }
+
+              scope_sql = sql.is_a?(Proc) ? sql.call(*values) : sql
+
+              {:conditions => [scope_sql, *expand_range_bind_variables(values)]}
+            }
           end
-        end
-        
-        def any_or_all_scope_options(column_type, sql, options)
-          searchlogic_lambda(column_type, :skip_conversion => options[:skip_conversion]) { |*values|
-            return {} if values.empty?
-            values.flatten!
-            values.collect! { |value| value_with_modifier(value, options[:value_modifier]) }
-            
-            join = $1 == "any" ? " OR " : " AND "
-            scope_sql = values.collect { |value| sql.is_a?(Proc) ? sql.call(value) : sql }.join(join)
-            
-            {:conditions => [scope_sql, *expand_range_bind_variables(values)]}
-          }
-        end
-        
-        def general_scope_options(column_type, sql, options)
-          searchlogic_lambda(column_type, :skip_conversion => options[:skip_conversion]) { |*values|
-            values.collect! { |value| value_with_modifier(value, options[:value_modifier]) }
-            
-            scope_sql = sql.is_a?(Proc) ? sql.call(*values) : sql
-            
-            {:conditions => [scope_sql, *expand_range_bind_variables(values)]}
-          }
         end
         
         def value_with_modifier(value, modifier)
