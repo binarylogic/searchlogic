@@ -17,7 +17,7 @@ module Searchlogic
         :greater_than => [:gt, :after],
         :greater_than_or_equal_to => [:gte],
       }
-      
+
       WILDCARD_CONDITIONS = {
         :like => [:contains, :includes],
         :not_like => [:does_not_include],
@@ -26,7 +26,7 @@ module Searchlogic
         :ends_with => [:ew],
         :not_end_with => [:does_not_end_with]
       }
-      
+
       BOOLEAN_CONDITIONS = {
         :null => [:nil],
         :not_null => [:not_nil],
@@ -34,41 +34,41 @@ module Searchlogic
         :blank => [],
         :not_blank => [:present]
       }
-      
+
       CONDITIONS = {}
-      
+
       # Add any / all variations to every comparison and wildcard condition
       COMPARISON_CONDITIONS.merge(WILDCARD_CONDITIONS).each do |condition, aliases|
         CONDITIONS[condition] = aliases
         CONDITIONS["#{condition}_any".to_sym] = aliases.collect { |a| "#{a}_any".to_sym }
         CONDITIONS["#{condition}_all".to_sym] = aliases.collect { |a| "#{a}_all".to_sym }
       end
-      
+
       CONDITIONS[:equals_any] = CONDITIONS[:equals_any] + [:in]
       CONDITIONS[:does_not_equal_all] = CONDITIONS[:does_not_equal_all] + [:not_in]
-      
+
       BOOLEAN_CONDITIONS.each { |condition, aliases| CONDITIONS[condition] = aliases }
-      
+
       PRIMARY_CONDITIONS = CONDITIONS.keys
       ALIAS_CONDITIONS = CONDITIONS.values.flatten
-      
+
       # Is the name of the method a valid condition that can be dynamically created?
       def condition?(name)
         local_condition?(name)
       end
-      
+
       private
         def local_condition?(name)
           return false if name.blank?
           scope_names = scopes.keys.reject { |k| k == :scoped }
           scope_names.include?(name.to_sym) || !condition_details(name).nil? || boolean_condition?(name)
         end
-        
+
         def boolean_condition?(name)
           column = columns_hash[name.to_s] || columns_hash[name.to_s.gsub(/^not_/, "")]
           column && column.type == :boolean
         end
-        
+
         def method_missing(name, *args, &block)
           if details = condition_details(name)
             create_condition(details[:column], details[:condition], args)
@@ -81,8 +81,8 @@ module Searchlogic
             super
           end
         end
-        
-        
+
+
         def condition_details(method_name)
           column_name_matcher = column_names.join("|")
           conditions_matcher = (PRIMARY_CONDITIONS + ALIAS_CONDITIONS).join("|")
@@ -91,7 +91,7 @@ module Searchlogic
             {:column => $1, :condition => $2}
           end
         end
-        
+
         def create_condition(column, condition, args)
           if PRIMARY_CONDITIONS.include?(condition.to_sym)
             create_primary_condition(column, condition)
@@ -99,12 +99,12 @@ module Searchlogic
             create_alias_condition(column, condition, args)
           end
         end
-        
+
         def create_primary_condition(column, condition)
           column_type = columns_hash[column.to_s].type
           skip_conversion = skip_time_zone_conversion_for_attributes.include?(columns_hash[column.to_s].name.to_sym)
           match_keyword = ::ActiveRecord::Base.connection.adapter_name == "PostgreSQL" ? "ILIKE" : "LIKE"
-          
+
           scope_options = case condition.to_s
           when /^equals/
             scope_options(condition, column_type, lambda { |a| attribute_condition("#{table_name}.#{column}", a) }, :skip_conversion => skip_conversion)
@@ -141,10 +141,10 @@ module Searchlogic
           when "not_blank"
             {:conditions => "#{table_name}.#{column} != '' AND #{table_name}.#{column} IS NOT NULL"}
           end
-          
+
           named_scope("#{column}_#{condition}".to_sym, scope_options)
         end
-        
+
         # This method helps cut down on defining scope options for conditions that allow *_any or *_all conditions.
         # Kepp in mind that the lambdas get cached in a method, so you want to keep the contents of the lambdas as
         # fast as possible, which is why I didn't do the case statement inside of the lambda.
@@ -152,15 +152,18 @@ module Searchlogic
           case condition.to_s
           when /_(any|all)$/
             searchlogic_lambda(column_type, :skip_conversion => options[:skip_conversion]) { |*values|
-              return {} if values.empty?
-              values.flatten!
-              values.collect! { |value| value_with_modifier(value, options[:value_modifier]) }
+              unless values.empty?
+                values.flatten!
+                values.collect! { |value| value_with_modifier(value, options[:value_modifier]) }
 
-              join = $1 == "any" ? " OR " : " AND "
+                join = $1 == "any" ? " OR " : " AND "
 
-              scope_sql = values.collect { |value| sql.is_a?(Proc) ? sql.call(value) : sql }.join(join)
+                scope_sql = values.collect { |value| sql.is_a?(Proc) ? sql.call(value) : sql }.join(join)
 
-              {:conditions => [scope_sql, *expand_range_bind_variables(values)]}
+                {:conditions => [scope_sql, *expand_range_bind_variables(values)]}
+              else
+                {}
+              end
             }
           else
             searchlogic_lambda(column_type, :skip_conversion => options[:skip_conversion]) { |*values|
@@ -172,7 +175,7 @@ module Searchlogic
             }
           end
         end
-        
+
         def value_with_modifier(value, modifier)
           case modifier
           when :like
@@ -185,7 +188,7 @@ module Searchlogic
             value
           end
         end
-        
+
         def create_alias_condition(column, condition, args)
           primary_condition = primary_condition(condition)
           alias_name = "#{column}_#{condition}"
@@ -193,7 +196,7 @@ module Searchlogic
           send(primary_name, *args) # go back to method_missing and make sure we create the method
           (class << self; self; end).class_eval { alias_method alias_name, primary_name }
         end
-        
+
         # Returns the primary condition for the given alias. Ex:
         #
         #   primary_condition(:gt) => :greater_than
