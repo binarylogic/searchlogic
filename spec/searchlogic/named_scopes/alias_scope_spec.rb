@@ -16,4 +16,8 @@ describe Searchlogic::NamedScopes::AliasScope do
     search.username_has = "bjohnson"
     search.username_has.should == "bjohnson"
   end
+  
+  it "should inherit alias scopes from superclasses" do
+    Class.new(User).alias_scope?("username_has").should be_true
+  end
 end
