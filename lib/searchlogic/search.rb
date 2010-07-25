@@ -60,6 +60,10 @@ module Searchlogic
       mass_conditions.clone.merge(@conditions)
     end
     
+    def compact_conditions
+      conditions.select { |k,v| !v.blank? }
+    end
+    
     # Accepts a hash of conditions.
     def conditions=(values)
       values.each do |condition, value|

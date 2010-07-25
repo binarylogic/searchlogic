@@ -102,6 +102,14 @@ describe Searchlogic::Search do
     end
   end
   
+  context "#compact_conditions" do
+    it "should remove conditions with blank values" do
+      search = User.search
+      search.conditions = {"id_equals" => "", "name_equals" => "Ben"}
+      search.compact_conditions.should == {:name_equals => "Ben"}
+    end
+  end
+  
   context "condition accessors" do
     it "should allow setting exact columns individually" do
       search = User.search
