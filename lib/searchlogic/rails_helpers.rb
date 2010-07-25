@@ -44,6 +44,9 @@ module Searchlogic
       url_options = {
         options[:params_scope] => search.conditions.merge( { :order => new_scope } )
       }.deep_merge(options[:params] || {})
+
+      options[:as] = raw(options[:as]) if defined?(RailsXss)
+
       link_to options[:as], url_for(url_options), html_options
     end
 
@@ -60,8 +63,8 @@ module Searchlogic
       end
       super
     end
-    
-    # Automatically adds an "order" hidden field in your form to preserve how the data 
+
+    # Automatically adds an "order" hidden field in your form to preserve how the data
     # is being ordered.
     def fields_for(*args, &block)
       if search_obj = args.find { |arg| arg.is_a?(Searchlogic::Search) }

@@ -47,7 +47,7 @@ module Searchlogic
       alias_method :scope_procedure, :alias_scope
       
       def alias_scopes # :nodoc:
-        @alias_scopes ||= {}
+        read_inheritable_attribute(:alias_scopes) || write_inheritable_attribute(:alias_scopes, {})
       end
       
       def alias_scope?(name) # :nodoc:
