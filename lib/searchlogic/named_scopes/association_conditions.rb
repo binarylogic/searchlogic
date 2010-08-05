@@ -71,10 +71,11 @@ module Searchlogic
             options
           else
             proc_args = arity_args(arity)
-            arg_type = (scope_options.respond_to?(:searchlogic_options) && scope_options.searchlogic_options[:type]) || :string
+            scope_options = scope_options.respond_to?(:searchlogic_options) ? scope_options.searchlogic_options.clone : {}
+            arg_type = scope_options.delete(:type) || :string
             
             eval <<-"end_eval"
-              searchlogic_lambda(:#{arg_type}) { |#{proc_args.join(",")}|
+              searchlogic_lambda(:#{arg_type}, #{scope_options}) { |#{proc_args.join(",")}|
                 options = {}
                 
                 in_searchlogic_delegation do

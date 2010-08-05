@@ -75,6 +75,11 @@ describe Searchlogic::NamedScopes::AssociationConditions do
     Company.users_orders_total_gt(10).proxy_options.should == Order.total_gt(10).proxy_options.merge(:joins => {:users => :orders})
   end
   
+  it "should copy over the named scope options" do
+    Order.user_whatever_at_equals(1)
+    Order.named_scope_options(:user_whatever_at_equals).searchlogic_options[:skip_conversion].should == true
+  end
+  
   it "should include optional associations" do
     pending # this is a problem with using inner joins and left outer joins
     Company.create
