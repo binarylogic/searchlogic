@@ -75,7 +75,7 @@ module Searchlogic
             arg_type = scope_options.delete(:type) || :string
             
             eval <<-"end_eval"
-              searchlogic_lambda(:#{arg_type}, #{scope_options}) { |#{proc_args.join(",")}|
+              searchlogic_lambda(:#{arg_type}, #{scope_options.inspect}) { |#{proc_args.join(",")}|
                 options = {}
                 
                 in_searchlogic_delegation do
