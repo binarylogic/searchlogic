@@ -421,6 +421,14 @@ describe Searchlogic::Search do
     end
   end
   
+  context "#respond_to?" do
+    it "should respond to created_at_lte" do
+      s = User.search
+      s.created_at_lte
+      s.respond_to?(:created_at_lte).should == true
+    end
+  end
+  
   context "delegation" do
     it "should return all when not given any conditions" do
       3.times { User.create }

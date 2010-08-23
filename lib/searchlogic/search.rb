@@ -106,6 +106,10 @@ module Searchlogic
       order && order.to_s.gsub(/^(ascend|descend)_by_/, '')
     end
     
+    def respond_to?(*args)
+      super || scope?(args.first)
+    end
+    
     private
       def method_missing(name, *args, &block)
         condition_name = condition_name(name)
