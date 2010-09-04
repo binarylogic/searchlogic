@@ -427,6 +427,12 @@ describe Searchlogic::Search do
       s.created_at_lte
       s.respond_to?(:created_at_lte).should == true
     end
+    
+    it "should respond to created_at" do
+      s = User.search
+      s.created_at_lte
+      s.respond_to?(:created_at).should == true
+    end
   end
   
   context "delegation" do

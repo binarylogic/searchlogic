@@ -1,10 +1,10 @@
 require 'spec'
 require 'rubygems'
-require 'ruby-debug'
+#require 'ruby-debug'
 require 'active_record'
 
 ENV['TZ'] = 'UTC'
-Time.zone = 'Eastern Time (US & Canada)'
+#Time.zone = 'Eastern Time (US & Canada)'
 
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
 ActiveRecord::Base.configurations = true

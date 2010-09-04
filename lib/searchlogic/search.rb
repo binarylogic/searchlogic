@@ -107,7 +107,7 @@ module Searchlogic
     end
     
     def respond_to?(*args)
-      super || scope?(args.first)
+      super || scope?(normalize_scope_name(args.first))
     end
     
     private
