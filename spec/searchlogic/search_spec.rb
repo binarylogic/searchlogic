@@ -478,4 +478,17 @@ describe Searchlogic::Search do
       search.paged(0, 0).count.should == 0
     end
   end
+  
+  context "yaml" do
+    it "should load yaml" do
+      time = Time.now
+      search = User.search(:name_like => "Ben", :created_at_after => time)
+      search.current_scope = {:conditions => "1=1"}
+      yaml = search.to_yaml
+      loaded_search = YAML.load(yaml)
+      loaded_search.current_scope.should == {:conditions => "1=1"}
+      loaded_search.name_like.should == "Ben"
+      loaded_search.created_at_after.should == time
+    end
+  end
 end
