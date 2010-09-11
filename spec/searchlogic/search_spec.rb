@@ -424,14 +424,17 @@ describe Searchlogic::Search do
   context "#respond_to?" do
     it "should respond to created_at_lte" do
       s = User.search
-      s.created_at_lte
       s.respond_to?(:created_at_lte).should == true
     end
     
     it "should respond to created_at" do
       s = User.search
-      s.created_at_lte
       s.respond_to?(:created_at).should == true
+    end
+    
+    it "should not respond to created_at_or_whatever" do
+      s = User.search
+      s.respond_to?(:created_at_or_whatever)
     end
   end
   

@@ -3,8 +3,10 @@ module Searchlogic
     module MethodMissing
       def respond_to?(*args)
         super || scope?(normalize_scope_name(args.first))
+      rescue Searchlogic::NamedScopes::OrConditions::UnknownConditionError
+        false
       end
-      
+
       private
         def method_missing(name, *args, &block)
           condition_name = condition_name(name)
@@ -64,16 +66,16 @@ module Searchlogic
           else scope_name.to_sym
           end
         end
-        
+
         def setter?(name)
           !(name.to_s =~ /=$/).nil?
         end
-        
+
         def condition_name(name)
           condition = name.to_s.match(/(\w+)=?$/)
           condition ? condition[1].to_sym : nil
         end
-        
+
         def cast_type(name)
           named_scope_options = scope_options(name)
           arity = klass.named_scope_arity(name)
