@@ -16,6 +16,8 @@ module Searchlogic
         :less_than_or_equal_to => [:lte],
         :greater_than => [:gt, :after],
         :greater_than_or_equal_to => [:gte],
+        :between => [:is_between, :in_range],
+        :between_inclusive => [:is_between_inclusive, :in_range_inclusive]
       }
 
       WILDCARD_CONDITIONS = {
@@ -118,6 +120,10 @@ module Searchlogic
             scope_options(condition, column_type, "#{table_name}.#{column} >= ?", :skip_conversion => skip_conversion)
           when /^greater_than/
             scope_options(condition, column_type, "#{table_name}.#{column} > ?", :skip_conversion => skip_conversion)
+          when /^between_inclusive/
+            scope_options(condition, column_type, "#{table_name}.#{column} >= ? AND #{table_name}.#{column} <= ?", :skip_conversion => skip_conversion)
+          when /^between/
+            scope_options(condition, column_type, "#{table_name}.#{column} > ? AND #{table_name}.#{column} < ?", :skip_conversion => skip_conversion)
           when /^like/
             scope_options(condition, column_type, "#{table_name}.#{column} #{match_keyword} ?", :skip_conversion => skip_conversion, :value_modifier => :like)
           when /^not_like/
