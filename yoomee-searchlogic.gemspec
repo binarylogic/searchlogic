@@ -4,14 +4,14 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{searchlogic}
-  s.version = "2.4.26"
+  s.name = %q{yoomee-searchlogic}
+  s.version = "2.4.27"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Ben Johnson of Binary Logic"]
-  s.date = %q{2010-09-10}
+  s.authors = ["Yoomee Developers, Ben Johnson of Binary Logic"]
+  s.date = %q{2010-09-22}
   s.description = %q{Searchlogic makes using ActiveRecord named scopes easier and less repetitive.}
-  s.email = %q{bjohnson@binarylogic.com}
+  s.email = %q{developers@yoomee.com, bjohnson@binarylogic.com}
   s.extra_rdoc_files = [
     "LICENSE",
      "README.rdoc"
@@ -47,7 +47,6 @@ Gem::Specification.new do |s|
      "lib/searchlogic/search/to_yaml.rb",
      "lib/searchlogic/search/unknown_condition_error.rb",
      "rails/init.rb",
-     "searchlogic.gemspec",
      "spec/searchlogic/active_record/association_proxy_spec.rb",
      "spec/searchlogic/active_record/consistency_spec.rb",
      "spec/searchlogic/core_ext/object_spec.rb",
@@ -59,9 +58,10 @@ Gem::Specification.new do |s|
      "spec/searchlogic/named_scopes/or_conditions_spec.rb",
      "spec/searchlogic/named_scopes/ordering_spec.rb",
      "spec/searchlogic/search_spec.rb",
-     "spec/spec_helper.rb"
+     "spec/spec_helper.rb",
+     "yoomee-searchlogic.gemspec"
   ]
-  s.homepage = %q{http://github.com/binarylogic/searchlogic}
+  s.homepage = %q{http://github.com/Yoomee/searchlogic}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{searchlogic}

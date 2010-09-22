@@ -4,12 +4,12 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "searchlogic"
+    gem.name = "yoomee-searchlogic"
     gem.summary = "Searchlogic makes using ActiveRecord named scopes easier and less repetitive."
     gem.description = "Searchlogic makes using ActiveRecord named scopes easier and less repetitive."
-    gem.email = "bjohnson@binarylogic.com"
-    gem.homepage = "http://github.com/binarylogic/searchlogic"
-    gem.authors = ["Ben Johnson of Binary Logic"]
+    gem.email = "developers@yoomee.com, bjohnson@binarylogic.com"
+    gem.homepage = "http://github.com/Yoomee/searchlogic"
+    gem.authors = ["Yoomee Developers, Ben Johnson of Binary Logic"]
     gem.rubyforge_project = "searchlogic"
     gem.add_dependency "activerecord", ">= 2.0.0"
   end
