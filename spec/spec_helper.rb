@@ -1,6 +1,6 @@
 require 'spec'
 require 'rubygems'
-require 'ruby-debug'
+#require 'ruby-debug'
 require 'active_record'
 
 ENV['TZ'] = 'UTC'
@@ -15,7 +15,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string :auditable_type
     t.integer :auditable_id
   end
-  
+
   create_table :companies do |t|
     t.datetime :created_at
     t.datetime :updated_at
@@ -23,16 +23,16 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string :description
     t.integer :users_count, :default => 0
   end
-  
+
   create_table :user_groups do |t|
     t.string :name
   end
-  
+
   create_table :user_groups_users, :id => false do |t|
     t.integer :user_group_id, :null => false
     t.integer :user_id, :null => false
   end
-  
+
   create_table :users do |t|
     t.datetime :created_at
     t.datetime :updated_at
@@ -44,13 +44,13 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string :some_type_id
     t.datetime :whatever_at
   end
-  
+
   create_table :carts do |t|
     t.datetime :created_at
     t.datetime :updated_at
     t.integer :user_id
   end
-  
+
   create_table :orders do |t|
     t.datetime :created_at
     t.datetime :updated_at
@@ -59,7 +59,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.float :taxes
     t.float :total
   end
-  
+
   create_table :fees do |t|
     t.datetime :created_at
     t.datetime :updated_at
@@ -67,7 +67,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.integer :owner_id
     t.float :cost
   end
-  
+
   create_table :line_items do |t|
     t.datetime :created_at
     t.datetime :updated_at
@@ -85,44 +85,44 @@ Spec::Runner.configure do |config|
     class ::Audit < ActiveRecord::Base
       belongs_to :auditable, :polymorphic => true
     end
-    
+
     class ::Company < ActiveRecord::Base
       has_many :orders, :through => :users
       has_many :users, :dependent => :destroy
     end
-    
+
     class ::UserGroup < ActiveRecord::Base
       has_and_belongs_to_many :users
     end
-    
+
     class ::User < ActiveRecord::Base
       belongs_to :company, :counter_cache => true
       has_many :orders, :dependent => :destroy
       has_many :orders_big, :class_name => 'Order', :conditions => 'total > 100'
       has_and_belongs_to_many :user_groups
-      
+
       self.skip_time_zone_conversion_for_attributes = [:whatever_at]
     end
-    
+
     class ::Order < ActiveRecord::Base
       belongs_to :user
       has_many :line_items, :dependent => :destroy
     end
-    
+
     class ::Fee < ActiveRecord::Base
       belongs_to :owner, :polymorphic => true
     end
-    
+
     class ::LineItem < ActiveRecord::Base
       belongs_to :order
     end
-    
+
     ::Company.destroy_all
     ::User.destroy_all
     ::Order.destroy_all
     ::LineItem.destroy_all
   end
-  
+
   config.after(:each) do
     Object.send(:remove_const, :Company)
     Object.send(:remove_const, :User)

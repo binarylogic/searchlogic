@@ -4,14 +4,7 @@ module Searchlogic
       def self.included(klass)
         klass.class_eval do
           yaml_as "tag:ruby.yaml.org,2002:class"
-          extend ClassMethods
           include InstanceMethods
-        end
-      end
-      
-      module ClassMethods
-        def yaml_new(klass, tag, val)
-          raise "ass"
         end
       end
       
