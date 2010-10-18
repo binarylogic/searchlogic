@@ -101,6 +101,8 @@ Spec::Runner.configure do |config|
       has_many :orders_big, :class_name => 'Order', :conditions => 'total > 100'
       has_and_belongs_to_many :user_groups
 
+      named_scope :username_containing_the_letter_b, { :conditions => "username LIKE '%b%'" }
+
       self.skip_time_zone_conversion_for_attributes = [:whatever_at]
     end
 
