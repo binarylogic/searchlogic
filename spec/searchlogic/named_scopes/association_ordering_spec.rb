@@ -26,6 +26,6 @@ describe Searchlogic::NamedScopes::Ordering do
   end
   
   it "should ascend with a polymorphic belongs to" do
-    Audit.ascend_by_auditable_user_type_username.proxy_options.should == User.descend_by_username.proxy_options.merge(:joins => :users)
+    Audit.descend_by_auditable_user_type_username.proxy_options.should == User.descend_by_username.proxy_options.merge(:joins => :users)
   end
 end
