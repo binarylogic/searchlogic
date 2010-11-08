@@ -99,6 +99,7 @@ Spec::Runner.configure do |config|
       belongs_to :company, :counter_cache => true
       has_many :orders, :dependent => :destroy
       has_many :orders_big, :class_name => 'Order', :conditions => 'total > 100'
+      has_many :audits, :as => :auditable
       has_and_belongs_to_many :user_groups
 
       self.skip_time_zone_conversion_for_attributes = [:whatever_at]
