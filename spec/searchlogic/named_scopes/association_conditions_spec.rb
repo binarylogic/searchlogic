@@ -200,4 +200,16 @@ describe Searchlogic::NamedScopes::AssociationConditions do
     
     Company.users_id_equals_any([user2.id, user3.id]).all(:select => "DISTINCT companies.*").should == [company2]
   end
+  
+  it "should not lose association conditions on bizarre occasions" do
+    pending
+    user = User.create
+    order = Order.create :user => user, :shipped_on => Time.now
+    order.line_items.create :price => 37
+    order = Order.create :shipped_on => Time.now
+    order.line_items.create :price => 37
+    user.orders.shipped_on_not_null # this line causes the test to fail
+    user.orders.shipped_on_not_null.line_items_price_eq(37).count.should == 1
+  end
+
 end
