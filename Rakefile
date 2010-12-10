@@ -1,5 +1,8 @@
 require 'rubygems'
 require 'rake'
+require 'bundler'
+
+Bundler.setup
 
 begin
   require 'jeweler'
@@ -11,7 +14,7 @@ begin
     gem.homepage = "http://github.com/binarylogic/searchlogic"
     gem.authors = ["Ben Johnson of Binary Logic"]
     gem.rubyforge_project = "searchlogic"
-    gem.add_dependency "activerecord", ">= 2.0.0"
+    gem.add_bundler_dependencies
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
@@ -29,7 +32,5 @@ Spec::Rake::SpecTask.new(:rcov) do |spec|
   spec.pattern = 'spec/**/*_spec.rb'
   spec.rcov = true
 end
-
-task :spec => :check_dependencies
 
 task :default => :spec
