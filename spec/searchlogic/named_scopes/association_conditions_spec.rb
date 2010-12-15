@@ -158,7 +158,7 @@ describe Searchlogic::NamedScopes::AssociationConditions do
     User.named_scope(:orders_big_id, :joins => User.inner_joins(:orders))
     Company.users_orders_big_id.proxy_options.should == {:joins=>[" INNER JOIN \"users\" ON users.company_id = companies.id ", " INNER JOIN \"orders\" ON orders.user_id = users.id "]}
   end
-
+  
   it "should order the join statements ascending by the fieldnames so that we don't get double joins where the only difference is that the order of the fields is different" do
     company = Company.create
     user = company.users.create(:company_id => company.id)
@@ -201,15 +201,14 @@ describe Searchlogic::NamedScopes::AssociationConditions do
     Company.users_id_equals_any([user2.id, user3.id]).all(:select => "DISTINCT companies.*").should == [company2]
   end
   
-  it "should not lose association conditions on bizarre occasions" do
+  it "should allow dynamic scope generation on associations without losing association scope options" do
     pending
     user = User.create
-    order = Order.create :user => user, :shipped_on => Time.now
-    order.line_items.create :price => 37
-    order = Order.create :shipped_on => Time.now
-    order.line_items.create :price => 37
-    user.orders.shipped_on_not_null # this line causes the test to fail
-    user.orders.shipped_on_not_null.line_items_price_eq(37).count.should == 1
+    Order.create :user => user, :shipped_on => Time.now
+    Order.create :shipped_on => Time.now
+    # The next line causes the assertion to fail
+    Order.named_scope :shipped_on_not_null, :conditions => ['shipped_on is not null']
+    user.orders.shipped_on_not_null.shipped_on_greater_than(2.days.ago).count.should == 1
   end
 
 end
