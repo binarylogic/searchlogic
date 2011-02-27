@@ -62,7 +62,6 @@ Gem::Specification.new do |s|
   ]
   s.homepage = %q{http://github.com/binarylogic/searchlogic}
   s.require_paths = ["lib"]
-  s.rubyforge_project = %q{searchlogic}
   s.rubygems_version = %q{1.5.2}
   s.summary = %q{Searchlogic makes using ActiveRecord named scopes easier and less repetitive.}
   s.test_files = [
