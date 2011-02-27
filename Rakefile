@@ -10,7 +10,6 @@ begin
     gem.email = "bjohnson@binarylogic.com"
     gem.homepage = "http://github.com/binarylogic/searchlogic"
     gem.authors = ["Ben Johnson of Binary Logic"]
-    gem.rubyforge_project = "searchlogic"
     gem.add_dependency "activerecord", ">= 2.0.0"
   end
   Jeweler::GemcutterTasks.new
