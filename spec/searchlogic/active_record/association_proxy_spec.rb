@@ -19,5 +19,10 @@ describe "Searchlogic::ActiveRecord::AssociationProxy" do
     company.users.send(:username_or_some_type_id_like, "bjohnson").should == [user]
   end
     
+  it "should ignore belongs_to associations" do
+    user = User.create(:male => true)
+    cart = user.carts.create
+    cart.user.send("male").should == true
+  end
 end
 

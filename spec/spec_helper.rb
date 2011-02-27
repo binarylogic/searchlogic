@@ -1,7 +1,8 @@
 require 'spec'
 require 'rubygems'
-#require 'ruby-debug'
-require 'active_record'
+require 'ruby-debug'
+gem "activerecord", "2.3.11"
+require "active_record"
 
 ENV['TZ'] = 'UTC'
 Time.zone = 'Eastern Time (US & Canada)'
@@ -91,12 +92,17 @@ Spec::Runner.configure do |config|
       has_many :users, :dependent => :destroy
     end
 
+    class ::Cart < ActiveRecord::Base
+      belongs_to :user
+    end
+
     class ::UserGroup < ActiveRecord::Base
       has_and_belongs_to_many :users
     end
 
     class ::User < ActiveRecord::Base
       belongs_to :company, :counter_cache => true
+      has_many :carts, :dependent => :destroy
       has_many :orders, :dependent => :destroy
       has_many :orders_big, :class_name => 'Order', :conditions => 'total > 100'
       has_and_belongs_to_many :user_groups
