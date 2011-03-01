@@ -24,4 +24,8 @@ describe Searchlogic::NamedScopes::Ordering do
   it "should work through #order" do
     Company.order('ascend_by_users_username').proxy_options.should == Company.ascend_by_users_username.proxy_options
   end
+  
+  it "should ascend with a polymorphic belongs to" do
+    Audit.descend_by_auditable_user_type_username.proxy_options.should == User.descend_by_username.proxy_options.merge(:joins => :users)
+  end
 end

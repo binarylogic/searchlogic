@@ -37,7 +37,14 @@ module Searchlogic
         end
         
         def create_association_ordering_condition(association, order_as, condition, args)
-          named_scope("#{order_as}_by_#{association.name}_#{condition}", association_condition_options(association, "#{order_as}_by_#{condition}", args))
+         cond = condition
+         poly_class = nil
+         if condition =~ /^(\w+)_type_(\w+)$/
+           poly_type = $1
+           cond = $2
+           poly_class = poly_type.camelcase.constantize if poly_type
+         end
+         named_scope("#{order_as}_by_#{association.name}_#{condition}", association_condition_options(association, "#{order_as}_by_#{cond}", args, poly_class))
         end
     end
   end
