@@ -82,7 +82,6 @@ module Searchlogic
           end
         end
 
-
         def condition_details(method_name)
           column_name_matcher = column_names.join("|")
           conditions_matcher = (PRIMARY_CONDITIONS + ALIAS_CONDITIONS).join("|")

@@ -5,12 +5,12 @@ module Searchlogic
       def condition?(name) # :nodoc:
         super || association_condition?(name)
       end
-      
+
       private
         def association_condition?(name)
           !association_condition_details(name).nil? unless name.to_s.downcase.match("_or_")
         end
-        
+
         def method_missing(name, *args, &block)
           if !local_condition?(name) && details = association_condition_details(name)
             create_association_condition(details[:association], details[:condition], args, details[:poly_class])
@@ -19,18 +19,18 @@ module Searchlogic
             super
           end
         end
-        
+
         def association_condition_details(name, last_condition = nil)
           non_poly_assocs = reflect_on_all_associations.reject { |assoc| assoc.options[:polymorphic] }.sort { |a, b| b.name.to_s.size <=> a.name.to_s.size }
           poly_assocs = reflect_on_all_associations.reject { |assoc| !assoc.options[:polymorphic] }.sort { |a, b| b.name.to_s.size <=> a.name.to_s.size }
           return nil if non_poly_assocs.empty? && poly_assocs.empty?
-        
+
           name_with_condition = [name, last_condition].compact.join('_')
-          
+
           association_name = nil
           poly_type = nil
           condition = nil
-          
+
           if name_with_condition.to_s =~ /^(#{non_poly_assocs.collect(&:name).join("|")})_(\w+)$/
             association_name = $1
             condition = $2
@@ -39,7 +39,7 @@ module Searchlogic
             poly_type = $2
             condition = $3
           end
-          
+
           if association_name && condition
             association = reflect_on_association(association_name.to_sym)
             klass = poly_type ? poly_type.camelcase.constantize : association.klass
@@ -50,18 +50,18 @@ module Searchlogic
             end
           end
         end
-        
+
         def create_association_condition(association, condition_name, args, poly_class = nil)
           name = [association.name, poly_class && "#{poly_class.name.underscore}_type", condition_name].compact.join("_")
           named_scope(name, association_condition_options(association, condition_name, args, poly_class))
         end
-        
+
         def association_condition_options(association, association_condition, args, poly_class = nil)
           klass = poly_class ? poly_class : association.klass
           scope = klass.send(association_condition, *args)
           scope_options = klass.named_scope_options(association_condition)
           arity = klass.named_scope_arity(association_condition)
-          
+
           if !arity || arity == 0
             # The underlying condition doesn't require any parameters, so let's just create a simple
             # named scope that is based on a hash.
@@ -73,24 +73,24 @@ module Searchlogic
             proc_args = arity_args(arity)
             scope_options = scope_options.respond_to?(:searchlogic_options) ? scope_options.searchlogic_options.clone : {}
             arg_type = scope_options.delete(:type) || :string
-            
+
             eval <<-"end_eval"
               searchlogic_lambda(:#{arg_type}, #{scope_options.inspect}) { |#{proc_args.join(",")}|
                 options = {}
-                
+
                 in_searchlogic_delegation do
                   scope = klass.send(association_condition, #{proc_args.join(",")})
                   options = scope.scope(:find) if scope
                 end
-                
-                
+
+
                 prepare_named_scope_options(options, association, poly_class)
                 options
               }
             end_eval
           end
         end
-        
+
         # Used to match the new scopes parameters to the underlying scope. This way we can disguise the
         # new scope as best as possible instead of taking the easy way out and using *args.
         def arity_args(arity)
@@ -109,16 +109,16 @@ module Searchlogic
           end
           args
         end
-        
+
         def prepare_named_scope_options(options, association, poly_class = nil)
           options.delete(:readonly) # AR likes to set :readonly to true when using the :joins option, we don't want that
-          
+
           klass = poly_class || association.klass
           # sanitize the conditions locally so we get the right table name, otherwise the conditions will be evaluated on the original model
           options[:conditions] = klass.sanitize_sql_for_conditions(options[:conditions]) if options[:conditions].is_a?(Hash)
-          
+
           poly_join = poly_class && inner_polymorphic_join(poly_class.name.underscore, :as => association.name)
-          
+
           if options[:joins].is_a?(String) || array_of_strings?(options[:joins])
             options[:joins] = [poly_class ? poly_join : inner_joins(association.name), options[:joins]].flatten
           elsif poly_class
