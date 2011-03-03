@@ -91,81 +91,89 @@ module Searchlogic
           end
         end
 
-        def create_condition(column, condition, args)
+        def create_condition(column_name, condition, args)
           if PRIMARY_CONDITIONS.include?(condition.to_sym)
-            create_primary_condition(column, condition)
+            create_primary_condition(column_name, condition)
           elsif ALIAS_CONDITIONS.include?(condition.to_sym)
-            create_alias_condition(column, condition, args)
+            create_alias_condition(column_name, condition, args)
           end
         end
 
-        def create_primary_condition(column, condition)
-          column_type = columns_hash[column.to_s].type
-          skip_conversion = skip_time_zone_conversion_for_attributes.include?(columns_hash[column.to_s].name.to_sym)
+        def create_primary_condition(column_name, condition)
+          column = columns_hash[column_name.to_s]
+          column_type = column.type
+          skip_conversion = skip_time_zone_conversion_for_attributes.include?(column.name.to_sym)
           match_keyword = ::ActiveRecord::Base.connection.adapter_name == "PostgreSQL" ? "ILIKE" : "LIKE"
 
           scope_options = case condition.to_s
           when /^equals/
-            scope_options(condition, column_type, lambda { |a| attribute_condition("#{table_name}.#{column}", a) }, :skip_conversion => skip_conversion)
+            scope_options(condition, column, lambda { |a| attribute_condition("#{table_name}.#{column.name}", a) }, :skip_conversion => skip_conversion)
           when /^does_not_equal/
-            scope_options(condition, column_type, "#{table_name}.#{column} != ?", :skip_conversion => skip_conversion)
+            scope_options(condition, column, "#{table_name}.#{column.name} != ?", :skip_conversion => skip_conversion)
           when /^less_than_or_equal_to/
-            scope_options(condition, column_type, "#{table_name}.#{column} <= ?", :skip_conversion => skip_conversion)
+            scope_options(condition, column, "#{table_name}.#{column.name} <= ?", :skip_conversion => skip_conversion)
           when /^less_than/
-            scope_options(condition, column_type, "#{table_name}.#{column} < ?", :skip_conversion => skip_conversion)
+            scope_options(condition, column, "#{table_name}.#{column.name} < ?", :skip_conversion => skip_conversion)
           when /^greater_than_or_equal_to/
-            scope_options(condition, column_type, "#{table_name}.#{column} >= ?", :skip_conversion => skip_conversion)
+            scope_options(condition, column, "#{table_name}.#{column.name} >= ?", :skip_conversion => skip_conversion)
           when /^greater_than/
-            scope_options(condition, column_type, "#{table_name}.#{column} > ?", :skip_conversion => skip_conversion)
+            scope_options(condition, column, "#{table_name}.#{column.name} > ?", :skip_conversion => skip_conversion)
           when /^like/
-            scope_options(condition, column_type, "#{table_name}.#{column} #{match_keyword} ?", :skip_conversion => skip_conversion, :value_modifier => :like)
+            scope_options(condition, column, "#{table_name}.#{column.name} #{match_keyword} ?", :skip_conversion => skip_conversion, :value_modifier => :like)
           when /^not_like/
-            scope_options(condition, column_type, "#{table_name}.#{column} NOT #{match_keyword} ?", :skip_conversion => skip_conversion, :value_modifier => :like)
+            scope_options(condition, column, "#{table_name}.#{column.name} NOT #{match_keyword} ?", :skip_conversion => skip_conversion, :value_modifier => :like)
           when /^begins_with/
-            scope_options(condition, column_type, "#{table_name}.#{column} #{match_keyword} ?", :skip_conversion => skip_conversion, :value_modifier => :begins_with)
+            scope_options(condition, column, "#{table_name}.#{column.name} #{match_keyword} ?", :skip_conversion => skip_conversion, :value_modifier => :begins_with)
           when /^not_begin_with/
-            scope_options(condition, column_type, "#{table_name}.#{column} NOT #{match_keyword} ?", :skip_conversion => skip_conversion, :value_modifier => :begins_with)
+            scope_options(condition, column, "#{table_name}.#{column.name} NOT #{match_keyword} ?", :skip_conversion => skip_conversion, :value_modifier => :begins_with)
           when /^ends_with/
-            scope_options(condition, column_type, "#{table_name}.#{column} #{match_keyword} ?", :skip_conversion => skip_conversion, :value_modifier => :ends_with)
+            scope_options(condition, column, "#{table_name}.#{column.name} #{match_keyword} ?", :skip_conversion => skip_conversion, :value_modifier => :ends_with)
           when /^not_end_with/
-            scope_options(condition, column_type, "#{table_name}.#{column} NOT #{match_keyword} ?", :skip_conversion => skip_conversion, :value_modifier => :ends_with)
+            scope_options(condition, column, "#{table_name}.#{column.name} NOT #{match_keyword} ?", :skip_conversion => skip_conversion, :value_modifier => :ends_with)
           when "null"
-            {:conditions => "#{table_name}.#{column} IS NULL"}
+            {:conditions => "#{table_name}.#{column.name} IS NULL"}
           when "not_null"
-            {:conditions => "#{table_name}.#{column} IS NOT NULL"}
+            {:conditions => "#{table_name}.#{column.name} IS NOT NULL"}
           when "empty"
-            {:conditions => "#{table_name}.#{column} = ''"}
+            {:conditions => "#{table_name}.#{column.name} = ''"}
           when "blank"
-            {:conditions => "#{table_name}.#{column} = '' OR #{table_name}.#{column} IS NULL"}
+            {:conditions => "#{table_name}.#{column.name} = '' OR #{table_name}.#{column.name} IS NULL"}
           when "not_blank"
-            {:conditions => "#{table_name}.#{column} != '' AND #{table_name}.#{column} IS NOT NULL"}
+            {:conditions => "#{table_name}.#{column.name} != '' AND #{table_name}.#{column.name} IS NOT NULL"}
           end
 
-          named_scope("#{column}_#{condition}".to_sym, scope_options)
+          named_scope("#{column.name}_#{condition}".to_sym, scope_options)
         end
 
         # This method helps cut down on defining scope options for conditions that allow *_any or *_all conditions.
         # Kepp in mind that the lambdas get cached in a method, so you want to keep the contents of the lambdas as
         # fast as possible, which is why I didn't do the case statement inside of the lambda.
-        def scope_options(condition, column_type, sql, options = {})
+        def scope_options(condition, column, sql, options = {})
           case condition.to_s
           when /_(any|all)$/
-            searchlogic_lambda(column_type, :skip_conversion => options[:skip_conversion]) { |*values|
+            any = $1 == "any"
+            join_word = any ? " OR " : " AND "
+            equals = condition.to_s =~ /^equals_/
+            searchlogic_lambda(column.type, :skip_conversion => options[:skip_conversion]) { |*values|
               unless values.empty?
-                values.flatten!
-                values.collect! { |value| value_with_modifier(value, options[:value_modifier]) }
+                if equals && any
+                  values = values.flatten
+                  r = attribute_condition("#{table_name}.#{column.name}", values)
+                  {:conditions => [r, values]}
+                else
+                  values.flatten!
+                  values.collect! { |value| value_with_modifier(value, options[:value_modifier]) }
 
-                join = $1 == "any" ? " OR " : " AND "
+                  scope_sql = values.collect { |value| sql.is_a?(Proc) ? sql.call(value) : sql }.join(join_word)
 
-                scope_sql = values.collect { |value| sql.is_a?(Proc) ? sql.call(value) : sql }.join(join)
-
-                {:conditions => [scope_sql, *expand_range_bind_variables(values)]}
+                  {:conditions => [scope_sql, *expand_range_bind_variables(values)]}
+                end
               else
                 {}
               end
             }
           else
-            searchlogic_lambda(column_type, :skip_conversion => options[:skip_conversion]) { |*values|
+            searchlogic_lambda(column.type, :skip_conversion => options[:skip_conversion]) { |*values|
               values.collect! { |value| value_with_modifier(value, options[:value_modifier]) }
 
               scope_sql = sql.is_a?(Proc) ? sql.call(*values) : sql
@@ -188,10 +196,10 @@ module Searchlogic
           end
         end
 
-        def create_alias_condition(column, condition, args)
+        def create_alias_condition(column_name, condition, args)
           primary_condition = primary_condition(condition)
-          alias_name = "#{column}_#{condition}"
-          primary_name = "#{column}_#{primary_condition}"
+          alias_name = "#{column_name}_#{condition}"
+          primary_name = "#{column_name}_#{primary_condition}"
           send(primary_name, *args) # go back to method_missing and make sure we create the method
           (class << self; self; end).class_eval { alias_method alias_name, primary_name }
         end
