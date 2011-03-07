@@ -209,5 +209,12 @@ describe Searchlogic::NamedScopes::AssociationConditions do
     user.orders.count.should == 1
     user.orders.shipped_on_not_null.shipped_on_greater_than(2.days.ago).count.should == 1
   end
-
+  
+  it "should allow chained dynamic scopes without losing association scope conditions" do
+    user = User.create
+    order1 = Order.create :user => user, :shipped_on => Time.now, :total => 2
+    order2 = Order.create :shipped_on => Time.now, :total => 2
+    user.orders.id_equals(order1.id).count.should == 1
+    user.orders.id_equals(order1.id).total_equals(2).count.should == 1
+  end
 end

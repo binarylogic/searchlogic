@@ -1,12 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
 describe Searchlogic::NamedScopes::Ordering do
-  it "should be dynamically created and then cached" do
-    User.should_not respond_to(:ascend_by_username)
-    User.ascend_by_username
-    User.should respond_to(:ascend_by_username)
-  end
-  
   it "should have ascending" do
     %w(bjohnson thunt).each { |username| User.create(:username => username) }
     User.ascend_by_username.all.should == User.all(:order => "username ASC")

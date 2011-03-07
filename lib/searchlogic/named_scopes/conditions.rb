@@ -57,6 +57,14 @@ module Searchlogic
         local_condition?(name)
       end
 
+      # We want to return true for any conditions that can be called, and while we're at it. We might as well
+      # create the condition so we don't have to do it again.
+      def respond_to?(*args)
+        name = args.first
+        result = super
+        (!result && self != ::ActiveRecord::Base && !create_condition(name).blank?) || result
+      end
+
       private
         def local_condition?(name)
           return false if name.blank?
@@ -70,13 +78,8 @@ module Searchlogic
         end
 
         def method_missing(name, *args, &block)
-          if details = condition_details(name)
-            create_condition(details[:column], details[:condition], args)
-            send(name, *args)
-          elsif boolean_condition?(name)
-            column = name.to_s.gsub(/^not_/, "")
-            named_scope name, :conditions => {column => (name.to_s =~ /^not_/).nil?}
-            send(name)
+          if create_condition(name)
+            send(name, *args, &block)
           else
             super
           end
@@ -91,11 +94,17 @@ module Searchlogic
           end
         end
 
-        def create_condition(column_name, condition, args)
-          if PRIMARY_CONDITIONS.include?(condition.to_sym)
-            create_primary_condition(column_name, condition)
-          elsif ALIAS_CONDITIONS.include?(condition.to_sym)
-            create_alias_condition(column_name, condition, args)
+        def create_condition(name)
+          if details = condition_details(name)
+            if PRIMARY_CONDITIONS.include?(details[:condition].to_sym)
+              create_primary_condition(details[:column], details[:condition])
+            elsif ALIAS_CONDITIONS.include?(details[:condition].to_sym)
+              create_alias_condition(details[:column], details[:condition])
+            end
+
+          elsif boolean_condition?(name)
+            column = name.to_s.gsub(/^not_/, "")
+            named_scope name, :conditions => {column => (name.to_s =~ /^not_/).nil?}
           end
         end
 
@@ -204,12 +213,13 @@ module Searchlogic
           end
         end
 
-        def create_alias_condition(column_name, condition, args)
+        def create_alias_condition(column_name, condition)
           primary_condition = primary_condition(condition)
           alias_name = "#{column_name}_#{condition}"
           primary_name = "#{column_name}_#{primary_condition}"
-          send(primary_name, *args) # go back to method_missing and make sure we create the method
-          (class << self; self; end).class_eval { alias_method alias_name, primary_name }
+          if respond_to?(primary_name)
+            (class << self; self; end).class_eval { alias_method alias_name, primary_name }
+          end
         end
 
         # Returns the primary condition for the given alias. Ex:

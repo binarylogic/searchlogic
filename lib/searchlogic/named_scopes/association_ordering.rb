@@ -13,21 +13,20 @@ module Searchlogic
       def condition?(name) # :nodoc:
         super || association_ordering_condition?(name)
       end
-      
+
       private
         def association_ordering_condition?(name)
           !association_ordering_condition_details(name).nil?
         end
-        
-        def method_missing(name, *args, &block)
+
+        def create_condition(name)
           if details = association_ordering_condition_details(name)
-            create_association_ordering_condition(details[:association], details[:order_as], details[:condition], args)
-            send(name, *args)
+            create_association_ordering_condition(details[:association], details[:order_as], details[:condition])
           else
             super
           end
         end
-        
+
         def association_ordering_condition_details(name)
           associations = reflect_on_all_associations
           association_names = associations.collect { |assoc| assoc.name }
@@ -35,8 +34,8 @@ module Searchlogic
             {:order_as => $1, :association => associations.find { |a| a.name == $2.to_sym }, :condition => $3}
           end
         end
-        
-        def create_association_ordering_condition(association, order_as, condition, args)
+
+        def create_association_ordering_condition(association, order_as, condition)
          cond = condition
          poly_class = nil
          if condition =~ /^(\w+)_type_(\w+)$/
@@ -44,7 +43,7 @@ module Searchlogic
            cond = $2
            poly_class = poly_type.camelcase.constantize if poly_type
          end
-         named_scope("#{order_as}_by_#{association.name}_#{condition}", association_condition_options(association, "#{order_as}_by_#{cond}", args, poly_class))
+         named_scope("#{order_as}_by_#{association.name}_#{condition}", association_condition_options(association, "#{order_as}_by_#{cond}", poly_class))
         end
     end
   end

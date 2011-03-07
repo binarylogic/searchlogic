@@ -11,10 +11,9 @@ module Searchlogic
           !association_condition_details(name).nil? unless name.to_s.downcase.match("_or_")
         end
 
-        def method_missing(name, *args, &block)
+        def create_condition(name)
           if !local_condition?(name) && details = association_condition_details(name)
-            create_association_condition(details[:association], details[:condition], args, details[:poly_class])
-            send(name, *args)
+            create_association_condition(details[:association], details[:condition], details[:poly_class])
           else
             super
           end
@@ -51,27 +50,27 @@ module Searchlogic
           end
         end
 
-        def create_association_condition(association, condition_name, args, poly_class = nil)
+        def create_association_condition(association, condition_name, poly_class = nil)
           name = [association.name, poly_class && "#{poly_class.name.underscore}_type", condition_name].compact.join("_")
-          named_scope(name, association_condition_options(association, condition_name, args, poly_class))
+          named_scope(name, association_condition_options(association, condition_name, poly_class))
         end
 
-        def association_condition_options(association, association_condition, args, poly_class = nil)
+        def association_condition_options(association, association_condition, poly_class = nil)
           klass = poly_class ? poly_class : association.klass
-          scope = klass.send(association_condition, *args)
-          scope_options = klass.named_scope_options(association_condition)
+          raise ArgumentError.new("The #{klass} class does not respond to the #{association_condition} scope") if !klass.respond_to?(association_condition)
           arity = klass.named_scope_arity(association_condition)
 
           if !arity || arity == 0
             # The underlying condition doesn't require any parameters, so let's just create a simple
             # named scope that is based on a hash.
             options = {}
-            in_searchlogic_delegation { options = scope.scope(:find) }
+            in_searchlogic_delegation { options = klass.send(association_condition).scope(:find) }
             prepare_named_scope_options(options, association, poly_class)
             options
           else
-            proc_args = arity_args(arity)
+            scope_options = klass.named_scope_options(association_condition)
             scope_options = scope_options.respond_to?(:searchlogic_options) ? scope_options.searchlogic_options.clone : {}
+            proc_args = arity_args(arity)
             arg_type = scope_options.delete(:type) || :string
 
             eval <<-"end_eval"

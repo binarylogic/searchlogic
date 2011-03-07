@@ -14,14 +14,14 @@ module Searchlogic
       # method.
       def named_scope_options(name)
         key = scopes.key?(name.to_sym) ? name.to_sym : condition_scope_name(name)
-        
-        if key
+
+        if key && scopes[key]
           eval("options", scopes[key].binding)
         else
           nil
         end
       end
-      
+
       # The arity for a named scope's proc is important, because we use the arity
       # to determine if the condition should be ignored when calling the search method.
       # If the condition is false and the arity is 0, then we skip it all together. Ex:
@@ -37,7 +37,7 @@ module Searchlogic
         options = named_scope_options(name)
         options.respond_to?(:arity) ? options.arity : nil
       end
-      
+
       # When searchlogic calls a named_scope on a foreigh model it will execute that scope and then call scope(:find).
       # When we get these options we want this to be in an exclusive scope, especially if we are calling a condition on
       # the same originating model:
@@ -58,7 +58,7 @@ module Searchlogic
         with_exclusive_scope(&block)
         Thread.current["searchlogic_delegation"] = old
       end
-      
+
       # A convenience method for creating inner join sql to that your inner joins
       # are consistent with how Active Record creates them. Basically a tool for
       # you to use when writing your own named scopes. This way you know for sure
@@ -71,7 +71,7 @@ module Searchlogic
       def inner_joins(association_name)
         ::ActiveRecord::Associations::ClassMethods::InnerJoinDependency.new(self, association_name, nil).join_associations.collect { |assoc| assoc.association_join }
       end
-      
+
       # A convenience methods to create a join on a polymorphic associations target.
       # Ex:
       #
@@ -91,7 +91,7 @@ module Searchlogic
         "INNER JOIN #{options[:target_table]} ON #{options[:target_table]}.id = #{options[:on_table_name]}.#{options[:as]}_id AND " +
           "#{options[:on_table_name]}.#{options[:as]}_type = #{postgres ? "E" : ""}'#{target.to_s.camelize}'"
       end
-      
+
       # See inner_joins. Does the same thing except creates LEFT OUTER joins.
       def left_outer_joins(association_name)
         ::ActiveRecord::Associations::ClassMethods::JoinDependency.new(self, association_name, nil).join_associations.collect { |assoc| assoc.association_join }

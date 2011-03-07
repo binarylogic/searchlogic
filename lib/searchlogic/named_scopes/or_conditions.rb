@@ -5,30 +5,30 @@ module Searchlogic
     module OrConditions
       class NoConditionSpecifiedError < StandardError; end
       class UnknownConditionError < StandardError; end
-      
+
       def condition?(name) # :nodoc:
         super || or_condition?(name)
       end
-      
+
       def named_scope_options(name) # :nodoc:
         super || super(or_conditions(name).try(:join, "_or_"))
       end
-      
+
       private
         def or_condition?(name)
           !or_conditions(name).nil?
         end
-        
-        def method_missing(name, *args, &block)
+
+        def create_condition(name)
           if conditions = or_conditions(name)
-            create_or_condition(conditions, args)
-            (class << self; self; end).class_eval { alias_method name, conditions.join("_or_") } if !respond_to?(name)
-            send(name, *args)
+            create_or_condition(conditions)
+            alias_name = conditions.join("_or_")
+            (class << self; self; end).class_eval { alias_method name, conditions.join("_or_") } if name != alias_name
           else
             super
           end
         end
-        
+
         def or_conditions(name)
           # First determine if we should even work on the name, we want to be as quick as possible
           # with this.
@@ -41,7 +41,7 @@ module Searchlogic
             end
           end
         end
-        
+
         def split_or_condition(name)
           parts = name.to_s.split("_or_")
           new_parts = []
@@ -54,7 +54,7 @@ module Searchlogic
           end
           new_parts
         end
-        
+
         # The purpose of this method is to convert the method name parts into actual condition names.
         #
         # Example:
@@ -90,13 +90,13 @@ module Searchlogic
                 raise NoConditionSpecifiedError.new("The '#{part}' column doesn't know which condition to use, if you use an exact column " +
                   "name you need to specify a condition sometime after (ex: id_or_created_at_lt), where id would use the 'lt' condition.")
               end
-              
+
               conditions << "#{part}_#{last_condition}"
             else
               raise UnknownConditionError.new("The condition '#{part}' is not a valid condition, we could not find any scopes that match this.")
             end
           end
-          
+
           conditions.reverse
         end
 
@@ -116,8 +116,8 @@ module Searchlogic
             end
             { :path => path, :column => part, :condition => last_condition }
         end
-        
-        def create_or_condition(scopes, args)
+
+        def create_or_condition(scopes)
           scopes_options = scopes.collect { |scope, *args| send(scope, *args).proxy_options }
           # We're using first scope to determine column's type
           scope = named_scope_options(scopes.first)
@@ -126,7 +126,7 @@ module Searchlogic
             merge_scopes_with_or(scopes.collect { |scope| clone.send(scope, *args) })
           }
         end
-        
+
         def merge_scopes_with_or(scopes)
           scopes_options = scopes.collect { |scope| scope.scope(:find) }
           conditions = scopes_options.reject { |o| o[:conditions].nil? }.collect { |o| sanitize_sql(o[:conditions]) }

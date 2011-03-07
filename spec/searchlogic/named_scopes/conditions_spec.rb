@@ -2,8 +2,12 @@ require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
 describe Searchlogic::NamedScopes::Conditions do
   it "should be dynamically created and then cached" do
-    User.should_not respond_to(:age_less_than)
+    User.scopes.key?(:age_less_than).should == false
     User.age_less_than(5)
+    User.scopes.key?(:age_less_than).should == true
+  end
+  
+  it "should respond to the scope" do
     User.should respond_to(:age_less_than)
   end
   
