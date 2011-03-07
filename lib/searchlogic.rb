@@ -2,6 +2,7 @@ require "searchlogic/core_ext/proc"
 require "searchlogic/core_ext/object"
 require "searchlogic/active_record/consistency"
 require "searchlogic/active_record/named_scope_tools"
+require "searchlogic/active_record/scope"
 require "searchlogic/named_scopes/base"
 require "searchlogic/named_scopes/column_conditions"
 require "searchlogic/named_scopes/ordering"
@@ -29,6 +30,7 @@ module ActiveRecord # :nodoc: all
   end
 end
 
+ActiveRecord::NamedScope::Scope.send(:include, Searchlogic::ActiveRecord::Scope)
 ActiveRecord::Base.extend(Searchlogic::ActiveRecord::NamedScopeTools)
 ActiveRecord::Base.extend(Searchlogic::NamedScopes::Base)
 ActiveRecord::Base.extend(Searchlogic::NamedScopes::ColumnConditions)
