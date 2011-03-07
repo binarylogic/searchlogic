@@ -1,6 +1,5 @@
 require "searchlogic/core_ext/proc"
 require "searchlogic/core_ext/object"
-require "searchlogic/active_record/association_proxy"
 require "searchlogic/active_record/consistency"
 require "searchlogic/active_record/named_scope_tools"
 require "searchlogic/named_scopes/base"
@@ -25,12 +24,6 @@ Proc.send(:include, Searchlogic::CoreExt::Proc)
 Object.send(:include, Searchlogic::CoreExt::Object)
 
 module ActiveRecord # :nodoc: all
-  module Associations
-    class AssociationProxy
-      include Searchlogic::ActiveRecord::AssociationProxy
-    end
-  end
-
   class Base
     class << self; include Searchlogic::ActiveRecord::Consistency; end
   end

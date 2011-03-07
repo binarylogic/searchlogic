@@ -115,7 +115,7 @@ module Searchlogic
 
           scope_options = case condition.to_s
           when /^equals/
-            scope_options(condition, column, lambda { |a| attribute_condition("#{table_name}.#{column.name}", a) }, :skip_conversion => skip_conversion)
+            scope_options(condition, column, "#{table_name}.#{column.name} = ?", :skip_conversion => skip_conversion)
           when /^does_not_equal/
             scope_options(condition, column, "#{table_name}.#{column.name} != ?", :skip_conversion => skip_conversion)
           when /^less_than_or_equal_to/
@@ -180,9 +180,9 @@ module Searchlogic
                   values.flatten!
                   values.collect! { |value| value_with_modifier(value, options[:value_modifier]) }
 
-                  scope_sql = values.collect { |value| sql.is_a?(Proc) ? sql.call(value) : sql }.join(join_word)
+                  scope_sql = values.collect { |value| sql }.join(join_word)
 
-                  {:conditions => [scope_sql, *expand_range_bind_variables(values)]}
+                  {:conditions => [scope_sql, *values]}
                 end
               else
                 {}
@@ -192,9 +192,7 @@ module Searchlogic
             searchlogic_lambda(column.type, :skip_conversion => options[:skip_conversion]) { |*values|
               values.collect! { |value| value_with_modifier(value, options[:value_modifier]) }
 
-              scope_sql = sql.is_a?(Proc) ? sql.call(*values) : sql
-
-              {:conditions => [scope_sql, *expand_range_bind_variables(values)]}
+              {:conditions => [sql, *values]}
             }
           end
         end
