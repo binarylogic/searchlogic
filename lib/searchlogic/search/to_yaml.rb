@@ -7,7 +7,7 @@ module Searchlogic
           include InstanceMethods
         end
       end
-      
+
       module InstanceMethods
         def to_yaml( opts = {} )
           YAML::quick_emit( self, opts ) do |out|
@@ -18,7 +18,7 @@ module Searchlogic
             end
           end
         end
-        
+
         def yaml_initialize(taguri, attributes = {})
           self.klass = attributes["class_name"].constantize
           self.current_scope = attributes["current_scope"]

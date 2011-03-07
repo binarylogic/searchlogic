@@ -31,13 +31,13 @@ module Searchlogic
         end
         self
       end
-      
+
       private
         # This is here as a hook to allow people to modify the order in which the conditions are called, for whatever reason.
         def conditions_array
           @conditions.to_a
         end
-        
+
         def write_condition(name, value)
           @conditions[name] = value
         end
@@ -49,7 +49,7 @@ module Searchlogic
         def mass_conditions
           @mass_conditions ||= {}
         end
-        
+
         def ignore_value?(value)
           (value.is_a?(String) && value.blank?) || (value.is_a?(Array) && value.empty?)
         end

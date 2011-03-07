@@ -82,7 +82,6 @@ module Searchlogic
                   options = scope.scope(:find) if scope
                 end
 
-
                 prepare_named_scope_options(options, association, poly_class)
                 options
               }

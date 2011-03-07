@@ -10,7 +10,7 @@ module Searchlogic
           alias_method_chain :merge_joins, :merged_duplicates
         end
       end
-      
+
       # In AR multiple joins are sometimes in a single join query, and other times they
       # are not. The merge_joins method in AR should account for this, but it doesn't.
       # This fixes that problem. This way there is one join per string, which allows
@@ -19,7 +19,7 @@ module Searchlogic
         joins = merge_joins_without_singularity(*args)
         joins.collect { |j| j.is_a?(String) ? j.split("  ") : j }.flatten.uniq
       end
-      
+
       # This method ensures that the order of the conditions in the joins are the same.
       # The strings of the joins MUST be exactly the same for AR to remove the duplicates.
       # AR is not consistent in this approach, resulting in duplicate joins errors when
@@ -38,8 +38,8 @@ module Searchlogic
           end
         end.uniq
       end
-      
-      
+
+
       def merge_joins_with_merged_duplicates(*args)
         args << "" if !Thread.current["searchlogic_delegation"]
         joins = merge_joins_without_merged_duplicates(*args)
