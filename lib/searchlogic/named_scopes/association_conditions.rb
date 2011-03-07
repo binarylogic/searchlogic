@@ -11,11 +11,13 @@ module Searchlogic
           !association_condition_details(name).nil? unless name.to_s.downcase.match("_or_")
         end
 
+        # We need to try and create other conditions first so that we give priority to conflicting names.
+        # Such as having a column names the exact same name as an association condition.
         def create_condition(name)
-          if !local_condition?(name) && details = association_condition_details(name)
+          if result = super
+            result
+          elsif details = association_condition_details(name)
             create_association_condition(details[:association], details[:condition], details[:poly_class])
-          else
-            super
           end
         end
 

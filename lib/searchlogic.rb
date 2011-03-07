@@ -3,7 +3,8 @@ require "searchlogic/core_ext/object"
 require "searchlogic/active_record/association_proxy"
 require "searchlogic/active_record/consistency"
 require "searchlogic/active_record/named_scope_tools"
-require "searchlogic/named_scopes/conditions"
+require "searchlogic/named_scopes/base"
+require "searchlogic/named_scopes/column_conditions"
 require "searchlogic/named_scopes/ordering"
 require "searchlogic/named_scopes/association_conditions"
 require "searchlogic/named_scopes/association_ordering"
@@ -36,7 +37,8 @@ module ActiveRecord # :nodoc: all
 end
 
 ActiveRecord::Base.extend(Searchlogic::ActiveRecord::NamedScopeTools)
-ActiveRecord::Base.extend(Searchlogic::NamedScopes::Conditions)
+ActiveRecord::Base.extend(Searchlogic::NamedScopes::Base)
+ActiveRecord::Base.extend(Searchlogic::NamedScopes::ColumnConditions)
 ActiveRecord::Base.extend(Searchlogic::NamedScopes::AssociationConditions)
 ActiveRecord::Base.extend(Searchlogic::NamedScopes::AssociationOrdering)
 ActiveRecord::Base.extend(Searchlogic::NamedScopes::Ordering)
