@@ -126,6 +126,12 @@ describe Searchlogic::NamedScopes::Conditions do
       User.username_equals_any("bjohnson", "thunt").all.should == User.find_all_by_username(["bjohnson", "thunt"])
     end
     
+    # PostgreSQL does not allow null in "in" statements
+    it "should have equals any and handle nils" do
+      %w(bjohnson thunt dgainor).each { |username| User.create(:username => username) }
+      User.username_equals_any("bjohnson", "thunt", nil).proxy_options.should == {:conditions=>["users.username IN (?) OR users.username IS ?", ["bjohnson", "thunt"], nil]}
+    end
+    
     it "should have equals all" do
       %w(bjohnson thunt dainor).each { |username| User.create(:username => username) }
       User.username_equals_all("bjohnson", "thunt").all.should == []

@@ -157,9 +157,17 @@ module Searchlogic
             searchlogic_lambda(column.type, :skip_conversion => options[:skip_conversion]) { |*values|
               unless values.empty?
                 if equals && any
-                  values = values.flatten
-                  r = attribute_condition("#{table_name}.#{column.name}", values)
-                  {:conditions => [r, values]}
+                  has_nil = values.include?(nil)
+                  values = values.flatten.compact
+                  sql = attribute_condition("#{table_name}.#{column.name}", values)
+                  subs = [values]
+
+                  if has_nil
+                    sql += " OR " + attribute_condition("#{table_name}.#{column.name}", nil)
+                    subs << nil
+                  end
+
+                  {:conditions => [sql, *subs]}
                 else
                   values.flatten!
                   values.collect! { |value| value_with_modifier(value, options[:value_modifier]) }
