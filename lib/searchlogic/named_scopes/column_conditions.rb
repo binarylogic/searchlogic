@@ -159,11 +159,13 @@ module Searchlogic
         # Kepp in mind that the lambdas get cached in a method, so you want to keep the contents of the lambdas as
         # fast as possible, which is why I didn't do the case statement inside of the lambda.
         def scope_options(condition, column, sql, options = {})
+          equals = !(condition.to_s =~ /^equals/).nil?
+          does_not_equal = !(condition.to_s =~ /^does_not_equal/).nil?
+
           case condition.to_s
           when /_(any|all)$/
             any = $1 == "any"
             join_word = any ? " OR " : " AND "
-            equals = condition.to_s =~ /^equals_/
             searchlogic_lambda(column.type, :skip_conversion => options[:skip_conversion]) { |*values|
               unless values.empty?
                 if equals && any
@@ -193,6 +195,12 @@ module Searchlogic
           else
             searchlogic_lambda(column.type, :skip_conversion => options[:skip_conversion]) { |*values|
               values.collect! { |value| value_with_modifier(value, options[:value_modifier]) }
+
+              if does_not_equal && values == [nil]
+                sql.gsub!('!=', 'IS NOT')
+              elsif equals && values == [nil]
+                sql.gsub!('=', 'IS')
+              end
 
               {:conditions => [sql, *values]}
             }

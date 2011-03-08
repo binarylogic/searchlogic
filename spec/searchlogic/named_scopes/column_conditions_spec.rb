@@ -18,7 +18,9 @@ describe Searchlogic::NamedScopes::ColumnConditions do
   context "comparison conditions" do
     it "should have equals" do
       (5..7).each { |age| User.create(:age => age) }
+      nil_user = User.create
       User.age_equals(6).all.should == User.find_all_by_age(6)
+      User.age_equals(nil).all.should == User.find_all_by_age(nil)
     end
     
     it "should have does not equal" do
