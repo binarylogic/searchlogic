@@ -1,27 +1,22 @@
 module Searchlogic
   module ActiveRecord
-    # Makes sure chained scopes work correctly. ActiveRecord calls scopes.include?(name) in the ActiveRecord::NamedScopes::Scope class
-    # This presented a problem because searchlogic scopes are called on the fly. So we need to try and create the scope before they
-    # check for this. Thats what this module is all about.
+    # The internals to ActiveRecord like to do scopes.include?(scope_name). And this is how they check for the existence
+    # of scopes, which is terrible. The problem is that searchlogic scopes are dynamically created. So the only solution
+    # is to override the include? method for the scopes hash, try to create the named scope, and then check it again.
+    # This shouldn't effect performance because once its created it never gets called again. I also cache failed names
+    # so we don't try to create them again.
     module Scope
-      def self.included(klass)
-        klass.class_eval do
-          alias_method_chain :method_missing, :searchlogic
-        end
-      end
-
-      private
-        def method_missing_with_searchlogic(*args)
-          method = args.first
-          if !scopes.include?(method)
-            begin
-              proxy_scope.proxy_reflection.klass.respond_to?(method)
-            rescue NoMethodError => e
-              proxy_scope.respond_to?(method)
+      def scopes
+        read_inheritable_attribute(:scopes) || write_inheritable_attribute(:scopes, {}.tap do |h|
+          h.instance_eval <<-eval
+            def include?(key)
+              result = super
+              return result if result
+              super
             end
-          end
-          method_missing_without_searchlogic(*args)
-        end
+          eval
+        end)
+      end
     end
   end
 end

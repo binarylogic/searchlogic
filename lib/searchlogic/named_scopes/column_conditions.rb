@@ -60,9 +60,7 @@ module Searchlogic
       # We want to return true for any conditions that can be called, and while we're at it. We might as well
       # create the condition so we don't have to do it again.
       def respond_to?(*args)
-        name = args.first
-        result = super
-        (!result && self != ::ActiveRecord::Base && !create_condition(name).blank?) || result
+        super || (self != ::ActiveRecord::Base && !create_condition(args.first).blank?)
       end
 
       private
@@ -94,6 +92,10 @@ module Searchlogic
         end
 
         def create_condition(name)
+          @conditions_already_tried ||= []
+          return nil if @conditions_already_tried.include?(name.to_s)
+          @conditions_already_tried << name.to_s
+
           if details = condition_details(name)
             if PRIMARY_CONDITIONS.include?(details[:condition].to_sym)
               create_primary_condition(details[:column], details[:condition])

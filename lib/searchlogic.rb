@@ -30,7 +30,7 @@ module ActiveRecord # :nodoc: all
   end
 end
 
-ActiveRecord::NamedScope::Scope.send(:include, Searchlogic::ActiveRecord::Scope)
+ActiveRecord::Base.extend(Searchlogic::ActiveRecord::Scope)
 ActiveRecord::Base.extend(Searchlogic::ActiveRecord::NamedScopeTools)
 ActiveRecord::Base.extend(Searchlogic::NamedScopes::Base)
 ActiveRecord::Base.extend(Searchlogic::NamedScopes::ColumnConditions)
