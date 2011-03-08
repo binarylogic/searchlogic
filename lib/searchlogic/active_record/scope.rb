@@ -12,6 +12,7 @@ module Searchlogic
             def include?(key)
               result = super
               return result if result
+              #{name}.respond_to?(key)
               super
             end
           eval
