@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{searchlogic}
-  s.version = "2.4.32"
+  s.version = "2.5.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ben Johnson of Binary Logic"]
@@ -25,15 +25,16 @@ Gem::Specification.new do |s|
     "VERSION.yml",
     "init.rb",
     "lib/searchlogic.rb",
-    "lib/searchlogic/active_record/association_proxy.rb",
     "lib/searchlogic/active_record/consistency.rb",
     "lib/searchlogic/active_record/named_scope_tools.rb",
+    "lib/searchlogic/active_record/scope.rb",
     "lib/searchlogic/core_ext/object.rb",
     "lib/searchlogic/core_ext/proc.rb",
     "lib/searchlogic/named_scopes/alias_scope.rb",
     "lib/searchlogic/named_scopes/association_conditions.rb",
     "lib/searchlogic/named_scopes/association_ordering.rb",
-    "lib/searchlogic/named_scopes/conditions.rb",
+    "lib/searchlogic/named_scopes/base.rb",
+    "lib/searchlogic/named_scopes/column_conditions.rb",
     "lib/searchlogic/named_scopes/or_conditions.rb",
     "lib/searchlogic/named_scopes/ordering.rb",
     "lib/searchlogic/rails_helpers.rb",
@@ -56,7 +57,7 @@ Gem::Specification.new do |s|
     "spec/searchlogic/named_scopes/alias_scope_spec.rb",
     "spec/searchlogic/named_scopes/association_conditions_spec.rb",
     "spec/searchlogic/named_scopes/association_ordering_spec.rb",
-    "spec/searchlogic/named_scopes/conditions_spec.rb",
+    "spec/searchlogic/named_scopes/column_conditions_spec.rb",
     "spec/searchlogic/named_scopes/or_conditions_spec.rb",
     "spec/searchlogic/named_scopes/ordering_spec.rb",
     "spec/searchlogic/search_spec.rb",
@@ -74,7 +75,7 @@ Gem::Specification.new do |s|
     "spec/searchlogic/named_scopes/alias_scope_spec.rb",
     "spec/searchlogic/named_scopes/association_conditions_spec.rb",
     "spec/searchlogic/named_scopes/association_ordering_spec.rb",
-    "spec/searchlogic/named_scopes/conditions_spec.rb",
+    "spec/searchlogic/named_scopes/column_conditions_spec.rb",
     "spec/searchlogic/named_scopes/or_conditions_spec.rb",
     "spec/searchlogic/named_scopes/ordering_spec.rb",
     "spec/searchlogic/search_spec.rb",
