@@ -196,13 +196,15 @@ module Searchlogic
             searchlogic_lambda(column.type, :skip_conversion => options[:skip_conversion]) { |*values|
               values.collect! { |value| value_with_modifier(value, options[:value_modifier]) }
 
-              if does_not_equal && values == [nil]
-                sql.gsub!('!=', 'IS NOT')
+              new_sql = if does_not_equal && values == [nil]
+                sql.gsub('!=', 'IS NOT')
               elsif equals && values == [nil]
-                sql.gsub!('=', 'IS')
+                sql.gsub('=', 'IS')
+              else
+                sql
               end
 
-              {:conditions => [sql, *values]}
+              {:conditions => [new_sql, *values]}
             }
           end
         end
