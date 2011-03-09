@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
+require 'spec_helper'
 
 describe Searchlogic::CoreExt::Object do
   it "should accept and pass the argument to the searchlogic_options" do

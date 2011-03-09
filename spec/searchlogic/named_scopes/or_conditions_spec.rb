@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
+require 'spec_helper'
 
 describe Searchlogic::NamedScopes::OrConditions do
   it "should define a scope by the exact same name as requested by the code" do
