@@ -101,20 +101,20 @@ module Searchlogic
         end
 
         def full_association_path(part, last_condition, given_assoc)
-            path = [given_assoc.name]
-            part.sub!(/^#{given_assoc.name}_/, "")
-            klass = self
-            while klass = klass.send(:reflect_on_association, given_assoc.name)
-              klass = klass.klass
-              if details = klass.send(:association_condition_details, part, last_condition)
-                path << details[:association]
-                part = details[:condition]
-                given_assoc = details[:association]
-              elsif details = klass.send(:condition_details, part)
-                return { :path => path, :column => details[:column], :condition => details[:condition] }
-              end
+          path = [given_assoc.name]
+          part.sub!(/^#{given_assoc.name}_/, "")
+          klass = self
+          while klass = klass.send(:reflect_on_association, given_assoc.name)
+            klass = klass.klass
+            if details = klass.send(:association_condition_details, part, last_condition)
+              path << details[:association].name
+              part = details[:condition]
+              given_assoc = details[:association]
+            elsif details = klass.send(:condition_details, part)
+              return { :path => path, :column => details[:column], :condition => details[:condition] }
             end
-            { :path => path, :column => part, :condition => last_condition }
+          end
+          {:path => path, :column => part, :condition => last_condition}
         end
 
         def create_or_condition(scopes)

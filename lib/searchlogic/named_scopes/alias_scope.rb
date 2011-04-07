@@ -33,7 +33,7 @@ module Searchlogic
       # is a safe method.
       def alias_scope(name, options = nil)
         alias_scopes[name.to_sym] = options
-        (class << self; self end).instance_eval do
+        (class << self; self; end).instance_eval do
           define_method name do |*args|
             case options
             when Symbol
