@@ -1,7 +1,6 @@
 require 'spec'
 require 'rubygems'
 require 'ruby-debug'
-gem "activerecord", "2.3.11"
 require "active_record"
 
 ENV['TZ'] = 'UTC'

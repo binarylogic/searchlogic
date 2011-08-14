@@ -101,11 +101,7 @@ module Searchlogic
 
             if Time.zone && casted_value.is_a?(Time)
               if value.is_a?(String)
-                if options[:skip_conversion]
-                  casted_value.utc
-                else
-                  (casted_value + (Time.zone.utc_offset * -1)).in_time_zone
-                end
+                (casted_value + (Time.zone.utc_offset * -1)).in_time_zone
               else
                 if options[:skip_conversion]
                   casted_value.utc
