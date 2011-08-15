@@ -101,13 +101,12 @@ module Searchlogic
 
             if Time.zone && casted_value.is_a?(Time)
               if value.is_a?(String)
-                (casted_value + (Time.zone.utc_offset * -1)).in_time_zone
+                # if its a string, we should assume the user means the local time
+                # we need to update the object to include the proper time zone without changing
+                # the time
+                (casted_value + (Time.zone.utc_offset * -1)).in_time_zone(Time.zone)
               else
-                if options[:skip_conversion]
-                  casted_value.utc
-                else
-                  casted_value.in_time_zone
-                end
+                casted_value.in_time_zone
               end
             else
               casted_value
