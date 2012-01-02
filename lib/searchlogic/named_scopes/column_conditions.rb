@@ -113,7 +113,7 @@ module Searchlogic
           column = columns_hash[column_name.to_s]
           column_type = column.type
           skip_conversion = skip_time_zone_conversion_for_attributes.include?(column.name.to_sym)
-          match_keyword = ::ActiveRecord::Base.connection.adapter_name == "PostgreSQL" ? "ILIKE" : "LIKE"
+          match_keyword = self.connection.adapter_name == "PostgreSQL" ? "ILIKE" : "LIKE"
 
           scope_options = case condition.to_s
           when /^equals/
