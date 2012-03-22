@@ -125,9 +125,11 @@ Spec::Runner.configure do |config|
   end
 
   config.after(:each) do
-    Object.send(:remove_const, :Company)
-    Object.send(:remove_const, :User)
-    Object.send(:remove_const, :Order)
-    Object.send(:remove_const, :LineItem)
+    class ::Object
+      remove_const :Company rescue nil
+      remove_const :User rescue nil
+      remove_const :Order rescue nil
+      remove_const :LineItem rescue nil
+    end
   end
 end
