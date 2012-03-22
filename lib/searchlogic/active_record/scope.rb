@@ -8,14 +8,21 @@ module Searchlogic
     module Scope
       def scopes
         read_inheritable_attribute(:scopes) || write_inheritable_attribute(:scopes, {}.tap do |h|
+          
+          class << h
+            attr_accessor :active_record_class
+          end
+          h.active_record_class = self
+          
           h.instance_eval <<-eval
             def include?(key)
               result = super
               return result if result
-              #{name}.respond_to?(key)
+              active_record_class.respond_to?(key)
               super
             end
           eval
+          
         end)
       end
     end
