@@ -1,6 +1,7 @@
 #!/usr/bin/env rake
 require "bundler/gem_tasks"
 Bundler.setup
+require 'appraisal'
 
 require 'spec/rake/spectask'
 Spec::Rake::SpecTask.new(:spec) do |spec|
