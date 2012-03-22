@@ -25,7 +25,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'activerecord', '~> 2.3.12'
   gem.add_development_dependency 'jeweler'
   # gem.add_development_dependency 'ruby-debug19'
-  gem.add_development_dependency 'rspec', '1.3.1'
+  gem.add_development_dependency 'rspec', '~> 1.3.1'
   gem.add_development_dependency 'sqlite3'
 end
 
