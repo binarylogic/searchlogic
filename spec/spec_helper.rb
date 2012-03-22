@@ -1,7 +1,5 @@
-require 'spec'
-require 'rubygems'
-require 'ruby-debug'
-require "active_record"
+Bundler.setup
+require 'active_record'
 
 ENV['TZ'] = 'UTC'
 Time.zone = 'Eastern Time (US & Canada)'
