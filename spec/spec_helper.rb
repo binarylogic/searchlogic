@@ -1,5 +1,5 @@
 Bundler.setup
-require 'active_record'
+require 'searchlogic'
 
 ENV['TZ'] = 'UTC'
 Time.zone = 'Eastern Time (US & Canada)'
@@ -74,9 +74,6 @@ ActiveRecord::Schema.define(:version => 1) do
   end
 end
 
-$LOAD_PATH.unshift(File.dirname(__FILE__))
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-require 'searchlogic'
 
 Spec::Runner.configure do |config|
   config.before(:each) do
