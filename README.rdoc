@@ -2,7 +2,7 @@
 
 Searchlogic makes using ActiveRecord named scopes easier and less repetitive. It helps keep your code DRY, clean, and simple.
 
-The specs pass with ActiveRecord 2.3.9 - 2.3.14 on Ruby 1.9.3-p125 and 1.9.2-p318
+The specs pass with ActiveRecord 2.3.9 - 2.3.14 on Ruby 1.9.3-p125, 1.9.2-p318, and 1.8.7-p358
 
 == Helpful links
 
