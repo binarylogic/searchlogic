@@ -23,7 +23,6 @@ Gem::Specification.new do |gem|
   
   
   gem.add_dependency 'activerecord', '~> 2.3.8'
-  gem.add_development_dependency 'jeweler'
   gem.add_development_dependency 'rspec', '~> 1.3.1'
   gem.add_development_dependency 'sqlite3'
   gem.add_development_dependency 'appraisal', '0.4.1'
