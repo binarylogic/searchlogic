@@ -39,12 +39,22 @@ describe Searchlogic::NamedScopes::OrConditions do
       {:conditions => "((users.username LIKE '%ben') OR (users.name LIKE '%ben')) AND ((users.age IS NOT NULL) AND ((users.id > 10) AND (users.username LIKE 'ben%')))"}
   end
   
+  it "should work with boolean conditions" do
+    User.male_or_name_eq("susan").proxy_options.should == {:conditions => %Q{("users"."male" = 't') OR (users.name = 'susan')}}
+    User.not_male_or_name_eq("susan").proxy_options.should == {:conditions => %Q{("users"."male" = 'f') OR (users.name = 'susan')}}
+    lambda { User.male_or_name_eq("susan").all }.should_not raise_error
+  end
+  
   it "should play nice with scopes on associations" do
     lambda { User.name_or_company_name_like("ben") }.should_not raise_error(Searchlogic::NamedScopes::OrConditions::NoConditionSpecifiedError)
     User.name_or_company_name_like("ben").proxy_options.should == {:joins => :company, :conditions => "(users.name LIKE '%ben%') OR (companies.name LIKE '%ben%')"}
     User.company_name_or_name_like("ben").proxy_options.should == {:joins => :company, :conditions => "(companies.name LIKE '%ben%') OR (users.name LIKE '%ben%')"}
     User.company_name_or_company_description_like("ben").proxy_options.should == {:joins =>[:company], :conditions => "(companies.name LIKE '%ben%') OR (companies.description LIKE '%ben%')"}
     Cart.user_company_name_or_user_company_name_like("ben").proxy_options.should == {:joins => {:user=>:company}, :conditions => "(companies.name LIKE '%ben%') OR (companies.name LIKE '%ben%')"}
+  end
+  
+  it "should raise an error on missing condition" do
+    lambda { User.id_or_age(123) }.should raise_error(Searchlogic::NamedScopes::OrConditions::NoConditionSpecifiedError)
   end
   
   it "should not get confused by the 'or' in find_or_create_by_* methods" do
