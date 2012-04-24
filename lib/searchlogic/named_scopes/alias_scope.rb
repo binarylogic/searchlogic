@@ -8,7 +8,7 @@ module Searchlogic
       # or represents a named scope procedure. Ex:
       #
       #   class User
-      #     def teenager
+      #     def self.teenager
       #       age_gte(13).age_lte(19)
       #     end
       #   end
@@ -37,7 +37,7 @@ module Searchlogic
           define_method name do |*args|
             case options
             when Symbol
-              send(options)
+              send(options, *args)
             else
               options.call(*args)
             end

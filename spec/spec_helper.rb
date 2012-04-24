@@ -1,7 +1,5 @@
-require 'spec'
-require 'rubygems'
-require 'ruby-debug'
-require "active_record"
+Bundler.setup
+require 'searchlogic'
 
 ENV['TZ'] = 'UTC'
 Time.zone = 'Eastern Time (US & Canada)'
@@ -76,9 +74,6 @@ ActiveRecord::Schema.define(:version => 1) do
   end
 end
 
-$LOAD_PATH.unshift(File.dirname(__FILE__))
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-require 'searchlogic'
 
 Spec::Runner.configure do |config|
   config.before(:each) do
@@ -130,9 +125,11 @@ Spec::Runner.configure do |config|
   end
 
   config.after(:each) do
-    Object.send(:remove_const, :Company)
-    Object.send(:remove_const, :User)
-    Object.send(:remove_const, :Order)
-    Object.send(:remove_const, :LineItem)
+    class ::Object
+      remove_const :Company rescue nil
+      remove_const :User rescue nil
+      remove_const :Order rescue nil
+      remove_const :LineItem rescue nil
+    end
   end
 end

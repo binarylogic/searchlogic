@@ -1,5 +1,5 @@
 PATH
-  remote: .
+  remote: /Users/john/code/searchlogic
   specs:
     searchlogic (2.5.8)
       activerecord (~> 2.3.8)
@@ -7,9 +7,9 @@ PATH
 GEM
   remote: http://rubygems.org/
   specs:
-    activerecord (2.3.14)
-      activesupport (= 2.3.14)
-    activesupport (2.3.14)
+    activerecord (2.3.10)
+      activesupport (= 2.3.10)
+    activesupport (2.3.10)
     appraisal (0.4.1)
       bundler
       rake
@@ -21,6 +21,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activerecord (= 2.3.10)
   appraisal (= 0.4.1)
   rspec (~> 1.3.1)
   searchlogic!

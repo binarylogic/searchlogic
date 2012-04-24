@@ -1,24 +1,7 @@
-require 'rubygems'
-require 'rake'
-require 'bundler'
-
+#!/usr/bin/env rake
+require "bundler/gem_tasks"
 Bundler.setup
-
-begin
-  require 'jeweler'
-  Jeweler::Tasks.new do |gem|
-    gem.name = "searchlogic"
-    gem.summary = "Searchlogic makes using ActiveRecord named scopes easier and less repetitive."
-    gem.description = "Searchlogic makes using ActiveRecord named scopes easier and less repetitive."
-    gem.email = "bjohnson@binarylogic.com"
-    gem.homepage = "http://github.com/binarylogic/searchlogic"
-    gem.authors = ["Ben Johnson of Binary Logic"]
-    gem.add_bundler_dependencies
-  end
-  Jeweler::GemcutterTasks.new
-rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
-end
+require 'appraisal'
 
 require 'spec/rake/spectask'
 Spec::Rake::SpecTask.new(:spec) do |spec|
