@@ -1,3 +1,5 @@
+require 'active_record'
+require "searchlogic/version"
 require "searchlogic/core_ext/proc"
 require "searchlogic/core_ext/object"
 require "searchlogic/active_record/consistency"
