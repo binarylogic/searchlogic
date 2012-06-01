@@ -26,6 +26,9 @@ describe Searchlogic::NamedScopes::ColumnConditions do
     it "should have does not equal" do
       (5..7).each { |age| User.create(:age => age) }
       User.age_does_not_equal(6).all.should == User.find_all_by_age([5,7])
+      
+      User.create!(:age => nil)
+      User.age_does_not_equal(nil).all.size.should == 3
     end
     
     it "should have less than" do
@@ -325,5 +328,9 @@ describe Searchlogic::NamedScopes::ColumnConditions do
     count1 = User.id_ne(10).username_not_like("root").count
     count2 = User.id_ne(10).username_not_like("root").count
     count1.should == count2
+  end
+  
+  it "should produce left outer joins" do
+    User.left_outer_joins(:orders).should == [" LEFT OUTER JOIN \"orders\" ON orders.user_id = users.id "]
   end
 end
