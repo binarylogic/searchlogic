@@ -32,7 +32,7 @@ module Searchlogic
           poly_type = nil
           condition = nil
 
-          if name_with_condition.to_s =~ /^(#{non_poly_assocs.collect(&:name).join("|")})_(\w+)$/
+          if name_with_condition.to_s =~ /^(#{non_poly_assocs.collect(&:name).join("|")})_(\w+)$/ && non_poly_assocs.present?
             association_name = $1
             condition = $2
           elsif name_with_condition.to_s =~ /^(#{poly_assocs.collect(&:name).join("|")})_(\w+?)_type_(\w+)$/
