@@ -217,4 +217,10 @@ describe Searchlogic::NamedScopes::AssociationConditions do
     user.orders.id_equals(order1.id).count.should == 1
     user.orders.id_equals(order1.id).total_equals(2).count.should == 1
   end
+
+  it "should allow Marshal.dump on objects that only have polymorphic associations where a polymorphic association is loaded" do
+    audit = Audit.create
+    audit.auditable = User.create
+    lambda { Marshal.dump(audit) }.should_not raise_error
+  end
 end
