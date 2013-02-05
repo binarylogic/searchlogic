@@ -6,6 +6,7 @@ describe Searchlogic::Conditions::BeginsWith do
     @james.name = "James"
     @james.save
   end
+
   it "should not match middle of work" do 
     User.name_begins_with("am").should be_empty
   end

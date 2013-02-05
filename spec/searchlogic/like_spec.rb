@@ -6,6 +6,7 @@ describe Searchlogic::Conditions::Like do
     @james.name = "James"
     @james.save
   end
+
   it "finds user based on partial name" do 
     User.name_like("am").should_not be_empty
   end

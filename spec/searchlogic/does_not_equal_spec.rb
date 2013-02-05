@@ -9,6 +9,7 @@ describe Searchlogic::Conditions::DoesNotEqual do
     @bob.name = "Bob"
     @bob.save 
   end
+
   it "finds users that do not equal input" do 
     find_bob = User.name_does_not_equal("James").first
     find_bob.name.should eq("Bob")

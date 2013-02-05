@@ -16,7 +16,15 @@ module Searchlogic
           Equals,
           Like,
           BeginsWith,
-          DoesNotEqual
+          DoesNotEqual,
+          DoesNotBeginWith,
+          EndsWith,
+          DoesNotEndWith,
+          NotLike,
+          GreaterThan,
+          LessThan,
+          GreaterThanOrEqualTo,
+          LessThanOrEqualTo
         ]
       end
   end

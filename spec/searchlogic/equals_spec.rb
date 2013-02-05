@@ -6,6 +6,7 @@ describe Searchlogic::Conditions::Equals do
     @james.name = "James"
     @james.save
   end
+
   describe "Equals Query on Single Column" do 
     it "returns the user when column exists"  do 
       User.name_equals("James").should_not be_empty
