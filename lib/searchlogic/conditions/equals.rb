@@ -3,12 +3,12 @@ module Searchlogic
     class Equals < Condition
 
       def scope
-        klass.where("#{table_name}.#{column_name} = ?", value) if applicable?
+        returned_objects = values.map {|value| klass.where("#{table_name}.#{column_name} = ?", value)}.flatten if applicable?
       end
 
       private
-        def value
-          args.first
+        def values
+          [args.first].flatten
         end
 
         def applicable? 

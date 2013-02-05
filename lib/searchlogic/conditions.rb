@@ -26,7 +26,8 @@ module Searchlogic
           GreaterThanOrEqualTo,
           LessThanOrEqualTo,
           Null,
-          NotNull
+          NotNull,
+          Blank
         ]
       end
   end
