@@ -2,7 +2,7 @@ module Searchlogic
   module Conditions
     class Like < Condition
       def scope
-        result = klass.where("#{table_name}.#{column_name} like ?", "%#{value}%") if applicable?
+        klass.where("#{table_name}.#{column_name} like ?", "%#{value}%") if applicable?
       end
 
       private

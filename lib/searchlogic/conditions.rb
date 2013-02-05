@@ -14,8 +14,9 @@ module Searchlogic
       def condition_klasses
         [
           Equals,
-          Like
-          # BeginsWith
+          Like,
+          BeginsWith,
+          DoesNotEqual
         ]
       end
   end
