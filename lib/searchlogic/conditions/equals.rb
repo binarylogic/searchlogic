@@ -2,21 +2,18 @@ module Searchlogic
   module Conditions
     class Equals < Condition
 
-      def generate_scope(value)
-        puts "generating scope" 
-        puts value
+      def scope
+        klass.where("#{table_name}.#{column_name} = ?", value) if applicable?
+      end
 
-        if current_scope = scope(method)
-          klass.where("#{current_scope} = ?", value)
+      private
+        def value
+          args.first
         end
-      end
 
-      private 
-      def scope(method)
-        puts "Scoping"
-        match = /^(#{column_names.join("|")})_equals$/.match(method)
-        match[1] if match
-      end
+        def applicable? 
+          !(/^(#{klass.column_names.join("|")})_equals$/ =~ method_name).nil? if klass
+        end
     end
   end
 end
