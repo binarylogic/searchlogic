@@ -9,7 +9,10 @@ describe Searchlogic::Conditions::Equals do
 
   describe "Equals Query on Single Column" do 
     it "returns the user when column exists"  do 
-      User.name_equals("James").should_not be_empty
+      users = User.name_equals("James")
+      users.count.should eq(1)
+      james = users.first
+      james.name.should eq("James")
     end
     xit "and raises NoMethodError when column doesn't exist" do 
       User.titties_equals("Big").should_raise NoMethodError

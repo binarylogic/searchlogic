@@ -12,7 +12,7 @@ describe Searchlogic::Conditions::LessThan do
     @ben.save
   end
 
-  it "finds all other users greater than" do 
+  it "finds all other users less than specific age" do 
     find_users = User.age_less_than(27).map { |u| u.name }
     find_users.should eq(["James"])
   end
