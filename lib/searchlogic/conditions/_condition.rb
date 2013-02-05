@@ -18,10 +18,9 @@ module Searchlogic
         @block = block
       end
 
-      private
-        def applicable?
-          raise NotImplementedError.new("You need to define a #applicable method")
-        end
+      def applicable?
+        raise NotImplementedError.new("You need to define a #applicable method")
+      end
     end
   end
 end

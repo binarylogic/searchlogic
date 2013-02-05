@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Searchlogic::Conditions::Equals do
   before(:each) do 
-    @james = User.create(:name=>"James")
+    @james = User.create(:name=>"James", :age=>28)
     @ben = User.create(:name=> "Ben")
   end
 
@@ -20,8 +20,15 @@ describe Searchlogic::Conditions::Equals do
       names.count.should eq(2)
       names.should eq(["Ben","James"])
     end
-    xit "and raises NoMethodError when column doesn't exist" do 
-      User.titties_equals("Big").should_raise NoMethodError
-    end 
   end
+
+  it "can be chained with other scopes" do 
+    james = User.create(:name=>"James", :age=>26)
+    p User.age_equals("James").class
+    users = User.name_equals("James").age_equals(28)
+    users.count.should eq(1)
+    users.first.name.should eq("James")
+    users.first.age.should eq(28)
+  end
+
 end

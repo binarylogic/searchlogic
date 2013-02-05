@@ -2,15 +2,15 @@ require 'spec_helper'
 
 describe Searchlogic::Conditions::BeginsWith do 
   before(:each) do 
-    @james = User.new
-    @james.name = "James"
-    @james.save
+    @james = User.create(:name=>"James", :age=>26)
   end
 
   it "should not match middle of work" do 
     User.name_begins_with("am").should be_empty
   end
   it "finds user based on beginning" do 
-    User.name_begins_with("Jam").should_not be_empty
+    users = User.name_begins_with("Jam")
+    users.count.should eq(1)
+    users.first.name.should eq("James")
   end
 end
