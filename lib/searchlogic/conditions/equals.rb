@@ -15,7 +15,7 @@ module Searchlogic
       def scope(method)
         puts "Scoping"
         match = /^(#{column_names.join("|")})_equals$/.match(method)
-        match[1]
+        match[1] if match
       end
     end
   end

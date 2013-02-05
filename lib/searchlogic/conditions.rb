@@ -12,14 +12,6 @@ module Searchlogic
           return condition_klass.new(self, method)
         end
       end
-
-      def valid_condition?(condition)
-        condition.downcase!
-        condition.capitalize!
-        puts condition.constantize
-        condition_klasses.select{ |klass| condition == klass }
-      end
-
       def condition_klasses
         [
           Equals
