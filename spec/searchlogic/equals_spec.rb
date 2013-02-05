@@ -1,10 +1,16 @@
 require 'spec_helper'
 
 describe Searchlogic::Conditions::Equals do
-  it "return the user from .column_equals"  do 
+  before(:each) do 
     james = User.new
     james.name = "James"
     james.save
-    User.name_equals("James").should_not be_empty
+  end
+  describe "Equals Query on Single Column" do 
+    it "returns the user when column exists"  do 
+
+      User.name_equals("James").should_not be_empty
+    end
+
   end
 end

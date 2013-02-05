@@ -9,10 +9,15 @@ module Searchlogic
       def find_condition(method)
         puts "finding conditiond "
         condition_klasses.each do |condition_klass|
-          puts condition_klass
-          condition_klass.new(self, method)
+          return condition_klass.new(self, method)
         end
-        nil
+      end
+
+      def valid_condition?(condition)
+        condition.downcase!
+        condition.capitalize!
+        puts condition.constantize
+        condition_klasses.select{ |klass| condition == klass }
       end
 
       def condition_klasses

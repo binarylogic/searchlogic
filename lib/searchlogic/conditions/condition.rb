@@ -1,11 +1,11 @@
 module Searchlogic
   module Conditions
     class Condition
-      attr_reader :klass, :column
-      def initialize(klass, column)
+      attr_reader :klass, :method
+      def initialize(klass, method)
+        puts "initializeing" 
         @klass = klass
-        @column = column.split("_").first
-        puts "Done initializing"
+        @method = method
       end
 
       private
@@ -15,7 +15,6 @@ module Searchlogic
       def scope(name)
         raise NotImplementedError.new("You need to define a #scope method")
       end
-
     end
   end
 end
