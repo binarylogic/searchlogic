@@ -5,20 +5,17 @@ module Searchlogic
       def initialize(klass, column)
         @klass = klass
         @column = column.split("_").first
-      end
-
-      def self.to_str
-        "Condition"
-      end
-
-      def applicable?(name)
-        raise NotImplementedError.new("You need to define a #applicable? method")
+        puts "Done initializing"
       end
 
       private
       def column_names
         klass.column_names
       end
+      def scope(name)
+        raise NotImplementedError.new("You need to define a #scope method")
+      end
+
     end
   end
 end

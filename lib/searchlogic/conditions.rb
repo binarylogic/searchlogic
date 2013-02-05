@@ -3,13 +3,14 @@ module Searchlogic
   module Conditions
     private
       def method_missing(method, *args, &block)
-        find_condition(method.to_s).try(:process, args, &block) || super
+        find_condition(method.to_s).try(:generate_scope, args, &block) || super
       end
 
       def find_condition(method)
+        puts "finding conditiond "
         condition_klasses.each do |condition_klass|
-          condition = condition_klass.new(self, method)
-          return condition if condition.applicable?(method)
+          puts condition_klass
+          condition_klass.new(self, method)
         end
         nil
       end
