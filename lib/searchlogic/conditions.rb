@@ -11,26 +11,18 @@ module Searchlogic
         generate_scope(method, args, &block) || super
       end
 
-      def generate_scope(method_klass, args, &block)
-        method_name = find_method_and_klass(method_klass)[1]
-        klass_name = find_method_and_klass(method_klass)[2]
-        klass = condition_klasses.find  { |condition_klass| make_comparable(condition_klass) == klass_name }
-        klass.generate_scope(self, method_name, args, &block) if klass
+      def generate_scope(method, args, &block)
+        klass = condition_klasses.find  { |ck| condition_klass_matches_method?(ck, method) }
+        return nil unless klass 
+        klass.generate_scope(self, method, args, &block)
       end
 
-      def scopeable?(method_klass)
-        !(find_method_and_klass(method_klass).nil?) 
+      def scopeable?(method)
+        !(match_klass(method).nil?) 
       end
 
-      def find_method_and_klass(method_klass)
-        if defined_method?(method_klass)
-          re = /^(#{column_names.join("|")})_(#{joined_condition_klasses})/
-          re.match(method_klass)
-        end
-      end
-
-      def defined_method?(method)
-        method.match(/_(#{joined_condition_klasses}$)/)
+      def match_klass(method)
+        /(#{joined_condition_klasses})/.match(method)
       end
 
       def joined_condition_klasses
@@ -39,6 +31,14 @@ module Searchlogic
 
       def make_comparable(const)
         const.to_s.split("::").last.underscore
+      end
+
+      def condition_klass_matches_method?(condition_klass, method)        
+        match = match_klass(method)
+        possible_matches = (1..match.length).map do |match_num|
+          match[match_num]
+        end
+        possible_matches.include?(make_comparable(condition_klass))
       end
 
       def condition_klasses
@@ -57,7 +57,9 @@ module Searchlogic
           LessThan,
           Null,
           NotNull,
-          Blank
+          Blank,
+          AscendBy,
+          DescendBy
         ]
       end
   end

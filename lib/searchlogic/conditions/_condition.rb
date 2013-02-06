@@ -1,3 +1,4 @@
+require 'pry'
 module Searchlogic
   module Conditions
     class Condition < ActiveRecord::Base
@@ -12,11 +13,12 @@ module Searchlogic
 
       def initialize(klass, method_name, args, &block)
         @klass = klass
-        @column_name = method_name
+        @column_name = method_name.to_s.split("_").first
         @args = args
         @block = block
       end
 
+  
       def applicable?
         raise NotImplementedError.new("You need to define a #applicable method")
       end
