@@ -13,6 +13,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'activerecord', '3.2.11'
   s.add_dependency 'activesupport', '3.2.11'
   s.add_development_dependency 'debugger'
+  s.add_development_dependency 'pry'
   s.add_development_dependency 'rspec', '2.12.0'
   s.add_development_dependency 'sqlite3'
   s.add_development_dependency 'appraisal', '0.5.1'

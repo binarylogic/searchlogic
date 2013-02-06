@@ -1,4 +1,5 @@
 Dir[File.dirname(__FILE__) + '/conditions/*.rb'].each { |f| require(f) }
+require 'pry'
 module Searchlogic
   module Conditions
       def respond_to?(*args)
@@ -11,12 +12,17 @@ module Searchlogic
       end
 
       def generate_scope(method, args, &block)
-        klass = condition_klasses.find { |condition_klass| condition_klass.generate_scope(self, method, args, &block) }
+        klass = condition_klasses.find  { |condition_klass| condition_klass.generate_scope(self, method, args, &block) }
         klass.generate_scope(self, method, args, &block) if klass
       end
 
       def applicable?(method)
-        !(%r{^(#{column_names.join("|")})_(#{condition_klasses.map{ |k| k.to_s.split("::").last.downcase}.join("|")})} =~ method).nil? unless method.match(/connection/)
+        !(match_method(method).nil?) unless method.match(/connection/)
+      end
+
+      def match_method(method)
+        re = %r{^(#{column_names.join("|")})_(#{condition_klasses.map{ |k| k.to_s.split("::").last.underscore}.join("|")})}
+        re.match(method)
       end
 
       def condition_klasses
