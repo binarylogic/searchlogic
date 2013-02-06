@@ -24,11 +24,9 @@ describe Searchlogic::Conditions::Equals do
 
   it "can be chained with other scopes" do 
     james = User.create(:name=>"James", :age=>26)
-    p User.age_equals("James").class
     users = User.name_equals("James").age_equals(28)
     users.count.should eq(1)
     users.first.name.should eq("James")
     users.first.age.should eq(28)
   end
-
 end
