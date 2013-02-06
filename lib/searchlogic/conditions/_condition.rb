@@ -12,8 +12,7 @@ module Searchlogic
 
       def initialize(klass, method_name, args, &block)
         @klass = klass
-        @method_name = method_name
-        @column_name = method_name.to_s.split("_").first
+        @column_name = method_name
         @args = args
         @block = block
       end
