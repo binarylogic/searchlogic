@@ -2,12 +2,13 @@ require 'spec_helper'
 
 describe Searchlogic::Conditions::Like do 
   before(:each) do 
-    @james = User.new
-    @james.name = "James"
-    @james.save
+    @james = User.create(:name=> "Vanneman")
+    @ben = User.create(:name=>"Johnson")
   end
 
   it "finds user based on partial name" do 
-    User.name_like("am").should_not be_empty
+    users = User.name_like("ann")
+    users.count.should eq(1)
+    users.first.name.should eq("Vanneman")
   end
 end

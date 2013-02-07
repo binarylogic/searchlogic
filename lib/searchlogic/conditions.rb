@@ -21,14 +21,6 @@ module Searchlogic
         /(#{joined_condition_klasses})/.match(method)
       end
 
-      def joined_condition_klasses
-        condition_klasses.map{ |k| make_comparable(k)}.join("|")
-      end
-
-      def make_comparable(const)
-        const.to_s.split("::").last.underscore
-      end
-
       def condition_klasses
        [
           Equals,
@@ -47,8 +39,18 @@ module Searchlogic
           NotNull,
           Blank,
           AscendBy,
-          DescendBy
+          DescendBy,
+          Joins 
         ] 
       end
+
+      def joined_condition_klasses
+        condition_klasses.map{ |k| make_comparable(k)}.join("|")
+      end
+
+      def make_comparable(const)
+        const.to_s.split("::").last.underscore
+      end
+
   end
 end
