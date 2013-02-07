@@ -6,7 +6,7 @@ describe Searchlogic::Conditions::Joins do
     order2 = Order.create(:total=>19)
     @james = User.create(:name=>"James")
     @james.orders << order1
-
+    @noorder = User.create(:name=>"noorder")
     @ben = User.create(:name=>"Ben")
     @ben.orders << order2
 

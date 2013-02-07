@@ -12,16 +12,12 @@ module Searchlogic
       end
 
       def generate_scope(method, args, &block)
-        klass = condition_klasses.find  { |ck| condition_klass_matches_method?(ck, method) }
+        klass = condition_klasses.find  { |ck| ck.generate_scope(self, method, args, &block) }  
         return nil unless klass 
         klass.generate_scope(self, method, args, &block)
       end
 
       def scopeable?(method)
-        !(match_klass(method).nil?) 
-      end
-
-      def match_klass(method)
         /(#{joined_condition_klasses})/.match(method)
       end
 
@@ -33,16 +29,8 @@ module Searchlogic
         const.to_s.split("::").last.underscore
       end
 
-      def condition_klass_matches_method?(condition_klass, method)        
-        match = match_klass(method)
-        possible_matches = (1..match.length).map do |match_num|
-          match[match_num]
-        end
-        possible_matches.include?(make_comparable(condition_klass))
-      end
-
       def condition_klasses
-        [
+       [
           Equals,
           Like,
           BeginsWith,
@@ -60,7 +48,7 @@ module Searchlogic
           Blank,
           AscendBy,
           DescendBy
-        ]
+        ] 
       end
   end
 end

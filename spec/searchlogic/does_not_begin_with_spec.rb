@@ -8,7 +8,7 @@ describe Searchlogic::Conditions::DoesNotBeginWith do
 
   it "finds users that do not begin with input" do 
     find_users = User.name_does_not_begin_with("Jam")
-    user_names = find_users.map { |u| u.name }
+        user_names = find_users.map { |u| u.name }
     user_names.should eq(["Ben"])
   end
 end
