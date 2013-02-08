@@ -26,7 +26,7 @@ describe Searchlogic::Conditions::Joins do
     companies = Company.users_orders_total_greater_than(17)
     p companies
     p companies.count.to_s + "!!!!!"
-    # companies.count.should eq(2)
+    companies.count.should eq(2)
     company_names = companies.map { |c| c.name }
     company_names.should eq(["Neco", "ConcLive2"])
   end

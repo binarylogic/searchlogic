@@ -6,6 +6,8 @@ module Searchlogic
         name = args.first
         scopeable?(name) || super
       end
+
+      
     private
       def method_missing(method, *args, &block) 
         generate_scope(method, args, &block) || super
