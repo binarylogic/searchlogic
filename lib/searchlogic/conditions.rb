@@ -7,6 +7,10 @@ module Searchlogic
         scopeable?(name) || super
       end
 
+      def joined_condition_klasses
+        condition_klasses.map{ |k| make_comparable(k)}.join("|")
+      end
+
       
     private
       def method_missing(method, *args, &block) 
@@ -24,7 +28,7 @@ module Searchlogic
       end
 
       def condition_klasses
-       [
+       [  Any,
           Joins,
           Equals,
           BeginsWith,
@@ -45,10 +49,6 @@ module Searchlogic
           DescendBy
           
         ] 
-      end
-
-      def joined_condition_klasses
-        condition_klasses.map{ |k| make_comparable(k)}.join("|")
       end
 
       def make_comparable(const)

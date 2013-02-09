@@ -33,4 +33,3 @@ describe Searchlogic::Conditions::Joins do
 
 
 end
-

@@ -6,6 +6,7 @@ module Searchlogic
         if applicable?
           find_column
           klass.where("#{table_name}.#{column_name} like ?", "%#{value}%"  )  
+
         end
 
       end

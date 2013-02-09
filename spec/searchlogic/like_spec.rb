@@ -13,10 +13,4 @@ describe Searchlogic::Conditions::Like do
     users.first.name.should eq("Vanneman")
   end
 
-  xit "returns all users who have either name with 'any' clause" do 
-    users = User.name_like_any("Vanneman", "Janson")
-    users.count.should eq(2)
-    user_names = users.map(&:name)
-    user_names.should eq(["Vanneman", "Janson"])
-  end
 end
