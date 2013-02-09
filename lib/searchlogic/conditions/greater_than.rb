@@ -3,8 +3,7 @@ module Searchlogic
     class GreaterThan < Condition
       def scope
         if applicable?
-          find_method
-          binding.pry
+          find_column
           klass.where("#{table_name}.#{column_name} > ?", "#{value}") if applicable?
         end
       end
@@ -13,7 +12,7 @@ module Searchlogic
         def value
           args.first
         end
-        def find_method
+        def find_column
           @column_name = /(.*)_greater_than/.match(method_name)[1]
         end
         def applicable? 
