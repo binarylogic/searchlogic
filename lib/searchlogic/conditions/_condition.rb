@@ -2,10 +2,8 @@ require 'pry'
 module Searchlogic
   module Conditions
     class Condition < ActiveRecord::Base
-      attr_reader :klass, :method_name, :args, :column_name, :block, :value 
-      attr_accessor :or_conditions
-
-      delegate :table_name, :to => :klass
+      attr_reader :klass, :args, :column_name, :block, :value, :table_name
+      attr_accessor :or_conditions, :method_name
 
       class << self
         def generate_scope(*args)
@@ -16,8 +14,9 @@ module Searchlogic
       def initialize(klass, method_name, args, &block)
         @klass = klass
         @method_name = method_name
-        @column_name = find_columns.first  
+        @table_name = args[1] || klass.to_s.downcase.pluralize
         @value = args.first
+        @column_name = method_name
         @or_conditions = ""
         @args = args
         @block = block
@@ -27,9 +26,6 @@ module Searchlogic
         raise NotImplementedError.new("You need to define a #applicable method")
       end
 
-      def find_columns
-        columns = klass.column_names.select{ |cn| method_name.to_s.include?(cn)}
-      end
       def calc_or_conditions
         raise NotImplementedError.new("You need to define a #calc_or_conditions method") 
       end

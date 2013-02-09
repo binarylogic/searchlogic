@@ -25,8 +25,8 @@ module Searchlogic
 
       def condition_klasses
        [
+          Joins,
           Equals,
-          Like,
           BeginsWith,
           DoesNotEqual,
           DoesNotBeginWith,
@@ -35,14 +35,15 @@ module Searchlogic
           GreaterThanOrEqualTo,
           LessThanOrEqualTo,
           NotLike,
+          Like,
           GreaterThan,
           LessThan,
-          Null,
           NotNull,
+          Null,
           Blank,
           AscendBy,
-          DescendBy,
-          Joins 
+          DescendBy
+          
         ] 
       end
 

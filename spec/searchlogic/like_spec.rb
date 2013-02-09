@@ -13,15 +13,7 @@ describe Searchlogic::Conditions::Like do
     users.first.name.should eq("Vanneman")
   end
 
-  it "combines scopes with OR" do 
-    users = User.username_or_name_like("eman")
-    users.count.should eq(2)
-    usernames = users.map(&:username)
-    usernames.should eq(["jvans", "eman"])
-
-  end
-
-  it "returns all users who have either name with 'any' clause" do 
+  xit "returns all users who have either name with 'any' clause" do 
     users = User.name_like_any("Vanneman", "Janson")
     users.count.should eq(2)
     user_names = users.map(&:name)

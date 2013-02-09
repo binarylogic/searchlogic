@@ -16,19 +16,20 @@ describe Searchlogic::Conditions::Joins do
     company3 = Company.create(:name => "ConcLive2", :users => [@ben])
   end
 
-  it "returns all users with order total greater than 20" do 
-    users = User.orders_total_greater_than(20)
+  xit "returns all users with order total greater than 20" do 
+    users = User.orders__total_greater_than(20)
     users.count.should eq(1)
     users.first.name.should eq("James")
   end
 
   it "allows multiple joins" do  
-    companies = Company.users_orders_total_greater_than(17)
-    p companies
-    p companies.count.to_s + "!!!!!"
-    companies.count.should eq(2)
+    companies = Company.users__orders__line_items__price_greater_than(8)
+    # companies.count.should eq(2)
     company_names = companies.map { |c| c.name }
-    company_names.should eq(["Neco", "ConcLive2"])
+    company_names.should eq(["Neco", "ConcLive1"])
   end
+
+
+
 end
 
