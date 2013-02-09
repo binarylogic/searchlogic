@@ -8,7 +8,7 @@ describe Searchlogic::Conditions::Any do
   end
 
   it "finds either user specified" do 
-    users = User.name_like_any("James", "Jon")
+    users = User.name_like_any("ame", "on")
     users.count.should eq(2)
     names = users.map(&:name)
     names.should eq(["James", "Jon"])
