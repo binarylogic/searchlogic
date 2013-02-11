@@ -16,8 +16,6 @@ module Searchlogic
         def applicable?
           !(/__/.match(method_name).nil?)
         end
-
-
     end
   end
 end

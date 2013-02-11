@@ -32,6 +32,7 @@ describe Searchlogic::Conditions::Joins do
 
   it "orders ascending by associations in method" do 
     order1 = Company.descend_by_users_orders_total
+    binding.pry
     # company_order_names = 
   end
 

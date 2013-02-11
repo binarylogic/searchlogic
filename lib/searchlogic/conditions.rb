@@ -43,7 +43,6 @@ module Searchlogic
           DoesNotBeginWith,
           EndsWith,
           DoesNotEndWith,
-
           NotLike,
           Like,
           GreaterThan,
