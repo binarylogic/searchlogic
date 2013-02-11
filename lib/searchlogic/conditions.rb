@@ -47,7 +47,6 @@ module Searchlogic
           Blank,
           AscendBy,
           DescendBy
-          
         ] 
       end
 
