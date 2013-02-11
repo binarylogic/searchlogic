@@ -2,9 +2,7 @@ require 'spec_helper'
 
 describe Searchlogic::Conditions::Blank do 
   before(:each) do 
-    @james = User.new
-    @james.name = "James"
-    @james.save
+    @james = User.create(:name => "James")
   end
 
   it "should return user with null name" do 

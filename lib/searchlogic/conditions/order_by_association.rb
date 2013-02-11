@@ -5,6 +5,7 @@ module Searchlogic
         if applicable?
           association = find_association
           method_without_association = method_name.to_s.split(association + "_").join
+
           klass.joins(association.pluralize.to_sym).send(method_without_association)            
         end
       end
@@ -33,7 +34,7 @@ module Searchlogic
           klass.tables + klass.tables.map(&:singularize)
         end
         def applicable? 
-          /_by_#{associations_in_method.join("|")}.*/ =~ method_name
+          !(/(_by_#{associations_in_method.join("|")})/.match(method_name)).nil?
         end
     end
   end

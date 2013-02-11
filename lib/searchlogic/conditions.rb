@@ -33,16 +33,17 @@ module Searchlogic
       def condition_klasses
         #NOTE DONOT FUCK WITH THIS ORDER
        [  Any,
+          GreaterThanOrEqualTo,
+          LessThanOrEqualTo,
+          Oor,
           Joins,
-          OrderByAssociation,
           Equals,
           BeginsWith,
           DoesNotEqual,
           DoesNotBeginWith,
           EndsWith,
           DoesNotEndWith,
-          GreaterThanOrEqualTo,
-          LessThanOrEqualTo,
+
           NotLike,
           Like,
           GreaterThan,
@@ -50,8 +51,10 @@ module Searchlogic
           NotNull,
           Null,
           Blank,
+          OrderByAssociation,
           AscendBy,
-          DescendBy
+          DescendBy,
+          Aliases
         ] 
       end
 

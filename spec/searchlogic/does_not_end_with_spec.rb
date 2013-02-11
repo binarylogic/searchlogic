@@ -2,12 +2,8 @@ require 'spec_helper'
 
 describe Searchlogic::Conditions::DoesNotEndWith do 
   before(:each) do 
-    @james = User.new
-    @james.name = "James"
-    @james.save
-    @bob = User.new
-    @bob.name = "Bob"
-    @bob.save 
+    @james = User.create(:name=>"James")
+    @bob = User.create(:name => "Bob")
   end
 
   it "finds users that do not end with input" do 
