@@ -11,6 +11,9 @@ module Searchlogic
         condition_klasses.map{ |k| make_comparable(k)}.join("|")
       end
 
+      def tables
+        ActiveRecord::Base.connection.tables
+      end
       
     private
       def method_missing(method, *args, &block) 

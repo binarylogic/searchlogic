@@ -3,9 +3,9 @@ module Searchlogic
     class OrderByAssociation < Condition
       def scope
         if applicable?
-          new_method = method_name.to_s.split("#{find_association}_").join
-          association = find_association.pluralize
-          klass.joins(association.to_sym).send(new_method.to_sym)
+          association = find_association
+          method_without_association = method_name.to_s.split(association + "_").join
+          klass.joins(association.pluralize.to_sym).send(method_without_association)            
         end
       end
 
@@ -14,14 +14,26 @@ module Searchlogic
           args.first
         end
 
-        def find_association
-          associations.find{|a| method_name.to_s.include?(a)}
+        def method_without_ordering
+          split_method[2]
         end
-        def associations
-          klass.reflect_on_all_associations.map{ |a| a.name.to_s.singularize}
+
+        def ordering 
+          split_method[1] 
+        end
+
+        def split_method
+          /(.*_by_)(.*)/.match(method_name)
+        end
+
+        def find_association
+          associations_in_method.find{|a| /^#{a}/.match(method_without_ordering.to_s)}
+        end
+        def associations_in_method
+          klass.tables + klass.tables.map(&:singularize)
         end
         def applicable? 
-          /_by_#{associations.join("|")}.*/ =~ method_name
+          /_by_#{associations_in_method.join("|")}.*/ =~ method_name
         end
     end
   end

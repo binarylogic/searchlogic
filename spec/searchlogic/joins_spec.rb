@@ -22,7 +22,6 @@ describe Searchlogic::Conditions::Joins do
     users.first.name.should eq("James")
   end
   it "allows multiple joins" do  
-    #TODO Company.users__orders***
     companies = Company.orders__total_greater_than(17)
     companies.count.should eq(2)
     company_names = companies.map { |c| c.name }
