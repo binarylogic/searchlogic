@@ -16,25 +16,18 @@ describe Searchlogic::Conditions::Joins do
     company3 = Company.create(:name => "ConcLive2", :users => [@ben])
   end
 
-  it "returns all users with order total greater than 20" do 
-    users = User.orders__total_greater_than(20)
-    users.count.should eq(1)
-    users.first.name.should eq("James")
-  end
-  it "allows multiple joins" do  
-    #TODO Company.users__orders***
-    companies = Company.orders__total_greater_than(17)
-    companies.count.should eq(2)
-    company_names = companies.map { |c| c.name }
-    company_names.should eq(["Neco", "ConcLive2"])
+  it "orders ascending by associated columnd" do
+    ordered_users = User.ascend_by_order_total
+    ordered_users.count.should eq(5)
+    ordered_users_names = ordered_users.map(&:name)
+    ordered_users_names.should eq(["noorder", "Tren", "John", "Ben", "James"])
   end
 
-  it "allows multiple joins with underscore in association name " do 
-    companies = Company.users__orders__line_items__price_greater_than(8)
-    companies.count.should eq(2)
-    company_names = companies.map(&:name)
-    company_names.should eq(["Neco", "ConcLive2"])
+  it "orders descding by associated column" do 
+    ordered_users = User.descend_by_order_total
+    ordered_users.count.should eq(5)
+    ordered_users_names = ordered_users.map(&:name)
+    ordered_users_names.should eq(["noorder", "Tren", "John", "Ben", "James"].reverse)
+
   end
-
-
 end
