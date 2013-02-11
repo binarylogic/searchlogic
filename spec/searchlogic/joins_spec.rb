@@ -9,8 +9,8 @@ describe Searchlogic::Conditions::Joins do
     @james = User.create(:name=>"James", :orders => [order1])
     @ben = User.create(:name=>"Ben", :orders => [order2])
     @john = User.create(:name=>"John", :orders => [order3])
-    @tren = User.create(:name=>"John", :orders => [order4])
-    @noorder = User.create(:name=>"noorder")
+    @tren = User.create(:name=>"Tren", :orders => [order4])
+    @noorder = User.create(:name=>"noorder", :orders => [Order.create(:total => 0)])
     company1 = Company.create(:name => "Neco", :users => [@james, @john])
     company2 = Company.create(:name => "ConcLive1", :users => [@tren])
     company3 = Company.create(:name => "ConcLive2", :users => [@ben])
@@ -21,13 +21,26 @@ describe Searchlogic::Conditions::Joins do
     users.count.should eq(1)
     users.first.name.should eq("James")
   end
-
   it "allows multiple joins" do  
-    companies = Company.users__orders__total_greater_than(17)
+    #TODO Company.users__orders***
+    companies = Company.orders__total_greater_than(17)
     companies.count.should eq(2)
-    binding.pry
     company_names = companies.map { |c| c.name }
     company_names.should eq(["Neco", "ConcLive2"])
+  end
+
+  it "allows multiple joins with underscore in association name " do 
+    companies = Company.users__orders__line_items__price_greater_than(8)
+    companies.count.should eq(2)
+    company_names = companies.map(&:name)
+    company_names.should eq(["Neco", "ConcLive2"])
+  end
+
+  it "orders by associated columnd" do
+    ordered_users = User.ascend_by_order_total
+    ordered_users.count.should eq(5)
+    ordered_users_names = ordered_users.map(&:name)
+    ordered_users_names.should eq(["noorder", "Tren", "John", "Ben", "James"])
   end
 
 

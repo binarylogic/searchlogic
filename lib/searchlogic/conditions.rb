@@ -28,8 +28,10 @@ module Searchlogic
       end
 
       def condition_klasses
+        #NOTE DONOT FUCK WITH THIS ORDER
        [  Any,
           Joins,
+          OrderByAssociation,
           Equals,
           BeginsWith,
           DoesNotEqual,

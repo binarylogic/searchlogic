@@ -10,7 +10,7 @@ module Searchlogic
 
       private
         def applicable?
-          !(/ascend_by_(#{klass.column_names.join("|")})$/ =~ method_name).nil?
+          !(/ascend_by_/ =~ method_name).nil?
         end
 
         def find_sort_on(method)
