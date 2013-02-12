@@ -16,7 +16,7 @@ describe Searchlogic::Conditions::Joins do
     company3 = Company.create(:name => "ConcLive2", :users => [@ben])
   end
 
-  it "orders ascending by associated columnd" do
+  it "orders ascending by associated column" do
     ordered_users = User.ascend_by_order_total
     ordered_users.count.should eq(5)
     ordered_users_names = ordered_users.map(&:name)

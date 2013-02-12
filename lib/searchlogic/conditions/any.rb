@@ -3,7 +3,7 @@ module Searchlogic
     class Any < Condition
       def scope
         if applicable?
-          args.map do |value|
+          args.flatten.map do |value|
             klass.send(new_method, value)
           end.flatten
         end

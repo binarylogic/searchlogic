@@ -36,6 +36,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string :name
     t.integer :age
     t.boolean :male
+    t.string :email
     t.string :some_type_id
     t.datetime :whatever_at
   end

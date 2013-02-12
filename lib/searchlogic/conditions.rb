@@ -54,7 +54,8 @@ module Searchlogic
           OrderByAssociation,
           AscendBy,
           DescendBy,
-          Aliases
+          Aliases,
+          All
         ] 
       end
 

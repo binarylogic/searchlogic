@@ -14,4 +14,12 @@ describe Searchlogic::Conditions::Any do
     names.should eq(["James", "Jon"])
   end
 
+
+  it "finds either user specified with an array" do 
+    users = User.name_like_any(["ame", "on"])
+    users.count.should eq(2)
+    names = users.map(&:name)
+    names.should eq(["James", "Jon"])
+  end
+
 end
