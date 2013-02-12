@@ -1,3 +1,4 @@
+require 'searchlogic/conditions/condition'
 Dir[File.dirname(__FILE__) + '/conditions/*.rb'].each { |f| require(f) }
 require 'pry'
 module Searchlogic
@@ -31,7 +32,7 @@ module Searchlogic
       end
 
       def condition_klasses
-        #NOTE DONOT FUCK WITH THIS ORDER
+        #NOTE DO NOT FUCK WITH THIS ORDER
        [  Any,
           GreaterThanOrEqualTo,
           LessThanOrEqualTo,

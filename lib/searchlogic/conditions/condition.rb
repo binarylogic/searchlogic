@@ -13,7 +13,7 @@ module Searchlogic
       def initialize(klass, method_name, args, &block)
         @klass = klass
         @method_name = method_name
-        @table_name = args[1] || klass.to_s.downcase.pluralize
+        @table_name = args[1] || klass.to_s.underscore.pluralize
         @value = args[0]
         @args = args
         @block = block

@@ -1,4 +1,5 @@
-require(File.dirname(__FILE__) + '/../lib/searchlogic.rb')
+$:.push File.expand_path("../lib", __FILE__)
+require 'searchlogic'
 require 'database_cleaner'
 require 'debugger'
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
