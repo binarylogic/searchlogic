@@ -6,9 +6,7 @@ describe Searchlogic::Conditions::Blank do
   end
 
   it "should return user with null name" do 
-    no_name = User.new
-    no_name.name = nil
-    no_name.save
+    no_name = User.create
     no_name_id = no_name.id
     users = User.name_blank
     users.count.should eq(1)
@@ -16,9 +14,7 @@ describe Searchlogic::Conditions::Blank do
 
   end
   it "should return user with empty string as name" do 
-    no_name = User.new
-    no_name.name = ""
-    no_name.save
+    no_name = User.create(:name=>"")
     no_name_id = no_name.id
     users = User.name_blank
     users.count.should eq(1)
@@ -26,9 +22,7 @@ describe Searchlogic::Conditions::Blank do
   end
 
   it "should return user with empty string as name" do 
-    no_name = User.new
-    no_name.name = false
-    no_name.save
+    no_name = User.create(:name=>false)
     no_name_id = no_name.id
     users = User.name_blank
     users.count.should eq(1)

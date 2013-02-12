@@ -4,6 +4,7 @@ describe Searchlogic::Conditions::Aliases do
   before(:each) do 
     @james = User.create(:name=>"James", :age => 26)
     User.create(:name=>"Jon")
+    User.create(:name=>"aJJ")
     @ben = User.create(:name=>"Ben", :age => 28)
     @tren = User.create(:name=>"Tren", :age =>45)
   end
@@ -59,6 +60,20 @@ describe Searchlogic::Conditions::Aliases do
     contains.map(&:name).should eq(["Ben", "Tren"])
     includes.map(&:name).should eq(["Ben", "Tren"])
   end
+
+  it "does_not_include == not_like" do 
+    dni = User.name_does_not_include("e")
+    dni.count.should eq(2)
+    names = dni.map(&:name)
+    names.should eq(["Jon", "aJJ"])
+  end
+  it "bw == begins with" do 
+    bw = User.name_bw("J")
+    bw.count.should eq(2)
+    names = bw.map(&:name)
+    names.should eq(["James", "Jon"])
+  end
+
 
 
 end

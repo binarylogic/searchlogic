@@ -29,10 +29,9 @@ describe Searchlogic::Conditions::Joins do
   end
 
   it "allows multiple joins with underscore in association name " do 
-    
     companies = Company.users__orders__line_items__price_greater_than(8)
     ##NOTE fuck does this return a count of 4 in a 2 element array?
-    # companies.count.should eq(2)
+    companies.count.should eq(2)
     company_names = companies.map(&:name)
     company_names.should eq(["Neco", "ConcLive2"])
   end

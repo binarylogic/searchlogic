@@ -22,5 +22,4 @@ describe Searchlogic::Conditions::Any do
     names = users.map(&:name)
     names.should eq(["JamesBen"])
   end
-
 end

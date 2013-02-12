@@ -33,7 +33,9 @@ module Searchlogic
 
       def condition_klasses
         #NOTE DO NOT FUCK WITH THIS ORDER
-       [  Any,
+
+       [  NormalizeInput,
+          Any,
           GreaterThanOrEqualTo,
           LessThanOrEqualTo,
           Oor,

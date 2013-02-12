@@ -31,7 +31,7 @@ describe Searchlogic::Conditions::Joins do
   end
 
   it "orders ascending by associations in method" do 
-    order1 = Company.descend_by_users_orders_total
+    order1 = Company.descend_by_users_orders_line_items_total
     # company_order_names = 
   end
 
