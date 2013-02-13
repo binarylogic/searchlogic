@@ -82,6 +82,7 @@ Spec::Runner.configure do |config|
     class ::Company < ActiveRecord::Base
       has_many :orders, :through => :users
       has_many :users, :dependent => :destroy
+      has_many :audits, :as => :auditable 
     end
 
     class ::Cart < ActiveRecord::Base

@@ -22,9 +22,11 @@ module Searchlogic
       end
 
       def generate_scope(method, args, &block)
-        klass = condition_klasses.find  { |ck| ck.generate_scope(self, method, args, &block) }  
-        return nil unless klass 
-        klass.generate_scope(self, method, args, &block)
+        condition_klasses.each do |ck|
+          scope = ck.generate_scope(self, method, args, &block)
+          return scope if scope
+        end
+        nil
       end
 
       def scopeable?(method)
@@ -39,6 +41,7 @@ module Searchlogic
           GreaterThanOrEqualTo,
           LessThanOrEqualTo,
           Oor,
+          OrderByAssociation,
           Joins,
           Equals,
           BeginsWith,
@@ -53,11 +56,10 @@ module Searchlogic
           NotNull,
           Null,
           Blank,
-          OrderByAssociation,
           AscendBy,
           DescendBy,
-          Aliases,
-          All
+          All,
+          Aliases
         ] 
       end
 

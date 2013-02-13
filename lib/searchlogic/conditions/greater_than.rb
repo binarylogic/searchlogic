@@ -1,10 +1,14 @@
 module Searchlogic
   module Conditions
     class GreaterThan < Condition
+      def initialize(*args)
+        super
+      end
+
       def scope
         if applicable?
           find_column
-          klass.where("#{table_name}.#{column_name} > ?", "#{value}") if applicable?
+          klass.where("#{table_name}.#{column_name} > ?", "#{value}")
         end
       end
 

@@ -3,7 +3,11 @@ module Searchlogic
     class OrderByAssociation < Condition
       def scope
         if applicable?
+                    binding.pry
+
           association = find_association
+          
+
           method_without_association = method_name.to_s.split(association + "_").join
           klass.joins(association.pluralize.to_sym).send(method_without_association)            
         end
