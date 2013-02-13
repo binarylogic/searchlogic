@@ -33,7 +33,7 @@ module Searchlogic
           klass.tables + klass.tables.map(&:singularize)
         end
         def applicable? 
-          !(/(_by_#{associations_in_method.join("|")})/.match(method_name)).nil?
+          !(/(_by_(#{associations_in_method.join("|")}))/.match(method_name)).nil?
         end
     end
   end

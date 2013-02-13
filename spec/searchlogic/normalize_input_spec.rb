@@ -10,8 +10,11 @@ describe Searchlogic::Conditions::NormalizeInput do
     @ben.save
   end
 
-  xit "finds all users with null name" do 
-    # User.orders_line_items_price
+  it "normalizes input without double underscore in associations" do 
+
+    User.should_receive(:orders__line_items__price_greater_than).with(4).times(2)
+    user = User.orders_line_items_price_greater_than(4)
+
     # no_name = User.new
     # no_name.name = nil
     # no_name.save
