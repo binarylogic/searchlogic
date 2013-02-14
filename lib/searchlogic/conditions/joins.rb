@@ -7,10 +7,10 @@ module Searchlogic
       def initialize(*args)
         super
         @method_parts = method_name.to_s.split(DELIMITER) 
-        @join_name = match_ordering ? join_name = match_ordering[2].to_s.pluralize : join_name = method_parts.first.to_s.pluralize
-        first_part = method_parts.shift.to_sym
-        @new_method = match_ordering ? match_ordering[1] + method_parts.join(DELIMITER) : method_parts.join(DELIMITER) 
-        @association = klass.reflect_on_all_associations.find { |association| association.name == join_name || association.name.to_s == join_name }
+        @join_name = find_join_name
+        method_parts.shift.to_sym
+        @new_method = find_new_method
+        @association = find_association
       end      
 
       def scope
@@ -39,6 +39,18 @@ module Searchlogic
         end
         def send_method
           match_ordering ? match_ordering[1] + method_parts.last : method_parts.last
+        end
+
+        def find_join_name
+          match_ordering ? match_ordering[2].to_s.pluralize : method_parts.first.to_s.pluralize
+        end
+
+        def find_new_method
+          match_ordering ? match_ordering[1] + method_parts.join(DELIMITER) : method_parts.join(DELIMITER) 
+        end
+
+        def find_association
+          klass.reflect_on_all_associations.find { |association| association.name == join_name || association.name.to_s == join_name }
         end
     end
   end
