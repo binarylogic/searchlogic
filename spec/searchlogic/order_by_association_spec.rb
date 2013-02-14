@@ -13,7 +13,7 @@ describe Searchlogic::Conditions::Joins do
     @noorder = User.create(:name=>"noorder", :orders => [Order.create(:total => 0)])
   end
 
-  xit "orders ascending by associated column" do
+  it "orders ascending by associated column" do
     ordered_users = User.ascend_by_orders_total
     ordered_users.count.should eq(5)
     names = ordered_users.map(&:name)
@@ -21,13 +21,13 @@ describe Searchlogic::Conditions::Joins do
   end
 
   it "orders descending by associated column with singular name" do 
-    ordered_users = User.descend_by_order_total
+    ordered_users = User.descend_by_order__total
     ordered_users.count.should eq(5)
     ordered_users_names = ordered_users.map(&:name)
     ordered_users_names.should eq(["noorder", "Tren", "John", "Ben", "James"].reverse)
   end
 
-  xit "orders ascending by associations in method" do 
+  it "orders ascending by associations in method" do 
     users = User.ascend_by_orders_line_items_price
     users.count.should eq(8)
     names = users.map(&:name)
