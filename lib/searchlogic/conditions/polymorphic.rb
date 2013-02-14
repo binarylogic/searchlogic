@@ -9,18 +9,23 @@ module Searchlogic
 
       private
         def applicable? 
-          !(klass.reflect_on_all_associations.map(&:options).flatten.find{|association| association[:polymorphic]}).nil?
+          polymorphic_association && method_name.to_s.include?(polymorphic_association.name.to_s)
         end
 
         def polymorphic_association_name
           klass.reflect_on_all_associations.map{ |a| a.name if a.options[:polymorphic]}.compact.first.to_s
         end
+
         def association_klass
           method_parts = method_name.to_s.split("_type_")
           method_parts[0].split(polymorphic_association_name + "_").last.camelize.constantize
         end
         def new_method
           method_parts = method_name.to_s.split("_type_").last
+        end
+
+        def polymorphic_association
+          klass.reflect_on_all_associations.flatten.detect{|association| association.options[:polymorphic]}
         end
     end
   end

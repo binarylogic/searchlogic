@@ -2,9 +2,7 @@ module Searchlogic
   module Conditions
     class Joins < Condition
       DELIMITER = "__"
-      def initialize(*args)
-        super
-      end
+
       def scope
         return nil unless applicable?
         method_parts = method_name.to_s.split(DELIMITER)

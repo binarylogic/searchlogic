@@ -5,7 +5,6 @@ module Searchlogic
         if applicable?
           association = find_association
           method_without_association = method_name.to_s.split(association + "_").join
-          binding.pry
           klass.joins(association.pluralize.to_sym).send(method_without_association)            
         end
       end
