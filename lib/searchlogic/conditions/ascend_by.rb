@@ -9,6 +9,7 @@ module Searchlogic
       end
 
       private
+
         def applicable?
           !(/ascend_by_/ =~ method_name).nil?
         end

@@ -5,6 +5,7 @@ module Searchlogic
       def scope
         if applicable?
           sort_on = find_sort_on(method_name)
+          binding.pry
           klass.order("#{sort_on} DESC") 
         end
       end

@@ -42,7 +42,6 @@ module Searchlogic
           GreaterThanOrEqualTo,
           LessThanOrEqualTo,
           Oor,
-          OrderByAssociation,
           Joins,
           Equals,
           BeginsWith,
