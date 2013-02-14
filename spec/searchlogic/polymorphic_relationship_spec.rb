@@ -2,17 +2,18 @@ require 'spec_helper'
 
 describe Searchlogic::Conditions::Polymorphic do 
   before(:each) do 
-    @james = User.create(:name => "James")
-    @ben = User.create(:name=>"Ben")
-    @a1 = Audit.create
-    @a2 = Audit.create
-    @u1 = User.create(:audits => [@a1])
-    @u2 = Company.create(:audits => [@a2])
+    @a1 = Audit.create(:name => "James' Audit")
+    @a2 = Audit.create(:name => "Ben's Audit")
+    @james = User.create(:name => "James", :audits => [@a1])
+    @ben = User.create(:name=>"Ben", :audits => [@a2])
+
   end
 
-  xit "finds all other users besides partial name" do 
-    # find_users = User.name_not_like("am")
-    # not_ben = find_users.map(&:name)
-    # not_ben.should eq(["Ben"])
+  it "finds all other users besides partial name" do 
+    audits = Audit.auditable_user_type_name_equals("James")
+    audits.count.should eq(1)
+    names = audits.map(&:name)
+    names.first.should eq("James' Audit")
   end
+  
 end

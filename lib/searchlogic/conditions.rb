@@ -37,6 +37,7 @@ module Searchlogic
         #NOTE DO NOT FUCK WITH THIS ORDER
 
        [  NormalizeInput,
+          Polymorphic,
           Any,
           GreaterThanOrEqualTo,
           LessThanOrEqualTo,

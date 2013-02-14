@@ -9,6 +9,7 @@ ActiveRecord::Schema.define(:version => 1) do
   create_table :audits do |t|
     t.string :auditable_type
     t.integer :auditable_id
+    t.string :name
   end
 
   create_table :companies do |t|
