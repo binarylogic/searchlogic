@@ -33,5 +33,13 @@ describe Searchlogic::Conditions::Joins do
     names = users.map(&:name)
     names.should eq(["Tren", "Tren", "John", "John", "Ben", "Ben", "James", "James"])
   end
+
+  it "orders by associations at end of method" do
+    users = User.orders__line_items_ascend_by_id
+    users.count.should eq(8)
+    names = users.map(&:name)
+    names.should eq(["James", "James", "Ben", "Ben", "John", "John", "Tren", "Tren"])
+
+  end
 end
 

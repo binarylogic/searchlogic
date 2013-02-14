@@ -2,7 +2,6 @@ require 'spec_helper'
 
 describe Searchlogic::Conditions::Polymorphic do 
   before(:each) do 
-    Company.create(:name => "Concierge Live", :audits => [Audit.create()])
     @a1 = Audit.create(:name => "James' Audit")
     @a2 = Audit.create(:name => "Ben's Audit")
     @james = User.create(:name => "James", :audits => [@a1])

@@ -36,13 +36,14 @@ module Searchlogic
       def condition_klasses
         #NOTE DO NOT FUCK WITH THIS ORDER
 
-       [  NormalizeInput,
+
+       [  
+          NormalizeInput,
           Polymorphic,
           Any,
           GreaterThanOrEqualTo,
           LessThanOrEqualTo,
           Oor,
-          OrderByAssociation,
           Joins,
           Equals,
           BeginsWith,
