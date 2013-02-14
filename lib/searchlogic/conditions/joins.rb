@@ -16,20 +16,29 @@ module Searchlogic
       def scope
         return nil unless applicable?
         nested_scope = association.klass.send(new_method, value)
+        where_values = nested_scope.where_values
+        
         join_values = nested_scope.joins_values
-        if nested_scope.where_values.empty?
+        if where_values.empty?
           ##Must be an ordering if where values empty
-          klass.
-            joins(join_values.any? ? {join_name => join_values.first} : join_name.to_sym).
-            send(send_method)
+          generate_join_and_send_ordering_method(join_values)
         else
-          klass.
-            joins(join_values.any? ? {join_name => join_values.first} : join_name.to_sym).
-            where(nested_scope.where_values.first).uniq
+          generate_join_with_where_values(where_values.first, join_values)
         end
       end
 
       private
+
+        def generate_join_and_send_ordering_method(join_values)
+          klass.
+            joins(join_values.any? ? {join_name => join_values.first} : join_name.to_sym).
+            send(send_method)          
+        end
+        def generate_join_with_where_values(where_values, join_values)
+          klass.
+            joins(join_values.any? ? {join_name => join_values.first} : join_name.to_sym).
+            where(where_values).uniq          
+        end
         def applicable?
           !(/#{DELIMITER}/.match(method_name).nil?) || match_ordering
         end
