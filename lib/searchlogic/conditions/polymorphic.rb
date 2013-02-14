@@ -3,7 +3,7 @@ module Searchlogic
     class Polymorphic < Condition
       def scope
         if applicable?
-          association_klass.send(new_method, value).map{|returned_obj| returned_obj.send(klass.name.downcase.pluralize.to_sym)}.flatten
+          association_klass.send(new_method, value).map{|returned_obj| returned_obj.send(klass_symbol)}.flatten
         end
       end
 
@@ -26,6 +26,9 @@ module Searchlogic
 
         def polymorphic_association
           klass.reflect_on_all_associations.flatten.detect{|association| association.options[:polymorphic]}
+        end
+        def klass_symbol
+          klass.name.downcase.pluralize.to_sym
         end
     end
   end
