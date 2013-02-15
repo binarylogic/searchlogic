@@ -16,12 +16,10 @@ module Searchlogic
       def scope
         return nil unless applicable?
         nested_scope = association.klass.send(new_method, value)
-        where_values = nested_scope.where_values
-        
+        where_values = nested_scope.where_values 
         join_values = nested_scope.joins_values
         if where_values.empty?
-          ##Must be an ordering if where values empty
-          generate_join_and_send_ordering_method(join_values)
+          generate_join_and_send_method(join_values)
         else
           generate_join_with_where_values(where_values.first, join_values)
         end
@@ -29,7 +27,7 @@ module Searchlogic
 
       private
 
-        def generate_join_and_send_ordering_method(join_values)
+        def generate_join_and_send_method(join_values)
           klass.
             joins(join_values.any? ? {join_name => join_values.first} : join_name.to_sym).
             send(send_method)          
