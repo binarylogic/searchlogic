@@ -1,5 +1,7 @@
 require 'searchlogic/conditions/condition'
 Dir[File.dirname(__FILE__) + '/conditions/*.rb'].each { |f| require(f) }
+Dir[File.dirname(__FILE__) + '/search/*.rb'].each { |f| require(f) }
+
 require 'pry'
 module Searchlogic
   module Conditions

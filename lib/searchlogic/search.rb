@@ -1,18 +1,13 @@
-require 'searchlogic/search/base/base'
-Dir[File.dirname(__FILE__) + '/conditions/*.rb'].each { |f| require(f) }
-require 'pry'
+Dir[File.dirname(__FILE__) + '/search/*.rb'].each { |f| require(f) }
 module Searchlogic
   module Search
-    module Base
-    private
-      def method_missing(method, *args, &block) 
-        generate_search(method, args, &block)
-      end
-
-
-      def generate_search(method, args, &block)
-        binding.pry
-      end
+    private 
+    def method_missing(method, *args, &block)
+      generate_search_proxy(self, method, args) || super
     end
-  end
+    def generate_search_proxy(klass, method, args)
+      return nil unless method == :search
+      Search::SearchProxy.new(klass, method, args)
+    end
+  end 
 end
