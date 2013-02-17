@@ -7,7 +7,7 @@ module Searchlogic
     end
     def generate_search_proxy(klass, method, args)
       return nil unless method == :search
-      Search::SearchProxy.new(klass, method, args)
+      Search::SearchProxy.new(klass, args.first)
     end
   end 
 end

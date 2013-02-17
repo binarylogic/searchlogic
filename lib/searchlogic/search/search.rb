@@ -4,6 +4,7 @@ module Searchlogic
       include MethodMissing
       include AttributesReaderWriters 
       include Base
+      include ChainedConditions
     end
   end
 end

@@ -2,8 +2,8 @@ module Searchlogic
   module Conditions
     class Aliases < Condition
       def scope
-        if match_alias
-          case match_alias[0]
+        if Aliases.match_alias(method_name)
+          case alias_used
           when "eq", "is"
             replace_and_send("equals")
           when  "not_equal_to", "is_not", "not", "ne"
@@ -38,14 +38,18 @@ module Searchlogic
         end
       end
 
+      def self.match_alias(method)
+          /(is|eq|not_equal_to|is_not|not|ne|lt|before|lte|gt|after|gte|contains|includes|does_not_include|bw|not_begin_with|ew|not_end_with|nil|not_nil|present)$/.match(method)
+      end
+
       private
-        def match_alias
-          /(is|eq|not_equal_to|is_not|not|ne|lt|before|lte|gt|after|gte|contains|includes|does_not_include|bw|not_begin_with|ew|not_end_with|nil|not_nil|present)$/.match(method_name)
-        end
+
         def replace_and_send(method)
-          malias = match_alias[0]
-          method = method_name.to_s.gsub(malias, method)
+          method = method_name.to_s.gsub(alias_used, method)
           klass.send(method, value)
+        end
+        def alias_used
+          Aliases.match_alias(method_name)[0]
         end
     end
   end

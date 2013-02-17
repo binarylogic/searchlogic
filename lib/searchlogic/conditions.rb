@@ -32,13 +32,11 @@ module Searchlogic
       end
 
       def scopeable?(method)
-        /(#{joined_condition_klasses})/.match(method)
+        !!(/(#{joined_condition_klasses})/.match(method)) || !!(Aliases.match_alias(method))
       end
 
       def condition_klasses
         #NOTE DO NOT FUCK WITH THIS ORDER
-
-
        [  
           NormalizeInput,
           Polymorphic,

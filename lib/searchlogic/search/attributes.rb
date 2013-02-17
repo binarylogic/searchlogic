@@ -1,9 +1,9 @@
 module Searchlogic
   module Search
-    class SearchProxy
+    class SearchProxy < BasicObject
         module AttributesReaderWriters
           def conditions
-            @conditions
+            @conditions ||={}
           end
           def klass
             @klass

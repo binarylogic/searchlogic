@@ -3,8 +3,7 @@ module Searchlogic
   module Search
     class SearchProxy < BasicObject
       module Base
-        def initialize(klass, method, conditions)
-          return nil unless method == :search
+        def initialize(klass, conditions)
           @klass = klass
           @method = method
           @conditions = conditions

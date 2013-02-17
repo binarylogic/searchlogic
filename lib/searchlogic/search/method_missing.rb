@@ -3,16 +3,14 @@ module Searchlogic
     class SearchProxy < BasicObject
       module MethodMissing
         private
-        def method_missing(method, *args, &block)
-          ::Object.send(:binding).pry
-          @attributes ||= {}
-          scope_name = method.to_s.gsub(/=$/, '')
-          if klass.respond_to?(scope_name)
-            @attributes[method.to_s.gsub(/=$/, '')] = args.first
-          elsif @attributes.key?(method)
-            @attributes[method]
-          else
-            chained_scopes.send(method, *args, &block)
+          def method_missing(method, *args, &block)
+            scope_name = method.to_s.gsub(/=$/, '')
+            if klass.respond_to?(scope_name) && scope_name != "all"
+              @conditions[scope_name] = args.first
+            # elsif @conditions.key?(method)
+              # @conditions.merge(args)
+            else
+              chained_conditions
           end
         end
       end
