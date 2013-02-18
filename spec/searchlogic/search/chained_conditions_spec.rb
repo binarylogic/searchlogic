@@ -15,7 +15,6 @@ describe Searchlogic::Search::SearchProxy::ChainedConditions do
     search.all.count.should eq(1)
   end 
 
-
   it "chains multiple scopes" do 
     search = User.search
     search.all.count.should eq(4)
@@ -58,12 +57,9 @@ describe Searchlogic::Search::SearchProxy::ChainedConditions do
     search.all.count.should eq(2)
     search.first.username.should eq(["Tren", "Ben"])
   end
-  it "raises NoMethodError when calling something that's not a scope" do 
 
 
-  end
   describe "no arguement methods" do 
-
     it "returns all users with non nil username " do 
       User.all.count.should eq(4)
       search = User.search(:username_not_nil => true)

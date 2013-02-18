@@ -20,4 +20,5 @@ describe Searchlogic::Conditions::DescendBy do
     user_order_names = user_orders.map(&:name)
     user_order_names.should eq(["James", "Ben", "James", "Tren", "John", "Jon"])
   end
+
 end

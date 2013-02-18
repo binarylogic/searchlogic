@@ -1,4 +1,3 @@
-require 'pry'
 module Searchlogic
   module Conditions
     class DescendBy < Condition

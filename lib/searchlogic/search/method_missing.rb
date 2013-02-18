@@ -6,9 +6,11 @@ module Searchlogic
           def method_missing(method, *args, &block)
             scope_name = method.to_s.gsub(/=$/, '').to_sym
               ###TODO WHITELIST ALLOWED SCOPES with Eq sign                           
-                                                                            # ::Object.send(:binding).pry
+
             if !!(/=$/ =~ method) && !!klass.column_names.detect{|kcn| scope_name.to_s.include?(kcn)}
               conditions[scope_name] = args.first
+            elsif order = ordering
+              conditions_with_ordering(order)
             elsif klass.respond_to?(method.to_sym) && !scope?(method)
               ###TODO trigger this block if klass responds to method && method not a scope
               delegate(method, args, &block)
@@ -33,6 +35,9 @@ module Searchlogic
 
           def scope?(method)
             /(#{klass.column_names.join("|")})[_]/ =~ method 
+          end
+          def ordering
+            conditions.find{|c, v| (c.to_sym == :ascend_by) || (c.to_sym == :descend_by) }
           end
       end
     end

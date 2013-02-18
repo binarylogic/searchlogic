@@ -6,6 +6,7 @@ module Searchlogic
       include Base
       include ChainedConditions
       include Delegate
+      include Ordering
     end
   end
 end
