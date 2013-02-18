@@ -13,3 +13,5 @@ describe Searchlogic::Search::SearchProxy::Base do
     search.conditions.should eq({:name_like => "James", :age_gt => 20, :username_eq => "jvans1"})
   end
 end
+
+

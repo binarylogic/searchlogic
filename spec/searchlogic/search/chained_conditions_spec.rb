@@ -15,10 +15,6 @@ describe Searchlogic::Search::SearchProxy::ChainedConditions do
     search.all.count.should eq(1)
   end 
 
-  it "returns the count" do 
-    search = User.search(:username_is => "jvans1")
-    search.count.should eq(2)
-  end
 
   it "chains multiple scopes" do 
     search = User.search

@@ -5,7 +5,7 @@ module Searchlogic
       include Attributes 
       include Base
       include ChainedConditions
-      include CountConditions
+      include Delegate
     end
   end
 end
