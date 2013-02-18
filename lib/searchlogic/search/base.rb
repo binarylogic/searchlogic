@@ -1,4 +1,3 @@
-require "pry"
 module Searchlogic
   module Search
     class SearchProxy < BasicObject
@@ -6,7 +5,7 @@ module Searchlogic
         def initialize(klass, conditions)
           @klass = klass
           @method = method
-          @conditions = conditions
+          @conditions = conditions ||= {}
         end
       end
     end

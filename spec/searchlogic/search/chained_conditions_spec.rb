@@ -11,9 +11,7 @@ describe Searchlogic::Search::SearchProxy::Base do
   describe "Proxy Object" do 
     it "sets conditions on initialize" do
       search = User.search(:name_like => "James", :age_gt => 20, :username_eq => "jvans1")
-      james = search.all
-      name = james.map(&:name)
-      name.should eq(["James Vanneman"])
+      search.conditions.should eq({:name_like => "James", :age_gt => 20, :username_eq => "jvans1"})
     end
   end
 end

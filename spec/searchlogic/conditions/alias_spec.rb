@@ -112,5 +112,9 @@ describe Searchlogic::Conditions::Aliases do
       names = nil_ages.map(&:name)
       names.should eq(["Jon", "aJJ"])
     end
+    it "bw == beginswith" do
+      begins_j = User.name_bw("J")
+      begins_j.map(&:name).should eq(["James", "Jon"])
+    end
   end
 end

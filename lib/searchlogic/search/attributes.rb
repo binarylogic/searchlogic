@@ -1,7 +1,7 @@
 module Searchlogic
   module Search
     class SearchProxy < BasicObject
-      module AttributesReaderWriters
+      module Attributes
         def conditions
           @conditions ||={}
         end
