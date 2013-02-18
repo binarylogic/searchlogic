@@ -16,7 +16,6 @@ describe Searchlogic::Search::SearchProxy::Delegate do
   it "delegates with arguements" do 
     search = User.search(:username_is => "jvans1")
     james = search.find_by_name("James Vanneman")
-    # james.name.should eq(1)
     james.name.should eq("James Vanneman")
   end
 

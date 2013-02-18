@@ -36,6 +36,6 @@ describe Searchlogic::Search::SearchProxy::ChainedConditions do
     search = User.search(:name_ew => "man")
     search.name_bw.should be_nil
   end
-
+  
  
 end

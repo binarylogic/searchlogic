@@ -1,11 +1,9 @@
 require 'spec_helper'
 
 describe Searchlogic::Search::SearchProxy::Attributes do 
-#   before(:each) do 
-#     User.create(:name=>"James", :age =>20, :username => "jvans1" )
-#     User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
-#     User.create(:name => "Tren")
-#     User.create(:name=>"Ben")
-#   end
+  it "defaults conditions to an emtpy hash" do 
 
+    search = User.search
+    search.conditions.should eq({})
+  end
 end
