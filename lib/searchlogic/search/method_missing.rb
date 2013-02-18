@@ -14,8 +14,6 @@ module Searchlogic
             elsif !!klass.column_names.detect{|kcn| scope_name.to_s.include?(kcn)}
               ###TODO Use whitelist scope names here w/ equal sign
               read_or_write_condition(scope_name, args)
-            elsif method.to_sym == :all
-              chained_conditions
             else
               super
             end
@@ -24,6 +22,7 @@ module Searchlogic
           def scope?(method)
             /(#{klass.column_names.join("|")})[_]/ =~ method 
           end
+          
           def ordering
             conditions.find{|c, v| (c.to_sym == :ascend_by) || (c.to_sym == :descend_by) }
           end
