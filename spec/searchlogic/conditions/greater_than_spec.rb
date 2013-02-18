@@ -9,7 +9,7 @@ describe Searchlogic::Conditions::GreaterThan do
   end
 
   it "finds all other users greater than" do 
-    find_users = User.age_greater_than(26).map { |u| u.name }
+    find_users = User.age_gt(26).map { |u| u.name }
     find_users.should eq(["Ben", "Tren"])
   end
 end

@@ -7,26 +7,27 @@ describe Searchlogic::Search::SearchProxy::ChainedConditions do
     User.create(:name => "Tren")
     User.create(:name=>"Ben")
   end
-  it "sets conditions with attribute writers" do 
-      search = User.search
-      search.name_contains = "James"
-      search.age_lt = 21
-      search.username_eq = "jvans1"
-      james = search.all 
-      james.count.should eq(1)
-      name = james.map(&:name)
-      name.should eq(["James"])
+
+  it "chains scopes" do
+    search = User.search(:name_like => "James")
+    search.all.count.should eq(2)
+    search.age_gt(20)
+    search.all.count.should eq(1)
+  end 
+
+  it "returns the count" do 
+    search = User.search(:username_is => "jvans1")
+    search.count.should eq(2)
   end
 
-  it "overrides conditions with attribute writers" do 
-    search = User.search(:name_bw => "Ja")
-    search.all.map(&:name).should eq(["James", "James Vanneman"])
-    search.name_bw = "B"
-    ben = search.all
-    ben.count.should eq(1)
-    ben.map(&:name).should eq(["Ben"])
+  it "chains multiple scopes" do 
+    search = User.search
+    search.all.count.should eq(4)
+    search.name_like("James").age_eq(20)
+    search.all.count.should eq(1)
+    search.all.map(&:name).should eq(["James"])
   end
-  
+
   it "should return nil for empty condition" do 
     search = User.search(:name_ew => "man")
     search.name_bw.should be_nil
@@ -44,18 +45,27 @@ describe Searchlogic::Search::SearchProxy::ChainedConditions do
     cond_hash1.should eq(cond_hash2)
   end
 
-  xit "Calling All without conditions returns all users" do 
+  it "Calling All without conditions returns all users" do 
     search = User.search
     search.all.count.should eq(4)
   end
-  ##NOTE support this?
-  xit "returns users with nil attributes when explicity set" do 
+  it "returns users with one condition set" do 
+    search = User.search(:age_lt => 21)
+    james = search.all 
+    james.count.should eq(1)
+    james.map(&:name).should eq(["James"])
+  end
+
+  it "returns users with nil attributes when explicity set" do 
     search = User.search(:username_eq => "James")
     search.username_eq = nil
     search.all.count.should eq(2)
     search.first.username.should eq(["Tren", "Ben"])
   end
+  it "raises NoMethodError when calling something that's not a scope" do 
 
+
+  end
   describe "no arguement methods" do 
 
     it "returns all users with non nil username " do 
