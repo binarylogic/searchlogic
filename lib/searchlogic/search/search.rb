@@ -7,6 +7,7 @@ module Searchlogic
       include ChainedConditions
       include Delegate
       include Ordering
+      include ReaderWriter
     end
   end
 end

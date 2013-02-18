@@ -23,12 +23,6 @@ describe Searchlogic::Search::SearchProxy::ChainedConditions do
     search.all.map(&:name).should eq(["James"])
   end
 
-  it "should return nil for empty condition" do 
-    search = User.search(:name_ew => "man")
-    search.name_bw.should be_nil
-  end
-
-
   it "doesn't remove conditions from object" do 
     search = User.search
     search.name_contains = "James"

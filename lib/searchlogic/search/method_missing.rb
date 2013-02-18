@@ -5,8 +5,7 @@ module Searchlogic
         private
           def method_missing(method, *args, &block)
             scope_name = method.to_s.gsub(/=$/, '').to_sym
-              ###TODO WHITELIST ALLOWED SCOPES with Eq sign                           
-
+              ###TODO WHITELIST ALLOWED SCOPES with Eq sign                                        
             if !!(/=$/ =~ method) && !!klass.column_names.detect{|kcn| scope_name.to_s.include?(kcn)}
               conditions[scope_name] = args.first
             elsif order = ordering
@@ -15,22 +14,13 @@ module Searchlogic
               ###TODO trigger this block if klass responds to method && method not a scope
               delegate(method, args, &block)
             elsif !!klass.column_names.detect{|kcn| scope_name.to_s.include?(kcn)}
-              ###TODO Use whitelist scope names here w/out equal sign
-              args.empty? ? return_value(scope_name) : assign_condition(scope_name, args.first)
+              ###TODO Use whitelist scope names here w/ equal sign
+              read_or_write_condition(scope_name, args) 
             elsif method.to_sym == :all
               chained_conditions
             else
               super
             end
-          end
-
-          def return_value(key)
-            conditions[key]
-          end
-
-          def assign_condition(cond_name, value)
-            conditions[cond_name] = value
-            self
           end
 
           def scope?(method)
