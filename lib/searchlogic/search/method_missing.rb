@@ -5,14 +5,16 @@ module Searchlogic
         private
           def method_missing(method, *args, &block)
             scope_name = method.to_s.gsub(/=$/, '')
-            if klass.respond_to?(scope_name) && scope_name != "all"
-              @conditions[scope_name] = args.first
-            # elsif @conditions.key?(method)
-              # @conditions.merge(args)
+              ###TODO WHITELIST ALLOWED SCOPES
+            if /=$/ =~ method && klass.column_names.detect{|kcn| scope_name.include?(kcn)}
+
+              conditions[scope_name] = args.first
+            elsif conditions[scope_name]
+              conditions[scope_name]
             else
               chained_conditions
+            end
           end
-        end
       end
     end
   end
