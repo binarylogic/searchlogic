@@ -15,8 +15,6 @@ module Searchlogic
               chained_conditions
             end
           end
-
-
           private
             def contains_column_referenced_in_method?(method)
               

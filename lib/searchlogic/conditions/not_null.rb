@@ -2,9 +2,14 @@ module Searchlogic
   module Conditions
     class NotNull < Condition
       def scope
-        if applicable?
+
+        if applicable? && args.first != false          
           find_column
           klass.where("#{table_name}.#{column_name} is not NULL")
+        elsif applicable? && args.first == false
+          send_to_null
+        else
+          false
         end
       end
 
@@ -17,6 +22,9 @@ module Searchlogic
         end
         def applicable? 
           !(/_not_null$/ =~ method_name).nil?
+        end
+        def send_to_null
+          klass.send(find_column + "_null")
         end
     end
   end

@@ -57,6 +57,7 @@ module Searchlogic
           LessThan,
           NotNull,
           Null,
+          NotBlank,
           Blank,
           AscendBy,
           DescendBy,
