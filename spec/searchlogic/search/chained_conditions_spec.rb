@@ -23,6 +23,22 @@ describe Searchlogic::Search::SearchProxy::ChainedConditions do
     search.all.map(&:name).should eq(["James"])
   end
 
+  it "ignores nil on mass assignment" do 
+    search = User.search(:username_eq => nil, :name_like =>"James")
+    search.all.count.should eq(2)
+    search.all.map(&:name).should eq(["James", "James Vanneman"])
+  end
+  it "finds nil conditions on explicit assignment" do 
+    search = User.search
+    search.username = nil 
+    search.count.should eq(2)
+    search.all.map(&:name).should eq(["Tren", "Ben"])
+  end
+
+  it "finds with blank assignment" do 
+
+
+  end
   it "doesn't remove conditions from object" do 
     search = User.search
     search.name_contains = "James"
@@ -60,7 +76,6 @@ describe Searchlogic::Search::SearchProxy::ChainedConditions do
       search.all.count.should eq(2)
       search.all.map(&:name).should eq(["James", "James Vanneman"])
     end
-
     it "returns all users with nil username when value set to false" do 
       search = User.search(:username_not_nil => false)
       search.all.count.should eq(2)
@@ -85,10 +100,22 @@ describe Searchlogic::Search::SearchProxy::ChainedConditions do
       search.all.count.should eq(2)
       search.all.map(&:name).should eq(["Tren", "Ben"])
     end
+
     it "returns all users without blank names when value set to false" do 
       search = User.search(:username_blank => false)
       search.all.count.should eq(2)
       search.all.map(&:name).should eq(["James", "James Vanneman"])
+    end
+    it "returns all users with blank name" do 
+      search = User.search(:username_not_blank => true)
+      search.all.count.should eq(2)
+      search.all.map(&:name).should eq(["James", "James Vanneman"])
+    end
+    
+    it "returns all users without blank names when value set to false" do 
+      search = User.search(:username_not_blank => false)
+      search.all.count.should eq(2)
+      search.all.map(&:name).should eq(["Tren", "Ben"])
     end
   end
 end

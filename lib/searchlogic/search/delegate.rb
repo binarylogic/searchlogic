@@ -3,6 +3,7 @@ module Searchlogic
     class SearchProxy < BasicObject
       module Delegate
         def delegate(method_name, args, &block)
+
           if conditions.empty?
             send_delegated_method(method_name, klass, args, &block)
           else

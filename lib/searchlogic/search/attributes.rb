@@ -3,7 +3,7 @@ module Searchlogic
     class SearchProxy < BasicObject
       module Attributes
         def conditions
-          @conditions ||={}
+          @conditions
         end
         def klass
           @klass
