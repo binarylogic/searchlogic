@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe Searchlogic::Conditions::Equals do
   before(:each) do 
-    @james = User.create(:name=>"James", :age=>28)
-    @ben = User.create(:name=> "Ben")
+    User.create(:name=>"James", :age=>28)
+    User.create(:name=> "Ben")
   end
 
   describe "Equals Query on Single Column" do 

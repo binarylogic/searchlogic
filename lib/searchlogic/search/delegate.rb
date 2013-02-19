@@ -14,6 +14,9 @@ module Searchlogic
           def send_delegated_method(method, klass, args, &block)
             args.empty? ? klass.send(method) : klass.send(method, args, &block)
           end
+
+          ##Have Sanitized conditions in this class so they're only changed once
+          ##the method has been delegated and the original search object never changes
           def sanitized_conditions
             implicit_equals(replace_nils)
           end

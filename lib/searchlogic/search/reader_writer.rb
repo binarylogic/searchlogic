@@ -10,7 +10,6 @@ module Searchlogic
           conditions[key] = value
           self
         end
-
         def read_condition(key)
           conditions[key]
         end

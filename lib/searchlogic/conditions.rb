@@ -1,8 +1,8 @@
 require 'searchlogic/conditions/condition'
+require 'chronic'
 Dir[File.dirname(__FILE__) + '/conditions/*.rb'].each { |f| require(f) }
 Dir[File.dirname(__FILE__) + '/search/*.rb'].each { |f| require(f) }
 
-require 'pry'
 module Searchlogic
   module Conditions
       def respond_to?(*args)
@@ -20,15 +20,22 @@ module Searchlogic
       
     private
       def method_missing(method, *args, &block) 
+        return memoized_scope[method] if memoized_scope[method]
         generate_scope(method, args, &block) || super
       end
 
       def generate_scope(method, args, &block)
         condition_klasses.each do |ck|
           scope = ck.generate_scope(self, method, args, &block)
+          memoized_scope[method] = scope 
           return scope if scope
         end
         nil
+      end
+
+      def memoized_scope
+        {
+        }
       end
 
       def scopeable?(method)

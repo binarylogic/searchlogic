@@ -10,7 +10,6 @@ module Searchlogic
           klass.where("#{table_name}.#{column_name} = ?", values)
         end
       end
-
       private
         def values
           args.first
