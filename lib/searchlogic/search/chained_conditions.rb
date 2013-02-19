@@ -3,9 +3,9 @@ module Searchlogic
     class SearchProxy < BasicObject
       module ChainedConditions
         ##TODO change chaing for 0 conditions 1, and many
-        def chained_conditions(parsed_conditions = conditions)          
+        def chained_conditions(sanitized_conditions = self.conditions)          
           return klass.all if conditions.empty?
-          return chained_scoped_conditions(parsed_conditions)
+          return chained_scoped_conditions(sanitized_conditions)
         end
 
         private

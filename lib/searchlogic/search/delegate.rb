@@ -1,22 +1,19 @@
+require 'pry'
 module Searchlogic
   module Search
     class SearchProxy < BasicObject
       module Delegate
         def delegate(method_name, args, &block)
-
+          args = nil if args.empty?
           if conditions.empty?
-            send_delegated_method(method_name, klass, args, &block)
+            klass.send(method_name, args, &block)
           else
-            send_delegated_method(method_name, chained_conditions(sanitized_conditions), args, &block)            
+            chained_conditions(sanitized_conditions).send(method_name, args, &block)            
           end
         end
         private 
-          def send_delegated_method(method, klass, args, &block)
-            args.empty? ? klass.send(method) : klass.send(method, args, &block)
-          end
-
-          ##Have Sanitized conditions in this class so they're only changed once
-          ##the method has been delegated and the original search object never changes
+          ##Sanitized conditions in this class so they're only changed once
+          ##the method has been delegated. This allows for the original search object to stay the same
           def sanitized_conditions
             implicit_equals(replace_nils)
           end

@@ -116,5 +116,6 @@ describe Searchlogic::Conditions::Aliases do
       begins_j = User.name_bw("J")
       begins_j.map(&:name).should eq(["James", "Jon"])
     end
+
   end
 end

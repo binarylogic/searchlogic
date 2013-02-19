@@ -7,11 +7,11 @@ module Searchlogic
           @method = method
           @conditions = ignore_nils(conditions)
         end
-
-        def ignore_nils(conditions)
-          return {} unless conditions
-          conditions.select{|k, v| !v.nil? } 
-        end
+        private
+          def ignore_nils(conditions)
+            return {} unless conditions
+            conditions.select{|k, v| !v.nil? } 
+          end
       end
     end
   end
