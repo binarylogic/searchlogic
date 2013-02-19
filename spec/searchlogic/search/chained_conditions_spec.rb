@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Searchlogic::Search::SearchProxy::ChainedConditions do 
   before(:each) do 
-    User.create(:name=>"James", :age =>20, :username => "jvans1" )
+    User.create(:name=>"James", :age =>20, :username => "jvans1", :email => "jvannem@gmail.com" )
     User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
     User.create(:name => "Tren")
     User.create(:name=>"Ben")
@@ -35,15 +35,34 @@ describe Searchlogic::Search::SearchProxy::ChainedConditions do
     search.all.map(&:name).should eq(["Tren", "Ben"])
   end
 
-  xit "finds with blank assignment" do 
+  it "find nils with explicit assignment and other args" do 
+    search = User.search(:name_contains => "James")
+    search.email = nil 
+    search.count.should eq(1)
+    search.all.map(&:name).should eq(["James Vanneman"  ])
 
+  end
+
+  it "allows ommission of 'eq' on attributes" do 
+    search = User.search(:name => "James")
+    james = search.all
+    james.count.should eq(1)
+    james.first.name.should eq("James")
+
+  end
+
+  it "finds with blank assignment" do 
+    search = User.search(:username_blank => true)
+    search.count.should eq(2)
+    search.all.map(&:name).should eq(["Tren", "Ben"])
 
   end
   it "doesn't remove conditions from object" do 
     search = User.search
     search.name_contains = "James"
     search.age_lt = 21
-    search.username_eq = "jvans1"
+    search.username = "jvans1"
+    search.email = nil 
     cond_hash1 = search.conditions
     james = search.all 
     cond_hash2 = search.conditions
