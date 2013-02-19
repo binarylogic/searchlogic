@@ -35,7 +35,7 @@ describe Searchlogic::Search::SearchProxy::ChainedConditions do
     search.all.map(&:name).should eq(["Tren", "Ben"])
   end
 
-  it "finds with blank assignment" do 
+  xit "finds with blank assignment" do 
 
 
   end
@@ -60,14 +60,6 @@ describe Searchlogic::Search::SearchProxy::ChainedConditions do
     james.count.should eq(1)
     james.map(&:name).should eq(["James"])
   end
-
-  it "returns users with nil attributes when explicity set" do 
-    search = User.search(:username_eq => "James")
-    search.username_eq = nil
-    search.all.count.should eq(2)
-    search.first.username.should eq(["Tren", "Ben"])
-  end
-
 
   describe "no arguement methods" do 
     it "returns all users with non nil username " do 

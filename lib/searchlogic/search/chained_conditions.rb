@@ -3,14 +3,14 @@ module Searchlogic
     class SearchProxy < BasicObject
       module ChainedConditions
         ##TODO change chaing for 0 conditions 1, and many
-        def chained_conditions          
+        def chained_conditions(parsed_conditions = conditions)          
           return klass.all if conditions.empty?
-          return chained_scoped_conditions
+          return chained_scoped_conditions(parsed_conditions)
         end
 
         private
-        def chained_scoped_conditions
-          conditions_for_results = conditions.clone
+        def chained_scoped_conditions(conditions_to_chain)
+          conditions_for_results = conditions_to_chain.clone
           first_params = conditions_for_results.shift          
           initial_scope = klass.send(first_params[0], first_params[1]) 
           if conditions_for_results.empty?
@@ -20,13 +20,6 @@ module Searchlogic
               scope.send(conditions_value[0], conditions_value[1])
             end
           end
-        end
-
-        def replace_nil(conditions_value)
-          return conditions_value if conditions_value.last
-
-          klass.column_names.select{|kcn| conditions_value.first.to_s.include?(kcn)}                                                                             
-
         end
       end
     end
