@@ -1,7 +1,9 @@
-$:.push File.expand_path("../lib", __FILE__)
-require 'searchlogic'
+$:.push File.expand_path("../lib", __FILE__) 
 require 'database_cleaner'
-require 'debugger'
+require 'pry'
+require 'active_record'
+require 'chronic'
+require 'searchlogic'
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
 ActiveRecord::Base.configurations = true
 ActiveRecord::Schema.verbose = false
@@ -150,4 +152,3 @@ Spec::Runner.configure do |config|
   end
 
 end
-

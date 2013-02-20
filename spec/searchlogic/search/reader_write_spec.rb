@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Searchlogic::Search::SearchProxy::ChainedConditions do 
+describe Searchlogic::Search::ReaderWriter do 
   before(:each) do 
     User.create(:name=>"James", :age =>20, :username => "jvans1" )
     User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
@@ -9,12 +9,12 @@ describe Searchlogic::Search::SearchProxy::ChainedConditions do
   end
 
   it "has readers for conditions" do
-    search = User.search(:name_ew => "man")
+    search = User.searchlogic(:name_ew => "man")
     search.name_ew.should eq("man")
   end
 
   it "sets conditions with attribute writers" do 
-      search = User.search
+      search = User.searchlogic
       search.name_contains = "James"
       search.age_lt = 21
       search.username_eq = "jvans1"
@@ -25,7 +25,7 @@ describe Searchlogic::Search::SearchProxy::ChainedConditions do
   end
 
   it "overrides conditions with attribute writers" do 
-    search = User.search(:name_bw => "Ja")
+    search = User.searchlogic(:name_bw => "Ja")
     search.all.map(&:name).should eq(["James", "James Vanneman"])
     search.name_bw = "B"
     ben = search.all
@@ -33,7 +33,7 @@ describe Searchlogic::Search::SearchProxy::ChainedConditions do
     ben.map(&:name).should eq(["Ben"])
   end
   it "should return nil for empty condition" do 
-    search = User.search(:name_ew => "man")
+    search = User.searchlogic(:name_ew => "man")
     search.name_bw.should be_nil
   end
   

@@ -1,18 +1,12 @@
 module Searchlogic
-  module Search
-    class SearchProxy < BasicObject
-      module Base
-        def initialize(klass, conditions)
-          @klass = klass
-          @method = method
-          @conditions = ignore_nils(conditions)
-        end
-        private
-          def ignore_nils(conditions)
-            return {} unless conditions
-            conditions.select{|k, v| !v.nil? } 
-          end
-      end
+  class Base < BasicObject
+    def initialize(klass, conditions)
+      @klass = klass
+      @conditions = ignore_nils(conditions)
     end
+    private
+      def ignore_nils(conditions)
+        conditions.select{|k, v| !v.nil? } 
+      end
   end
 end

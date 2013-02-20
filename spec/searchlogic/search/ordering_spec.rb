@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Searchlogic::Search::SearchProxy::Ordering do 
+describe Searchlogic::Search::Ordering do 
   before(:each) do 
     User.create(:name=>"James", :age =>20, :username => "jvans1" )
     User.create(:name=>"Sarah", :age =>22, :username => "jvans1")
@@ -11,19 +11,19 @@ describe Searchlogic::Search::SearchProxy::Ordering do
   end
 
   it "ascend's by" do
-    search = User.search(:ascend_by => "id")
+    search = User.searchlogic(:ascend_by => "id")
     people = search.all
     people.count.should eq(6)
     people.map(&:name).should eq(["James", "Sarah", "John", "Jason", "Tren", "Ben"])
   end
   it "descend's by" do
-    search = User.search(:descend_by => "id")
+    search = User.searchlogic(:descend_by => "id")
     people = search.all
     people.count.should eq(6)
     people.map(&:name).should eq(["James", "Sarah", "John", "Jason", "Tren", "Ben"].reverse)
   end
   it "ordering containing other conditions" do 
-    search = User.search(:descend_by => "id", :username_eq => "jvans1", :age_gt => 21)
+    search = User.searchlogic(:descend_by => "id", :username_eq => "jvans1", :age_gt => 21)
     users = search.all
     users.map(&:name).should eq(["Jason", "John", "Sarah"])
   end
