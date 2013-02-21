@@ -15,6 +15,5 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::LessThan do
     users = User.created_at_before("1 year ago")
     users.count.should eq(2)
     users.map(&:name).should eq(["James", "Tren"])
-
   end
 end

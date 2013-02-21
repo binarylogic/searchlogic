@@ -2,7 +2,8 @@ module Searchlogic
   class Search < Base
     module ReaderWriter
       private 
-      def read_or_write_condition(scope_name, args)
+
+      def read_or_write_condition(scope_name, args)        
         args.empty? ? read_condition(scope_name) : write_condition(scope_name, args.first)
       end
       def write_condition(key, value)

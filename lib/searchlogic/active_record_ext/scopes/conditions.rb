@@ -1,3 +1,4 @@
+require Dir[File.dirname(__FILE__) + '/conditions/chronic_support.rb'].first
 require Dir[File.dirname(__FILE__) + '/conditions/condition.rb'].first
 Dir[File.dirname(__FILE__) + '/conditions/*.rb'].each { |f| require(f) }
 
@@ -23,7 +24,7 @@ module Searchlogic
             scope = ck.generate_scope(self, method, args, &block)
             if scope 
               memoized_scope[method] = scope 
-            return scope
+              return scope
             end
           end
           nil
@@ -36,6 +37,11 @@ module Searchlogic
         def scopeable?(method)
           !!(/(#{joined_condition_klasses})/.match(method)) || !!(Aliases.match_alias(method))
         end
+
+        def self.const_missing(const)
+          puts "#{const} is undefined in searchlogic"
+        end
+          
 
         def condition_klasses
           #NOTE DO NOT FUCK WITH THIS ORDER

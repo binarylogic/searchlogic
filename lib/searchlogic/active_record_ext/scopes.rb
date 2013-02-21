@@ -4,7 +4,7 @@ module Searchlogic
   module ActiveRecordExt
     module Scopes
       def self.included(klass)
-        klass.class_eval do 
+        klass.instance_eval do 
           extend Conditions
         end
       end

@@ -1,16 +1,18 @@
 require 'spec_helper'
 
-describe Searchlogic::ActiveRecordExt::ScopeProcedure::ClassMethods do 
+describe Searchlogic::Base do 
   before(:each) do 
     User.create(:name=>"James", :age =>20, :username => "jvans1", :email => "jvannem@gmail.com" )
     User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
     User.create(:name => "Tren")
     User.create(:name=>"Ben")
   end
-  it "creates a scope procedure" do 
-    User.scope_procedure(:cool){ User.name_like("James").age_gt(20)}
-    User.cool.count.should eq(1)
-    User.cool.first.name.should eq("James Vanneman")
-  end
-end
 
+  it "ignores nil on mass assignment" do 
+    search = User.searchlogic(:username_eq => nil, :name_like =>"James")
+    search.count.should eq(2)
+    search.all.map(&:name).should eq(["James", "James Vanneman"])
+  end
+
+
+end

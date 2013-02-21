@@ -6,11 +6,9 @@ module Searchlogic
           scope_name = method.to_s.gsub(/=$/, '').to_sym
           if order = ordering
             conditions_with_ordering(order)
-          elsif klass.respond_to?(method.to_sym) && !scope?(method)
-            ###TODO trigger this block if klass responds to method && method not a scope
+          elsif klass.respond_to?(method.to_sym) && !scope?(scope_name)
             delegate(method, args, &block)
-          elsif !!klass.column_names.detect{|kcn| scope_name.to_s.include?(kcn)}
-            ###TODO Use whitelist scope names
+          elsif column_name?(scope_name) || authorized_scope?(scope_name)
             read_or_write_condition(scope_name, args)
           else
             super
@@ -20,7 +18,7 @@ module Searchlogic
         def scope?(method)
           /(#{klass.column_names.join("|")})[_]/ =~ method 
         end
-        
+
         def ordering
           conditions.find{|c, v| (c.to_sym == :ascend_by) || (c.to_sym == :descend_by) }
         end

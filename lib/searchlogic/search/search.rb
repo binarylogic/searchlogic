@@ -1,10 +1,23 @@
 module Searchlogic
   class Search < Base
+    def initialize(klass, conditions)
+      super
+      @conditions = sanitize(conditions)
+    end
+    private
+    def column_name?(scope)
+      !!(klass.column_names.detect{|kcn| scope.downcase.to_s.include?(kcn.downcase)})
+    end
+    def sanitize(conditions)
+      conditions.select{ |k, v| !v.nil? && (authorized_scope?(k) || column_name?(k)) }
+    end
+
     include Attributes
     include ChainedConditions
     include ReaderWriter
     include Ordering
     include MethodMissing
     include Delegate
+    include AuthorizedScopes
   end
 end

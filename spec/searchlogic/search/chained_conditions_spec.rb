@@ -8,31 +8,23 @@ describe Searchlogic::Search::ChainedConditions do
     User.create(:name=>"Ben")
   end
 
-  xit "handles unknown condition error" do 
-    search = User.searchlogic(:age_eq => 24, :unknown => true)
-    search.all.should_raise UnknownConditionError
-  end
 
   it "chains scopes" do
-    search = User.searchlogic(:name_like => "James")
+    search = User.search(:name_like => "James")
     search.all.count.should eq(2)
     search.age_gt(20)
     search.all.count.should eq(1)
   end 
 
   it "chains multiple scopes" do 
-    search = User.searchlogic
+    search = User.search
     search.all.count.should eq(4)
     search.name_like("James").age_eq(20)
     search.all.count.should eq(1)
     search.all.map(&:name).should eq(["James"])
   end
 
-  it "ignores nil on mass assignment" do 
-    search = User.searchlogic(:username_eq => nil, :name_like =>"James")
-    search.all.count.should eq(2)
-    search.all.map(&:name).should eq(["James", "James Vanneman"])
-  end
+
   it "finds nil conditions on explicit assignment" do 
     search = User.searchlogic
     search.username = nil 
@@ -41,7 +33,7 @@ describe Searchlogic::Search::ChainedConditions do
   end
 
   it "find nils with explicit assignment and other args" do 
-    search = User.searchlogic(:name_contains => "James")
+    search = User.search(:name_contains => "James")
     search.email = nil 
     search.count.should eq(1)
     search.all.map(&:name).should eq(["James Vanneman"  ])
@@ -53,6 +45,22 @@ describe Searchlogic::Search::ChainedConditions do
     james = search.all
     james.count.should eq(1)
     james.first.name.should eq("James")
+  end
+
+  it "can be called with scope procedures" do 
+    User.scope_procedure(:awesome){User.name_like("James")}
+    search = User.search(:awesome => true, :age_eq => 21)    
+    search.count.should eq(1)
+    search.all.map(&:name).should eq(["James Vanneman"])
+  end
+
+  it "can be called with multiple scope procecures" do 
+    User.scope_procedure(:young){User.age_lt(21)}
+    User.scope_procedure(:awesome){User.name_like("James")}
+
+    search = User.search(:awesome => true, :young => true)
+    search.count.should eq(1)
+    search.all.map(&:name).should eq(["James"])
 
   end
 

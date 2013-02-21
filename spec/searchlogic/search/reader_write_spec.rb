@@ -36,6 +36,12 @@ describe Searchlogic::Search::ReaderWriter do
     search = User.searchlogic(:name_ew => "man")
     search.name_bw.should be_nil
   end
+
+  it "doesn't let you write an unauthorized condition" do 
+    search = User.search
+    search.destroy_all = true
+    search.conditions.empty.should be_true
+  end
   
  
 end

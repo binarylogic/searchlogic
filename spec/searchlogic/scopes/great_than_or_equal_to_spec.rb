@@ -11,7 +11,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::GreaterThanOrEqualTo 
     find_users = User.age_greater_than_or_equal_to(26).map { |u| u.name }
     find_users.should eq(["James" ,"Ben"])
   end
-  xit "parses datetime strings with chronic" do
+  it "parses datetime strings with chronic" do
     users = User.created_at_gte("Today")
     users.count.should eq(2)
     names = users.map(&:name)
