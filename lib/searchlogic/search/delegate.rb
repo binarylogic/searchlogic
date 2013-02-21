@@ -12,9 +12,7 @@ module Searchlogic
       private 
         ##Sanitized conditions in this class so they're only changed once
         ##the method has been delegated. This allows for the original search object to stay the same
-        # def scope_procedure?
-        #   ActiveRecord::Base.scope_procedure.find{|sp| sp ==}
-        # end
+
         def sanitized_conditions
           implicit_equals(replace_nils)
         end

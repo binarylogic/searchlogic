@@ -8,13 +8,6 @@ module Searchlogic
           extend Conditions
         end
       end
-      module Conditions
-        private
-          def method_missing(method, *args, &block) 
-            return memoized_scope[method] if memoized_scope[method]
-            generate_scope(method, args, &block) || super
-          end
-      end
     end
   end
 end

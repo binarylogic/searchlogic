@@ -38,10 +38,3 @@ module Searchlogic
     end
   end
 end
-
-# Audit.belongs_to :auditable, :polymorphic => true
-# User.has_many :audits, :as => :auditable
-
-# Audit.auditable_user_type_username_equals("ben") 
-# User.audits_name_equals("IRS") => Audit.where()
-#   => Audit.user_equals("ben")
