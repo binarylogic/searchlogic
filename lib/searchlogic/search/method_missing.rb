@@ -11,7 +11,7 @@ module Searchlogic
           elsif column_name?(scope_name) || authorized_scope?(scope_name)
             read_or_write_condition(scope_name, args)
           else
-            super
+            ::Object.send(:raise, UnknownConditionError.new(scope_name.to_s))
           end
         end
 

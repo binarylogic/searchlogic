@@ -25,9 +25,9 @@ module Searchlogic
       end
       def create_scope(scope, value)
         if klass.searchlogic_scopes.include?(scope) && value
-          return  klass.send(scope)
+          klass.send(scope)
         else
-          return klass.send(scope, value)
+          klass.send(scope, value)
         end
       end
     end

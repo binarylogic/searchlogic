@@ -6,11 +6,11 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Joins do
     order2 = Order.create(:total=>18, :line_items => [LineItem.create(:price => 9), LineItem.create(:price => 9)])
     order3 = Order.create(:total=>16, :line_items => [LineItem.create(:price => 6), LineItem.create(:price => 7)])
     order4 = Order.create(:total=>15, :line_items => [LineItem.create(:price => 8), LineItem.create(:price => 5)])
-    @james = User.create(:name=>"James", :orders => [order1])
-    @ben = User.create(:name=>"Ben", :orders => [order2])
-    @john = User.create(:name=>"John", :orders => [order3])
-    @tren = User.create(:name=>"Tren", :orders => [order4])
-    @noorder = User.create(:name=>"noorder", :orders => [Order.create(:total => 0)])
+    User.create(:name=>"James", :orders => [order1])
+    User.create(:name=>"Ben", :orders => [order2])
+    User.create(:name=>"John", :orders => [order3])
+    User.create(:name=>"Tren", :orders => [order4])
+    User.create(:name=>"noorder", :orders => [Order.create(:total => 0)])
   end
 
   it "orders ascending by associated column" do

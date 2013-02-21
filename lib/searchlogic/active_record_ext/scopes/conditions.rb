@@ -37,12 +37,6 @@ module Searchlogic
         def scopeable?(method)
           !!(/(#{joined_condition_klasses})/.match(method)) || !!(Aliases.match_alias(method))
         end
-
-        def self.const_missing(const)
-          puts "#{const} is undefined in searchlogic"
-        end
-          
-
         def condition_klasses
           #NOTE DO NOT FUCK WITH THIS ORDER
          [  
@@ -53,6 +47,7 @@ module Searchlogic
             LessThanOrEqualTo,
             Oor,
             Joins,
+            ScopeProcedure,
             Equals,
             BeginsWith,
             DoesNotEqual,
