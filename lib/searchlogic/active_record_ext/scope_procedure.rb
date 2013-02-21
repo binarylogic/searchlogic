@@ -11,16 +11,19 @@ module Searchlogic
 
       module ClassMethods
         def scope_procedure(name, &block)
-          method_call = lambda { puts "block.called HEre" }
-          define_method = lambda do |klass, method_call|
-            puts "#{klass}"
-            method_call.call
-            def cool
-              method_call.call
-            end
+          method_call = lambda do |klass, block, name|
+              self.name do  
+                block.call
+              end
+              puts "defined myself!"
           end
+
+          define_method = lambda do |klass|
+            method_call.call(klass, block, name)
+          end
+
           binding.pry
-          self.instance_eval(&define_method(method_call))
+          self.instance_eval(&define_method)
         end
       end
     end

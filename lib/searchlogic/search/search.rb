@@ -1,5 +1,4 @@
 module Searchlogic
-  
   class Search < Base
     include Attributes
     include ChainedConditions
@@ -8,5 +7,4 @@ module Searchlogic
     include MethodMissing
     include Delegate
   end
-
 end

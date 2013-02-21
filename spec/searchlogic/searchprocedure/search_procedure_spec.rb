@@ -9,6 +9,7 @@ describe Searchlogic::ActiveRecordExt::ScopeProcedure::ClassMethods do
   end
   it "creates a scope procedure" do 
     User.scope_procedure(:cool){ puts "Woo I'm cool"}
+    binding.pry
   end
 end
 
