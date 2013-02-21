@@ -8,8 +8,9 @@ describe Searchlogic::ActiveRecordExt::ScopeProcedure::ClassMethods do
     User.create(:name=>"Ben")
   end
   it "creates a scope procedure" do 
-    User.scope_procedure(:cool){ puts "Woo I'm cool"}
-    binding.pry
+    User.scope_procedure(:cool){ User.name_like("James").age_gt(20)}
+    User.cool.count.should eq(1)
+    User.cool.first.name.should eq("James Vanneman")
   end
 end
 

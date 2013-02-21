@@ -10,20 +10,15 @@ module Searchlogic
       end
 
       module ClassMethods
+        def metaclass
+          class << self; self; end
+        end
         def scope_procedure(name, &block)
-          method_call = lambda do |klass, block, name|
-              self.name do  
-                block.call
-              end
-              puts "defined myself!"
+          metaclass.instance_eval do 
+            define_method(name) do
+              block.call
+            end
           end
-
-          define_method = lambda do |klass|
-            method_call.call(klass, block, name)
-          end
-
-          binding.pry
-          self.instance_eval(&define_method)
         end
       end
     end
