@@ -3,6 +3,5 @@ module Searchlogic
     def initialize(klass, conditions)
       @klass = klass
     end
-    private
   end
 end
