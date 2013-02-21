@@ -7,7 +7,7 @@ module Searchlogic
     include MethodMissing
     include Delegate
     include AuthorizedScopes 
-    include Each   
+    include Each
     def initialize(klass, conditions)
       super
       @conditions = sanitize(conditions)

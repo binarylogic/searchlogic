@@ -2,7 +2,7 @@ module Searchlogic
   class Search
     class UnknownConditionError < ::Object::StandardError
       def initialize(condition)
-        msg = "The #{condition} is not a valid condition. You may only use conditions that are defined with scope_procedure"
+        msg = "'#{condition}' is not a valid condition. In order to use custom conditions you must define them with 'scope_procedure'"
         puts msg
       end
     end
