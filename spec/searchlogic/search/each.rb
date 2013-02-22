@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Searchlogic::Search::MixinEnumerable do 
+describe Searchlogic::Search::Each do 
   before(:each) do 
     User.create(:name=>"James", :age =>20, :username => "jvans1" )
     User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
@@ -10,8 +10,7 @@ describe Searchlogic::Search::MixinEnumerable do
 
   it "Acts as an enumerable" do 
     search = User.search
-    binding.pry
-    search.should_respond_to(:map)
+    search.should respond_to(:map)
   end
 
 
