@@ -3,6 +3,7 @@ module Searchlogic
     module Scopes
       module Conditions
         class LessThanOrEqualTo < Condition
+          include ChronicSupport
           def scope
             if applicable?
               find_column
@@ -11,6 +12,7 @@ module Searchlogic
           end
 
           private
+
             def find_column
               @column_name = /(.*)_less_than_or_equal_to$/.match(method_name)[1]
               

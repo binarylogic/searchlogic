@@ -6,7 +6,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::GreaterThan do
     User.create(:name => "Ben", :age => 30)
     User.create(:name => "Tren", :age => 27)
     Order.create(:title => "James' Order", :created_at => DateTime.new(2013, 2, 19))
-    Order.create(:title => "Ben's Order", :created_at => DateTime.new(2013, 2, 20))
+    Order.create(:title => "Ben's Order", :created_at => DateTime.new(2014, 3, 29))
 
   end
 

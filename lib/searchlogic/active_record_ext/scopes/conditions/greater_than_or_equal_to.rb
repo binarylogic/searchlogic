@@ -3,6 +3,7 @@ module Searchlogic
     module Scopes
       module Conditions
         class GreaterThanOrEqualTo < Condition
+          include ChronicSupport
           def scope
             if applicable?
               find_column

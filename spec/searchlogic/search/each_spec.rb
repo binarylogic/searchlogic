@@ -10,7 +10,7 @@ describe Searchlogic::Search::Each do
 
   it "Acts as an enumerable" do 
     search = User.search
-    search.should respond_to(:map)
+    search.map.class.should eq(Enumerator)
   end
 
 
