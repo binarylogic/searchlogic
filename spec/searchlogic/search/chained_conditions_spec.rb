@@ -47,22 +47,7 @@ describe Searchlogic::Search::ChainedConditions do
     james.first.name.should eq("James")
   end
 
-  it "can be called with scope procedures" do 
-    User.scope_procedure(:awesome){User.name_like("James")}
-    search = User.search(:awesome => true, :age_eq => 21)    
-    search.count.should eq(1)
-    search.all.map(&:name).should eq(["James Vanneman"])
-  end
 
-  it "can be called with multiple scope procecures" do 
-    User.scope_procedure(:young){User.age_lt(21)}
-    User.scope_procedure(:awesome){User.name_like("James")}
-
-    search = User.search(:awesome => true, :young => true)
-    search.count.should eq(1)
-    search.all.map(&:name).should eq(["James"])
-
-  end
 
   it "finds with blank assignment" do 
     search = User.searchlogic(:username_blank => true)

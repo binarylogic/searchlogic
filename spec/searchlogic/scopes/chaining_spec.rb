@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Searchlogic::ActiveRecordExt::Scopes::Conditions::DescendBy do 
+describe Searchlogic::ActiveRecordExt::Scopes::Conditions do 
   before(:each) do 
     @james = User.create(:name=>"James G", :age => 26, :username => "jvans1"   )
     @ben = User.create(:name=>"James V", :age => 19, :username =>  "jvans" )

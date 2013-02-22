@@ -14,32 +14,29 @@ module Searchlogic
         ##the method has been delegated. This allows for the original search object to stay the same
 
         def sanitized_conditions
-          implicit_equals(replace_nils)
-        end
-        def replace_nils
-          conditions.inject({}) do |h, (key, value)|  
-            if value.nil?
-              new_key = (key.to_s + "_null").to_sym
-              h[new_key] = true 
-              h 
-            else
-              h[key] = value
-              h 
-            end
+          conditions.inject({}) do |h, (k,v)|
+            key, value = replace_nils(k, v)
+            new_key, new_value = implicit_equals(key, value)
+            h[new_key] = new_value
+            h.delete(k) if false_scope_proc?(k, v)
+            h
           end
         end
+        def replace_nils(original_key, value)
+          new_key = (original_key.to_s + "_null").to_sym
+          value.nil? ? [new_key, true] : [original_key, value]
+        end
+        def false_scope_proc?(key, value)
+          klass.searchlogic_scopes.include?(key.to_sym) && !value
+        end
 
-        def implicit_equals(nil_sanitized_conditions)
-          nil_sanitized_conditions.inject({}) do |h, (key, value)|  
-            if klass.column_names.detect{|kcn| kcn.to_sym == key}
-              new_key = (key.to_s + "_equals").to_sym
-              h[new_key] = value
-              h
-            else
-              h[key] = value
-              h
-            end
-          end 
+        def implicit_equals(original_key, value)
+          new_key = (original_key.to_s + "_equals").to_sym
+          column_name_as_condition?(original_key) ? [new_key, value] : [original_key, value]
+        end
+
+        def column_name_as_condition?(key)
+          !!(klass.column_names.detect{|kcn| kcn.to_sym == key})
         end
     end
   end
