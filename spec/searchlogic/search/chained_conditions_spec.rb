@@ -47,8 +47,6 @@ describe Searchlogic::Search::ChainedConditions do
     james.first.name.should eq("James")
   end
 
-
-
   it "finds with blank assignment" do 
     search = User.searchlogic(:username_blank => true)
     search.count.should eq(2)

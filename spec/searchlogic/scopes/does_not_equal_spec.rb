@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe Searchlogic::ActiveRecordExt::Scopes::Conditions::DoesNotEqual do 
   before(:each) do 
-    @james = User.create(:name => "James")
-    @bob = User.create(:name => "Bob")
+    User.create(:name => "James")
+    User.create(:name => "Bob")
   end
 
   it "finds users that do not equal input" do 

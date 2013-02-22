@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe Searchlogic::ActiveRecordExt::Scopes::Conditions::NotLike do 
   before(:each) do 
-    @james = User.create(:name => "James")
-    @ben = User.create(:name=>"Ben")
+    User.create(:name => "James")
+    User.create(:name=>"Ben")
   end
 
   it "finds all other users besides partial name" do 

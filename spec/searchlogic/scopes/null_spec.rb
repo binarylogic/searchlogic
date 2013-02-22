@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Null do 
   before(:each) do 
-    @james = User.create(:name => "James")
-    @ben = User.create(:name => "Ben")
+    User.create(:name => "James")
+    User.create(:name => "Ben")
     @no_name = User.create
   end
 

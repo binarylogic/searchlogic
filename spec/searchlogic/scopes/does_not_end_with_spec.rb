@@ -2,9 +2,9 @@ require 'spec_helper'
 
 describe Searchlogic::ActiveRecordExt::Scopes::Conditions::DoesNotEndWith do 
   before(:each) do 
-    @james = User.create(:name=>"James")
+    User.create(:name=>"James")
     User.create(:name => "Jamess")
-    @bob = User.create(:name => "Bob")
+    User.create(:name => "Bob")
   end
 
   it "finds users that do not end with input" do 

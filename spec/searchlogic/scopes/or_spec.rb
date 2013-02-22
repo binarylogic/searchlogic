@@ -2,12 +2,12 @@ require 'spec_helper'
 
 describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Oor do 
   before(:each) do 
-    @james2 = User.create(:name => "Vanneman")
-    @bill = User.create(:name => "Bill", :username => "Bill_Vanneman_JR")
-    @james = User.create(:name=>"James")
-    @ben = User.create(:name=>"Ben", :username => "america", :email => "Ben@Vanneman")
-    @tren = User.create(:name=> "Tren", :username => "ANTJamesan")
-    @john = User.create(:name => "John", :username => "amicus")
+    User.create(:name => "Vanneman")
+    User.create(:name => "Bill", :username => "Bill_Vanneman_JR")
+    User.create(:name=>"James")
+    User.create(:name=>"Ben", :username => "america", :email => "Ben@Vanneman")
+    User.create(:name=> "Tren", :username => "ANTJamesan")
+    User.create(:name => "John", :username => "amicus")
   end
 
   it "gathers users based on OR condition" do 

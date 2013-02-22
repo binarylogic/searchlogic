@@ -2,10 +2,10 @@ require 'spec_helper'
 
 describe Searchlogic::ActiveRecordExt::Scopes::Conditions do 
   before(:each) do 
-    @james = User.create(:name=>"James G", :age => 26, :username => "jvans1"   )
-    @ben = User.create(:name=>"James V", :age => 19, :username =>  "jvans" )
-    @Tren = User.create(:name=>"James B", :age => 21, :username =>  "jvans" )
-    @John = User.create(:name=>"L. James H", :age => 22 , :username =>   "jvans")
+    User.create(:name=>"James G", :age => 26, :username => "jvans1"   )
+    User.create(:name=>"James V", :age => 19, :username =>  "jvans" )
+    User.create(:name=>"James B", :age => 21, :username =>  "jvans" )
+    User.create(:name=>"L. James H", :age => 22 , :username =>   "jvans")
     User.create(:name=>"Jon L", :age => 21, :username => "jvans1"  )
   end
 

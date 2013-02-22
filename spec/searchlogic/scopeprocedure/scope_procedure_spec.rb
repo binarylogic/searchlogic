@@ -12,13 +12,22 @@ describe Searchlogic::ActiveRecordExt::ScopeProcedure::ClassMethods do
     Order.scope_procedure(:large){Order.total_gt(400)}
     LineItem.scope_procedure(:expensive){LineItem.price_gt(15)}
   end
+  after(:each) do 
+    ActiveRecord::Base.searchlogic_scopes.clear
+    User.searchlogic_scopes.clear
+    Order.searchlogic_scopes.clear
+  end
   it "creates a scope procedure" do    
     User.cool.count.should eq(1)
-    User.cool.first.name.should eq("James Vanneman")
+    User.cool.first.name.should eq("James Vanneman")  
+  end
 
+  it "keeps track of scope procedures for individual classes" do 
     User.searchlogic_scopes.should eq([:cool, :super_cool])
     Order.searchlogic_scopes.should eq([:large])
+  end
 
+  it "keeps track of scope procedures globally" do 
     ActiveRecord::Base.searchlogic_scopes.should eq([:cool, :super_cool, :large, :expensive])
   end
 end

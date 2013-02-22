@@ -2,9 +2,9 @@ require 'spec_helper'
 
 describe Searchlogic::ActiveRecordExt::Scopes::Conditions::DoesNotBeginWith do 
   before(:each) do 
-    @james = User.create(:name=>"James")
-    @ben = User.create(:name=>"BenJam")
-    @tren = User.create(:name=>"TJamn")
+    User.create(:name=>"James")
+    User.create(:name=>"BenJam")
+    User.create(:name=>"TJamn")
   end
 
   it "finds users that do not begin with input" do 

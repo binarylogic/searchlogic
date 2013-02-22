@@ -2,12 +2,8 @@ require 'spec_helper'
 
 describe Searchlogic::ActiveRecordExt::Scopes::Conditions::NotNull do 
   before(:each) do 
-    @james = User.new
-    @james.name = "James"
-    @james.save
-    @ben = User.new
-    @ben.name = "Ben"
-    @ben.save
+    User.create(:name => "James")
+    User.create(:name => "Ben")
   end
 
   it "finds all users with null name" do 
