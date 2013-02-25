@@ -18,8 +18,10 @@ module Searchlogic
         def tables
           ActiveRecord::Base.connection.tables
         end
+        
         private
         def method_missing(method, *args, &block) 
+
           return memoized_scope[method] if memoized_scope[method]
           generate_scope(method, args, &block) || super
         end

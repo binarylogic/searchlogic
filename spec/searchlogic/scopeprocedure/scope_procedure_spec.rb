@@ -13,7 +13,6 @@ describe Searchlogic::ActiveRecordExt::ScopeProcedure::ClassMethods do
     LineItem.scope_procedure(:expensive){LineItem.price_gt(15)}
   end
   after(:each) do 
-    ActiveRecord::Base.searchlogic_scopes.clear
     User.searchlogic_scopes.clear
     Order.searchlogic_scopes.clear
   end
@@ -25,10 +24,6 @@ describe Searchlogic::ActiveRecordExt::ScopeProcedure::ClassMethods do
   it "keeps track of scope procedures for individual classes" do 
     User.searchlogic_scopes.should eq([:cool, :super_cool])
     Order.searchlogic_scopes.should eq([:large])
-  end
-
-  it "keeps track of scope procedures globally" do 
-    ActiveRecord::Base.searchlogic_scopes.should eq([:cool, :super_cool, :large, :expensive])
   end
 end
 

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Searchlogic::Search::ChainedConditions do 
+describe Searchlogic::SearchExt::ChainedConditions do 
   before(:each) do 
     User.create(:name=>"James", :age =>20, :username => "jvans1", :email => "jvannem@gmail.com" )
     User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
@@ -17,27 +17,12 @@ describe Searchlogic::Search::ChainedConditions do
   end 
 
   it "chains multiple scopes" do 
+
     search = User.search
     search.all.count.should eq(4)
     search.name_like("James").age_eq(20)
     search.all.count.should eq(1)
-    search.all.map(&:name).should eq(["James"])
-  end
-
-
-  it "finds nil conditions on explicit assignment" do 
-    search = User.searchlogic
-    search.username = nil 
-    search.count.should eq(2)
-    search.all.map(&:name).should eq(["Tren", "Ben"])
-  end
-
-  it "find nils with explicit assignment and other args" do 
-    search = User.search(:name_contains => "James")
-    search.email = nil 
-    search.count.should eq(1)
-    search.all.map(&:name).should eq(["James Vanneman"  ])
-
+    search.map(&:name).should eq(["James"])
   end
 
   it "allows ommission of 'eq' on attributes" do 
@@ -50,7 +35,7 @@ describe Searchlogic::Search::ChainedConditions do
   it "finds with blank assignment" do 
     search = User.searchlogic(:username_blank => true)
     search.count.should eq(2)
-    search.all.map(&:name).should eq(["Tren", "Ben"])
+    search.map(&:name).should eq(["Tren", "Ben"])
 
   end
   it "doesn't remove conditions from object" do 
@@ -81,48 +66,48 @@ describe Searchlogic::Search::ChainedConditions do
       User.all.count.should eq(4)
       search = User.searchlogic(:username_not_nil => true)
       search.all.count.should eq(2)
-      search.all.map(&:name).should eq(["James", "James Vanneman"])
+      search.map(&:name).should eq(["James", "James Vanneman"])
     end
     it "returns all users with nil username when value set to false" do 
       search = User.searchlogic(:username_not_nil => false)
       search.all.count.should eq(2)
-      search.all.map(&:name).should eq(["Tren", "Ben"])
+      search.map(&:name).should eq(["Tren", "Ben"])
     end
 
     it "retuns all users with nil username" do 
       User.all.count.should eq(4)
       search = User.searchlogic(:username_nil => true)
       search.all.count.should eq(2)
-      search.all.map(&:name).should eq(["Tren", "Ben"])
+      search.map(&:name).should eq(["Tren", "Ben"])
     end
 
     it "returns all users without nil username when value set to false" do 
       search = User.searchlogic(:username_nil => false)
       search.all.count.should eq(2)
-      search.all.map(&:name).should eq(["James", "James Vanneman"])
+      search.map(&:name).should eq(["James", "James Vanneman"])
     end
 
     it "returns all users with blank name" do 
       search = User.searchlogic(:username_blank => true)
       search.all.count.should eq(2)
-      search.all.map(&:name).should eq(["Tren", "Ben"])
+      search.map(&:name).should eq(["Tren", "Ben"])
     end
 
     it "returns all users without blank names when value set to false" do 
       search = User.searchlogic(:username_blank => false)
       search.all.count.should eq(2)
-      search.all.map(&:name).should eq(["James", "James Vanneman"])
+      search.map(&:name).should eq(["James", "James Vanneman"])
     end
     it "returns all users with blank name" do 
       search = User.searchlogic(:username_not_blank => true)
       search.all.count.should eq(2)
-      search.all.map(&:name).should eq(["James", "James Vanneman"])
+      search.map(&:name).should eq(["James", "James Vanneman"])
     end
     
     it "returns all users without blank names when value set to false" do 
       search = User.searchlogic(:username_not_blank => false)
       search.all.count.should eq(2)
-      search.all.map(&:name).should eq(["Tren", "Ben"])
+      search.map(&:name).should eq(["Tren", "Ben"])
     end
   end
 end

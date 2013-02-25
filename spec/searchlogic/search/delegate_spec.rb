@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Searchlogic::Search::Delegate do 
+describe Searchlogic::SearchExt::Delegate do 
   before(:each) do 
     User.create(:name=>"James", :age =>20, :username => "jvans1" )
     User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")

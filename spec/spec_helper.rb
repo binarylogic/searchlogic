@@ -4,6 +4,7 @@ require 'pry'
 require 'active_record'
 require 'chronic'
 require 'searchlogic'
+
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
 ActiveRecord::Base.configurations = true
 ActiveRecord::Schema.verbose = false

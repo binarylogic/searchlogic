@@ -6,7 +6,8 @@ module Searchlogic
           def scope
             if applicable?
               find_column
-              klass.where("#{table_name}.#{column_name} like ?", "#{value}%") 
+              table_name = klass.name.downcase.pluralize
+              klass.where("#{table_name}.#{column_name} like ? ", "#{value}%") 
             end
           end
 

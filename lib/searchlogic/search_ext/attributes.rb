@@ -1,8 +1,11 @@
 module Searchlogic
-  class Search < Base
+  module SearchExt
     module Attributes
       def conditions
         @conditions
+      end
+      def conditions=(hash)
+        @conditions = hash
       end
       def klass
         @klass

@@ -3,6 +3,7 @@ module Searchlogic
     module Scopes
       module Conditions
         class Null < Condition
+
           def scope
             if applicable? && args.first != false          
               find_column
@@ -13,7 +14,9 @@ module Searchlogic
               false
             end
           end
+
           private
+          
             def value
               args.first
             end
@@ -21,9 +24,11 @@ module Searchlogic
             def find_column
               @column_name = (/(.*)_null/).match(method_name)[1]
             end
+
             def applicable? 
               !(/_null$/ =~ method_name).nil?
             end
+
             def send_to_not_null
               klass.send(find_column + "_not_null")
             end

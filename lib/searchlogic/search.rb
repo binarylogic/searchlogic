@@ -1,19 +1,7 @@
-require Dir[File.dirname(__FILE__) + '/search/base.rb'].first
-Dir[File.dirname(__FILE__) + '/search/*.rb'].each { |f| require(f) }
+require_relative './search_ext.rb'
 
 module Searchlogic
-  def self.included(klass)
-    klass.instance_eval do
-      extend ClassMethods
-    end
-  end
-
-  module ClassMethods
-    def searchlogic(conditions = {})      
-      Search.new(self, conditions)
-    end
-    alias_method :search, :searchlogic
+  class Search 
+    include SearchExt
   end
 end
-
-ActiveRecord::Base.send(:include, Searchlogic)

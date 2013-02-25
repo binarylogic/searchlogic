@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Searchlogic::Search::Ordering do 
+describe Searchlogic::SearchExt::Ordering do 
   before(:each) do 
     User.create(:name=>"James", :age =>20, :username => "jvans1" )
     @sarah = User.create(:name=>"Sarah", :age =>22, :username => "jvans1")

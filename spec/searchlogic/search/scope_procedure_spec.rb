@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Searchlogic::Search::ChainedConditions do 
+describe "Searchlogic::SearchExt::ScopeProcedure" do 
   before(:each) do
     User.scope_procedure(:young){User.age_lt(21)}
     User.scope_procedure(:awesome){User.name_like("James")}
@@ -13,7 +13,7 @@ describe Searchlogic::Search::ChainedConditions do
   it "can be called with multiple scope procecures" do 
     search = User.search(:awesome => true, :young => true)
     search.count.should eq(1)
-    search.all.map(&:name).should eq(["James"])
+    search.map(&:name).should eq(["James"])
   end
 
   it "doesn't call scope procecure when left out" do 
@@ -27,5 +27,15 @@ describe Searchlogic::Search::ChainedConditions do
     search.count.should eq(2)
     search.map(&:name).should eq(["James", "James Vanneman"])    
   end
+
+  xit "should use custom scopes before normalizing" do
+    User.scope_procedure(:cust_username){ |value| {:username => value.reverse}}
+    search1 = User.search(:cust_username => "jvans1")
+    search2 = User.search(:cust_username => "1snavj")
+    search1.count.should eq(0)
+    search2.count.should eq(1)
+  end
+
+
 
 end

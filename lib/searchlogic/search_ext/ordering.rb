@@ -1,5 +1,5 @@
 module Searchlogic
-  class Search < Base
+  module SearchExt
     module Ordering
       def conditions_with_ordering(order)
         order_method = order.join("_")

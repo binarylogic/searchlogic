@@ -5,13 +5,9 @@ module Searchlogic
         class Equals < Condition
           def scope
             return nil unless applicable?
-            find_column
-            if values.kind_of?(Array)
-              values.map {|value| klass.where("#{table_name}.#{column_name} = ?", value)}.flatten
-            else
+              find_column
               klass.where("#{table_name}.#{column_name} = ?", values)
             end
-          end
           private
             def values
               args.first

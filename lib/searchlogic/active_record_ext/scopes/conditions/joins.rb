@@ -29,22 +29,26 @@ module Searchlogic
 
           private
             def created_nested_scope
-              scope_procedure? ? association.klass.send(new_method) : association.klass.send(new_method, value)
+              args.compact!
+              args.empty? ? association.klass.send(new_method) : association.klass.send(new_method, value)
             end
 
             def scope_procedure? 
-              ActiveRecord::Base.searchlogic_scopes.map(&:to_s).include?(new_method.to_s)
+              klass.searchlogic_scopes.map(&:to_s).include?(new_method.to_s)
             end
+
             def generate_join_and_send_method(join_values)
               klass.
                 joins(join_values.any? ? {join_name => join_values.first} : join_name.to_sym).
                 send(send_method)          
             end
+
             def generate_join_with_where_values(where_values, join_values)
               klass.
                 joins(join_values.any? ? {join_name => join_values.first} : join_name.to_sym).
                 where(where_values).uniq          
             end
+
             def applicable?
               !(/#{DELIMITER}/.match(method_name).nil?) || match_ordering
             end
@@ -52,6 +56,7 @@ module Searchlogic
             def match_ordering
               /(descend_by_|ascend_by_)(#{klass.tables.join("|")}|#{klass.tables.map(&:singularize).join("|")})/.match(method_name.to_s.split(DELIMITER).first)
             end
+
             def send_method
               match_ordering ? match_ordering[1] + method_parts.last : method_parts.last
             end

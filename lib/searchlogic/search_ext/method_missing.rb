@@ -1,24 +1,17 @@
 module Searchlogic
-  class Search < Base
+  module SearchExt
     module MethodMissing
       private
         def method_missing(method, *args, &block)
           scope_name = method.to_s.gsub(/=$/, '').to_sym
           if order = ordering
             conditions_with_ordering(order)
-          elsif klass.respond_to?(method.to_sym) && !scope?(scope_name)
-            delegate(method, args, &block)
-          elsif column_name?(scope_name) || authorized_scope?(scope_name)
+          elsif authorized_scope?(scope_name) || column_name?(scope_name) || method.to_s.include?('=')
             read_or_write_condition(scope_name, args)
           else
-            ::Kernel.send(:raise, UnknownConditionError, scope_name.to_s)
+            delegate(method, args, &block)
           end
         end
-
-        def scope?(method)
-          /(#{klass.column_names.join("|")})[_]/ =~ method 
-        end
-
         def ordering
           conditions.find{|c, v| (c.to_sym == :ascend_by) || (c.to_sym == :descend_by) }
         end
