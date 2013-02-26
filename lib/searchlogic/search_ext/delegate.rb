@@ -43,9 +43,9 @@ module Searchlogic
         end
 
         def column_or_association?(key)
-          !!(klass.column_names.detect{|kcn| kcn.to_sym == key} || klass.reflect_on_all_associations.map(&:name).detect{ |association| key.to_s.include?(association.to_s)})
+          !!(klass.column_names.detect{|kcn| kcn.to_sym == key} || klass.reflect_on_all_associations.detect{ |association| key.to_s.include?(association.name.to_s) && !authorized_scope?(key.to_s) })
         end
-        
+
         def replace_empty_strings(array)
           array.select{|value| !value.empty? }
 

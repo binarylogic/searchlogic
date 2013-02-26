@@ -20,12 +20,14 @@ describe Searchlogic::SearchExt::ReaderWriter do
       search.four_year_olds = true
       search.four_year_olds.should == true
     end
+
     xit "should allow setting custom conditions individually with an arity of 1" do
       User.named_scope(:username_should_be, lambda { |u| {:conditions => {:username => u}} })
       search = User.search
       search.username_should_be = "bjohnson"
       search.username_should_be.should == "bjohnson"
-    end  
+    end 
+
     it "should not use the ruby implementation of the id method" do
       search = User.search
       search.id.should be_nil
@@ -58,7 +60,7 @@ describe Searchlogic::SearchExt::ReaderWriter do
       search.username_gt.should == "bjohnson2"
     end  
 
-    xit "should allow setting pre-existing association conditions" do
+    it "should allow setting pre-existing association conditions" do
       User.scope_procedure(:uname){ |value| User.where("users.username = ?", value)}
       search = Company.search
       search.users_uname = "bjohnson"

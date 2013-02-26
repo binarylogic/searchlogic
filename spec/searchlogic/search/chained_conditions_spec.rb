@@ -17,7 +17,6 @@ describe Searchlogic::SearchExt::ChainedConditions do
   end 
 
   it "chains multiple scopes" do 
-
     search = User.search
     search.all.count.should eq(4)
     search.name_like("James").age_eq(20)
@@ -109,5 +108,16 @@ describe Searchlogic::SearchExt::ChainedConditions do
       search.all.count.should eq(2)
       search.map(&:name).should eq(["Tren", "Ben"])
     end
+    it "returns all users with blank name with string" do 
+      search = User.searchlogic(:username_not_blank => "true")
+      search.all.count.should eq(2)
+      search.map(&:name).should eq(["James", "James Vanneman"])
+    end
+    
+    it "returns all users without blank names when value set to false with string" do 
+      search = User.searchlogic(:username_not_blank => "false")
+      search.all.count.should eq(2)
+      search.map(&:name).should eq(["Tren", "Ben"])
+    end    
   end
 end

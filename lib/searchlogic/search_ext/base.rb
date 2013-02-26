@@ -3,6 +3,7 @@ module Searchlogic
     module Base
       def initialize(klass, conditions)
         @klass = klass
+
         @conditions = sanitize(conditions)
       end
 
@@ -13,7 +14,8 @@ module Searchlogic
       private
 
       def sanitize(conditions)
-        conditions.select{ |k, v| !v.nil? && (authorized_scope?(k) || column_name?(k)) }
+        conditions.select{ |k, v| !v.nil? && (authorized_scope?(k) || column_name?(k))}.  
+                    inject({}) { |h, (k,v)| h[k] = typecast(k, v); h}
       end
 
       def column_name?(scope)

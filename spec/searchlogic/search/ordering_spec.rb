@@ -1,30 +1,48 @@
 require 'spec_helper'
 
-describe Searchlogic::SearchExt::Ordering do 
+describe "Searchlogic::SearchExt::Ordering" do 
   before(:each) do 
-    User.create(:name=>"James", :age =>20, :username => "jvans1" )
-    @sarah = User.create(:name=>"Sarah", :age =>22, :username => "jvans1")
-    @john = User.create(:name=>"John", :age =>26, :username => "jvans1")
-    @jason = User.create(:name=>"Jason", :age =>31, :username => "jvans1")
-    User.create(:name => "Tren")
-    User.create(:name=>"Ben")
+    Order.create(:total=> 22, :title => "jvans1", :user_id => 3)
+    Order.create(:total=> 20, :title => "jvans1", :user_id => 2)
+    Order.create(:total=> 19, :title => "jvans1", :user_id => 5)
+    Order.create(:total=> 26, :user_id => 3)
+    Order.create(:total=> 21, :user_id => 6)
   end
 
   it "ascend's by" do
-    search = User.searchlogic(:ascend_by => "id")
-    people = search.all
-    people.count.should eq(6)
-    people.map(&:id).should eq([1, 2, 3, 4, 5, 6])
+    search = Order.searchlogic(:descend_by => "total")
+    orders = search.all
+    orders.count.should eq(5)
+    orders.map(&:total).should eq([26,22,21,20,19])
+  end
+  it "has an ordering accessor" do 
+    search = Order.searchlogic(:descend_by => "total")
+    search.ordering_by.should eq([:descend_by, "total"])
   end
   it "descend's by" do
-    search = User.searchlogic(:descend_by => "id")
-    people = search.all
-    people.count.should eq(6)
-    people.map(&:id).should eq([6, 5, 4, 3, 2, 1])
+    search = Order.searchlogic(:ascend_by => "total")
+    orders = search.all
+    orders.count.should eq(5)
+    orders.map(&:total).should eq([26,22,21,20,19].reverse)
   end
   it "ordering containing other conditions" do 
-    search = User.searchlogic(:descend_by => "id", :username_eq => "jvans1", :age_gt => 21)
-    users = search.all
-    users.map(&:id).should eq([@jason.id, @john.id, @sarah.id])
+    search = Order.searchlogic(:descend_by => "total", :title => "jvans1", :user_id_gt => 2)
+    orders = search.all
+    orders.count.should eq(2)
+    orders.map(&:total).should eq([22, 19])
+  end
+
+  it "accepts symbols as arguements" do 
+    search = Order.searchlogic(:descend_by => :id)
+    orders = search.all
+    orders.count.should eq(5)
+    orders.map(&:id).should eq([5,4 ,3, 2, 1])
+  end
+
+  it "redifining order overwites previous" do 
+    search = Order.searchlogic(:descend_by => "total")
+    search.ascend_by = :total
+    search.conditions.should eq({:ascend_by => :total})
+
   end
 end

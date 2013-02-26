@@ -20,16 +20,23 @@ module Searchlogic
         def process_scopes(raw_conditions, starting_scope)
           raw_conditions.inject(starting_scope) do |scope, conditions_value|
             if klass.searchlogic_scopes.include?(conditions_value[0]) && conditions_value[1]
-              scope.send(conditions_value[0])
+              scope.send(conditions_value[0], conditions_value[1])
             else
               scope.send(conditions_value[0], conditions_value[1])
             end
           end        
         end
+
         def create_scope(scope, value)
           if klass.searchlogic_scopes.include?(scope) && value
-            klass.send(scope)
-
+            results = klass.send(scope, value)
+            ##FIXME This accounts for named scopes retrunign dif values
+            if results.kind_of?(Hash)
+              self.conditions = results 
+              self
+            else
+              results
+            end
           else
             klass.send(scope, value)
           end

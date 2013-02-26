@@ -15,11 +15,15 @@ module Searchlogic
           value.kind_of?(Array) ? cast_in_array(value, "cast_date") : cast_date(value)
         when :datetime
           value.kind_of?(Array) ? cast_in_array(value, "cast_time") : cast_time(value)
+        when :ordering
+          value
         end
       end
       private 
         def column_type(method)
-          if boolean_method?(method) || klass.searchlogic_scopes.include?(method)
+          if ordering?(method)
+            :ordering
+          elsif boolean_method?(method) || klass.searchlogic_scopes.include?(method)
             :boolean
           elsif association_method = association_in_method(klass, method)
             find_column(association_method)
@@ -34,7 +38,7 @@ module Searchlogic
           association = current_klass.reflect_on_all_associations.find{|a| method.to_s.include?(a.name.to_s)}
           if association
             klassname = association.name.downcase.to_s.pluralize
-            new_method = /#{klassname}_(.*)/.match(method)[1]
+            new_method = /[#{klassname}|#{klassname.singularize}]_(.*)/.match(method)[1]
             [klassname, new_method]
           else
             nil

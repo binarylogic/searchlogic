@@ -11,10 +11,12 @@ describe "Searchlogic::SearchExt::ScopeProcedure" do
   it "should pass on the current scope to the proxy" do
     company = Company.create
     user = company.users.create
-
     search = company.users.search
     search.all.should eq(company.users)
-    # search.current_scope.should == company.users.scope(:find)
   end
-
+  it "should respond to empty" do 
+    search = Order.search
+    search.empty?.should be_true
+  end
+  
 end

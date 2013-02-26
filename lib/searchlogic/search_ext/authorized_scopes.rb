@@ -5,12 +5,15 @@ module Searchlogic
       def known_scopes        
         predefined = %w{_any greater_than_or_equal_to less_than_or_equal_to _or_ _equals _begins_with _does_not_equal _does_not_begin_with ends_with does_not_end_with not_like like greater_than less_than not_null null not_blank blank ascend_by descend_by _type}
         aliases = %w{ _is _eq _not_equal_to _is_not _not _ne _lt _before _less_than_or_equal _greater_than_or_equal _lte _gt _after _gte _contains _includes _does_not_include _bw _not_begin_with _ew _not_end_with _nil _not_nil _present}
-        associated_columns = klass.reflect_on_all_associations.map(&:name)
         custom = klass.searchlogic_scopes
-        predefined + aliases + custom + associated_columns
+        predefined + aliases + custom
       end
+      
       def authorized_scope?(scope) 
         !!(known_scopes.detect{ |ks| scope.to_s.include?(ks.to_s)})
+      end
+      def associated_column?(scope_name)
+        !!(klass.reflect_on_all_associations.detect{|associaton| scope_name.to_s.include?(associaton.name.to_s)})
       end
     end
   end

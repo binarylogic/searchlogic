@@ -8,10 +8,10 @@ module Searchlogic
         include AuthorizedScopes
         include ChainedConditions
         include Delegate
-        include Ordering
         include ReaderWriter
         include MethodMissing
         include TypeCast
+        include Delete
       end
     end
   end

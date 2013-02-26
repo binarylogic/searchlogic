@@ -13,11 +13,11 @@ module Searchlogic
           private
 
             def applicable?
-              !(/ascend_by_/ =~ method_name).nil?
+              !(/ascend_by/ =~ method_name).nil?
             end
 
             def find_sort_on(method)
-              /ascend_by_(.*)/.match(method)[1]
+              args.first || /ascend_by_(.*)/.match(method)[1]
             end
         end
       end

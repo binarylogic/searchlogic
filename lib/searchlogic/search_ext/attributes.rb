@@ -1,6 +1,8 @@
 module Searchlogic
   module SearchExt
     module Attributes
+      ORDERINGS = [:ascend_by, :descend_by, "ascend_by", "descend_by"]
+
       def conditions
         @conditions
       end
@@ -12,6 +14,9 @@ module Searchlogic
       end
       def method
         @method
+      end
+      def ordering_by
+        ORDERINGS.select{|key| conditions[key]}.map{ |key| [key, conditions[key]] }.flatten
       end
     end
   end
