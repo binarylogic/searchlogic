@@ -32,7 +32,7 @@ describe "Searchlogic::SearchExt::ScopeProcedure" do
     search.count.should eq(2)
     search.map(&:name).should eq(["James", "James Vanneman"])    
   end
-
+  
   xit "should use custom scopes before normalizing" do
     User.scope_procedure(:cust_username){ |value| {:username => value.reverse}}
     search1 = User.search(:cust_username => "jvans1")

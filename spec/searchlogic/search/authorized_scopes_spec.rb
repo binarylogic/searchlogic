@@ -9,9 +9,9 @@ describe Searchlogic::SearchExt::AuthorizedScopes do
     o5 = Order.create(:total => 10)    
     o6 = Order.create(:total => 12)    
 
-    @james = User.create(:name=>"James", :orders => [o1,o2], :age =>20, :username => "jvans1", :email => "jvannem@gmail.com" )
+    @james = User.create(:name=>"James", :orders => [o1,o3], :age =>20, :username => "jvans1", :email => "jvannem@gmail.com" )
     User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1", :orders => [o6])
-    @tren  = User.create(:name => "Tren", :orders => [o5,o3])
+    @tren  = User.create(:name => "Tren", :orders => [o5,o2])
     @ben = User.create(:name=>"Ben", :orders => [o4])
 
   end
@@ -30,7 +30,7 @@ describe Searchlogic::SearchExt::AuthorizedScopes do
   it "lets you write methods on associationed columns" do 
     search = User.search 
     search.orders_total = 10
-    search.all.should eq([@james, @tren])
+    search.all.should eq([@tren, @james])
   end
 
 end

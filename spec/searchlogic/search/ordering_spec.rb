@@ -15,10 +15,6 @@ describe "Searchlogic::SearchExt::Ordering" do
     orders.count.should eq(5)
     orders.map(&:total).should eq([26,22,21,20,19])
   end
-  it "has an ordering accessor" do 
-    search = Order.searchlogic(:descend_by => "total")
-    search.ordering_by.should eq([:descend_by, "total"])
-  end
   it "descend's by" do
     search = Order.searchlogic(:ascend_by => "total")
     orders = search.all
