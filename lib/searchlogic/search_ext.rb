@@ -11,6 +11,7 @@ module Searchlogic
         include Ordering
         include ReaderWriter
         include MethodMissing
+        include TypeCast
       end
     end
   end

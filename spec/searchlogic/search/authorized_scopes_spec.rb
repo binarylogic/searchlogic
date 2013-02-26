@@ -2,11 +2,16 @@ require 'spec_helper'
 
 describe Searchlogic::SearchExt::AuthorizedScopes do 
   before(:each) do 
-    User.create(:name=>"James", :age =>20, :username => "jvans1", :email => "jvannem@gmail.com" )
-    User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
-    User.create(:name => "Tren")
-    User.create(:name=>"Ben")
-    Order.create
+    o1 = Order.create(:total => 15)
+    o2 = Order.create(:total => 10)
+    o3 = Order.create(:total => 10)
+    o4 = Order.create(:total =>9)
+    o5 = Order.create(:total => 11)    
+    @james = User.create(:name=>"James", :orders => [o1,o2], :age =>20, :username => "jvans1", :email => "jvannem@gmail.com" )
+    User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1", :orders => [o5])
+    @tren  = User.create(:name => "Tren", :orders => [o2,o3])
+    @ben = User.create(:name=>"Ben", :orders => [o4])
+
   end
 
   it "ignores unauthorized scopes on mass assignment" do 
@@ -18,6 +23,12 @@ describe Searchlogic::SearchExt::AuthorizedScopes do
     search = User.search
     search.unauthorized = true
     search.conditions.empty?.should be_true
+  end
+
+  xit "lets you write methods on associationed columns" do 
+    search = User.search 
+    search.orders_total = 10
+    search.all.should eq([@james, @tren])
   end
 
 end

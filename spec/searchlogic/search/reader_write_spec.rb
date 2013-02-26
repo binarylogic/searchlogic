@@ -7,38 +7,64 @@ describe Searchlogic::SearchExt::ReaderWriter do
     User.create(:name => "Tren")
     User.create(:name=>"Ben")
   end
-
-  it "has readers for conditions" do
-    search = User.searchlogic(:name_ew => "man")
-    search.name_ew.should eq("man")
-  end
-
-  it "sets conditions with attribute writers" do 
-      search = User.searchlogic
-      search.name_contains = "James"
-      search.age_lt = 21
-      search.username_eq = "jvans1"
-      james = search.all 
-      james.count.should eq(1)
-      name = james.map(&:name)
-      name.should eq(["James"])
-  end
-
-  context "#removeemptystring" do 
-    it "should ignore blank values but still return on conditions" do
-      search = User.search
-      search.conditions = {"username" => ""} 
-      search.all.should eq(User.all)     
-      search.conditions.should eq({"username" => ""})
+  context "#accessors" do 
+    it "has readers for conditions" do
+      search = User.searchlogic(:name_ew => "man")
+      search.name_ew.should eq("man")
     end
-    it "should ignore blank values in arrays" do
+
+
+    it "should allow setting custom conditions with an arity of 0" do
+      User.scope_procedure(:four_year_olds){ User.age_equals(4)}
       search = User.search
-      search.conditions = {"username_equals_any" => [""]}
-      search.username_equals_any.should eq([""])
-      search.all.should eq(User.all)
-      search.conditions = {"id_equals_any" => ["", "1"]}
-      search.all.should eq([User.find(1)])      
+      search.four_year_olds = true
+      search.four_year_olds.should == true
     end
+    xit "should allow setting custom conditions individually with an arity of 1" do
+      User.named_scope(:username_should_be, lambda { |u| {:conditions => {:username => u}} })
+      search = User.search
+      search.username_should_be = "bjohnson"
+      search.username_should_be.should == "bjohnson"
+    end  
+    it "should not use the ruby implementation of the id method" do
+      search = User.search
+      search.id.should be_nil
+    end
+
+
+    it "sets conditions with attribute writers" do 
+        search = User.searchlogic
+        search.name_contains = "James"
+        search.age_lt = 21
+        search.username_eq = "jvans1"
+        james = search.all 
+        james.count.should eq(1)
+        name = james.map(&:name)
+        name.should eq(["James"])
+    end
+
+    it "should allow setting association conditions" do
+      search = User.search
+      search.orders_total_gt = 10
+      search.orders_total_gt.should == 10
+    end
+   it "should not merge conflicting conditions into one value" do
+      # This class should JUST be a proxy. It should not do anything more than that.
+      # A user would be allowed to call both named scopes if they wanted.
+      search = User.search
+      search.username_greater_than = "bjohnson1"
+      search.username_gt = "bjohnson2"
+      search.username_greater_than.should == "bjohnson1"
+      search.username_gt.should == "bjohnson2"
+    end  
+
+    xit "should allow setting pre-existing association conditions" do
+      User.scope_procedure(:uname){ |value| User.where("users.username = ?", value)}
+      search = Company.search
+      search.users_uname = "bjohnson"
+      search.users_uname.should == "bjohnson"
+    end
+
   end
 
   it "overrides conditions with attribute writers" do 
@@ -53,7 +79,6 @@ describe Searchlogic::SearchExt::ReaderWriter do
     search = User.searchlogic(:name_ew => "man")
     search.name_bw.should be_nil
   end
-
 
   context "assigning nils" do
     it "finds on explicit assignment" do 

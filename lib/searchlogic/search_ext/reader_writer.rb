@@ -16,7 +16,7 @@ module Searchlogic
       end
 
       def read_condition(key)
-        conditions[key] || conditions[key.to_s]
+        conditions.include?(key) ?  typecast(key, conditions[key]) :  typecast(key,conditions[key.to_s])
       end
     end
   end

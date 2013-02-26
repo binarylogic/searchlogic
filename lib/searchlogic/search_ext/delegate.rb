@@ -6,7 +6,6 @@ module Searchlogic
         args = nil if args.empty?
         new_conditions = sanitized_conditions
         if new_conditions.empty?
-          # binding.pry
           sending_klass = method_name.to_s == "all" ? klass : klass.all
           args.nil? ? sending_klass.send(method_name, &block) : sending_klass.send(method_name, args, &block)
         else
@@ -20,7 +19,7 @@ module Searchlogic
         def sanitized_conditions
           conditions.inject({}) do |h, (k,v)|
             key, value = replace_nils(k, v)
-            value = replace_empty_strings_in_array(v) if v.kind_of?(Array)
+            value = replace_empty_strings(v) if v.kind_of?(Array)
             new_key, new_value = implicit_equals(key, value)
             h[new_key] = new_value
             h.delete(k) if false_scope_proc?(k, v)
@@ -38,13 +37,13 @@ module Searchlogic
 
         def implicit_equals(original_key, value)
           new_key = (original_key.to_s + "_equals").to_sym
-          column_name_as_condition?(original_key) ? [new_key, value] : [original_key, value]
+          column_or_association?(original_key) ? [new_key, value] : [original_key, value]
         end
 
-        def column_name_as_condition?(key)
-          !!(klass.column_names.detect{|kcn| kcn.to_sym == key})
+        def column_or_association?(key)
+          !!(klass.column_names.detect{|kcn| kcn.to_sym == key} || klass.reflect_on_all_associations.map(&:name).detect{ |association| key.to_s.include?(association.to_s)})
         end
-        def replace_empty_strings_in_array(array)
+        def replace_empty_strings(array)
           array.select{|value| !value.empty? }
 
         end
