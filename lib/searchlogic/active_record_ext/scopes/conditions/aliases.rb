@@ -6,7 +6,7 @@ module Searchlogic
           def scope
             if Aliases.match_alias(method_name)
               case alias_used
-              when "eq", "is"
+              when "eq", "is", "equal"
                 replace_and_send("equals")
               when  "not_equal_to", "is_not", "not", "ne"
                 replace_and_send("does_not_equal")

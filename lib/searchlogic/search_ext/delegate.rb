@@ -27,10 +27,12 @@ module Searchlogic
             h
           end
         end
+
         def replace_nils(original_key, value)
           new_key = (original_key.to_s + "_null").to_sym
           value.nil? ? [new_key, true] : [original_key, value]
         end
+
         def false_scope_proc?(key, value)
           klass.searchlogic_scopes.include?(key.to_sym) && !value
         end
@@ -43,6 +45,7 @@ module Searchlogic
         def column_or_association?(key)
           !!(klass.column_names.detect{|kcn| kcn.to_sym == key} || klass.reflect_on_all_associations.map(&:name).detect{ |association| key.to_s.include?(association.to_s)})
         end
+        
         def replace_empty_strings(array)
           array.select{|value| !value.empty? }
 

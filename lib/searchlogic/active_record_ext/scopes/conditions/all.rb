@@ -5,13 +5,21 @@ module Searchlogic
         class All < Condition
           def scope
             if applicable?
-              args.flatten!
-              initial_scope = klass.send(new_method, args[0])
-              args.inject(initial_scope){|scope, value| scope.send(new_method, value)}
+              where_values = value.map{|arg| klass.send(new_method, arg).where_values}.
+                            flatten.
+                            join(" AND ")
+              klass.where(where_values)
             end
           end
 
           private
+            def value
+              if args.count > 1
+                args
+              else
+                args.first
+              end
+            end
             def new_method
               /(.*)_all/.match(method_name)[1]
             end

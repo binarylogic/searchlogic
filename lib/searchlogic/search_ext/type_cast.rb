@@ -19,7 +19,7 @@ module Searchlogic
       end
       private 
         def column_type(method)
-          if boolean_method?(method)
+          if boolean_method?(method) || klass.searchlogic_scopes.include?(method)
             :boolean
           elsif association_method = association_in_method(klass, method)
             find_column(association_method)
@@ -49,7 +49,7 @@ module Searchlogic
           ass_method = association_in_method(new_klass, new_method)
           column ? column.type : find_column(ass_method)
         end
-        
+
         def cast_boolean(value)
           if value == "false" || value == false || value == "0" ||  value == nil ||  value == "nil" || value == 0 
             false

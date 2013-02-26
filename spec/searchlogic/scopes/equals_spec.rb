@@ -16,6 +16,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Equals do
 
     xit "checks against multiple" do 
       users = User.name_equals(["Ben","James"])
+      binding.pry
       names = users.map { |u| u.name }
       names.count.should eq(2)
       names.should eq(["Ben","James"])
