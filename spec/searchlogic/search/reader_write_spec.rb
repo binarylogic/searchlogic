@@ -49,15 +49,6 @@ describe Searchlogic::SearchExt::ReaderWriter do
       search = User.search
       search.orders_total_gt = 10
       search.orders_total_gt.should == 10
-    end
-   it "should not merge conflicting conditions into one value" do
-      # This class should JUST be a proxy. It should not do anything more than that.
-      # A user would be allowed to call both named scopes if they wanted.
-      search = User.search
-      search.username_greater_than = "bjohnson1"
-      search.username_gt = "bjohnson2"
-      search.username_greater_than.should == "bjohnson1"
-      search.username_gt.should == "bjohnson2"
     end  
 
     it "should allow setting pre-existing association conditions" do
@@ -81,6 +72,17 @@ describe Searchlogic::SearchExt::ReaderWriter do
     search = User.searchlogic(:name_ew => "man")
     search.name_bw.should be_nil
   end
+
+    it "should not merge conflicting conditions into one value" do
+      # This class should JUST be a proxy. It should not do anything more than that.
+      # A user would be allowed to call both named scopes if they wanted.
+      search = User.search
+      search.username_greater_than = "bjohnson1"
+      search.username_gt = "bjohnson2"
+      search.username_greater_than.should == "bjohnson1"
+      search.username_gt.should == "bjohnson2"
+    end
+
 
   context "assigning nils" do
     it "finds on explicit assignment" do 

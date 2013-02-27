@@ -1,4 +1,3 @@
-#args.nil? ?  chained_conditions(sanitized_conditions).send(method_name, &block)  : chained_conditions(sanitized_conditions).send(method_name, args, &block)
 module Searchlogic
   module SearchExt
     module Delegate

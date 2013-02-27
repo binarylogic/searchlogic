@@ -25,6 +25,15 @@ describe Searchlogic::SearchExt::Base do
       search.count.should eq(2)
       search.map(&:name).should eq(["James", "James Vanneman"])
     end
+    it "should not merge conflicting conditions into one value" do
+      # This class should JUST be a proxy. It should not do anything more than that.
+      # A user would be allowed to call both named scopes if they wanted.
+      search = User.search
+      search.username_greater_than = "jvans1"
+      search.username_gt = "jvans1"
+      search.username_greater_than.should == "jvans1"
+      search.username_gt.should == "jvans1"
+    end    
   end
 
   it "allows string keys" do

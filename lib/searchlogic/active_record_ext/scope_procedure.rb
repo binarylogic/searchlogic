@@ -13,17 +13,10 @@ module Searchlogic
           @searchlogic_scopes ||= []
         end
         
-        def scope_procedure(name, *args, &block)
+        def scope_procedure(name, block)
           singleton_class.instance_eval do
-            if !args.empty?
-              define_method(name) do |args|
-                block.call(args)
-              end
-            else
-              define_method(name) do
-                singleton_class
-                block.call(args)
-              end
+              define_method(name) do |value|
+                block.call(value)
             end
           end
           searchlogic_scopes.push(name)
