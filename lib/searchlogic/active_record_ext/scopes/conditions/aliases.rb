@@ -18,7 +18,7 @@ module Searchlogic
                 replace_and_send("greater_than")
               when "gte", "greater_than_or_equal"
                 replace_and_send("greater_than_or_equal_to")
-              when "contains", "includes"
+              when "contains", "includes", "has"
                 replace_and_send("like")
               when "does_not_include" 
                 replace_and_send("not_like")

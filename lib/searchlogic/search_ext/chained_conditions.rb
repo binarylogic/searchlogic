@@ -25,6 +25,7 @@ module Searchlogic
 
         def create_scope(scope, value)
           if klass.searchlogic_scopes.include?(scope) && value
+            ##What if scope takes an arguement of true?
             value == true ? klass.send(scope) : klass.send(scope, value)
           else
             klass.send(scope, value)

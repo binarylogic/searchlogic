@@ -52,7 +52,9 @@ describe Searchlogic::SearchExt::ReaderWriter do
     end  
 
     it "should allow setting pre-existing association conditions" do
-      User.scope_procedure(:uname){ |value| User.where("users.username = ?", value)}
+      class User
+        scope_procedure(:uname, lambda{ |value| User.where("users.username = ?", value)})
+      end
       search = Company.search
       search.users_uname = "bjohnson"
       search.users_uname.should == "bjohnson"

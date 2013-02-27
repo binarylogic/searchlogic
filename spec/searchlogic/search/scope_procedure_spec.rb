@@ -2,49 +2,60 @@ require 'spec_helper'
 
 describe "Searchlogic::SearchExt::ScopeProcedure" do 
   before(:each) do
-    User.scope_procedure(:young, { :age_lt => 21 })
-    User.scope_procedure :awesome,  {:name_like => "James"}
-    User.create(:name=>"James", :age =>20, :username => "jvans1", :email => "jvannem@gmail.com" )
+    class User
+      scope_procedure(:young, lambda { age_lt(21)})
+      scope_procedure :awesome, lambda { name_like("James") }
+    end
+    james = User.create(:name=>"James", :age =>20, :username => "jvans1", :email => "jvannem@gmail.com" )
     User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
     User.create(:name => "Tren", :age =>21)
     User.create(:name=>"Ben", :age =>26)
+    Company.create(:users => [james])
   end
 
-  xit "can be called with scope procedure in mass assignment" do 
+  it "can be called with scope procedure in mass assignment" do 
     search = User.search(:awesome => true, :young => true)
     search.count.should eq(1)
     search.map(&:name).should eq(["James"])
   end
 
-  xit "doesn't call scope procecure when left out" do 
+  it "doesn't call scope procecure when left out" do 
     search = User.search
     search.count.should eq(4)
     search.map(&:name).should eq(["James", "James Vanneman", "Tren", "Ben"])
   end
   
-  xit "doesn't call scope procedure when assigned false" do 
+  it "doesn't call scope procedure when assigned false" do 
     search = User.search(:awesome => true, :young => false)
     search.count.should eq(2)
     search.map(&:name).should eq(["James", "James Vanneman"])    
   end
+
   xit "should use custom scopes before normalizing" do
-    User.scope_procedure(:cust_username){ |value| {:username => value.reverse}}
+    class User; scope_procedure(:cust_username, lambda{ |value| username_eq(value.reverse)} ); end
     search1 = User.search(:cust_username => "jvans1")
     search2 = User.search(:cust_username => "1snavj")    
+    binding.pry
     search1.count.should eq(0)
     search2.count.should eq(2)
   end
+
   it "should allow setting pre-existing association conditions" do
-    User.named_scope :uname, lambda { |value| {:conditions => ["users.username = ?", value]} }
+    class User
+      User.scope_procedure :uname, lambda { |value| where("users.username = ?", value) }
+    end
     search = Company.search
-    search.users_uname = "bjohnson"
-    search.users_uname.should == "bjohnson"
+    search.users_uname = "jvans1"
+    search.users_uname.should eq("jvans1")
   end
-  xit "should allow setting custom conditions individually with an arity of 0" do
-    User.named_scope(:four_year_olds, :conditions => {:age => 4})
+  it "should allow setting custom conditions individually with an arity of 0" do
+    class User
+      scope_procedure(:twenty_years_old, lambda{ age_eq(20)})
+    end
     search = User.search
-    search.four_year_olds = true
-    search.four_year_olds.should == true
+    search.twenty_years_old = true
+    search.twenty_years_old.should eq(true)
+    search.count.should eq(1)
   end
 
   xit "should allow setting pre-existing association alias conditions" do
@@ -53,12 +64,14 @@ describe "Searchlogic::SearchExt::ScopeProcedure" do
     search.users_username_has = "bjohnson"
     search.users_username_has.should == "bjohnson"
   end
-  xit "should delegate to named scopes with arity > 1" do
-    User.named_scope :paged, lambda {|start, limit| { :limit => limit, :offset => start }}
+  xit "should delegate to scope procedure with arity > 1" do
+    class User
+      scope_procedure :paged, lambda {|start, limit| { :limit => limit, :offset => start }}
+    end
     User.create(:username => "bjohnson")
     search = User.search(:username => "bjohnson")
-    search.paged(0, 1).count.should == 1
-    search.paged(0, 0).count.should == 0
+    search.paged(0, 1).count.should eq(1)
+    search.paged(0, 0).count.should eq(0)
   end 
 
 end
