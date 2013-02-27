@@ -11,7 +11,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::ScopeProcedure do
     User.create(:name=>"Ben", :orders => [order3])
   end
   it "can add a scope procedure to a method call" do 
-    LineItem.scope_procedure(:expensive){LineItem.price_gt (7)}
+    LineItem.scope_procedure(:expensive, lambda {LineItem.price_gt (7)})
     users = User.orders_line_items_expensive
     users.map(&:name).should eq(["James", "Tren"])
   end

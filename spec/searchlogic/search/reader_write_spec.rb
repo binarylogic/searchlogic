@@ -15,10 +15,10 @@ describe Searchlogic::SearchExt::ReaderWriter do
 
 
     it "should allow setting custom conditions with an arity of 0" do
-      User.scope_procedure(:four_year_olds){ User.age_equals(4)}
+      User.scope_procedure(:four_year_olds, lambda { User.age_equals(4)})
       search = User.search
       search.four_year_olds = true
-      search.four_year_olds.should == true
+      search.four_year_olds.should eq(true)
     end
 
     xit "should allow setting custom conditions individually with an arity of 1" do

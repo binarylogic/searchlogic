@@ -12,15 +12,6 @@ module Searchlogic
         def searchlogic_scopes 
           @searchlogic_scopes ||= []
         end
-        
-        def scope_procedure(name, block)
-          singleton_class.instance_eval do
-              define_method(name) do |value|
-                block.call(value)
-            end
-          end
-          searchlogic_scopes.push(name)
-        end
       end
     end
   end
