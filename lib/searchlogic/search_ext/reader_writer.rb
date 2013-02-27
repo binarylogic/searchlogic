@@ -11,9 +11,8 @@ module Searchlogic
       end
       
       def write_condition(key, value)
-        overwrite_orderings(key)
         new_value = typecast(key, value)
-        conditions[key] = new_value
+        conditions[key.to_sym] = new_value
         self
       end
 
@@ -21,17 +20,6 @@ module Searchlogic
         conditions.include?(key) ?  conditions[key] : conditions[key.to_s]
       end
 
-
-      def overwrite_orderings(key)
-        if ordering?(key)
-          delete_condition(:ascend_by)
-          delete_condition(:descend_by)
-        end
-      end
-
-      def ordering?(key)
-        key.to_s == "descend_by" || key.to_s == "ascend_by"
-      end
     end
   end
 end

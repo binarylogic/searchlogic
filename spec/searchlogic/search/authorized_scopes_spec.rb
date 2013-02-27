@@ -13,7 +13,6 @@ describe Searchlogic::SearchExt::AuthorizedScopes do
     User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1", :orders => [o6])
     @tren  = User.create(:name => "Tren", :orders => [o5,o2])
     @ben = User.create(:name=>"Ben", :orders => [o4])
-
   end
 
   it "ignores unauthorized scopes on mass assignment" do 
@@ -21,11 +20,6 @@ describe Searchlogic::SearchExt::AuthorizedScopes do
     search.conditions.should eq({:age_gt=> 26 })
   end 
   
-  xit "doesn't let you write an unauthorized condition" do 
-    search = User.search
-    search.unauthorized = true
-    search.conditions.empty?.should be_true
-  end
 
   it "lets you write methods on associationed columns" do 
     search = User.search 

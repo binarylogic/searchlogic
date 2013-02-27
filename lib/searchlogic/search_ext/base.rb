@@ -11,12 +11,10 @@ module Searchlogic
         self.class.new(klass, conditions.clone)
       end
 
-      private
-
       def sanitize(conditions)
         conditions = conditions.first if conditions.kind_of?(Array)
         conditions.select{ |k, v| !v.nil? && (authorized_scope?(k) || column_name?(k))}.  
-                    inject({}) { |h, (k,v)| h[k] = typecast(k, v); h}
+                    inject({}) { |h, (k,v)| h[k.to_sym] = typecast(k, v); h}
       end
 
       def column_name?(scope)

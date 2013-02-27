@@ -8,38 +8,32 @@ describe Searchlogic::SearchExt::Delegate do
     User.create(:name=>"Ben", :username =>"jvans1")
   end
 
-  context "#sanitize_conditions" do 
-    it "should ignore blank values but still return on conditions" do
-      search = User.search
-      search.conditions = {"username" => ""} 
-      search.send('sanitized_conditions').should eq({})
-
+  context "#delegate" do
+    it "delegates to AR relation" do 
+      search = User.searchlogic(:username_is => "jvans1")
+      search.count.should eq(3)
     end
-    it "should ignore blank values in arrays" do
-      search = User.search
-      search.conditions = {"username_equals_any" => [""]}
-      search.username_equals_any.should eq([""])
-      search.all.should eq(User.all)
-      search.conditions = {"id_equals_any" => ["", "1"]}
-      search.all.should eq([User.find(1)])      
+
+    it "delegates with arguements" do 
+      search = User.searchlogic(:username_is => "jvans1")
+      james = search.find_by_name("James Vanneman")
+      james.name.should eq("James Vanneman")
     end
-  end
 
-  it "delegates to AR relation" do 
-    search = User.searchlogic(:username_is => "jvans1")
-    search.count.should eq(3)
-  end
+    it "delegates" do 
+      search = User.searchlogic(:name_like => "James")
+      james = search.first
+      james.name.should eq("James")
+    end
+  end 
 
-  it "delegates with arguements" do 
-    search = User.searchlogic(:username_is => "jvans1")
-    james = search.find_by_name("James Vanneman")
-    james.name.should eq("James Vanneman")
-  end
-
-  it "delegates" do 
-    search = User.searchlogic(:name_like => "James")
-    james = search.first
-    james.name.should eq("James")
+  context "#implicit equals" do 
+    it "allows ommission of 'eq' on attributes" do 
+      search = User.searchlogic(:name => "James")
+      james = search.all
+      james.count.should eq(1)
+      james.first.name.should eq("James")
+    end
   end
 
 end

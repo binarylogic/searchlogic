@@ -4,8 +4,8 @@ describe Searchlogic::SearchExt::Base do
   before(:each) do 
     @James = User.create(:name=>"James", :age =>20, :username => "jvans1", :email => "jvannem@gmail.com" )
     @JamesV = User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
-    @Tren = User.create(:name => "Tren", :age =>11)
-    @Ben = User.create(:name=>"Ben", :age => 12)
+    @Tren = User.create(:name => "Tren", :age =>11, :username => "Tren")
+    @Ben = User.create(:name=>"Ben", :age => 12, :username => "")
   end
 
   context "#initialize" do
@@ -17,13 +17,19 @@ describe Searchlogic::SearchExt::Base do
       search = User.search(:username => "bjohnson")
       search.conditions.should == {:username => "bjohnson"}
     end
-  end
-
-  context "#sanitize" do 
     it "ignores nil on mass assignment" do 
       search = User.searchlogic(:username_eq => nil, :name_like =>"James")
       search.count.should eq(2)
       search.map(&:name).should eq(["James", "James Vanneman"])
+    end    
+  end
+
+  context "#sanitize_conditions" do 
+    it "should ignore blank values but still return on conditions" do
+      search = User.search
+      search.conditions = {"username" => ""} 
+      search.send('sanitized_conditions').should eq({})
+
     end
     it "should not merge conflicting conditions into one value" do
       # This class should JUST be a proxy. It should not do anything more than that.
@@ -33,9 +39,18 @@ describe Searchlogic::SearchExt::Base do
       search.username_gt = "jvans1"
       search.username_greater_than.should == "jvans1"
       search.username_gt.should == "jvans1"
-    end    
-  end
+    end   
 
+    it "should ignore blank values in arrays" do
+      search = User.search
+      search.conditions = {"username_equals_any" => [""]}
+      search.username_equals_any.should eq([""])
+      search.all.should eq(User.all)
+
+      search.conditions = {"username_equals_any" => ["", "Tren"]}
+      search.all.should eq([User.find_by_name("Tren")])      
+    end
+  end
   it "allows string keys" do
     search = User.search("name_eq" => "James")
     search.map(&:name).should eq(["James"])

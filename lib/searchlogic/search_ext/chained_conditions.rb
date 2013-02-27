@@ -17,6 +17,8 @@ module Searchlogic
           raw_conditions.inject(starting_scope) do |scope, conditions_value|
             if klass.searchlogic_scopes.include?(conditions_value[0]) && conditions_value[1]
               conditions_value[1] == true ? scope.send(conditions_value[0]) : scope.send(conditions_value[0], conditions_value[1])
+            elsif ordering?(conditions_value[0])
+              scope.send(conditions_value[1])
             else
               scope.send(conditions_value[0], conditions_value[1])
             end
@@ -27,6 +29,8 @@ module Searchlogic
           if klass.searchlogic_scopes.include?(scope) && value
             ##What if scope takes an arguement of true?
             value == true ? klass.send(scope) : klass.send(scope, value)
+          elsif ordering?(scope)
+            klass.send(value)            
           else
             klass.send(scope, value)
           end

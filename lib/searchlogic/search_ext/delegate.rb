@@ -21,8 +21,9 @@ module Searchlogic
             value = replace_empty_strings(v) if v.kind_of?(Array)
             new_key, new_value = implicit_equals(key, value)
             h[new_key] = new_value
+            h.delete(key) if empty_value?(value)
             h.delete(k) if false_scope_proc?(k, v)
-            h.delete(new_key) if (value.kind_of?(String) || value.kind_of?(Array))  && value.empty?
+            h.delete(new_key) if empty_value?(value)
             h
           end
         end
@@ -46,8 +47,15 @@ module Searchlogic
         end
 
         def replace_empty_strings(array)
-          array.select{|value| !value.empty? }
+          array.select{|value| value.kind_of?(String) && !value.empty? }
+        end
 
+        def empty_value?(value)
+          (value.kind_of?(String) || value.kind_of?(Array))  && value.empty?
+        end
+
+        def ordering?(scope_name)
+          scope_name.to_s == "order"
         end
     end
   end

@@ -70,9 +70,7 @@ module Searchlogic
         end
 
         def cast_integer(value)
-          if value == ""
-            0
-          elsif value.kind_of?(String)
+          if value.kind_of?(String)
             value.to_i
           else
             value
@@ -100,7 +98,6 @@ module Searchlogic
         end
         def cast_string(value)
           value
-          
         end
 
     end

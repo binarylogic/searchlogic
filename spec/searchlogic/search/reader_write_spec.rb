@@ -7,13 +7,13 @@ describe Searchlogic::SearchExt::ReaderWriter do
     User.create(:name => "Tren")
     User.create(:name=>"Ben")
   end
-  context "#accessors" do 
+  context "accessors" do 
+
     it "has readers for conditions" do
       search = User.searchlogic(:name_ew => "man")
       search.name_ew.should eq("man")
     end
-
-
+    
     it "should allow setting custom conditions with an arity of 0" do
       User.scope_procedure(:four_year_olds, lambda { User.age_equals(4)})
       search = User.search
@@ -21,11 +21,11 @@ describe Searchlogic::SearchExt::ReaderWriter do
       search.four_year_olds.should eq(true)
     end
 
-    xit "should allow setting custom conditions individually with an arity of 1" do
-      User.named_scope(:username_should_be, lambda { |u| {:conditions => {:username => u}} })
+    it "should allow setting custom conditions individually with an arity of 1" do
+      User.scope_procedure(:username_should_be, lambda { |u| {:conditions => {:username => u}} })
       search = User.search
       search.username_should_be = "bjohnson"
-      search.username_should_be.should == "bjohnson"
+      search.username_should_be.should eq("bjohnson")
     end 
 
     it "should not use the ruby implementation of the id method" do
@@ -57,7 +57,7 @@ describe Searchlogic::SearchExt::ReaderWriter do
       end
       search = Company.search
       search.users_uname = "bjohnson"
-      search.users_uname.should == "bjohnson"
+      search.users_uname.should eq("bjohnson")
     end
 
   end
@@ -70,6 +70,7 @@ describe Searchlogic::SearchExt::ReaderWriter do
     ben.count.should eq(1)
     ben.map(&:name).should eq(["Ben"])
   end
+
   it "should return nil for empty condition" do 
     search = User.searchlogic(:name_ew => "man")
     search.name_bw.should be_nil

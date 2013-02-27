@@ -9,9 +9,15 @@ describe Searchlogic::SearchExt::UnknownConditionError do
     Order.create
   end
 
-  xit "handles unknown condition error" do 
-    search = User.searchlogic(:age_eq => 24)
-    search.authorize.should_raise UnknownConditionError
+  xit "doesn't let you assign unauthorized conditions" do 
+    search = User.searchlogic
+    lambda{search.authorize = true }.should raise_error Searchlogic::SearchExt::UnknownConditionError
+  end
+
+
+  xit "doesn't let you assign harmful conditions" do 
+    search = User.searchlogic
+    lambda{search.destroy = true }.should raise_error Searchlogic::SearchExt::UnknownConditionError
   end
 
 end
