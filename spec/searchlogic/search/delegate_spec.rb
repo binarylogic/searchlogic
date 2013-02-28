@@ -27,7 +27,7 @@ describe Searchlogic::SearchExt::Delegate do
     end
   end
 
-  context "#sanitize" do 
+  context "#sanitize_conditions" do 
     it "should ignore blank values in arrays" do
       User.create(:name => "")
       search = User.search(:conditions => {"name_equals_any" => [""]})
@@ -37,15 +37,27 @@ describe Searchlogic::SearchExt::Delegate do
       search.all.should eq([User.find_by_name("Tren")])      
     end
 
-  end
-  context "#implicit equals" do 
-    it "allows ommission of 'eq' on attributes" do 
-      search = User.searchlogic(:name => "James")
-      james = search.all
-      james.count.should eq(1)
-      james.first.name.should eq("James")
+    it "should convert nil values to queriable methods" do 
+      search = User.search
+      search.name = nil
+      search.conditions.should eq({:name => nil})
+      search.sanitized_conditions.should eq({:name_null => true})
+    end
+
+    it "make column names without predicate into equality" do 
+      search = User.search(:name => "James")
+      search.conditions.should eq({:name=> "James"})
+      search.sanitized_conditions.should eq({:name_equals => "James"})
+    end
+
+    it "should remove scope procedures with a false value" do 
+      User.scope_procedure :old, lambda {|age| User.age_gt(40)}
+      search = User.search(:old => false, :name => "James")
+      search.conditions.should eq({:old => false, :name => "James"})
+      search.sanitized_conditions.should eq({:name_equals => "James"})
     end
   end
+  
   context "#empty" do 
     it "should respond to empty" do 
       search = Order.search
