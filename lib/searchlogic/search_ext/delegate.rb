@@ -17,7 +17,6 @@ module Searchlogic
 
       def sanitized_conditions
         conditions.inject({}) do |h, (k,v)|
-
           key, value = replace_nils(k, v)
           new_key, new_value = implicit_equals(key, value)
           h[new_key] = new_value

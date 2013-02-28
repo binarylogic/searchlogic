@@ -53,10 +53,11 @@
       User.create(:username => "")
       search = User.search
       search.conditions = {"username_equals_any" => [""]}
-      search.username_equals_any.should eq([""])
+      search.username_equals_any.should be_nil
       search.all.should eq(User.all)
 
       search.conditions = {"username_equals_any" => ["", "Tren"]}
+      search.conditions.should eq({:username_equals_any => ["Tren"]})
       search.all.should eq([User.find_by_name("Tren")])      
     end
     it "allows string keys" do

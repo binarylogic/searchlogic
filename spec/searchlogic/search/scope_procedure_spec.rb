@@ -77,7 +77,7 @@ describe "Searchlogic::SearchExt::ScopeProcedure" do
     User.search.klass.should == User
   end
 
-  it "should pass on the current scope to the proxy" do
+  xit "should pass on the current scope to the proxy" do
     company = Company.create
     user = company.users.create
     search = company.users.search
