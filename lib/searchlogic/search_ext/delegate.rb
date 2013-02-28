@@ -5,12 +5,11 @@ module Searchlogic
       def delegate(method_name, args, &block)
         args = nil if args.empty?
         scope_generator = ScopeGenerator.new(sanitized_conditions, klass)
-        if sanitized_conditions.empty?
-          sending_klass = method_name.to_s == "all" ? klass : klass.all
-          args.nil? ? sending_klass.send(method_name, &block) : sending_klass.send(method_name, args, &block)
-        else
-          args.nil? ? scope_generator.scope.send(method_name, &block) : scope_generator.scope.send(method_name, args, &block)
-        end
+        ##If no scope, defaults to klass so klass.map doesn't work
+        ##If scope all methods work
+        ##Can't initialize Search with AR::Rel obj
+        args.nil? ? scope_generator.scope.send(method_name, &block) : scope_generator.scope.send(method_name, args, &block)
+      
       end
         ##Sanitized conditions in this class so they're only changed once
         ##the method has been delegated. This allows for the original search object to stay the same

@@ -84,11 +84,11 @@ describe Searchlogic::SearchExt::ChainedConditions do
         orders.map(&:total).should eq([26,22,21,20,19])
       end
 
-      it "ordering containing other conditions" do 
-        search = Order.searchlogic( :title => "jvans1", "order" => "descend_by_total", :user_id_eq_any => [2,3])
+      it "containing other conditions" do 
+        search = Order.searchlogic(:title => "jvans1", "order" => "descend_by_total", :user_id_eq_any => [2,3])
         orders = search.all
         orders.count.should eq(2)
-        orders.map(&:total).should eq([22, 19])
+        orders.map(&:total).should eq([20, 19])
       end
 
       it "accepts symbols as arguements" do 

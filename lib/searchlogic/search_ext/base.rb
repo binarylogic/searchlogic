@@ -13,7 +13,7 @@ module Searchlogic
       def initial_sanitize(conditions)
         conditions.select{ |k, v| !v.nil? && (authorized_scope?(k) || column_name?(k))}.  
                     inject({}) do |h, (k,v)|
-                      h[k.to_sym] = typecast(k, v)
+                       h[k.to_sym] = typecast(k, v)
                       h[k.to_sym] = delete_empty_strings(v) if v.kind_of?(Array)
                       value = h[k.to_sym]
                       h.delete(k.to_sym) if (h[k.to_sym].kind_of?(String) || h[k.to_sym].kind_of?(Array)) && h[k.to_sym].empty?
@@ -27,7 +27,15 @@ module Searchlogic
         end    
 
         def delete_empty_strings(value)
-          value.select{|v| !v.empty?}
+          empty_strings_removed = []
+          value.each do |v|
+            if v.kind_of?(String)
+              empty_strings_removed << v unless v.empty?
+            else
+              empty_strings_removed << v
+            end
+          end
+          empty_strings_removed
         end
     end
   end

@@ -6,7 +6,7 @@ module Searchlogic
         def initialize(scope_conditions, klass)
           @scope_conditions = scope_conditions
           @klass = klass
-          @initial_scope = starting_scope
+          @initial_scope = starting_scope || klass
         end
 
         def scope
@@ -15,7 +15,7 @@ module Searchlogic
 
         private
           def starting_scope
-            first_conditions = scope_conditions.shift
+            first_conditions = with_any_condition || scope_conditions.shift
             return nil unless first_conditions
             create_scope(klass, first_conditions[0], first_conditions[1])
           end
@@ -31,7 +31,7 @@ module Searchlogic
             elsif ordering?(condition)
               scope.send(value)            
             else
-              scope.send(condition, value)
+              scope.send(condition, *value)
             end          
           end
 
@@ -39,6 +39,10 @@ module Searchlogic
             scope_conditions.inject(initial_scope) do |scope, (condition, value)| 
               create_scope(scope, condition, value)
             end
+          end
+
+          def with_any_condition
+            scope_conditions.find{|sc, value| /_any$/ =~ sc}
           end
       end
     end

@@ -32,11 +32,11 @@
       search.conditions.should eq({:age_gt=> 26 })
     end 
     
-    it "should ignore blank values but still return on conditions" do
+    it "should ignore blank values" do
       User.create(:username => "")
       search = User.search
       search.conditions = {"username" => ""} 
-      search.username.should eq("")
+      search.username.should be_nil
     end
 
     it "should not merge conflicting conditions into one value" do
