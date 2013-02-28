@@ -24,9 +24,9 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Equals do
       names.should eq(["James", "Ben"])
     end
 
-    xit "checks against multiple values in cdl" do
+    it "checks against multiple values in cdl" do
       users = User.age_equals(21, 20, 26)
-      users.should eq(@tren, @john, @sarah)
+      users.should eq([@tren, @john, @sarah])
     end
 
     it "can be chained with other scopes" do 
