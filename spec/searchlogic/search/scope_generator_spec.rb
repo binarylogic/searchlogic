@@ -34,6 +34,7 @@ describe Searchlogic::SearchExt::Delegate::ScopeGenerator do
     it "always uses an 'any' conditioned scope first" do
       ##Otherwise when scope is sent to ANY condition it joins all the scopes with OR so
       ## {:name_not_equal => "James", :username_equal_any => ["Tren", "Ben"]} => where user.name not in("James") OR user.username IN ("TREN") 
+      ##instead the first ANY scope is returned the rest of the scopes work as expected
       scope_generator = Searchlogic::SearchExt::Delegate::ScopeGenerator.new({:name_not_eq => "James", :age_gt=> 26, :id_eq_any => [1,2]}, User)
       scope_generator.initial_scope.all.should eq([@u1, @u2])
     end

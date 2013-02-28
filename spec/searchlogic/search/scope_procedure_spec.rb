@@ -7,7 +7,7 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
       scope_procedure :awesome, lambda { name_like("James") }
     end
     james = User.create(:name=>"James", :age =>20, :username => "jvans1", :email => "jvannem@gmail.com" )
-    User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
+    @jamesv = User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
     User.create(:name => "Tren", :age =>21)
     User.create(:name=>"Ben", :age =>26)
     Company.create(:users => [james])
@@ -24,7 +24,11 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
       search.count.should eq(4)
       search.map(&:name).should eq(["James", "James Vanneman", "Tren", "Ben"])
     end
-    
+    it "can combine scope procedure with other args" do 
+      search = User.search( :age_gte => "21", :awesome => true )
+      search.count.should eq(1)
+      search.first.should eq(@jamesv)
+    end
     it "doesn't call scope procedure when assigned false" do 
       search = User.search(:awesome => true, :young => false)
       search.count.should eq(2)
@@ -33,7 +37,7 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
   end
 
   context "scopes" do
-    xit "should use custom scopes before normalizing" do
+    it "should use custom scopes before normalizing" do
       class User; scope_procedure(:cust_username, lambda{ |value| username_eq(value.reverse)} ); end
       search1 = User.search(:cust_username => "jvans1")
       search2 = User.search(:cust_username => "1snavj")    
@@ -78,7 +82,7 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
       User.search.klass.should == User
     end
 
-    xit "should pass on the current scope to the proxy" do
+    it "should pass on the current scope to the proxy" do
       company = Company.create
       user = company.users.create
       search = company.users.search

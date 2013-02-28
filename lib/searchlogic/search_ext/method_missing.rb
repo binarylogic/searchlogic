@@ -9,11 +9,7 @@ module Searchlogic
           elsif valid_accessor?(scope_name,method)
             read_or_write_condition(scope_name, args)
           else
-            begin
-              delegate(method, args, &block)
-            rescue
-              klass.all.send(method, &block)  
-            end
+            delegate(method, args, &block)
           end
         end
 
