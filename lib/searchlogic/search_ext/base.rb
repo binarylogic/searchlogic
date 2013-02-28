@@ -3,8 +3,7 @@ module Searchlogic
     module Base
       def initialize(klass, conditions)
         @klass = klass
-
-        @conditions = initial_sanitize(conditions)
+        @conditions = initial_sanitize(conditions) #.merge(klass.where_values_hash)
       end
 
       def clone

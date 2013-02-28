@@ -40,24 +40,11 @@ module Searchlogic
             column.type
           end
         end
-    # def association_in_method(current_klass, method)
-    #       association_candidates = current_klass.reflect_on_all_associations.select{|a| method.to_s.include?(a.name.to_s)}
-    #       if !association_candidates.empty?
-    #         first_association = /^#{association_candidates.map(&:name).join("|")}/.match(method.to_s)[0]
-    #         klassname = association.name.downcase.to_s.pluralize
-    #         new_method = /[#{klassname}|#{klassname.singularize}]_(.*)/.match(method)[1]
-    #         binding.pry
-    #         [klassname, new_method]
-    #       else
-    #         nil
-    #       end
-    #     end
-
         def association_in_method(current_klass, method)
-          association = current_klass.reflect_on_all_associations.find{|a| method.to_s.include?(a.name.to_s)}
-          # 
-          if association
-            klassname = association.name.downcase.to_s.pluralize
+          association_candidates = current_klass.reflect_on_all_associations.select{|a| method.to_s.include?(a.name.to_s)}
+          if !association_candidates.empty?
+            first_association = /^#{association_candidates.map(&:name).join("|")}/.match(method.to_s)[0]
+            klassname = first_association
             new_method = /[#{klassname}|#{klassname.singularize}]_(.*)/.match(method)[1]
             [klassname, new_method]
           else
@@ -67,10 +54,10 @@ module Searchlogic
 
         def find_column(association_method)
           association, new_method = association_method
+
           new_klass = association.singularize.camelize.constantize
           column = new_klass.columns.find{|kc| new_method.to_s.include?(kc.name.to_s)}
           column = column.sort_by{|c1, c2| c.name.size <=> c.name.size } if column.kind_of?(Array) 
-          
           ass_method = association_in_method(new_klass, new_method)
           column ? column.type : find_column(ass_method)
         end

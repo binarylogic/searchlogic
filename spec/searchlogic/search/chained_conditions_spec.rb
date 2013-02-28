@@ -6,11 +6,18 @@ describe Searchlogic::SearchExt::ChainedConditions do
     l2 = LineItem.create(:price=> 20)
     l3 = LineItem.create(:price=> 9)
     l4 = LineItem.create(:price=> 12)
+    l5 = LineItem.create(:price=> 10)
+    l6 = LineItem.create(:price=> 10)
+    l7 = LineItem.create(:price=> 10)
+    l8 = LineItem.create(:price=> 12)
+    l9 = LineItem.create(:price=> 20)
+
+
     o1 = Order.create(:total=> 22, :title => "jvans1", :user_id => 3, :line_items => [l1,l3])
-    o2 = Order.create(:total=> 20, :title => "jvans1", :user_id => 2, :name => "jvans1's order", :line_items => [l1,l2])
-    o3 = Order.create(:total=> 19, :title => "jvans1", :user_id => 5, :line_items => [l2,l4])
-    o4 = Order.create(:total=> 26, :user_id => 3, :line_items => [l1,l3])
-    o5 = Order.create(:total=> 21, :user_id => 6, :line_items => [l1,l4])
+    o2 = Order.create(:total=> 20, :title => "jvans1", :user_id => 2, :line_items => [l1,l2] , :name => "jvans1's order")
+    o3 = Order.create(:total=> 19, :title => "jvans1", :user_id => 5, :line_items => [l9,l4])
+    o4 = Order.create(:total=> 26, :user_id => 3, :line_items => [l5,l6])
+    o5 = Order.create(:total=> 21, :user_id => 6, :line_items => [l7,l8])
     u1 = User.create(:orders=> [o1], :name=>"James", :age =>20, :username => "jvans1", :email => "jvannem@gmail.com" )
     u2 = User.create(:orders=> [o2], :name=>"James Vanneman", :age =>21, :username => "jvans1")
     u3 = User.create(:orders=> [o3], :name => "Tren")
@@ -101,10 +108,10 @@ describe Searchlogic::SearchExt::ChainedConditions do
     context "associations" do 
       it "chains deeply nested association" do 
         ## Should association be able to be singular?
-        search = Company.search(:users_orders_line_item_price_gt => 10)
+        search = Company.search(:users_orders_line_items_price_gt => 10)
         companies = search.all
         companies.count.should eq(2)
-        companies.map(&:name).should eq(["Neco", "ConciergeLive1"])
+        companies.map(&:name).should eq(["ConciergeLive1", "ConciergeLive2"])
       end  
 
     end

@@ -6,7 +6,6 @@ module Searchlogic
         include Base
         include Attributes
         include AuthorizedScopes
-        include ChainedConditions
         include Delegate
         include ReaderWriter
         include MethodMissing

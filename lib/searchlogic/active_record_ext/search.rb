@@ -11,7 +11,6 @@ module Searchlogic
         def searchlogic(conditions = {})      
           Search.new(self, conditions)
         end
-
         alias_method :search, :searchlogic
       end
     end

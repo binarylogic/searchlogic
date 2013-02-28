@@ -17,8 +17,8 @@ module Searchlogic
 
       def sanitized_conditions
         conditions.inject({}) do |h, (k,v)|
+
           key, value = replace_nils(k, v)
-          value = replace_empty_strings(v) if v.kind_of?(Array)
           new_key, new_value = implicit_equals(key, value)
           h[new_key] = new_value
           h.delete(key) if empty_value?(value)
@@ -46,10 +46,6 @@ module Searchlogic
 
         def column_or_association?(key)
           !!(klass.column_names.detect{|kcn| kcn.to_sym == key} || klass.reflect_on_all_associations.detect{ |association| key.to_s.include?(association.name.to_s) && !authorized_scope?(key.to_s) })
-        end
-
-        def replace_empty_strings(array)
-          array.select{|value| value.kind_of?(String) && !value.empty? }
         end
 
         def empty_value?(value)
