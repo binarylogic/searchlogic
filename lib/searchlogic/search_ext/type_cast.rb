@@ -16,7 +16,7 @@ module Searchlogic
         when :date
           value.kind_of?(Array) ? cast_in_array(value, "cast_date") : cast_date(value)
         when :datetime
-          value.kind_of?(Array) ? cast_in_array(value, "cast_time") : cast_time(value)
+          value.kind_of?(Array) ? cast_in_array(value, "cast_time") : cast_time(method, value)
         when :ordering
           value
         when :scope
@@ -105,13 +105,13 @@ module Searchlogic
           value.kind_of?(Date) ? value : Date.parse(value)
         end
 
-        def cast_time(value)
+        def cast_time(method, value)
           value.kind_of?(Time) ? value : Time.zone.parse(value)
         end
+
         def cast_string(value)
           value
         end
-
     end
   end
 end

@@ -22,7 +22,6 @@ describe Searchlogic::SearchExt::ReaderWriter do
 
 
   context "accessors" do 
-
     it "has readers for conditions" do
       search = User.searchlogic(:name_ew => "man")
       search.name_ew.should eq("man")
@@ -51,18 +50,20 @@ describe Searchlogic::SearchExt::ReaderWriter do
       search.username.should be_nil
     end
 
-    it "should ignore blank values in arrays" do
+    it "should ignore blank strings" do
 
-      User.create(:username => "")
-      search = User.search
-      search.conditions = {"username_equals_any" => [""]}
-      search.username_equals_any.should be_nil
-      search.all.should eq(User.all)
-      search.conditions = {"username_equals_any" => ["", "Tren"]}
-      search.conditions.should eq({:username_equals_any => ["Tren"]})
-      search.all.should eq([User.find_by_username("Tren")])      
+      search = User.search(:name => "")
+      search.name.should be_nil
+
     end
-    
+    it "should ignore blank values in arrays" do 
+      search = User.search
+      search.username_equals_any = [""]
+      search.username_equals_any.should be_nil
+      search.name_eq(["", "Tren"])
+      search.name_eq.should eq(["Tren"])
+      search.conditions.should eq({ :name_eq => ["Tren"]})
+    end    
     it "should allow setting custom conditions with an arity of 0" do
       User.scope_procedure(:four_year_olds, lambda { User.age_equals(4)})
       search = User.search
@@ -131,8 +132,8 @@ describe Searchlogic::SearchExt::ReaderWriter do
       search = User.search
       search.username_greater_than = "bjohnson1"
       search.username_gt = "bjohnson2"
-      search.username_greater_than.should == "bjohnson1"
-      search.username_gt.should == "bjohnson2"
+      search.username_greater_than.should eq("bjohnson1")
+      search.username_gt.should eq("bjohnson2")
     end
 
 
@@ -140,7 +141,6 @@ describe Searchlogic::SearchExt::ReaderWriter do
     it "finds on explicit assignment" do 
       search = User.searchlogic
       search.username = nil 
-      binding.pry
       search.count.should eq(4)
       search.map(&:name).should eq([ nil, nil, nil, "Ben"])
     end

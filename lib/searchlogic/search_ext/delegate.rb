@@ -28,7 +28,6 @@ module Searchlogic
       end
 
       private 
-
         def replace_nils(original_key, value)
           new_key = (original_key.to_s + "_null").to_sym
           value.nil? ? [new_key, true] : [original_key, value]

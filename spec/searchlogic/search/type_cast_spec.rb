@@ -133,12 +133,6 @@ describe Searchlogic::SearchExt::TypeCast do
         search.whatever_at_after = now
         search.whatever_at_after.should == now.utc
       end
-
-      xit "should support Rails' date_select and datetime_select out of the box" do
-        search = Company.search('created_at_after(1i)' => 2000, 'created_at_after(2i)' => 1, 'created_at_after(3i)' => 1)
-        search.created_at_after.should_not be_nil
-        search.created_at_after.should == Time.zone.local(2000, 1, 1)
-      end
     end
     context "with arrays"
       it "should be an Array and cast it's values given ['1', '2', '3']" do

@@ -27,8 +27,8 @@ describe Searchlogic::SearchExt::Delegate::ScopeGenerator do
 
   context "#initialize" do 
     it "defaults to klass.all if no scope conditions are present" do 
-      search = User.search 
-      search.all.should eq(User.all)
+      generator = Searchlogic::SearchExt::Delegate::ScopeGenerator.new({}, User) 
+      generator.scope.should eq(User.all)
     end
 
     it "always uses an 'any' conditioned scope first" do 
@@ -129,7 +129,7 @@ describe Searchlogic::SearchExt::Delegate::ScopeGenerator do
         search.all.count.should eq(2)
         search.map(&:name).should eq(["James", "James Vanneman"])
       end
-      
+
       it "returns all users with nil username when value set to false" do 
         search = User.searchlogic(:username_not_nil => false)
         search.all.count.should eq(2)

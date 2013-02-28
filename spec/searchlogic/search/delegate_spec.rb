@@ -25,8 +25,19 @@ describe Searchlogic::SearchExt::Delegate do
       james = search.first
       james.name.should eq("James")
     end
-  end 
+  end
 
+  context "#sanitize" do 
+    it "should ignore blank values in arrays" do
+      User.create(:username => "")
+      search = User.search(:conditions => {"username_equals_any" => [""]})
+      search.username_equals_any.should be_nil
+      search.conditions = {"username_equals_any" => ["", "Tren"]}
+      search.conditions.should eq({:username_equals_any => ["Tren"]})
+      search.all.should eq([User.find_by_name("Tren")])      
+    end
+
+  end
   context "#implicit equals" do 
     it "allows ommission of 'eq' on attributes" do 
       search = User.searchlogic(:name => "James")

@@ -20,7 +20,7 @@
   end
 
 
-  context "#sanitize_conditions" do 
+  context "#initial_sanitize" do 
     it "ignores nil on mass assignment" do 
       search = User.searchlogic(:username_eq => nil, :name_like =>"James")
       search.count.should eq(2)
@@ -28,14 +28,26 @@
     end    
 
     it "ignores unauthorized scopes on mass assignment" do 
-      search = User.search(:username_eq => nil, :age_gt => 26, :destroy_all => true, :awesome => "AwesoemS")
+      search = User.search(:age_gt => 26, :unauthorized => "not ok")
       search.conditions.should eq({:age_gt=> 26 })
     end 
-    
+
+    it "ignores nils on mass assignmetn" do 
+      search = User.search(:name_eq => nil)
+      search.conditions.should be_empty
+    end
+
+    it "ignores destructive methods" do 
+      search = User.search(:destroy => true)
+      search.conditions.should be_empty
+    end
+
     it "should ignore blank values" do
       User.create(:username => "")
       search = User.search(:conditions => {"username" => ""} )
       search.username.should be_nil
+      search = User.search(:name => [])
+      search.name.should be_nil
     end
 
     it "should ignore blank values in arrays" do
@@ -43,14 +55,14 @@
       search = User.search(:conditions => {"username_equals_any" => [""]})
       search.username_equals_any.should be_nil
       search.all.should eq(User.all)
-
       search.conditions = {"username_equals_any" => ["", "Tren"]}
       search.conditions.should eq({:username_equals_any => ["Tren"]})
-      search.all.should eq([User.find_by_name("Tren")])      
     end
-    it "allows string keys" do
+
+    it "converts string keys to symbols" do
       search = User.search("name_eq" => "James")
-      search.map(&:name).should eq(["James"])
+      search.conditions.should eq({:name_eq => "James"})
+      search.name_eq.should eq("James")
     end  
   
   end

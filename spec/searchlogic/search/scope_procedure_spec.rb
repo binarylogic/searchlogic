@@ -85,11 +85,4 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
       search.all.should eq(company.users)
     end
   end
-  context "#empty" do 
-    it "should respond to empty" do 
-      search = Order.search
-      search.empty?.should be_true
-    end
-  end
-
 end
