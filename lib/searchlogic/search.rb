@@ -1,4 +1,4 @@
-require_relative './search_ext.rb'
+require File.dirname(__FILE__) + '/search_ext.rb'
 
 module Searchlogic
   class Search 

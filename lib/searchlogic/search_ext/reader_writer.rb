@@ -4,6 +4,7 @@ module Searchlogic
       private 
       def read_or_write_condition(scope_name, args)
         if authorized_scope?(scope_name) || column_name?(scope_name) || associated_column?(scope_name)
+
           args.empty? ? read_condition(scope_name) : write_condition(scope_name, args)
         else
           ::Kernel.send(:raise, UnknownConditionError, scope_name.to_s)
@@ -11,9 +12,9 @@ module Searchlogic
       end
       
       def write_condition(key, value)
+        
         new_value = reader_writer_sanitize(key, value)
         conditions[key.to_sym] = new_value
-        conditions.delete(key.to_sym) if (new_value.kind_of?(String) || new_value.kind_of?(Array) ) && new_value.empty?
         self
       end
 
@@ -22,12 +23,10 @@ module Searchlogic
       end
 
       def reader_writer_sanitize(key, value)
-        return value.flatten.first if value.flatten.first.nil? || value.flatten.first == false
-        first_val = value.flatten
+        return value.first if [value].flatten.first.nil? || [value].flatten.first == false
+        first_val = value.kind_of?(Array) ? value.flatten : value
         one_value = first_val.first if first_val.kind_of?(Array) && first_val.size == 1
-        new_value =  typecast(key, one_value || first_val)
-        removed_empty = delete_empty_strings(new_value) if new_value.kind_of?(Array)
-        removed_empty || new_value
+        typecast(key, one_value || first_val)
       end
     end
   end

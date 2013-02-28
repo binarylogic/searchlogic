@@ -7,7 +7,7 @@ module Searchlogic
       end
 
       def conditions=(hash)
-        @conditions = initial_sanitize(hash)
+        @conditions = hash.inject({}) { |h, (k,v)| h[k.to_sym] = reader_writer_sanitize(k,v); h }
       end
 
       def klass

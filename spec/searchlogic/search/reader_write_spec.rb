@@ -32,11 +32,11 @@ describe Searchlogic::SearchExt::ReaderWriter do
       search.orders_total = 10
       search.all.should eq([@tren, @james])
     end
+
     it "should not use the ruby implementation of the id method" do
       search = User.search
       search.id.should be_nil
     end
-
 
     it "sets conditions with attribute writers" do 
         search = User.searchlogic
@@ -105,26 +105,20 @@ describe Searchlogic::SearchExt::ReaderWriter do
 
   end
   context "#reader_writer_sanitize" do
-    it "should ignore blank values" do
+    it "should allow you to assign blank values" do
+      #Will be ignored when search is performed
       User.create(:username => "")
       search = User.search
       search.conditions = {"username" => ""} 
-      search.username.should be_nil
+      search.username.should eq("")
     end
-
-    it "should ignore blank strings" do
-
-      search = User.search(:name => "")
-      search.name.should be_nil
-
-    end
-    it "should ignore blank values in arrays" do 
+    it "should allow blank values" do 
       search = User.search
-      search.username_equals_any = [""]
-      search.username_equals_any.should be_nil
+      search.username_equals_any = ""
+      search.username_equals_any.should eq("")
       search.name_eq(["", "Tren"])
-      search.name_eq.should eq(["Tren"])
-      search.conditions.should eq({ :name_eq => ["Tren"]})
+      search.name_eq.should eq(["","Tren"])
+      search.conditions.should eq({ :name_eq => ["",  "Tren"], :username_equals_any => ""})
     end    
 
     it "should not remove nils" do 

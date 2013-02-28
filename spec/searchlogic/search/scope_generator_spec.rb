@@ -31,9 +31,11 @@ describe Searchlogic::SearchExt::Delegate::ScopeGenerator do
       generator.scope.should eq(User.all)
     end
 
-    it "always uses an 'any' conditioned scope first" do 
+    it "always uses an 'any' conditioned scope first" do
+      ##Otherwise when scope is sent to ANY condition it joins all the scopes with OR so
+      ## {:name_not_equal => "James", :username_equal_any => ["Tren", "Ben"]} => where user.name not in("James") OR user.username IN ("TREN") 
       scope_generator = Searchlogic::SearchExt::Delegate::ScopeGenerator.new({:name_not_eq => "James", :age_gt=> 26, :id_eq_any => [1,2]}, User)
-      scope_generator.initial_scope.should eq([@u1, @u2])
+      scope_generator.initial_scope.all.should eq([@u1, @u2])
     end
   end
   context "#scope" do

@@ -52,11 +52,11 @@
 
     it "should ignore blank values in arrays" do
       User.create(:username => "")
-      search = User.search(:conditions => {"username_equals_any" => [""]})
+      search = User.search("username_equals_any" => [""])
       search.username_equals_any.should be_nil
       search.all.should eq(User.all)
       search.conditions = {"username_equals_any" => ["", "Tren"]}
-      search.conditions.should eq({:username_equals_any => ["Tren"]})
+      search.conditions.should eq({:username_equals_any => ["", "Tren"]})
     end
 
     it "converts string keys to symbols" do
