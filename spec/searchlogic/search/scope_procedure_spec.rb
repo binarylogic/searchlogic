@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "Searchlogic::SearchExt::ScopeProcedure" do 
+describe "Searchlogic::SearchExt::Search::ScopeProcedure" do 
   before(:each) do
     class User
       scope_procedure(:young, lambda { age_lt(21)})
@@ -32,61 +32,64 @@ describe "Searchlogic::SearchExt::ScopeProcedure" do
     end
   end
 
-  xit "should use custom scopes before normalizing" do
-    class User; scope_procedure(:cust_username, lambda{ |value| username_eq(value.reverse)} ); end
-    search1 = User.search(:cust_username => "jvans1")
-    search2 = User.search(:cust_username => "1snavj")    
-    search1.count.should eq(0)
-    search2.count.should eq(2)
-  end
-
-  it "should allow setting pre-existing association conditions" do
-    class User
-      User.scope_procedure :uname, lambda { |value| where("users.username = ?", value) }
+  context "scopes" do
+    xit "should use custom scopes before normalizing" do
+      class User; scope_procedure(:cust_username, lambda{ |value| username_eq(value.reverse)} ); end
+      search1 = User.search(:cust_username => "jvans1")
+      search2 = User.search(:cust_username => "1snavj")    
+      search1.count.should eq(0)
+      search2.count.should eq(2)
     end
-    search = Company.search
-    search.users_uname = "jvans1"
-    search.users_uname.should eq("jvans1")
-  end
 
-  it "should allow setting custom conditions individually with an arity of 0" do
-    class User
-      scope_procedure(:twenty_years_old, lambda{ age_eq(20)})
+    it "should allow setting pre-existing association conditions" do
+      class User
+        User.scope_procedure :uname, lambda { |value| where("users.username = ?", value) }
+      end
+      search = Company.search
+      search.users_uname = "jvans1"
+      search.users_uname.should eq("jvans1")
     end
-    search = User.search
-    search.twenty_years_old = true
-    search.twenty_years_old.should eq(true)
-    search.count.should eq(1)
-  end
 
-  it "should delegate to scope procedure with arity > 1" do
-    class User
-      scope_procedure :paged, lambda {|start, limit | limit(limit).offset(start) }
+    it "should allow setting custom conditions individually with an arity of 0" do
+      class User
+        scope_procedure(:twenty_years_old, lambda{ age_eq(20)})
+      end
+      search = User.search
+      search.twenty_years_old = true
+      search.twenty_years_old.should eq(true)
+      search.count.should eq(1)
     end
-    User.create(:username => "bjohnson")
-    search = User.search(:username => "bjohnson")
-    search.paged(0, 1).count.should eq(1)
-    search.paged(0, 0).count.should eq(0)
-  end 
 
-  it "should create a search proxy" do
-    User.search(:username => "joe").should be_kind_of(Searchlogic::Search)
-  end
+    it "should delegate to scope procedure with arity > 1" do
+      class User
+        scope_procedure :paged, lambda {|start, limit | limit(limit).offset(start) }
+      end
+      User.create(:username => "bjohnson")
+      search = User.search(:username => "bjohnson")
+      search.paged(0, 1).count.should eq(1)
+      search.paged(0, 0).count.should eq(0)
+    end 
 
-  it "should create a search proxy using the same class" do
-    User.search.klass.should == User
-  end
+    it "should create a search proxy" do
+      User.search(:username => "joe").should be_kind_of(Searchlogic::Search)
+    end
 
-  xit "should pass on the current scope to the proxy" do
-    company = Company.create
-    user = company.users.create
-    search = company.users.search
-    search.all.should eq(company.users)
+    it "should create a search proxy using the same class" do
+      User.search.klass.should == User
+    end
+
+    xit "should pass on the current scope to the proxy" do
+      company = Company.create
+      user = company.users.create
+      search = company.users.search
+      search.all.should eq(company.users)
+    end
   end
-  
-  it "should respond to empty" do 
-    search = Order.search
-    search.empty?.should be_true
+  context "#empty" do 
+    it "should respond to empty" do 
+      search = Order.search
+      search.empty?.should be_true
+    end
   end
 
 end

@@ -34,25 +34,13 @@
     
     it "should ignore blank values" do
       User.create(:username => "")
-      search = User.search
-      search.conditions = {"username" => ""} 
+      search = User.search(:conditions => {"username" => ""} )
       search.username.should be_nil
     end
 
-    it "should not merge conflicting conditions into one value" do
-      # This class should JUST be a proxy. It should not do anything more than that.
-      # A user would be allowed to call both named scopes if they wanted.
-      search = User.search
-      search.username_greater_than = "jvans1"
-      search.username_gt = "jvans1"
-      search.username_greater_than.should == "jvans1"
-      search.username_gt.should == "jvans1"
-    end   
-
     it "should ignore blank values in arrays" do
       User.create(:username => "")
-      search = User.search
-      search.conditions = {"username_equals_any" => [""]}
+      search = User.search(:conditions => {"username_equals_any" => [""]})
       search.username_equals_any.should be_nil
       search.all.should eq(User.all)
 

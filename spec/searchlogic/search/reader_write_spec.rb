@@ -16,9 +16,8 @@ describe Searchlogic::SearchExt::ReaderWriter do
 
     User.create(:name=>"James", :age =>20, :username => "jvans1" )
     User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
-    User.create(:name => "Tren")
-    User.create(:name=>"Ben", :email => "ben@gmail.com")
-
+    User.create(:name => "Tren", :username => "Tren")
+    User.create(:name=>"Ben", :email => "ben@gmail.com")                
   end
 
 
@@ -35,6 +34,34 @@ describe Searchlogic::SearchExt::ReaderWriter do
       search.all.should eq([@tren, @james])
     end
 
+    it "should not merge conflicting conditions into one value" do
+      # This class should JUST be a proxy. It should not do anything more than that.
+      # A user would be allowed to call both named scopes if they wanted.
+      search = User.search
+      search.username_greater_than = "jvans1"
+      search.username_gt = "jvans1"
+      search.username_greater_than.should == "jvans1"
+      search.username_gt.should == "jvans1"
+    end   
+
+    it "should ignore blank values" do
+      User.create(:username => "")
+      search = User.search
+      search.conditions = {"username" => ""} 
+      search.username.should be_nil
+    end
+
+    it "should ignore blank values in arrays" do
+
+      User.create(:username => "")
+      search = User.search
+      search.conditions = {"username_equals_any" => [""]}
+      search.username_equals_any.should be_nil
+      search.all.should eq(User.all)
+      search.conditions = {"username_equals_any" => ["", "Tren"]}
+      search.conditions.should eq({:username_equals_any => ["Tren"]})
+      search.all.should eq([User.find_by_username("Tren")])      
+    end
     
     it "should allow setting custom conditions with an arity of 0" do
       User.scope_procedure(:four_year_olds, lambda { User.age_equals(4)})
@@ -113,8 +140,9 @@ describe Searchlogic::SearchExt::ReaderWriter do
     it "finds on explicit assignment" do 
       search = User.searchlogic
       search.username = nil 
-      search.count.should eq(5)
-      search.map(&:name).should eq([ nil, nil, nil, "Tren", "Ben"])
+      binding.pry
+      search.count.should eq(4)
+      search.map(&:name).should eq([ nil, nil, nil, "Ben"])
     end
 
     it "finds with explicit assignment and other args" do 

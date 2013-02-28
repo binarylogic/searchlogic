@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Searchlogic::SearchExt::ChainedConditions do 
+describe Searchlogic::SearchExt::Delegate::ScopeGenerator do 
   before(:each) do 
     l1 = LineItem.create(:price=> 10)
     l2 = LineItem.create(:price=> 20)
@@ -11,24 +11,32 @@ describe Searchlogic::SearchExt::ChainedConditions do
     l7 = LineItem.create(:price=> 10)
     l8 = LineItem.create(:price=> 12)
     l9 = LineItem.create(:price=> 20)
-
-
     o1 = Order.create(:total=> 22, :title => "jvans1", :user_id => 3, :line_items => [l1,l3])
     o2 = Order.create(:total=> 20, :title => "jvans1", :user_id => 2, :line_items => [l1,l2] , :name => "jvans1's order")
     o3 = Order.create(:total=> 19, :title => "jvans1", :user_id => 5, :line_items => [l9,l4])
     o4 = Order.create(:total=> 26, :user_id => 3, :line_items => [l5,l6])
     o5 = Order.create(:total=> 21, :user_id => 6, :line_items => [l7,l8])
-    u1 = User.create(:orders=> [o1], :name=>"James", :age =>20, :username => "jvans1", :email => "jvannem@gmail.com" )
-    u2 = User.create(:orders=> [o2], :name=>"James Vanneman", :age =>21, :username => "jvans1")
+    @u1 = User.create(:orders=> [o1], :name=>"James", :age =>20, :username => "jvans1", :email => "jvannem@gmail.com" )
+    @u2 = User.create(:orders=> [o2], :name=>"James Vanneman", :age =>21, :username => "jvans1")
     u3 = User.create(:orders=> [o3], :name => "Tren")
     u4 = User.create(:orders=> [o4, o5], :name=>"Ben")
-    Company.create(:users => [u1], :name => "NEco")
-    Company.create(:users => [u2], :name => "ConciergeLive1")
+    Company.create(:users => [@u1], :name => "NEco")
+    Company.create(:users => [@u2], :name => "ConciergeLive1")
     Company.create(:users => [u3, u4], :name => "ConciergeLive2")
-
-
   end
-  context "#chained_conditions" do 
+
+  context "#initialize" do 
+    it "defaults to klass.all if no scope conditions are present" do 
+      search = User.search 
+      search.all.should eq(User.all)
+    end
+
+    it "always uses an 'any' conditioned scope first" do 
+      scope_generator = Searchlogic::SearchExt::Delegate::ScopeGenerator.new({:name_not_eq => "James", :age_gt=> 26, :id_eq_any => [1,2]}, User)
+      scope_generator.initial_scope.should eq([@u1, @u2])
+    end
+  end
+  context "#scope" do
     it "chains scopes" do
       search = User.search(:name_like => "James")
       search.all.count.should eq(2)
@@ -113,12 +121,7 @@ describe Searchlogic::SearchExt::ChainedConditions do
         companies.count.should eq(2)
         companies.map(&:name).should eq(["ConciergeLive1", "ConciergeLive2"])
       end  
-
     end
-    context "scopes" do 
-
-    end
-
     context "no argument methods" do 
       it "returns all users with non nil username " do 
         User.all.count.should eq(4)
@@ -126,6 +129,7 @@ describe Searchlogic::SearchExt::ChainedConditions do
         search.all.count.should eq(2)
         search.map(&:name).should eq(["James", "James Vanneman"])
       end
+      
       it "returns all users with nil username when value set to false" do 
         search = User.searchlogic(:username_not_nil => false)
         search.all.count.should eq(2)

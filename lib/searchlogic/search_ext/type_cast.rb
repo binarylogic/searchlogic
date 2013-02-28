@@ -2,9 +2,11 @@ module Searchlogic
   module SearchExt
     module TypeCast
       def typecast(method, value)
-        case column_type(method)
+        case type(method, value)
         when :boolean
           cast_boolean(value)
+        when :range 
+          value
         when :integer
           value.kind_of?(Array) ? cast_in_array(value, "cast_integer") : cast_integer(value)
         when :float 
@@ -24,15 +26,20 @@ module Searchlogic
         end
       end
       private 
-        def column_type(method)
-          if ordering?(method)
+        def type(method, value)
+          if value.kind_of?(Range)
+            :range
+          elsif value.kind_of?(Date)
+            :date
+          elsif value.kind_of?(Time)
+            :datetime
+          elsif ordering?(method)
             :ordering
           elsif boolean_method?(method)
             :boolean 
           elsif klass.searchlogic_scopes.include?(method)
             :scope
           elsif association_method = association_in_method(klass, method)
-            
             find_column(association_method)
           else
             column = klass.columns.find{|kc| method.to_s.include?(kc.name.to_s)}
@@ -40,6 +47,7 @@ module Searchlogic
             column.type
           end
         end
+
         def association_in_method(current_klass, method)
           association_candidates = current_klass.reflect_on_all_associations.select{|a| method.to_s.include?(a.name.to_s)}
           if !association_candidates.empty?
@@ -54,7 +62,6 @@ module Searchlogic
 
         def find_column(association_method)
           association, new_method = association_method
-
           new_klass = association.singularize.camelize.constantize
           column = new_klass.columns.find{|kc| new_method.to_s.include?(kc.name.to_s)}
           column = column.sort_by{|c1, c2| c.name.size <=> c.name.size } if column.kind_of?(Array) 
@@ -95,7 +102,7 @@ module Searchlogic
         end
 
         def cast_date(value)
-          Date.parse(value)
+          value.kind_of?(Date) ? value : Date.parse(value)
         end
 
         def cast_time(value)

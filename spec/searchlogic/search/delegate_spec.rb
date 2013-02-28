@@ -10,7 +10,6 @@ describe Searchlogic::SearchExt::Delegate do
 
   context "#delegate" do
     it "delegates to AR relation" do 
-      
       search = User.searchlogic(:username_is => "jvans1")
       search.count.should eq(3)
     end
@@ -36,5 +35,10 @@ describe Searchlogic::SearchExt::Delegate do
       james.first.name.should eq("James")
     end
   end
-
+  context "#empty" do 
+    it "should respond to empty" do 
+      search = Order.search
+      search.empty?.should be_true
+    end
+  end
 end

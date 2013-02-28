@@ -6,7 +6,7 @@ module Searchlogic
         def initialize(scope_conditions, klass)
           @scope_conditions = scope_conditions
           @klass = klass
-          @initial_scope = starting_scope || klass
+          @initial_scope = starting_scope || klass.all
         end
 
         def scope

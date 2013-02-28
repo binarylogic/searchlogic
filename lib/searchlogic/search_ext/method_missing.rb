@@ -9,7 +9,6 @@ module Searchlogic
           elsif valid_accessor?(scope_name,method)
             read_or_write_condition(scope_name, args)
           else
-            ##Hack, fix
             begin
               delegate(method, args, &block)
             rescue

@@ -8,6 +8,7 @@ module Searchlogic
         ##If no scope, defaults to klass so klass.map doesn't work
         ##If scope all methods work
         ##Can't initialize Search with AR::Rel obj
+        return scope_generator.scope if method_name.to_s == "all"
         args.nil? ? scope_generator.scope.send(method_name, &block) : scope_generator.scope.send(method_name, args, &block)
       
       end

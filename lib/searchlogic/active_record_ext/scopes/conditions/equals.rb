@@ -15,9 +15,9 @@ module Searchlogic
 
           def scope 
             return nil unless applicable?
-              find_column
-              klass.where("#{table_name}.#{column_name} IN (?)", values)
-            end
+            find_column
+            klass.where("#{table_name}.#{column_name} IN (?)", values)
+          end
           private
             def values
               args.flatten
