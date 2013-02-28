@@ -32,52 +32,6 @@ describe Searchlogic::SearchExt::ReaderWriter do
       search.orders_total = 10
       search.all.should eq([@tren, @james])
     end
-
-    it "should not merge conflicting conditions into one value" do
-      # This class should JUST be a proxy. It should not do anything more than that.
-      # A user would be allowed to call both named scopes if they wanted.
-      search = User.search
-      search.username_greater_than = "jvans1"
-      search.username_gt = "jvans1"
-      search.username_greater_than.should == "jvans1"
-      search.username_gt.should == "jvans1"
-    end   
-
-    it "should ignore blank values" do
-      User.create(:username => "")
-      search = User.search
-      search.conditions = {"username" => ""} 
-      search.username.should be_nil
-    end
-
-    it "should ignore blank strings" do
-
-      search = User.search(:name => "")
-      search.name.should be_nil
-
-    end
-    it "should ignore blank values in arrays" do 
-      search = User.search
-      search.username_equals_any = [""]
-      search.username_equals_any.should be_nil
-      search.name_eq(["", "Tren"])
-      search.name_eq.should eq(["Tren"])
-      search.conditions.should eq({ :name_eq => ["Tren"]})
-    end    
-    it "should allow setting custom conditions with an arity of 0" do
-      User.scope_procedure(:four_year_olds, lambda { User.age_equals(4)})
-      search = User.search
-      search.four_year_olds = true
-      search.four_year_olds.should eq(true)
-    end
-
-    it "should allow setting custom conditions individually with an arity of 1" do
-      User.scope_procedure(:username_should_be, lambda { |u| {:conditions => {:username => u}} })
-      search = User.search
-      search.username_should_be = "bjohnson"
-      search.username_should_be.should eq("bjohnson")
-    end 
-
     it "should not use the ruby implementation of the id method" do
       search = User.search
       search.id.should be_nil
@@ -110,21 +64,19 @@ describe Searchlogic::SearchExt::ReaderWriter do
       search.users_uname.should eq("bjohnson")
     end
 
-  end
+    it "overrides conditions with attribute writers" do 
+      search = User.searchlogic(:name_bw => "Ja")
+      search.map(&:name).should eq(["James", "James Vanneman"])
+      search.name_bw = "B"
+      ben = search.all
+      ben.count.should eq(1)
+      ben.map(&:name).should eq(["Ben"])
+    end
 
-  it "overrides conditions with attribute writers" do 
-    search = User.searchlogic(:name_bw => "Ja")
-    search.map(&:name).should eq(["James", "James Vanneman"])
-    search.name_bw = "B"
-    ben = search.all
-    ben.count.should eq(1)
-    ben.map(&:name).should eq(["Ben"])
-  end
-
-  it "should return nil for empty condition" do 
-    search = User.searchlogic(:name_ew => "man")
-    search.name_bw.should be_nil
-  end
+    it "should return nil for empty condition" do 
+      search = User.searchlogic(:name_ew => "man")
+      search.name_bw.should be_nil
+    end
 
     it "should not merge conflicting conditions into one value" do
       # This class should JUST be a proxy. It should not do anything more than that.
@@ -136,9 +88,46 @@ describe Searchlogic::SearchExt::ReaderWriter do
       search.username_gt.should eq("bjohnson2")
     end
 
+    it "should allow setting custom conditions with an arity of 0" do
+      User.scope_procedure(:four_year_olds, lambda { User.age_equals(4)})
+      search = User.search
+      search.four_year_olds = true
+      search.four_year_olds.should eq(true)
+    end
 
-  context "assigning nils" do
-    it "finds on explicit assignment" do 
+    it "should allow setting custom conditions individually with an arity of 1" do
+      User.scope_procedure(:username_should_be, lambda { |u| {:conditions => {:username => u}} })
+      search = User.search
+      search.username_should_be = "bjohnson"
+      search.username_should_be.should eq("bjohnson")
+    end 
+
+
+  end
+  context "#reader_writer_sanitize" do
+    it "should ignore blank values" do
+      User.create(:username => "")
+      search = User.search
+      search.conditions = {"username" => ""} 
+      search.username.should be_nil
+    end
+
+    it "should ignore blank strings" do
+
+      search = User.search(:name => "")
+      search.name.should be_nil
+
+    end
+    it "should ignore blank values in arrays" do 
+      search = User.search
+      search.username_equals_any = [""]
+      search.username_equals_any.should be_nil
+      search.name_eq(["", "Tren"])
+      search.name_eq.should eq(["Tren"])
+      search.conditions.should eq({ :name_eq => ["Tren"]})
+    end    
+
+    it "should not remove nils" do 
       search = User.searchlogic
       search.username = nil 
       search.count.should eq(4)
@@ -152,5 +141,7 @@ describe Searchlogic::SearchExt::ReaderWriter do
       search.count.should eq(2)
       search.map(&:name).should eq(["James", "James Vanneman"])
     end
+
   end
+
 end

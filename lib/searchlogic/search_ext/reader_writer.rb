@@ -22,7 +22,7 @@ module Searchlogic
       end
 
       def reader_writer_sanitize(key, value)
-        return value.flatten.first if value.flatten.first.nil?
+        return value.flatten.first if value.flatten.first.nil? || value.flatten.first == false
         first_val = value.flatten
         one_value = first_val.first if first_val.kind_of?(Array) && first_val.size == 1
         new_value =  typecast(key, one_value || first_val)
