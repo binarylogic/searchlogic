@@ -1,6 +1,6 @@
 module Searchlogic
   module SearchExt
-    module ChainedConditions
+    module Delegate
       class ScopeGenerator
         attr_accessor  :scope_conditions, :klass, :initial_scope
         def initialize(scope_conditions, klass)
@@ -9,14 +9,14 @@ module Searchlogic
           @initial_scope = starting_scope
         end
 
-        def full_scope
-          scope_conditions.inject(initial_scope) do |scope, (condition, value)| 
-            create_scope(scope, condition, value)
-          end
+        def scope
+          scope_conditions.empty? ? initial_scope : full_scope
         end
+
         private
           def starting_scope
             first_conditions = scope_conditions.shift
+            return nil unless first_conditions
             create_scope(klass, first_conditions[0], first_conditions[1])
           end
 
@@ -33,6 +33,12 @@ module Searchlogic
             else
               scope.send(condition, value)
             end          
+          end
+
+          def full_scope
+            scope_conditions.inject(initial_scope) do |scope, (condition, value)| 
+              create_scope(scope, condition, value)
+            end
           end
       end
     end

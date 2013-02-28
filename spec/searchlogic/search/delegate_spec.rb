@@ -10,6 +10,7 @@ describe Searchlogic::SearchExt::Delegate do
 
   context "#delegate" do
     it "delegates to AR relation" do 
+      
       search = User.searchlogic(:username_is => "jvans1")
       search.count.should eq(3)
     end

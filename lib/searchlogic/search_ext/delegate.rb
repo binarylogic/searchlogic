@@ -1,14 +1,15 @@
+Dir[File.dirname(__FILE__) + '/delegate/*.rb'].each { |f| require(f) }
 module Searchlogic
   module SearchExt
     module Delegate
       def delegate(method_name, args, &block)
         args = nil if args.empty?
-        new_conditions = sanitized_conditions
-        if new_conditions.empty?
+        scope_generator = ScopeGenerator.new(sanitized_conditions, klass)
+        if sanitized_conditions.empty?
           sending_klass = method_name.to_s == "all" ? klass : klass.all
           args.nil? ? sending_klass.send(method_name, &block) : sending_klass.send(method_name, args, &block)
         else
-          args.nil? ?  chained_conditions(new_conditions).send(method_name, &block)  : chained_conditions(new_conditions).send(method_name, args, &block)
+          args.nil? ? scope_generator.scope.send(method_name, &block) : scope_generator.scope.send(method_name, args, &block)
         end
       end
         ##Sanitized conditions in this class so they're only changed once

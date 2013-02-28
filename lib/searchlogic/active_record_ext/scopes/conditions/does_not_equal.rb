@@ -6,15 +6,17 @@ module Searchlogic
           def scope
             if applicable?
               find_column
-              klass.where("#{table_name}.#{column_name} != ?", "#{value}")  
+              klass.where("#{table_name}.#{column_name} not in (?)", values)  
             end
           end
 
           private
-            def value
-              args.first
+            def values
+              args.flatten
             end
-
+            def table_name
+              klass.to_s.underscore.pluralize
+            end            
             def find_column
               @column_name = /(.*)_does_not_equal$/.match(method_name)[1]
             end
