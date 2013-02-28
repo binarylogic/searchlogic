@@ -1,38 +1,11 @@
+Dir[File.dirname(__FILE__) + '/chained_conditions/*.rb'].each { |f| require(f) }
 module Searchlogic
   module SearchExt
     module ChainedConditions
       def chained_conditions(sanitized_conditions = self.conditions)          
-        conditions_for_results = sanitized_conditions.clone
-        first_params = conditions_for_results.shift                    
-        initial_scope = create_scope(first_params[0], first_params[1])
-        if conditions_for_results.empty?
-          initial_scope
-        else
-          process_scopes(conditions_for_results, initial_scope)
-        end        
+        scope_generator = ScopeGenerator.new(sanitized_conditions, klass)
+        scope_generator.scope_conditions.empty? ? scope_generator.initial_scope : scope_generator.full_scope
       end
-      private
-        def create_scope(scope, value)
-          if klass.searchlogic_scopes.include?(scope) && value
-            ##What if scope takes an arguement of true?
-            value == true ? klass.send(scope) : klass.send(scope, value)
-          elsif ordering?(scope)
-            klass.send(value)            
-          else
-            klass.send(scope, value)
-          end
-        end
-        def process_scopes(raw_conditions, starting_scope)
-          raw_conditions.inject(starting_scope) do |scope, conditions_value|
-            if klass.searchlogic_scopes.include?(conditions_value[0]) && conditions_value[1]
-              conditions_value[1] == true ? scope.send(conditions_value[0]) : scope.send(conditions_value[0], conditions_value[1])
-            elsif ordering?(conditions_value[0])
-              scope.send(conditions_value[1])
-            else
-              scope.send(conditions_value[0], conditions_value[1])
-            end
-          end        
-        end
-     end
+    end
   end
 end

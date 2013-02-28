@@ -17,7 +17,7 @@ describe Searchlogic::SearchExt::ReaderWriter do
     User.create(:name=>"James", :age =>20, :username => "jvans1" )
     User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
     User.create(:name => "Tren")
-    User.create(:name=>"Ben")
+    User.create(:name=>"Ben", :email => "ben@gmail.com")
 
   end
 
