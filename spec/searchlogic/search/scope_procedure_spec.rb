@@ -35,7 +35,6 @@ describe "Searchlogic::SearchExt::ScopeProcedure" do
     class User; scope_procedure(:cust_username, lambda{ |value| username_eq(value.reverse)} ); end
     search1 = User.search(:cust_username => "jvans1")
     search2 = User.search(:cust_username => "1snavj")    
-    binding.pry
     search1.count.should eq(0)
     search2.count.should eq(2)
   end

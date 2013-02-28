@@ -3,14 +3,27 @@ module Searchlogic
     module Scopes
       module Conditions
         class Equals < Condition
-          def scope
+
+          def initialize(klass, method_name, *args, &block)
+            @klass = klass
+            @method_name = method_name
+            @table_name = args[1] || klass.to_s.underscore.pluralize
+            @value = args[0]
+            @args = *args.flatten
+            @block = block
+          end
+
+          def scope 
             return nil unless applicable?
               find_column
-              klass.where("#{table_name}.#{column_name} = ?", values)
+              klass.where("#{table_name}.#{column_name} IN (?)", values)
             end
           private
             def values
-              args.first
+              args.flatten
+            end
+            def table_name
+              klass.to_s.underscore.pluralize
             end
             def find_column
               @column_name = /(.*)_equals$/.match(method_name)[1]

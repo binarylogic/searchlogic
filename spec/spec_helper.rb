@@ -58,6 +58,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.date :shipped_on
     t.float :taxes
     t.float :total
+    t.string :name
     t.string :title
   end
 

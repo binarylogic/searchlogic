@@ -11,22 +11,23 @@ module Searchlogic
           args.nil? ?  chained_conditions(new_conditions).send(method_name, &block)  : chained_conditions(new_conditions).send(method_name, args, &block)
         end
       end
-      private 
         ##Sanitized conditions in this class so they're only changed once
         ##the method has been delegated. This allows for the original search object to stay the same
 
-        def sanitized_conditions
-          conditions.inject({}) do |h, (k,v)|
-            key, value = replace_nils(k, v)
-            value = replace_empty_strings(v) if v.kind_of?(Array)
-            new_key, new_value = implicit_equals(key, value)
-            h[new_key] = new_value
-            h.delete(key) if empty_value?(value)
-            h.delete(k) if false_scope_proc?(k, v)
-            h.delete(new_key) if empty_value?(value)
-            h
-          end
+      def sanitized_conditions
+        conditions.inject({}) do |h, (k,v)|
+          key, value = replace_nils(k, v)
+          value = replace_empty_strings(v) if v.kind_of?(Array)
+          new_key, new_value = implicit_equals(key, value)
+          h[new_key] = new_value
+          h.delete(key) if empty_value?(value)
+          h.delete(k) if false_scope_proc?(k, v)
+          h.delete(new_key) if empty_value?(value)
+          h
         end
+      end
+
+      private 
 
         def replace_nils(original_key, value)
           new_key = (original_key.to_s + "_null").to_sym

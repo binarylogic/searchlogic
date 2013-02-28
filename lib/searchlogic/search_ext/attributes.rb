@@ -7,7 +7,7 @@ module Searchlogic
       end
 
       def conditions=(hash)
-        @conditions = sanitize(hash)
+        @conditions = initial_sanitize(hash)
       end
 
       def klass
@@ -16,7 +16,7 @@ module Searchlogic
 
       def ordering_by
         order = conditions[:order]
-        return order unless order
+        return order if order.nil?  
         order.split("_by_").last
       end
 

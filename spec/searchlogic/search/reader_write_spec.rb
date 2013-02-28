@@ -2,17 +2,39 @@ require 'spec_helper'
 
 describe Searchlogic::SearchExt::ReaderWriter do 
   before(:each) do 
+    o1 = Order.create(:total => 15)
+    o2 = Order.create(:total => 10)
+    o3 = Order.create(:total => 10)
+    o4 = Order.create(:total =>9)
+    o5 = Order.create(:total => 10)    
+    o6 = Order.create(:total => 12)    
+
+    @james = User.create(:orders => [o1,o3])
+    User.create(:age =>21, :username => "jvans1", :orders => [o6])
+    @tren  = User.create(:orders => [o5,o2])
+    @ben = User.create(:orders => [o4])
+
     User.create(:name=>"James", :age =>20, :username => "jvans1" )
     User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
     User.create(:name => "Tren")
     User.create(:name=>"Ben")
+
   end
+
+
   context "accessors" do 
 
     it "has readers for conditions" do
       search = User.searchlogic(:name_ew => "man")
       search.name_ew.should eq("man")
     end
+
+    it "lets you write methods on associatiated columns" do 
+      search = User.search 
+      search.orders_total = 10
+      search.all.should eq([@tren, @james])
+    end
+
     
     it "should allow setting custom conditions with an arity of 0" do
       User.scope_procedure(:four_year_olds, lambda { User.age_equals(4)})
@@ -91,8 +113,8 @@ describe Searchlogic::SearchExt::ReaderWriter do
     it "finds on explicit assignment" do 
       search = User.searchlogic
       search.username = nil 
-      search.count.should eq(2)
-      search.map(&:name).should eq(["Tren", "Ben"])
+      search.count.should eq(5)
+      search.map(&:name).should eq([ nil, nil, nil, "Tren", "Ben"])
     end
 
     it "finds with explicit assignment and other args" do 

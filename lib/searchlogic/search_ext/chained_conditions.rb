@@ -12,7 +12,16 @@ module Searchlogic
         end        
       end
       private
-
+        def create_scope(scope, value)
+          if klass.searchlogic_scopes.include?(scope) && value
+            ##What if scope takes an arguement of true?
+            value == true ? klass.send(scope) : klass.send(scope, value)
+          elsif ordering?(scope)
+            klass.send(value)            
+          else
+            klass.send(scope, value)
+          end
+        end
         def process_scopes(raw_conditions, starting_scope)
           raw_conditions.inject(starting_scope) do |scope, conditions_value|
             if klass.searchlogic_scopes.include?(conditions_value[0]) && conditions_value[1]
@@ -23,17 +32,6 @@ module Searchlogic
               scope.send(conditions_value[0], conditions_value[1])
             end
           end        
-        end
-
-        def create_scope(scope, value)
-          if klass.searchlogic_scopes.include?(scope) && value
-            ##What if scope takes an arguement of true?
-            value == true ? klass.send(scope) : klass.send(scope, value)
-          elsif ordering?(scope)
-            klass.send(value)            
-          else
-            klass.send(scope, value)
-          end
         end
      end
   end

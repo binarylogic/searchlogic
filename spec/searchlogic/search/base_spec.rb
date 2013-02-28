@@ -1,6 +1,6 @@
-require 'spec_helper'
+  require 'spec_helper'
 
-describe Searchlogic::SearchExt::Base do 
+  describe Searchlogic::SearchExt::Base do 
   before(:each) do 
     @James = User.create(:name=>"James", :age =>20, :username => "jvans1", :email => "jvannem@gmail.com" )
     @JamesV = User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
@@ -17,20 +17,28 @@ describe Searchlogic::SearchExt::Base do
       search = User.search(:username => "bjohnson")
       search.conditions.should == {:username => "bjohnson"}
     end
+  end
+
+
+  context "#sanitize_conditions" do 
     it "ignores nil on mass assignment" do 
       search = User.searchlogic(:username_eq => nil, :name_like =>"James")
       search.count.should eq(2)
       search.map(&:name).should eq(["James", "James Vanneman"])
     end    
-  end
 
-  context "#sanitize_conditions" do 
+    it "ignores unauthorized scopes on mass assignment" do 
+      search = User.search(:username_eq => nil, :age_gt => 26, :destroy_all => true, :awesome => "AwesoemS")
+      search.conditions.should eq({:age_gt=> 26 })
+    end 
+    
     it "should ignore blank values but still return on conditions" do
+      User.create(:username => "")
       search = User.search
       search.conditions = {"username" => ""} 
-      search.send('sanitized_conditions').should eq({})
-
+      search.username.should eq("")
     end
+
     it "should not merge conflicting conditions into one value" do
       # This class should JUST be a proxy. It should not do anything more than that.
       # A user would be allowed to call both named scopes if they wanted.
@@ -42,6 +50,7 @@ describe Searchlogic::SearchExt::Base do
     end   
 
     it "should ignore blank values in arrays" do
+      User.create(:username => "")
       search = User.search
       search.conditions = {"username_equals_any" => [""]}
       search.username_equals_any.should eq([""])
@@ -50,11 +59,12 @@ describe Searchlogic::SearchExt::Base do
       search.conditions = {"username_equals_any" => ["", "Tren"]}
       search.all.should eq([User.find_by_name("Tren")])      
     end
+    it "allows string keys" do
+      search = User.search("name_eq" => "James")
+      search.map(&:name).should eq(["James"])
+    end  
+  
   end
-  it "allows string keys" do
-    search = User.search("name_eq" => "James")
-    search.map(&:name).should eq(["James"])
-  end  
 
   context "#clone" do
     it "should clone properly" do
