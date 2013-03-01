@@ -11,7 +11,8 @@ module Searchlogic
       end
       
       def write_condition(key, value)
-        conditions[key.to_sym] = value.first
+        vals = value.flatten
+        conditions[key.to_sym] = typecast(key, *vals)
         self
       end
 

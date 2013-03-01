@@ -12,7 +12,7 @@ module Searchlogic
 
       def sanitized_conditions
         conditions.inject({}) do |h, (k,v)|
-          h[k] = typecast(k,v)
+          h[k] = v
           h.delete(k) if false_scope_proc?(k, v)
           h
         end
@@ -21,7 +21,7 @@ module Searchlogic
       private 
 
         def false_scope_proc?(key, value)
-          klass.searchlogic_scopes.include?(key.to_sym) && !value
+          klass.named_scopes.include?(key.to_sym) && !value
         end
 
         def column_or_association?(key)

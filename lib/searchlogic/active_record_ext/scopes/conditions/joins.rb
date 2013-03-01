@@ -33,8 +33,8 @@ module Searchlogic
               args.empty? ? association.klass.send(new_method) : association.klass.send(new_method, value)
             end
 
-            def scope_procedure? 
-              klass.searchlogic_scopes.map(&:to_s).include?(new_method.to_s)
+            def named_scopes? 
+              klass.named_scopes.map(&:to_s).include?(new_method.to_s)
             end
 
             def generate_join_and_send_method(join_values)

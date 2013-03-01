@@ -25,7 +25,7 @@ module Searchlogic
           end
 
           def create_scope(scope, condition, value)
-            if scope.searchlogic_scopes.include?(condition) && !(value).nil?
+            if scope.named_scopes.include?(condition) && !(value).nil?
               ##What if scope takes an arguement of true?
               value == true ? scope.send(condition) : scope.send(condition, *value)
             elsif ordering?(condition)

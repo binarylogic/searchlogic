@@ -15,7 +15,7 @@ module Searchlogic
           end
 
           def applicable?             
-            klass.searchlogic_scopes.detect{ |scope| scope.to_s == method_name.to_s }
+            klass.named_scopes.detect{ |scope| scope.to_s == method_name.to_s }
           end
         end
       end

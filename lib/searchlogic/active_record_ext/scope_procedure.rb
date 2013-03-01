@@ -1,4 +1,4 @@
-Dir[File.dirname(__FILE__) + '/scope_procedure/*.rb'].each { |f| require(f) }
+Dir[File.dirname(__FILE__) + '/named_scopes/*.rb'].each { |f| require(f) }
 module Searchlogic
   module ActiveRecordExt
     module ScopeProcedure
@@ -9,8 +9,8 @@ module Searchlogic
       end
 
       module ClassMethods
-        def searchlogic_scopes 
-          @searchlogic_scopes ||= []
+        def named_scopes 
+          @named_scopes ||= []
         end
       end
     end

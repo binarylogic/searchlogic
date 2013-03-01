@@ -14,8 +14,8 @@
     end
 
     it "should set the conditions" do
-      search = User.search(:username => "bjohnson")
-      search.conditions.should == {:username => "bjohnson"}
+      search = User.search(:username_eq => "bjohnson")
+      search.conditions.should eq({:username_eq => "bjohnson"})
     end
   end
 
@@ -23,32 +23,31 @@
   context "#initial_sanitize" do 
     it "ignores nil on mass assignment" do 
       search = User.searchlogic(:username_eq => nil, :name_like =>"James")
+      search.conditions.should eq({:name_like => "James"})
       search.count.should eq(2)
       search.map(&:name).should eq(["James", "James Vanneman"])
     end    
 
-    it "ignores unauthorized scopes on mass assignment" do 
-      search = User.search(:age_gt => 26, :unauthorized => "not ok")
-      search.conditions.should eq({:age_gt=> 26 })
+    it "raises error when passing unauthorzed scope on mass assignment" do 
+      expect {User.search(:age_gt => 26, :unauthorized => "not ok")}.to raise_error
     end 
 
-    it "ignores destructive methods" do 
-      search = User.search(:destroy => true)
-      search.conditions.should be_empty
+    it "raises error when passing destructive methods on initialize" do 
+      expect{ User.search(:destroy => true)}.to raise_error
     end
 
     it "should ignore blank strings" do
       User.create(:username => "")
-      search = User.search(:conditions => {"username" => ""} )
-      search.username.should be_nil
-      search = User.search(:name => [])
-      search.name.should eq([])
+      search = User.search(:conditions => {"username_eq" => ""} )
+      search.username_eq.should be_nil
+      search = User.search(:name_eq => [])
+      search.name_eq.should eq([])
     end
 
     it "should not ignore blank values in arrays" do
       User.create(:username => "")
       search = User.search("username_equals_any" => [""])
-      search.username_equals_any.should eq [""]
+      search.username_equals_any.should eq ""
       search.conditions = {"username_equals_any" => ["", "Tren"]}
       search.conditions.should eq({:username_equals_any => ["", "Tren"]})
     end
@@ -67,10 +66,10 @@
       user2 = company.users.create(:age => 25)
       search1 = company.users.search(:age_gt => 10)
       search2 = search1.clone
+      search2.conditions.should eq(search1.conditions)
       search2.age_gt = 1
-      
-      search2.all.should eq(User.all)
-      search1.all.should eq([@James, @JamesV, @Tren, @Ben, user2])
+      search2.all.should eq([user1, user2])
+      search1.all.should eq([user2])
     end
 
     it "should clone properly without scope" do

@@ -8,7 +8,7 @@ module Searchlogic
 
       def conditions=(hash)
         hash.each do |k,v|
-          next if v.is_a?(String) && v.blank?
+          next if (v.is_a?(String) && v.blank?) || v.nil?
           send("#{k}=", v)
         end
       end
@@ -19,6 +19,10 @@ module Searchlogic
         order.split("_by_").last
       end
 
+      def klass
+        @klass
+      end
+      
       def method
         @method
       end

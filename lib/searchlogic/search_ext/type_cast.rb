@@ -1,7 +1,8 @@
 module Searchlogic
   module SearchExt
     module TypeCast
-      def typecast(method, value)
+      def typecast(method, *val)
+        value = val.size == 1 ? val.first : val
         case type(method, value)
         when :boolean
           cast_boolean(value)
@@ -37,7 +38,7 @@ module Searchlogic
             :ordering
           elsif boolean_method?(method)
             :boolean 
-          elsif klass.searchlogic_scopes.include?(method)
+          elsif klass.named_scopes.include?(method)
             :scope
           elsif association_method = association_in_method(klass, method)
             find_column(association_method)
@@ -82,6 +83,7 @@ module Searchlogic
         end
 
         def cast_integer(value)
+          
           if value.kind_of?(String)
             value.to_i
           else
@@ -90,6 +92,7 @@ module Searchlogic
         end
 
         def cast_in_array(array, method)
+          
           array.map { |v| self.send(method, v) }
         end
 

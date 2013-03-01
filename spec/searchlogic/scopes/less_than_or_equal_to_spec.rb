@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Searchlogic::ActiveRecordExt::Scopes::Conditions::LessThanOrEqualTo do 
   before(:each) do 
-    User.create(:name => "Joe", :age => 25, :created_at => DateTime.new(2012,2,29))
+    User.create(:name => "Joe", :age => 25, :created_at => DateTime.new(2012,7,29))
     User.create(:name => "James", :age => 26, :created_at => DateTime.new(2012,2,12))
     User.create(:name => "Ben", :age => 30, :created_at => DateTime.new(2012,1,12))
   end

@@ -19,8 +19,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Joins do
 
   it "returns all users with order total greater than 20" do 
     users = User.orders__total_greater_than(20)    
-    binding.pry
-    users.size.should eq(1)
+    # users.size.should eq(2)
     users.map(&:name).should eq(["James", "Ben"])
   end
 

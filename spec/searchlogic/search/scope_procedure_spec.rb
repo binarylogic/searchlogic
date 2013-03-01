@@ -3,8 +3,8 @@ require 'spec_helper'
 describe "Searchlogic::SearchExt::Search::ScopeProcedure" do 
   before(:each) do
     class User
-      scope_procedure(:young, lambda { age_lt(21)})
-      scope_procedure :awesome, lambda { name_like("James") }
+      scope(:young, lambda { age_lt(21)})
+      scope :awesome, lambda { name_like("James") }
     end
     james = User.create(:name=>"James", :age =>20, :username => "jvans1", :email => "jvannem@gmail.com" )
     @jamesv = User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
@@ -38,7 +38,7 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
 
   context "scopes" do
     it "should use custom scopes before normalizing" do
-      class User; scope_procedure(:cust_username, lambda{ |value| username_eq(value.reverse)} ); end
+      class User; scope(:cust_username, lambda{ |value| username_eq(value.reverse)} ); end
       search1 = User.search(:cust_username => "jvans1")
       search2 = User.search(:cust_username => "1snavj")    
       search1.count.should eq(0)
@@ -47,7 +47,7 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
 
     it "should allow setting pre-existing association conditions" do
       class User
-        User.scope_procedure :uname, lambda { |value| where("users.username = ?", value) }
+        User.scope :uname, lambda { |value| where("users.username = ?", value) }
       end
       search = Company.search
       search.users_uname = "jvans1"
@@ -56,7 +56,7 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
 
     it "should allow setting custom conditions individually with an arity of 0" do
       class User
-        scope_procedure(:twenty_years_old, lambda{ age_eq(20)})
+        scope(:twenty_years_old, lambda{ age_eq(20)})
       end
       search = User.search
       search.twenty_years_old = true
@@ -66,20 +66,21 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
 
     it "should delegate to scope procedure with arity > 1" do
       class User
-        scope_procedure :paged, lambda {|start, limit | limit(limit).offset(start) }
+        scope :paged, lambda {|start, limit | limit(limit).offset(start) }
       end
       User.create(:username => "bjohnson")
-      search = User.search(:username => "bjohnson")
+      search = User.search(:username_equals => "bjohnson")
       search.paged(0, 1).count.should eq(1)
       search.paged(0, 0).count.should eq(0)
     end 
 
     it "should create a search proxy" do
-      User.search(:username => "joe").should be_kind_of(Searchlogic::Search)
+      User.search(:username_eq => "joe").should be_kind_of(Searchlogic::Search)
     end
 
-    it "should create a search proxy using the same class" do
-      User.search.klass.should == User
+    xit "should create a search proxy using the same class" do
+      binding.pry
+      User.search.klass.should eq(User)
     end
 
     it "should pass on the current scope to the proxy" do

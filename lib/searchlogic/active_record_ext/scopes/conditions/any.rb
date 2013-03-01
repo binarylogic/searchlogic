@@ -27,9 +27,9 @@ module Searchlogic
             end
 
             def separate_scopes(where_values)
-              or_values = where_values.map { |wv| wv.last }.join(" OR ")
-              and_values = where_values.map { |wv| wv.take_while{|e| e != wv.last } }.join(" AND ")
-              or_values + " AND " + and_values
+              or_values = where_values.map { |wv| wv.last }.join(" OR ")              
+              and_values = where_values.map { |wv| next if wv.size ==1; wv.take_while{|e| e != wv.last } }.compact
+              and_values.empty? ? or_values : or_values + " AND " + and_values.join(" AND ")
             end
         end
       end

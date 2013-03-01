@@ -25,8 +25,7 @@ describe Searchlogic::SearchExt::Delegate::ScopeGenerator do
     Company.create(:users => [u3, u4], :name => "ConciergeLive2")
   end
 
-  context "#initialize" do 
-
+  context "#initialize" do
     it "defaults to klass.all if no scope conditions are present" do 
       generator = Searchlogic::SearchExt::Delegate::ScopeGenerator.new({}, User) 
       generator.scope.all.should eq(User.all)

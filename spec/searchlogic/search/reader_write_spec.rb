@@ -35,7 +35,7 @@ describe Searchlogic::SearchExt::ReaderWriter do
 
     it "should not use the ruby implementation of the id method" do
       search = User.search
-      search.id.should be_nil
+      search.id_eq.should be_nil
     end
 
     it "sets conditions with attribute writers" do 
@@ -57,7 +57,7 @@ describe Searchlogic::SearchExt::ReaderWriter do
 
     it "should allow setting pre-existing association conditions" do
       class User
-        scope_procedure(:uname, lambda{ |value| User.where("users.username = ?", value)})
+        scope(:uname, lambda{ |value| User.where("users.username = ?", value)})
       end
       search = Company.search
       search.users_uname = "bjohnson"
@@ -89,14 +89,14 @@ describe Searchlogic::SearchExt::ReaderWriter do
     end
 
     it "should allow setting custom conditions with an arity of 0" do
-      User.scope_procedure(:four_year_olds, lambda { User.age_equals(4)})
+      User.scope(:four_year_olds, lambda { User.age_equals(4)})
       search = User.search
       search.four_year_olds = true
       search.four_year_olds.should eq(true)
     end
 
     it "should allow setting custom conditions individually with an arity of 1" do
-      User.scope_procedure(:username_should_be, lambda { |u| {:conditions => {:username => u}} })
+      User.scope(:username_should_be, lambda { |u| {:conditions => {:username => u}} })
       search = User.search
       search.username_should_be = "bjohnson"
       search.username_should_be.should eq("bjohnson")
