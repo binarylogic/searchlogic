@@ -25,6 +25,16 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Oor do
     usernames.should eq(["Ben", "Tren", "James"])
   end
 
+  it "should not get confused by the 'or' in find_or_create_by_* methods" do
+    User.create(:name => "Fred")
+    User.find_or_create_by_name("Fred").should be_a_kind_of User
+  end
+
+  it "should not get confused by the 'or' in compound find_or_create_by_* methods" do
+    User.create(:name => "Fred", :username => "fredb")
+    User.find_or_create_by_name_and_username("Fred", "fredb").should be_a_kind_of User
+  end
+  
 
   it "gathers users based on OR with two different conditions" do 
     users = User.username_like_or_name_equals("James")

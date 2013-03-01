@@ -40,6 +40,7 @@ module Searchlogic
             end
 
             def applicable? 
+              return nil if /find_or_create/ =~ method_name 
               !(/_or_/ =~ method_name).nil?
             end
         end

@@ -135,7 +135,5 @@ describe Searchlogic::SearchExt::ReaderWriter do
       search.count.should eq(2)
       search.map(&:name).should eq(["James", "James Vanneman"])
     end
-
   end
-
 end

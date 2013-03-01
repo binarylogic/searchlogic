@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Searchlogic::SearchExt::Delegate do 
   before(:each) do 
-    User.create(:name=>"James", :age =>20, :username => "jvans1" )
+    @james = User.create(:name=>"James", :age =>20, :username => "jvans1" )
     User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
     User.create(:name => "Tren", :username =>"jvans")
     User.create(:name=>"Ben", :username =>"jvans1")
@@ -12,6 +12,10 @@ describe Searchlogic::SearchExt::Delegate do
     it "delegates to AR relation" do 
       search = User.searchlogic(:username_is => "jvans1")
       search.count.should eq(3)
+    end
+
+    it "should delegate the find_* method of active record" do 
+      User.find_by_name("James").should eq(@james)
     end
 
     it "delegates with arguements" do 
@@ -49,6 +53,7 @@ describe Searchlogic::SearchExt::Delegate do
       search.conditions.should eq({:name=> "James"})
       search.sanitized_conditions.should eq({:name_equals => "James"})
     end
+
     it "should remove empty strings" do 
       search = User.search
       search = User.search
@@ -58,7 +63,7 @@ describe Searchlogic::SearchExt::Delegate do
     end
 
     it "should remove  empty arrays" do
-      search = User.search(:name => "")
+      search = User.search(:name => [""])
       search.sanitized_conditions.should be_blank
     end
 
