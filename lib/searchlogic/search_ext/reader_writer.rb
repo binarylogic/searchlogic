@@ -4,7 +4,6 @@ module Searchlogic
       private 
       def read_or_write_condition(scope_name, args)
         if authorized_scope?(scope_name) || column_name?(scope_name) || associated_column?(scope_name)
-
           args.empty? ? read_condition(scope_name) : write_condition(scope_name, args)
         else
           ::Kernel.send(:raise, UnknownConditionError, scope_name.to_s)
@@ -12,9 +11,7 @@ module Searchlogic
       end
       
       def write_condition(key, value)
-        
-        new_value = reader_writer_sanitize(key, value)
-        conditions[key.to_sym] = new_value
+        conditions[key.to_sym] = value.first
         self
       end
 

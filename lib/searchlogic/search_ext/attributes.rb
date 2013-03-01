@@ -3,15 +3,14 @@ module Searchlogic
     module Attributes
 
       def conditions
-        @conditions
+        @conditions ||= {}
       end
 
       def conditions=(hash)
-        @conditions = hash.inject({}) { |h, (k,v)| h[k.to_sym] = reader_writer_sanitize(k,v); h }
-      end
-
-      def klass
-        @klass
+        hash.each do |k,v|
+          next if v.is_a?(String) && v.blank?
+          send("#{k}=", v)
+        end
       end
 
       def ordering_by

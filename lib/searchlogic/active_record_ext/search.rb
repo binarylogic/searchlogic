@@ -9,7 +9,7 @@ module Searchlogic
 
       module ClassMethods
         def searchlogic(conditions = {})      
-          Search.new(self, conditions)
+          Search.new(self.where("true"), conditions)
         end
         alias_method :search, :searchlogic
       end

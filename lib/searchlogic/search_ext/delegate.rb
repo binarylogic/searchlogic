@@ -28,6 +28,7 @@ module Searchlogic
           new_key = (original_key.to_s + "_null").to_sym
           value.nil? ? [new_key, true] : [original_key, value]
         end
+
         def delete_empty_strings(value)
           empty_strings_removed = []
           value.each do |v|
@@ -47,7 +48,6 @@ module Searchlogic
           new_key = (original_key.to_s + "_equals").to_sym
           column_or_association?(original_key) ? [new_key, value] : [original_key, value]
         end
-
         def column_or_association?(key)
           !!(klass.column_names.detect{|kcn| kcn.to_sym == key} || klass.reflect_on_all_associations.detect{ |association| key.to_s.include?(association.name.to_s) && !authorized_scope?(key.to_s) })
         end

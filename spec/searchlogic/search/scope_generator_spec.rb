@@ -54,7 +54,7 @@ describe Searchlogic::SearchExt::Delegate::ScopeGenerator do
       search.all.count.should eq(1)
       search.map(&:name).should eq(["jvans1's order"])
     end
-    it "runs all any conditions first" do 
+    xit "runs all any conditions first" do 
 
     end
 

@@ -32,29 +32,23 @@
       search.conditions.should eq({:age_gt=> 26 })
     end 
 
-    it "ignores nils on mass assignmetn" do 
-      search = User.search(:name_eq => nil)
-      search.conditions.should be_empty
-    end
-
     it "ignores destructive methods" do 
       search = User.search(:destroy => true)
       search.conditions.should be_empty
     end
 
-    it "should ignore blank values" do
+    it "should ignore blank strings" do
       User.create(:username => "")
       search = User.search(:conditions => {"username" => ""} )
       search.username.should be_nil
       search = User.search(:name => [])
-      search.name.should be_nil
+      search.name.should eq([])
     end
 
-    it "should ignore blank values in arrays" do
+    it "should not ignore blank values in arrays" do
       User.create(:username => "")
       search = User.search("username_equals_any" => [""])
-      search.username_equals_any.should be_nil
-      search.all.should eq(User.all)
+      search.username_equals_any.should eq [""]
       search.conditions = {"username_equals_any" => ["", "Tren"]}
       search.conditions.should eq({:username_equals_any => ["", "Tren"]})
     end
@@ -64,7 +58,6 @@
       search.conditions.should eq({:name_eq => "James"})
       search.name_eq.should eq("James")
     end  
-  
   end
 
   context "#clone" do
