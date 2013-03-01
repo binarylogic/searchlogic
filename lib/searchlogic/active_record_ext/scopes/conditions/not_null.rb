@@ -4,7 +4,6 @@ module Searchlogic
       module Conditions
         class NotNull < Condition
           def scope
-
             if applicable? && args.first != false          
               find_column
               klass.where("#{table_name}.#{column_name} is not NULL")

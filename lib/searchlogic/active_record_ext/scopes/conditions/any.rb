@@ -5,10 +5,9 @@ module Searchlogic
         class Any < Condition
           def scope
             if applicable?
-              where_values = value.map{|arg| klass.send(new_method, arg).where_values}.
-                            flatten.
-                            join(" OR ")
-              klass.where(where_values)
+              where_values = value.map{|arg| klass.send(new_method, arg).where_values}
+              joined_scopes = separate_scopes(where_values)
+              klass.where(joined_scopes)
             end
           end
 
@@ -25,6 +24,12 @@ module Searchlogic
             end
             def applicable? 
               !(/_any/ =~ method_name).nil?
+            end
+
+            def separate_scopes(where_values)
+              or_values = where_values.map { |wv| wv.last }.join(" OR ")
+              and_values = where_values.map { |wv| wv.take_while{|e| e != wv.last } }.join(" AND ")
+              or_values + " AND " + and_values
             end
         end
       end

@@ -2,12 +2,13 @@ module Searchlogic
   module SearchExt
     module Delegate
       class ScopeGenerator
-        attr_accessor  :scope_conditions, :klass, :initial_scope
+        attr_accessor  :scope_conditions, :initial_scope
         def initialize(scope_conditions, klass)
-          @scope_conditions = scope_conditions
-          @klass = klass
-          @initial_scope = starting_scope
+          self.scope_conditions = scope_conditions
+          self.initial_scope = klass
+
         end
+
         def scope
           scope_conditions.empty? ? initial_scope : full_scope
         end
@@ -38,10 +39,6 @@ module Searchlogic
             scope_conditions.inject(initial_scope) do |scope, (condition, value)| 
               create_scope(scope, condition, value)
             end
-          end
-
-          def with_any_condition
-            scope_conditions.find{|sc, value| /_any$/ =~ sc}
           end
       end
     end

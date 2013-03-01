@@ -29,7 +29,7 @@ describe Searchlogic::SearchExt::ReaderWriter do
 
     it "lets you write methods on associatiated columns" do 
       search = User.search 
-      search.orders_total = 10
+      search.orders_total_equals = 10
       search.all.should eq([@tren, @james])
     end
 
@@ -109,8 +109,8 @@ describe Searchlogic::SearchExt::ReaderWriter do
       #Will be ignored when search is performed
       User.create(:username => "")
       search = User.search
-      search.conditions = {"username" => ""} 
-      search.username.should eq("")
+      search.username_eq = ""
+      search.username_eq.should eq("")
     end
     it "should allow blank values" do 
       search = User.search
@@ -123,15 +123,15 @@ describe Searchlogic::SearchExt::ReaderWriter do
 
     it "should not remove nils" do 
       search = User.searchlogic
-      search.username = nil 
+      search.username_eq = nil 
       search.count.should eq(4)
       search.map(&:name).should eq([ nil, nil, nil, "Ben"])
     end
 
     it "finds with explicit assignment and other args" do 
       search = User.search(:name_contains => "James")
-      search.email = nil 
-      search.conditions.should eq({:name_contains => "James", :email => nil})
+      search.email_eq = nil 
+      search.conditions.should eq({:name_contains => "James", :email_eq => nil})
       search.count.should eq(2)
       search.map(&:name).should eq(["James", "James Vanneman"])
     end

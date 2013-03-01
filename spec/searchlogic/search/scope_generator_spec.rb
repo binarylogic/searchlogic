@@ -26,17 +26,10 @@ describe Searchlogic::SearchExt::Delegate::ScopeGenerator do
   end
 
   context "#initialize" do 
+
     it "defaults to klass.all if no scope conditions are present" do 
       generator = Searchlogic::SearchExt::Delegate::ScopeGenerator.new({}, User) 
-      generator.scope.should eq(User.all)
-    end
-
-    it "always uses an 'any' conditioned scope first" do
-      ##Otherwise when scope is sent to ANY condition it joins all the scopes with OR so
-      ## {:name_not_equal => "James", :username_equal_any => ["Tren", "Ben"]} => where user.name not in("James") OR user.username IN ("TREN") 
-      ##instead the first ANY scope is returned the rest of the scopes work as expected
-      scope_generator = Searchlogic::SearchExt::Delegate::ScopeGenerator.new({:name_not_eq => "James", :age_gt=> 26, :id_eq_any => [1,2]}, User)
-      scope_generator.initial_scope.all.should eq([@u1, @u2])
+      generator.scope.all.should eq(User.all)
     end
   end
   context "#scope" do
@@ -54,6 +47,7 @@ describe Searchlogic::SearchExt::Delegate::ScopeGenerator do
       search.all.count.should eq(1)
       search.map(&:name).should eq(["jvans1's order"])
     end
+
     xit "runs all any conditions first" do 
 
     end
@@ -62,8 +56,8 @@ describe Searchlogic::SearchExt::Delegate::ScopeGenerator do
       search = User.searchlogic
       search.name_contains = "James"
       search.age_lt = 21
-      search.username = "jvans1"
-      search.email = nil 
+      search.username_eq = "jvans1"
+      search.email_eq = nil 
       cond_hash1 = search.conditions
       james = search.all 
       cond_hash2 = search.conditions
@@ -98,7 +92,7 @@ describe Searchlogic::SearchExt::Delegate::ScopeGenerator do
       end
 
       it "containing other conditions" do 
-        search = Order.searchlogic(:title => "jvans1", "order" => "descend_by_total", :user_id_eq_any => [2,3])
+        search = Order.searchlogic(:title_eq => "jvans1", "order" => "descend_by_total", :user_id_eq_any => [2,3])
         orders = search.all
         orders.count.should eq(2)
         orders.map(&:total).should eq([20, 19])

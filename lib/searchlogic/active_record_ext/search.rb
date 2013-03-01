@@ -8,8 +8,8 @@ module Searchlogic
       end
 
       module ClassMethods
-        def searchlogic(conditions = {})      
-          Search.new(self.where("true"), conditions)
+        def searchlogic(conditions = {}) 
+          Search.new(self.where("1=1") , conditions)
         end
         alias_method :search, :searchlogic
       end

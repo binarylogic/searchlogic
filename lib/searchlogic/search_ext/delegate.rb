@@ -12,48 +12,20 @@ module Searchlogic
 
       def sanitized_conditions
         conditions.inject({}) do |h, (k,v)|
-          key, value = replace_nils(k, v)
-          new_key, new_value = implicit_equals(key, value)
-          h[new_key] = new_value
-          h[new_key] = delete_empty_strings(new_value) if new_value.kind_of?(Array)
-          h.delete(key) if empty_value?(value)
+          h[k] = typecast(k,v)
           h.delete(k) if false_scope_proc?(k, v)
-          h.delete(new_key) if empty_value?(value)
           h
         end
       end
 
       private 
-        def replace_nils(original_key, value)
-          new_key = (original_key.to_s + "_null").to_sym
-          value.nil? ? [new_key, true] : [original_key, value]
-        end
 
-        def delete_empty_strings(value)
-          empty_strings_removed = []
-          value.each do |v|
-            if v.kind_of?(String)
-              empty_strings_removed << v unless v.empty?
-            else
-              empty_strings_removed << v
-            end
-          end
-          empty_strings_removed
-        end
         def false_scope_proc?(key, value)
           klass.searchlogic_scopes.include?(key.to_sym) && !value
         end
 
-        def implicit_equals(original_key, value)
-          new_key = (original_key.to_s + "_equals").to_sym
-          column_or_association?(original_key) ? [new_key, value] : [original_key, value]
-        end
         def column_or_association?(key)
           !!(klass.column_names.detect{|kcn| kcn.to_sym == key} || klass.reflect_on_all_associations.detect{ |association| key.to_s.include?(association.name.to_s) && !authorized_scope?(key.to_s) })
-        end
-
-        def empty_value?(value)
-          (value.kind_of?(String) || value.kind_of?(Array))  && value.empty?
         end
 
         def ordering?(scope_name)
