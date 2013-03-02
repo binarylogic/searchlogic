@@ -23,6 +23,9 @@ describe Searchlogic::ActiveRecordExt::ScopeProcedure::ClassMethods do
     users.count.should eq(1)
     users.first.name.should eq("James")
   end
+  it "works with deep OR conditions " do
+
+  end
 
   it "calls scope proc with an arity of 0" do 
     class User; scope :cool, lambda{ where("name LIKE ?", "%Jam%") }; end

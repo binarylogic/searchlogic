@@ -14,6 +14,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::DescendBy do
     user_ids = users.map(&:id)
     user_ids.should eq([5,4,3,2,1])
   end
+  
   it "sorts on desending order total " do
     user_orders = User.descend_by_order_total 
     user_orders.count.should eq(6)

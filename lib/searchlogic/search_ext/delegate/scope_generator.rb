@@ -25,13 +25,14 @@ module Searchlogic
           end
 
           def create_scope(scope, condition, value)
-            if scope.named_scopes.include?(condition) && !(value).nil?
+            std_condition = AliasesConverter.new(scope, condition, value).scope
+            if scope.named_scopes.include?(std_condition) && !(value).nil?
               ##What if scope takes an arguement of true?
-              value == true ? scope.send(condition) : scope.send(condition, *value)
-            elsif ordering?(condition)
+              value == true ? scope.send(std_condition) : scope.send(std_condition, *value)
+            elsif ordering?(std_condition)
               scope.send(value)            
             else
-              scope.send(condition, *value)
+              scope.send(std_condition, *value)
             end          
           end
 

@@ -79,7 +79,6 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
     end
 
     xit "should create a search proxy using the same class" do
-      binding.pry
       User.search.klass.should eq(User)
     end
 

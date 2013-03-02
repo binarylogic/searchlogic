@@ -1,5 +1,6 @@
 require Dir[File.dirname(__FILE__) + '/conditions/chronic_support.rb'].first
 require Dir[File.dirname(__FILE__) + '/conditions/condition.rb'].first
+require_relative "../../aliases_converter.rb"
 Dir[File.dirname(__FILE__) + '/conditions/*.rb'].each { |f| require(f) }
 
 module Searchlogic
@@ -12,7 +13,11 @@ module Searchlogic
         end
 
         def joined_condition_klasses
-          condition_klasses.map{ |k| make_comparable(k)}.join("|")
+          condition_klasses.map{ |k| make_comparable(k)}.join("|_")
+        end
+
+        def sl_conditions
+          %w{any greater_than_or_equal_to less_than_or_equal_to equals begins_with does_not_equal does_not_begin_with ends_with _does_not_end_with _not_like _like greater_than _less_than _not_null _null _not_blank blank ascend_by descend_by  _or_}.join("|")
         end
 
         def tables
@@ -21,9 +26,11 @@ module Searchlogic
         
         private
         def method_missing(method, *args, &block) 
-          return memoized_scope[method] if memoized_scope[method]
-          generate_scope(method, args, &block) || super
+          std_method = AliasesConverter.new(self, method, args).scope
+          return memoized_scope[std_method] if memoized_scope[std_method]
+          generate_scope(std_method, args, &block) || super
         end
+
         def generate_scope(method, args, &block)
           condition_klasses.each do |ck|
             scope = ck.generate_scope(self, method, args, &block)
@@ -40,17 +47,17 @@ module Searchlogic
         end
 
         def scopeable?(method)
-          !!(/(#{joined_condition_klasses})/.match(method)) || !!(Aliases.match_alias(method))
+          !!(/(#{sl_conditions})/.match(method))
         end
+
         def condition_klasses
-          #NOTE DO NOT FUCK WITH THIS ORDER
          [  
             NormalizeInput,
             Polymorphic,
             Any,
+            Oor,
             GreaterThanOrEqualTo,
             LessThanOrEqualTo,
-            Oor,
             Joins,
             ScopeProcedure,
             Equals,
@@ -69,10 +76,10 @@ module Searchlogic
             Blank,
             AscendBy,
             DescendBy,
-            All,
-            Aliases
+            All
           ] 
         end
+
 
         def make_comparable(const)
           const.to_s.split("::").last.underscore

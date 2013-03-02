@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Aliases do 
+describe Searchlogic::AliasesConverter do 
   before(:each) do 
     User.create(:name=>"James", :age => 26, :company_id => 34)
     User.create(:name=>"Jon", :email => "jon@James.com", :company_id => 4)
