@@ -2,11 +2,21 @@ require 'spec_helper'
 
 describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Oor do 
   before(:each) do 
-    User.create(:name => "Vanneman")
-    User.create(:name => "Bill", :username => "Bill_Vanneman_JR")
+    l1 = LineItem.new(:price => 1)
+    l2 = LineItem.new(:price => 4)
+    l3 = LineItem.new(:price => 4)
+    l4 = LineItem.new(:price => 4)
+    l5 = LineItem.new(:price => 1)
+    o1 = Order.new(:line_items => [l1, l2])
+    o2 = Order.new(:line_items => [l3])
+    o3 = Order.new(:line_items => [l4])
+    o4 = Order.new(:line_items => [l5])
+
+    User.create(:name => "Vanneman", :orders => [o1] )
+    User.create(:name => "Bill", :username => "Bill_Vanneman_JR", :orders => [o4])
     User.create(:name=>"James")
-    User.create(:name=>"Ben", :username => "america", :email => "Ben@Vanneman")
-    User.create(:name=> "Tren", :username => "ANTJamesan")
+    User.create(:name=>"Ben", :username => "america", :email => "Ben@Vanneman", :orders => [o3])
+    User.create(:name=> "Tren", :username => "ANTJamesan", :orders => [o2])
     User.create(:name => "John", :username => "amicus")
   end
 
@@ -15,14 +25,17 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Oor do
     users.count.should eq(3)
     usernames = users.map(&:name)
 
-    usernames.should eq(["James", "Ben", "Tren" ])
+    usernames.should eq(["Ben", "Tren", "James"])
   end
 
   it "works with 'or' in first method" do 
     users = User.id_greater_than_or_equal_to_or_age_lt(4)
   end 
 
-  xit "works with chaine of associations" do 
+  it "works with chain of associations" do 
+    users = User.id_greater_than_or_equal_to_or_orders_line_items_price_eq(4)
+    users.count.should eq(4)
+    users.map(&:name).should eq(["Ben", "Tren", "John", "Vanneman"])
 
   end
   xit 'workd with a long chain of ors' do 
@@ -33,7 +46,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Oor do
     users = User.username_or_name_like("ame")
     users.count.should eq(3)
     usernames = users.map(&:name)
-    usernames.should eq(["James", "Ben", "Tren" ])
+    usernames.should eq(["Ben", "Tren", "James"])
   end
 
   it "should not get confused by the 'or' in find_or_create_by_* methods" do
@@ -51,21 +64,21 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Oor do
     users = User.username_like_or_name_equals("James")
     users.count.should eq(2)
     names = users.map(&:name)
-    names.should eq(["James", "Tren"])
+    names.should eq(["Tren", "James"])
   end
 
   it "gather users based on OR with three conditions" do 
     users = User.username_like_or_name_equals_or_email_ends_with("Vanneman")
     users.count.should eq(3)
     names = users.map(&:name)
-    names.should eq(["Vanneman", "Bill", "Ben"])
+    names.should eq( ["Bill", "Vanneman", "Ben"])
   end
 
   it "gathers three OR conditions omitting specific conditions until end" do 
     users = User.username_or_name_or_email_like("Vanneman")
     users.count.should eq(3)
     names = users.map(&:name)
-    names.should eq(["Vanneman", "Bill", "Ben"])
+    names.should eq( ["Bill", "Vanneman", "Ben"])
   end
 
 

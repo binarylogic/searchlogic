@@ -54,7 +54,7 @@ module Searchlogic
     private
 
       def replace_method(replacement_method)
-        method.to_s.gsub(alias_used, replacement_method)
+        method.to_s.gsub(/(_is|_eq|_not_equal_to|_not_equal|_is_not|_not|_ne|_lt|_before|_less_than_or_equal|_greater_than_or_equal|_lte|_gt|_after|_gte|_contains|_includes|_does_not_include|_bw|_not_begin_with|_ew|_not_end_with|_nil|_not_nil|_present)$/, replacement_method)
       end
       def alias_used
         self.class.match_alias(method)[0]

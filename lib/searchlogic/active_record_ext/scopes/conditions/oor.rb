@@ -9,9 +9,10 @@ module Searchlogic
               method_without_ending_condition = method_name.to_s.chomp(ending_alias_condition)
               methods = join_equal_to(method_without_ending_condition.split("_or_"))
               where_values = methods.map do |m| 
-                klass.send(add_condition(m), value).where_values 
-              end.flatten
-              klass.where(where_values.join(" OR "))
+                klass.send(add_condition(m), value) 
+              end.flatten.uniq
+              # binding.pry
+              # klass.where(where_values.join(" OR "))
             end
           end
 
@@ -47,7 +48,7 @@ module Searchlogic
             end
 
             def association?(method)
-              !!(klass.reflect_on_all_associations.find{|ass| ass.name.to_s.downcase == method.to_s})
+              !!(klass.reflect_on_all_associations.find{|ass| method.to_s.include?(ass.name.downcase.to_s)})
             end
             
             def ending_alias_condition 
@@ -56,7 +57,7 @@ module Searchlogic
 
             def applicable? 
               return nil if /(find_or_create)/ =~ method_name 
-              !(/_or_(#{klass.column_names.join("|")})/ =~ method_name).nil? 
+              !(/_or_(#{klass.column_names.join("|")}|#{klass.reflect_on_all_associations.map(&:name).join("|")})/ =~ method_name).nil? 
             end
         end
       end

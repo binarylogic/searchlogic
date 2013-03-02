@@ -78,8 +78,14 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
       User.search(:username_eq => "joe").should be_kind_of(Searchlogic::Search)
     end
 
-    xit "should create a search proxy using the same class" do
-      User.search.klass.should eq(User)
+    it "should create a search proxy using the same class" do
+
+      User.search.klass.klass.should eq(User)
+    end
+    
+    it "should create a search proxy with an active record relation" do
+
+      User.search.klass.class.should eq(ActiveRecord::Relation)
     end
 
     it "should pass on the current scope to the proxy" do

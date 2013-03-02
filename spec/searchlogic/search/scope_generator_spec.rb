@@ -47,10 +47,6 @@ describe Searchlogic::SearchExt::Delegate::ScopeGenerator do
       search.map(&:name).should eq(["jvans1's order"])
     end
 
-    xit "runs all any conditions first" do 
-
-    end
-
     it "doesn't remove conditions from object" do 
       search = User.searchlogic
       search.name_contains = "James"
