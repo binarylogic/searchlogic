@@ -82,7 +82,7 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
 
       User.search.klass.klass.should eq(User)
     end
-    
+
     it "should create a search proxy with an active record relation" do
 
       User.search.klass.class.should eq(ActiveRecord::Relation)
@@ -93,6 +93,11 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
       user = company.users.create
       search = company.users.search
       search.all.should eq(company.users)
+    end
+
+    xit "works with or conditions" do 
+      search = User.search(:name_equals => "James", :age_greater_than_or_equal_to => 20, :id_eq_or_orders_price_greater_than_or_equal_to => 5)
+
     end
   end
 end

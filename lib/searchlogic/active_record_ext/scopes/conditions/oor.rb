@@ -8,7 +8,7 @@ module Searchlogic
             if applicable?
               method_without_ending_condition = method_name.to_s.chomp(ending_alias_condition)
               methods = join_equal_to(method_without_ending_condition.split("_or_"))
-              where_values = methods.map do |m| 
+              methods.map do |m| 
                 klass.send(add_condition(m), value) 
               end.flatten.uniq
               # binding.pry
