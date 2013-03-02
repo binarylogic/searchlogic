@@ -45,7 +45,8 @@ module Searchlogic
     end
 
     def self.match_alias(method_name)
-        /(_is|_eq|_not_equal|_not_equal_to|_is_not|_not|_ne|_lt|_before|_less_than_or_equal|_greater_than_or_equal|_lte|_gt|_after|_gte|_contains|_includes|_does_not_include|_bw|_not_begin_with|_ew|_not_end_with|_nil|_not_nil|_present)$/.match(method_name)
+        return nil if (method_name.to_s.include?("does_not_equal")) || (method_name.to_s.include?("does_not_begin_with")) || (method_name.to_s.include?("does_not_end_with"))
+        /(_is|_eq|_not_equal_to|_not_equal|_is_not|_not|_ne|_lt|_before|_less_than_or_equal|_greater_than_or_equal|_lte|_gt|_after|_gte|_contains|_includes|_does_not_include|_bw|_not_begin_with|_ew|_not_end_with|_nil|_not_nil|_present)$/.match(method_name)
     end
     def self.aliases
       "_is|_eq|_not_equal|_not_equal_to|_is_not|_not|_ne|_lt|_before|_less_than_or_equal|_greater_than_or_equal|_lte|_gt|_after|_gte|_contains|_includes|_does_not_include|_bw|_not_begin_with|_ew|_not_end_with|_nil|_not_nil|_present"

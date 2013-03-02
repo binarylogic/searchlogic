@@ -23,6 +23,8 @@ describe Searchlogic::AliasesConverter do
       names.should eq(["James", "aJJ"])
 
     end
+
+
     it "with two different conditionals" do 
       users = User.name_eq_or_email_contains("James")
       users.count.should eq(2)
@@ -43,6 +45,24 @@ describe Searchlogic::AliasesConverter do
       names.should eq( ["James", "Ben", "Tren"])
     end
   end
+  describe "doesn't incorrectly add alias" do 
+    it "does_not_begin_with" do 
+      users = User.name_does_not_begin_with("J")
+      users.count.should eq(3)
+      users.map(&:name).should eq(["aJJ", "Ben", "Tren"])
+    end
+    it "does_not_end_with" do 
+      users = User.name_does_not_end_with("n")
+      users.count.should eq(2)
+      users.map(&:name).should eq(["James", "aJJ"])
+    end
+    it "does_not_equal" do 
+      users = User.name_does_not_equal("James")
+      users.count.should eq(4)
+      users.map(&:name).should eq(["Jon", "aJJ", "Ben", "Tren"])
+    end
+  end
+
   describe "map to correct value" do
     it "is == equals" do 
       users = User.name_is("James")
