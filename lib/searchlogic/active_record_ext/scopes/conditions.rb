@@ -12,12 +12,8 @@ module Searchlogic
           scopeable?(name) || super
         end
 
-        def joined_condition_klasses
-          condition_klasses.map{ |k| make_comparable(k)}.join("|_")
-        end
-
         def sl_conditions
-          %w{any greater_than_or_equal_to less_than_or_equal_to equals begins_with does_not_equal does_not_begin_with ends_with _does_not_end_with _not_like _like greater_than _less_than _not_null _null _not_blank blank ascend_by descend_by  _or_}.join("|")
+          %w{_any greater_than_or_equal_to less_than_or_equal_to equals begins_with does_not_equal does_not_begin_with ends_with does_not_end_with not_like like greater_than less_than not_null null not_blank blank or_}.join("|_") + "|ascend_by|descend_by"
         end
 
         def tables
@@ -47,7 +43,7 @@ module Searchlogic
         end
 
         def scopeable?(method)
-          !!(/(#{sl_conditions})/.match(method))
+          !!(/(#{sl_conditions})/.match(method)) || !!(AliasesConverter.match_alias(method))
         end
 
         def condition_klasses
@@ -78,11 +74,6 @@ module Searchlogic
             DescendBy,
             All
           ] 
-        end
-
-
-        def make_comparable(const)
-          const.to_s.split("::").last.underscore
         end
       end
     end

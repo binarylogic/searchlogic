@@ -4,7 +4,6 @@ module Searchlogic
 
     def initialize(klass, method_name, value)
       @klass = klass
-      # binding.pry
       @value = value
       @method = method_name
     end
@@ -13,35 +12,35 @@ module Searchlogic
       return method if self.class.match_alias(method).nil?
       case alias_used
       when "_eq", "_is", "_equal"
-        replace_and_send("_equals")
+        replace_method("_equals")
       when  "_not_equal_to", "_is_not", "_not", "_ne", "_not_equal"
-        replace_and_send("_does_not_equal")
+        replace_method("_does_not_equal")
       when "_lt", "_before"
-        replace_and_send("_less_than")
+        replace_method("_less_than")
       when "_lte", "_less_than_or_equal"
-        replace_and_send("_less_than_or_equal_to")
+        replace_method("_less_than_or_equal_to")
       when "_gt", "_after"
-        replace_and_send("_greater_than")
+        replace_method("_greater_than")
       when "_gte", "_greater_than_or_equal"
-        replace_and_send("_greater_than_or_equal_to")
+        replace_method("_greater_than_or_equal_to")
       when "_contains", "_includes", "_has"
-        replace_and_send("_like")
+        replace_method("_like")
       when "_does_not_include" 
-        replace_and_send("_not_like")
+        replace_method("_not_like")
       when "_bw" 
-        replace_and_send("_begins_with")
+        replace_method("_begins_with")
       when "_not_begin_with"
-        replace_and_send("_does_not_begin_with")
+        replace_method("_does_not_begin_with")
       when "_ew"
-        replace_and_send("_ends_with")
+        replace_method("_ends_with")
       when "_not_end_with" 
-        replace_and_send("_does_not_end_with")
+        replace_method("_does_not_end_with")
       when "_nil"
-        replace_and_send("_null")
+        replace_method("_null")
       when "_not_nil"
-        replace_and_send("_not_null")
+        replace_method("_not_null")
       when "_present"
-        replace_and_send("_not_blank")
+        replace_method("_not_blank")
       end
     end
 
@@ -53,7 +52,7 @@ module Searchlogic
     end
     private
 
-      def replace_and_send(replacement_method)
+      def replace_method(replacement_method)
         method.to_s.gsub(alias_used, replacement_method)
       end
       def alias_used

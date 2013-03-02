@@ -51,7 +51,7 @@ module Searchlogic
             end
             
             def ending_alias_condition 
-              /#{(klass.sl_conditions)}$/.match(method_name)[0]
+              /(#{klass.sl_conditions.split("|").sort_by(&:size).reverse.join("|")})$/.match(method_name)[0]
             end
 
             def applicable? 

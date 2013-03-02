@@ -40,7 +40,7 @@ describe Searchlogic::AliasesConverter do
       users = User.age_or_company_id_gte(28)
       users.count.should eq(3)
       names = users.map(&:name)
-      names.should eq(["Ben", "Tren", "James"])
+      names.should eq( ["James", "Ben", "Tren"])
     end
   end
   describe "map to correct value" do
