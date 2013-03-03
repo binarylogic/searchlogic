@@ -105,8 +105,8 @@ describe Searchlogic::SearchExt::TypeCast do
       end
       it "should be a Time given 'Jan 1, 2009'" do
         search = Order.search
-  Time.zone = "EST"
-        
+        Time.zone = "EST"
+
         search.created_at_after = "Jan 1, 2009"
         search.created_at_after.should == Time.zone.parse("Jan 1, 2009")
       end

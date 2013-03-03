@@ -8,10 +8,12 @@ module Searchlogic
           Range.new(typecast(method, value.first), typecast(method, value.last))
         elsif value.kind_of?(Array)
           value.collect{|v| typecast(method, v)}
+        elsif klass.named_scopes.include?(method)
+          value
         else
           column_for_type_cast = ::ActiveRecord::ConnectionAdapters::Column.new("", nil)
           column_for_type_cast.instance_variable_set(:@type, type)
-          casted_value = column_for_type_cast.type_cast(value)
+          column_for_type_cast.type_cast(value)
         end
       end
       private 
@@ -21,11 +23,11 @@ module Searchlogic
           if boolean_method?(method)
             :boolean
           elsif association_method = association_in_method(klass, method)
-            find_column_type(association_method)
+            column_type_in_association(association_method)
           else
             name = klass.column_names.sort_by(&:size).reverse.find{ |kcn| method.to_s.include?(kcn.to_s)}
             column = klass.columns.select{|kc| kc.name == name}.first
-            column.type
+            column ? column.type : :scope
           end
         end
 
@@ -41,13 +43,13 @@ module Searchlogic
           end
         end
 
-        def find_column_type(association_method)
+        def column_type_in_association(association_method)
           association, new_method = association_method
           new_klass = association.singularize.camelize.constantize
           column = new_klass.columns.find{|kc| new_method.to_s.include?(kc.name.to_s)}
           column = column.sort_by{|c1, c2| c.name.size <=> c.name.size } if column.kind_of?(Array) 
           ass_method = association_in_method(new_klass, new_method)
-          column ? column.type : find_column_type(ass_method)
+          column ? column.type : column_type_in_association(ass_method)
         end
 
         def boolean_method?(method)

@@ -24,11 +24,13 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
       search.count.should eq(4)
       search.map(&:name).should eq(["James", "James Vanneman", "Tren", "Ben"])
     end
+
     it "can combine scope procedure with other args" do 
       search = User.search( :age_gte => "21", :awesome => true )
       search.count.should eq(1)
       search.first.should eq(@jamesv)
     end
+
     it "doesn't call scope procedure when assigned false" do 
       search = User.search(:awesome => true, :young => false)
       search.count.should eq(2)
@@ -74,6 +76,16 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
       search.paged(0, 0).count.should eq(0)
     end 
 
+    it "works with 3 args" do 
+      class User; scope :fun, lambda{|age, name, email| age_eq(age).name_like(name).email_ends_with_or_email_begins_with(email)};end
+      User.create(:age => 26, :name =>"Jam", :email => "email")
+      User.create(:age => 26, :name =>"James", :email => "ilmail")
+      User.create(:age => 26, :name =>"James", :email => "notmail")
+      User.create(:age => 26, :name =>"Jess", :email => "email")
+      users = User.search(:fun =>[26,"Jam", "il"])
+      users.count.should eq(3)
+    end
+
     it "should create a search proxy" do
       User.search(:username_eq => "joe").should be_kind_of(Searchlogic::Search)
     end
@@ -91,11 +103,10 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
       company = Company.create
       user = company.users.create
       search = company.users.search
-      binding.pry
       search.all.should eq(company.users)
     end
 
-    xit "works with or conditions" do 
+    it "works with or conditions" do 
       search = User.search(:name_equals => "James", :age_greater_than_or_equal_to => 20, :id_eq_or_orders_price_greater_than_or_equal_to => 5)
 
     end
