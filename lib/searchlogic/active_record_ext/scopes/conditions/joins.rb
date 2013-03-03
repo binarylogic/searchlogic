@@ -29,6 +29,7 @@ module Searchlogic
 
           private
             def created_nested_scope
+
               args.compact!
               args.empty? ? association.klass.send(new_method) : association.klass.send(new_method, value)
             end

@@ -21,4 +21,9 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::NormalizeInput do
     company_names = companies.map(&:name)
     company_names.should eq(["Neco", "ConcLive2"])
   end
+  it "works on a method with normalized and non normalized inputs" do 
+    companies = Company.users_orders__line_items_price_greater_than_or_orders_total_gt(8)
+    company_names = companies.map(&:name)
+    company_names.should eq(["Neco", "ConcLive1", "ConcLive2"])
+  end
 end

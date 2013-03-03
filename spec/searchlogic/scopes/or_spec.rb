@@ -10,7 +10,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Oor do
     o1 = Order.new(:line_items => [l1, l2])
     o2 = Order.new(:line_items => [l3])
     o3 = Order.new(:line_items => [l4])
-    o4 = Order.new(:line_items => [l5])
+    o4 = Order.new(:line_items => [l5], :total => 15)
 
     User.create(:name => "Vanneman", :orders => [o1] )
     User.create(:name => "Bill", :username => "Bill_Vanneman_JR", :orders => [o4])
@@ -25,7 +25,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Oor do
     users.count.should eq(3)
     usernames = users.map(&:name)
 
-    usernames.should eq(["Ben", "Tren", "James"])
+    usernames.should eq(["James", "Ben", "Tren"])
   end
 
   it "works with 'or' in first method" do 
@@ -35,18 +35,18 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Oor do
   it "works with chain of associations" do 
     users = User.id_greater_than_or_equal_to_or_orders_line_items_price_eq(4)
     users.count.should eq(4)
-    users.map(&:name).should eq(["Ben", "Tren", "John", "Vanneman"])
+    users.map(&:name).should eq( ["Vanneman", "Ben", "Tren", "John"])
 
   end
-  xit 'workd with a long chain of ors' do 
-
-
+  it 'works with a long chain of ors with associations' do 
+    users = User.id_greater_than_or_equal_to_or_orders_total_greater_than_or_equal_to_or_orders__line_items__id_eq(10)
+    users.count.should eq(1)
   end
   it "gathers users based on OR condition omiting first compairson" do 
     users = User.username_or_name_like("ame")
     users.count.should eq(3)
     usernames = users.map(&:name)
-    usernames.should eq(["Ben", "Tren", "James"])
+    usernames.should eq(["James", "Ben", "Tren"])
   end
 
   it "should not get confused by the 'or' in find_or_create_by_* methods" do
@@ -64,21 +64,21 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Oor do
     users = User.username_like_or_name_equals("James")
     users.count.should eq(2)
     names = users.map(&:name)
-    names.should eq(["Tren", "James"])
+    names.should eq(["James", "Tren"])
   end
 
   it "gather users based on OR with three conditions" do 
     users = User.username_like_or_name_equals_or_email_ends_with("Vanneman")
     users.count.should eq(3)
     names = users.map(&:name)
-    names.should eq( ["Bill", "Vanneman", "Ben"])
+    names.should eq( ["Vanneman", "Bill", "Ben"])
   end
 
   it "gathers three OR conditions omitting specific conditions until end" do 
     users = User.username_or_name_or_email_like("Vanneman")
     users.count.should eq(3)
     names = users.map(&:name)
-    names.should eq( ["Bill", "Vanneman", "Ben"])
+    names.should eq( ["Vanneman", "Bill", "Ben"])
   end
 
 

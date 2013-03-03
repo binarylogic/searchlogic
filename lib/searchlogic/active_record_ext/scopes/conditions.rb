@@ -50,11 +50,11 @@ module Searchlogic
          [  
             NormalizeInput,
             Polymorphic,
-            Any,
             Oor,
+            Joins,
+            Any,
             GreaterThanOrEqualTo,
             LessThanOrEqualTo,
-            Joins,
             ScopeProcedure,
             Equals,
             BeginsWith,

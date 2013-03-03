@@ -8,11 +8,14 @@ module Searchlogic
             if applicable?
               method_without_ending_condition = method_name.to_s.chomp(ending_alias_condition)
               methods = join_equal_to(method_without_ending_condition.split("_or_"))
-              methods.map do |m| 
-                klass.send(add_condition(m), value) 
-              end.flatten.uniq
-              # binding.pry
-              # klass.where(where_values.join(" OR "))
+              results = methods.map do |m| 
+                klass.send(add_condition(m), value)
+              end
+              ##need to return ActiveRecord::Relation object, combining 'where_values' from individual scopes fails when
+              ##scope is an association (or_spec.rb line 70) so collect the results and run a where clause vs their id's to return correct results
+              ##and an ActiveRecord::Relation
+              ids = results.flatten.uniq.map(&:id)
+              klass.where("id in (?)", ids)
             end
           end
 
@@ -22,8 +25,8 @@ module Searchlogic
               methods = []
               method_array.each_with_index do |item, index| 
                 if item == "equal" || item == "equal_to"
+                  methods.delete_at(-1)
                   methods << [method_array[index-1], item ].join("_or_")
-                  methods.delete_at(index-1)
                 else
                   methods << item
                 end
@@ -36,21 +39,17 @@ module Searchlogic
             end
 
             def add_condition(method)
-              if column_name?(method) || association?(method)
+              if !has_condition?(method)
                 method + ending_alias_condition
               else
                 method            
               end
             end
 
-            def column_name?(method)
-              !!(klass.column_names.find{|kcn| kcn.to_s == method.to_s})
+            def has_condition?(method)
+              !!(/(#{AliasesConverter.aliases}|#{klass.sl_conditions})/.match(method))
             end
 
-            def association?(method)
-              !!(klass.reflect_on_all_associations.find{|ass| method.to_s.include?(ass.name.downcase.to_s)})
-            end
-            
             def ending_alias_condition 
               /(#{klass.sl_conditions.split("|").sort_by(&:size).reverse.join("|")})$/.match(method_name)[0]
             end

@@ -157,10 +157,11 @@ describe Searchlogic::SearchExt::TypeCast do
         search.orders_line_items_price = "10"
         search.orders_line_items_price == 10
       end
-      xit "doesn't incorrectly match columns" do 
-
+      it "doesn't incorrectly match columns" do 
+        User.create(:username => "James", :company => Company.create)
         search = Company.search 
-        search.user_username_eq
+        search.users_username_eq("James")
+        search.count.should eq(1)
       end
 
   end

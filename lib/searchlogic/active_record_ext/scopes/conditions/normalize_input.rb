@@ -4,6 +4,7 @@ module Searchlogic
     module Scopes
       module Conditions
         class NormalizeInput < Condition
+          DELIMITER = "__"
           def scope
             if applicable?
               method = convert_syntax
@@ -13,13 +14,17 @@ module Searchlogic
           private 
 
           def convert_syntax
-            if incorrect_syntax =~ method_name
-              syntax_error = method_name.to_s.scan(incorrect_syntax).flatten.first
-              method_name.to_s.gsub(syntax_error, syntax_error + "_")    
-            else
-              syntax_error = method_name.to_s.scan(incorrect_syntax_in_ordering).flatten.last
-              method_name.to_s.gsub(syntax_error, syntax_error + "_")
-            end
+            methods = method_name.to_s.split(DELIMITER)
+            methods.map do |method| 
+              if incorrect_syntax.match(method)
+                method.to_s.gsub(incorrect_syntax.match(method)[1], incorrect_syntax.match(method)[1] + "_")    
+              elsif incorrect_syntax_in_ordering.match(method)
+                syntax_error = method.to_s.scan(incorrect_syntax_in_ordering).flatten.last
+                method.to_s.gsub(syntax_error, syntax_error + "_")
+              else
+                method
+              end
+            end.join(DELIMITER)
           end
 
           def applicable?
