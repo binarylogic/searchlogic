@@ -10,8 +10,6 @@ module Searchlogic
           elsif valid_accessor?(scope_name, method)
             read_or_write_condition(scope_name, args)
           else
-            scope = klass
-            conditions.each {}
             delegate(method, args, &block)
           end
         end

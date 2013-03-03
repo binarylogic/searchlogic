@@ -157,7 +157,11 @@ describe Searchlogic::SearchExt::TypeCast do
         search.orders_line_items_price = "10"
         search.orders_line_items_price == 10
       end
+      xit "doesn't incorrectly match columns" do 
 
+        search = Company.search 
+        search.user_username_eq
+      end
 
   end
 end
