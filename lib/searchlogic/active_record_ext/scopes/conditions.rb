@@ -9,11 +9,11 @@ module Searchlogic
       module Conditions
         def respond_to?(*args)
           name = args.first
-          scopeable?(name) || super
+          scopeable?(name)  || super
         end
 
         def sl_conditions
-          %w{_any greater_than_or_equal_to less_than_or_equal_to equals begins_with does_not_equal does_not_begin_with ends_with does_not_end_with not_like like greater_than less_than not_null null not_blank blank or_}.join("|_") + "|ascend_by|descend_by"
+          %w{_any _greater_than_or_equal_to _less_than_or_equal_to _equals _begins_with _does_not_equal _does_not_begin_with _ends_with _does_not_end_with _not_like _like _greater_than _less_than descend_by ascend_by _not_null _null _not_blank _blank or_}.join("|")
         end
 
         def tables

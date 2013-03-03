@@ -3,6 +3,9 @@ require 'spec_helper'
 describe Searchlogic::SearchExt::TypeCast do 
 
  context "type casting" do
+  it "should cast values with custom scopes" do 
+    User.scope :custom, lambda { User.where("age IN (10)")}
+  end
     context '#castboolean' do
       it "should be a Boolean given true" do
         search = User.search
@@ -53,7 +56,6 @@ describe Searchlogic::SearchExt::TypeCast do
         search.id_gt = "1"
         search.id_gt.should == 1
       end
-
     end
 
     context "#cast_float" do 
@@ -91,8 +93,8 @@ describe Searchlogic::SearchExt::TypeCast do
       end
       it "should accept a Date Object" do 
         search = Order.search
-        search.shipped_before = Date.today
-        search.shipped_before.should eq(Date.today)
+        search.shipped_on_before = Date.today
+        search.shipped_on_before.should eq(Date.today)
       end
     end
     context "#cast_time" do 
@@ -102,8 +104,9 @@ describe Searchlogic::SearchExt::TypeCast do
         search.created_at_before.should eq(Time.new("14,13,20"))
       end
       it "should be a Time given 'Jan 1, 2009'" do
-        Time.zone = "EST"
         search = Order.search
+  Time.zone = "EST"
+        
         search.created_at_after = "Jan 1, 2009"
         search.created_at_after.should == Time.zone.parse("Jan 1, 2009")
       end
