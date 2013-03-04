@@ -9,9 +9,7 @@ module Searchlogic
 
       def column_type
         @column_type || calculated_column_type
-
       end
-
 
       def column_type=(type)
         @column_type = type
