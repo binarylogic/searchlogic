@@ -7,6 +7,10 @@ describe Searchlogic::SearchExt::TypeCast do
     User.scope :custom, lambda { User.where("age IN (10)")}
   end
     context '#castboolean' do
+      it "should be a boolean  given col_null" do 
+        search = User.search(:name_blank => "true")
+        search.name_blank.should eq(true)
+      end
       it "should be a Boolean given true" do
         search = User.search
         search.id_nil = true

@@ -2,7 +2,6 @@ module Searchlogic
   module SearchExt
     module MethodMissing
       private
-        # no implicit equals/column naemes
         def method_missing(method, *args, &block)
           scope_name = method.to_s.gsub(/=$/, '').to_sym
           if method.to_s == "delete"

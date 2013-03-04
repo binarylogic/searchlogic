@@ -20,8 +20,8 @@ module Searchlogic
             @block = block
           end
 
-          def matcher
-            raise NotImplementedError.new("You must define a #matcher method")
+          def self.matcher
+            raise NotImplementedError.new("You must define a #matcher method if you're class doesn't use one, have it return nil")
           end
           
           def applicable? 

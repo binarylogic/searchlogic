@@ -9,7 +9,7 @@ describe Searchlogic::ScopeReflectionExt::Column do
       scope_refl.column_name.should eq("created_at")
     end
 
-    it "should match similar methods" do 
+    it "should not match similar methods" do 
       scope_refl = Searchlogic::ScopeReflection.new(User, :username_less_than_or_equal_to)
       scope_refl.column_name.should eq("username")
     end
@@ -27,6 +27,13 @@ describe Searchlogic::ScopeReflectionExt::Column do
       scope_refl.column_type.should eq(:string)
       scope_refl.column_type = :datetime
       scope_refl.column_type.should eq(:datetime)
+    end
+
+    it "finds column types on associated columns" do 
+      scope_refl = Searchlogic::ScopeReflection.new(Company, :users_orders_line_items_price_greater_than_or_equal_to)
+      scope_refl.column_type.should eq(:float)
+
+
     end
   end
 end

@@ -9,6 +9,10 @@ module Searchlogic
       def method=(method)
         @method = method
       end
+
+      def defined_named_scopes
+        @defined_named_scopes ||= {}
+      end
     end
   end
 end
