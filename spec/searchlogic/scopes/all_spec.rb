@@ -15,8 +15,6 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Any do
     names = users.map(&:name)
     names.should eq(["JamesBen"])
   end
-
-
   it "finds users specified by both conditions with an array" do 
     users = User.name_like_all(["James", "Ben"])
     users.count.should eq(1)

@@ -158,6 +158,19 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
       names = search.map(&:name)
       names.should eq(["James Vanneman", "Tren", "Ben"])
     end
+    it "should pass array values an array with arity = 1" do
+      class User
+        scope(:multiple_args, lambda { |args|
+          raise "This should be an array" unless args.is_a?(Array)
+        where("id IN (?)", args)
 
+      })
+      end
+      search = User.search
+      search.multiple_args = [2,3,4]
+      search.count.should eq(3)
+      names = search.map(&:name)
+      names.should eq(["James Vanneman", "Tren", "Ben"])
+    end
   end
 end

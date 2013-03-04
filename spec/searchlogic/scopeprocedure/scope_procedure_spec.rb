@@ -74,10 +74,10 @@ describe Searchlogic::ActiveRecordExt::ScopeProcedure::ClassMethods do
     names.should eq(["James Vanneman", "Tren", "Ben"])
   end
 
-  xit "should pass array as a single value with arity >= 0" do
+  it "should pass array as a single value with arity >= 0" do
     class User
       scope(:multiple_args, lambda { |*args|
-      # raise "This should be an array" if !args.is_a?(Array)
+      raise "This should be an array" if !args.is_a?(Array)
       where("id IN (?)", args)
     })
     end
