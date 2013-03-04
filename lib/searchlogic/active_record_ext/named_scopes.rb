@@ -10,7 +10,7 @@ module Searchlogic
 
       module ClassMethods
         def named_scopes 
-          @named_scopes ||= []
+          @named_scopes ||= {}
         end
       end
     end

@@ -2,7 +2,6 @@ module Searchlogic
   module ActiveRecordExt
     module Scopes
       module Conditions
-
         class Oor < Condition
           def scope
             if applicable?

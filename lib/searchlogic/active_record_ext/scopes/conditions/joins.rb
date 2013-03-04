@@ -35,7 +35,7 @@ module Searchlogic
             end
 
             def named_scopes? 
-              klass.named_scopes.map(&:to_s).include?(new_method.to_s)
+              klass.named_scopes.keys.map(&:to_s).include?(new_method.to_s)
             end
 
             def generate_join_and_send_method(join_values)

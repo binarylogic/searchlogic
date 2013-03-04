@@ -8,12 +8,12 @@ module Searchlogic
           Range.new(typecast(method, value.first), typecast(method, value.last))
         elsif value.kind_of?(Array)
           value.collect{|v| typecast(method, v)}
-        elsif klass.named_scopes.include?(method)
-          value
-        else
+        elsif
           column_for_type_cast = ::ActiveRecord::ConnectionAdapters::Column.new("", nil)
           column_for_type_cast.instance_variable_set(:@type, type)
           column_for_type_cast.type_cast(value)
+        else klass.named_scopes.keys.include?(method)
+          value          
         end
       end
       private 
@@ -26,7 +26,15 @@ module Searchlogic
           else
             name = klass.column_names.sort_by(&:size).reverse.find{ |kcn| method.to_s.include?(kcn.to_s)}
             column = klass.columns.select{|kc| kc.name == name}.first
-            column ? column.type : :scope
+            column ? column.type : scope_type(method)
+          end
+        end
+
+        def scope_type(method)
+          if klass.named_scopes[method].arity == 0
+            :boolean
+          else
+            :scope
           end
         end
 

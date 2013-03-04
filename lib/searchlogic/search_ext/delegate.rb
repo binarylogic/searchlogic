@@ -21,7 +21,7 @@ module Searchlogic
       private 
 
         def false_scope_proc?(key, value)
-          klass.named_scopes.include?(key.to_sym) && !value
+          klass.named_scopes.keys.include?(key.to_sym) && !value
         end
 
         def column_or_association?(key)

@@ -3,7 +3,7 @@ module Searchlogic
     module ScopeProcedure
       module ClassMethods
         def scope(name, scope)
-          named_scopes.push(name)
+          named_scopes[name] = scope
           super(name, scope)
         end
       end

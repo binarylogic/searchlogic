@@ -110,5 +110,54 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
       search = User.search(:name_equals => "James", :age_greater_than_or_equal_to => 20, :id_eq_or_orders_price_greater_than_or_equal_to => 5)
 
     end
+
+
+    it "works with arity > 2" do 
+      class User
+        scope(:winning, lambda{ |age, email, name| age_eq(age).email_like(email).name_ew(name)})
+      end
+      search = User.search(:id_gte => 1, :winning => [20, "vann", "es"])
+      search.count.should eq(1)
+      search.map(&:name).should eq(["James"])
+    end
+
+    it "works with an arity = 0 and string assignment" do 
+      class User
+        scope(:winning, lambda{ where("age > ? ", 21)})
+      end      
+      search = User.search
+      search.winning = "true"
+      search.count.should eq(1)
+      search.map(&:name).should eq(["Ben"])
+    end
+
+    it "returns class.all if no scope conditoins" do 
+      search = User.search 
+      search.all.should eq(User.all)
+
+    end 
+
+
+    it "works with strings for integer values" do 
+      search = User.search
+      search.id_eq = "2"
+      search.count.should eq(1)
+      search.all.should eq([@jamesv])
+    end
+
+    it "should pass array values as multiple arguments with arity -1 in search object" do
+      class User
+        scope(:multiple_args, lambda { |*args|
+        where("id IN (?)", args)
+
+      })
+      end
+      search = User.search
+      search.multiple_args = [2,3,4]
+      search.count.should eq(3)
+      names = search.map(&:name)
+      names.should eq(["James Vanneman", "Tren", "Ben"])
+    end
+
   end
 end
