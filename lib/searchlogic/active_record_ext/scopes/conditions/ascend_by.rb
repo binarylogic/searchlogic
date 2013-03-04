@@ -10,11 +10,16 @@ module Searchlogic
             end
           end
 
+          def self.matcher
+            "ascend_by"
+          end
           private
 
             def applicable?
-              !(/ascend_by/ =~ method_name).nil?
+              !(/^#{self.class.matcher}/ =~ method_name).nil?
             end
+
+
 
             def find_sort_on(method)
               args.first || /ascend_by_(.*)/.match(method)[1]

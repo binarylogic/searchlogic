@@ -13,20 +13,23 @@ module Searchlogic
               false
             end
           end
-
+            
+            def self.matcher
+              "_not_blank"
+            end
           private
             def value
               args.first
             end
+
             def find_column
               @column_name = /(.*)_not_blank$/.match(method_name)[1]
             end
-            def applicable? 
-              !((/_not_blank$/ =~ method_name).nil?)
-            end
+
             def send_to_blank
               klass.send(find_column + "_blank")
             end
+
 
         end
       end

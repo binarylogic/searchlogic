@@ -9,7 +9,9 @@ module Searchlogic
               klass.where("#{table_name}.#{column_name} like ?", "%#{value}") 
             end
           end
-
+            def self.matcher
+              "_ends_with"
+            end
           private
             def value
               args.first
@@ -18,9 +20,7 @@ module Searchlogic
             def find_column
               @column_name = /(.*)_ends_with$/.match(method_name)[1]
             end
-            def applicable? 
-              !(/_ends_with$/ =~ method_name).nil? 
-            end
+
         end
       end
     end

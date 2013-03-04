@@ -21,6 +21,10 @@ module Searchlogic
               klass.where("#{table_name}.#{column_name} IN (?)", values)
             end
           end
+
+            def self.matcher
+              "_equals"
+            end
           private
             def values
               args.flatten
@@ -34,9 +38,6 @@ module Searchlogic
               @column_name = /(.*)_equals$/.match(method_name)[1]
             end
 
-            def applicable? 
-              !(/_equals$/ =~ method_name).nil? 
-            end
         end
       end
     end

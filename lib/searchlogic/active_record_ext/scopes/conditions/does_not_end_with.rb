@@ -9,7 +9,10 @@ module Searchlogic
               klass.where("#{table_name}.#{column_name} not like ?", "%#{value}")
             end
           end
-
+            
+            def self.matcher
+              "_does_not_end_with"
+            end
           private
             def value
               args.first
@@ -19,10 +22,6 @@ module Searchlogic
               @column_name = /(.*)_does_not_end_with$/.match(method_name)[1]
             end
 
-
-            def applicable? 
-              !(/_does_not_end_with$/ =~ method_name).nil? 
-            end
         end
       end
     end

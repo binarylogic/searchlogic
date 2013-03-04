@@ -27,6 +27,11 @@ module Searchlogic
             end
           end
 
+            def self.matcher
+              nil
+            end
+
+
           private
             def created_nested_scope
 

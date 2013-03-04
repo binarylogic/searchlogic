@@ -14,6 +14,9 @@ module Searchlogic
               false
             end
           end
+            def self.matcher
+              "_null"
+            end          
 
           private
           
@@ -25,9 +28,7 @@ module Searchlogic
               @column_name = (/(.*)_null/).match(method_name)[1]
             end
 
-            def applicable? 
-              !(/_null$/ =~ method_name).nil?
-            end
+
 
             def send_to_not_null
               klass.send(find_column + "_not_null")

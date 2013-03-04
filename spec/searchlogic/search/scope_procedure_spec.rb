@@ -172,5 +172,14 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
       names = search.map(&:name)
       names.should eq(["James Vanneman", "Tren", "Ben"])
     end
+    it "should pass a date object" do 
+      class Order
+        scope(:expired, lambda { |end_date| where("created_at < ?", end_date)})
+      end
+      Order.create
+      search = Order.search
+      search.expired = "2020, 1, 2"
+      search.all.should eq([Order.last])
+    end
   end
 end

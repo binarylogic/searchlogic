@@ -10,7 +10,9 @@ module Searchlogic
               klass.where(joined_scopes)
             end
           end
-
+            def self.matcher
+              "_any"
+            end
           private
             def new_method
               /(.*)_any/.match(method_name)[1]
@@ -22,9 +24,8 @@ module Searchlogic
             def value
               args.flatten
             end
-            def applicable? 
-              !(/_any/ =~ method_name).nil?
-            end
+
+
 
             def separate_scopes(where_values)
               or_values = where_values.map { |wv| wv.last }.join(" OR ")              

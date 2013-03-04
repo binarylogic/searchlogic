@@ -11,6 +11,10 @@ module Searchlogic
               klass.send(method, value)
             end
           end
+
+          def self.matcher
+            nil
+          end
           private 
 
           def convert_syntax
@@ -37,6 +41,7 @@ module Searchlogic
           def matching_incorrect_syntax
             klass.tables.map { |k| k + "_" }.join("|")
           end
+
 
           def incorrect_syntax_in_ordering
             singular_tables = klass.tables.map { |k| k.singularize + "_" }.join("|")

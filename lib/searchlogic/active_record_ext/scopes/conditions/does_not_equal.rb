@@ -12,6 +12,10 @@ module Searchlogic
               klass.where("#{table_name}.#{column_name} not in (?)", values)
             end
           end
+                      
+            def self.matcher
+              "_does_not_equal"
+            end
           private
             def values
               args.flatten
@@ -24,10 +28,7 @@ module Searchlogic
             def find_column
               @column_name = /(.*)_does_not_equal$/.match(method_name)[1]
             end
-            
-            def applicable? 
-              !(/_does_not_equal$/ =~ method_name).nil?
-            end
+
         end
       end
     end

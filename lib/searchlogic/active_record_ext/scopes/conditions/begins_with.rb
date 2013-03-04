@@ -10,7 +10,10 @@ module Searchlogic
               klass.where("#{table_name}.#{column_name} like ? ", "#{value}%") 
             end
           end
-
+          
+          def self.matcher
+            "begins_with"
+          end
           private
             def value
               args.first
@@ -19,8 +22,10 @@ module Searchlogic
               @column_name = /(.*)_begins_with$/.match(method_name)[1]
             end
             def applicable? 
-              !(/_begins_with$/ =~ method_name).nil?
+              !(/#{self.class.matcher}$/ =~ method_name).nil?
             end
+
+
         end
       end
     end

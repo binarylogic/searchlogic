@@ -10,15 +10,16 @@ module Searchlogic
             end
           end
 
+            def self.matcher
+              "_not_like"
+            end
           private
             def value
               args.first
             end
+
             def find_column
               @column_name = /(.*)_not_like$/.match(method_name)[1]
-            end
-            def applicable? 
-              !((/_not_like$/ =~ method_name).nil?)
             end
 
         end

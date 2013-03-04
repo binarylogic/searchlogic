@@ -2,14 +2,15 @@ module Searchlogic
   module ActiveRecordExt
     module Scopes
       module Conditions
-
         class Polymorphic < Condition
           def scope
             if applicable?
               association_klass.send(new_method, value).map{|returned_obj| returned_obj.send(klass_symbol)}.flatten
             end
           end
-
+            def self.matcher
+              nil
+            end
           private
             def applicable? 
               polymorphic_association && method_name.to_s.include?(polymorphic_association.name.to_s)
@@ -33,6 +34,7 @@ module Searchlogic
             def klass_symbol
               klass.name.downcase.pluralize.to_sym
             end
+
         end
       end
     end

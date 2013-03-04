@@ -20,8 +20,12 @@ module Searchlogic
             @block = block
           end
 
-          def applicable?
-            raise NotImplementedError.new("You need to define a #applicable method")
+          def matcher
+            raise NotImplementedError.new("You must define a #matcher method")
+          end
+          
+          def applicable? 
+            !(/#{self.class.matcher}$/ =~ method_name).nil?
           end
 
         end

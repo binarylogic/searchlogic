@@ -6,7 +6,6 @@ module Searchlogic
 
           def scope
             if applicable?
-              # binding.pry
               association_klass.send(new_method, value).map{|returned_obj| returned_obj.send(klass_symbol)}.flatten
             end
           end
@@ -17,6 +16,10 @@ module Searchlogic
 
           def applicable?             
             klass.named_scopes.keys.detect{ |scope| scope.to_s == method_name.to_s }
+          end
+
+          def self.matcher
+            nil
           end
         end
       end

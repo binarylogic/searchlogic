@@ -10,15 +10,15 @@ module Searchlogic
               klass.where("#{table_name}.#{column_name} > ?", "#{value}")
             end
           end
-
+            def self.matcher
+              "_greater_than"
+            end
           private
             def find_column
               @column_name = /(.*)_greater_than/.match(method_name)[1]
             end
 
-            def applicable? 
-              !(/_greater_than/ =~ method_name).nil?
-            end
+
         end
       end
     end

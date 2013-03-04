@@ -12,6 +12,9 @@ module Searchlogic
             end
           end
 
+          def self.matcher
+            "_all"
+          end
           private
             def value
               if args.count > 1
@@ -23,9 +26,8 @@ module Searchlogic
             def new_method
               /(.*)_all/.match(method_name)[1]
             end
-            def applicable? 
-              !(/_all/ =~ method_name).nil?
-            end
+
+
         end
       end
     end

@@ -11,13 +11,16 @@ module Searchlogic
                 klass.send(add_condition(m), value)
               end
               ##need to return ActiveRecord::Relation object, combining 'where_values' from individual scopes fails when
-              ##scope is an association (or_spec.rb line 70) so collect the results and run a where clause vs their id's to return correct results
+              ##scope is an association so collect the results and run a where clause vs their id's to return correct results
               ##and an ActiveRecord::Relation
               ids = results.flatten.uniq.map(&:id)
               klass.where("id in (?)", ids)
             end
           end
 
+            def self.matcher
+              nil
+            end
           private
 
             def join_equal_to(method_array)
@@ -46,17 +49,18 @@ module Searchlogic
             end
 
             def has_condition?(method)
-              !!(/(#{AliasesConverter.aliases}|#{klass.sl_conditions})/.match(method))
+              !!(/(#{ScopeReflection.aliases.join("|")}|#{self.class.all_matchers.join("|")})/.match(method))
             end
 
             def ending_alias_condition 
-              /(#{klass.sl_conditions.split("|").sort_by(&:size).reverse.join("|")})$/.match(method_name)[0]
+              /(_#{self.class.all_matchers.sort_by(&:size).reverse.join("|")})$/.match(method_name)[0]
             end
 
             def applicable? 
               return nil if /(find_or_create)/ =~ method_name 
               !(/_or_(#{klass.column_names.join("|")}|#{klass.reflect_on_all_associations.map(&:name).join("|")})/ =~ method_name).nil? 
             end
+
         end
       end
     end

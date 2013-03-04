@@ -1,12 +1,43 @@
 require 'spec_helper'
 
-describe Searchlogic::AliasesConverter do 
+describe Searchlogic::ScopeReflectionExt::MatchAlias do 
   before(:each) do 
     User.create(:name=>"James", :age => 26, :company_id => 34)
     User.create(:name=>"Jon", :email => "jon@James.com", :company_id => 4)
     User.create(:name=>"aJJ", :username => "James", :company_id => 12)
     User.create(:name=>"Ben", :age => 28, :username => "JamesVanneman", :company_id => 15)
     User.create(:name=>"Tren", :age =>45)
+  end
+  context ".aliases" do 
+    it "reads all aliases from aliases file into 1 array" do 
+      Searchlogic::ScopeReflection.aliases.should be_kind_of(Array)
+      Searchlogic::ScopeReflection.aliases.count.should eq(27)
+    end
+
+  end
+
+  context ".searchlogic_methods" do
+    it "should return an array of defined searchlogic method matchers" do 
+
+    end
+  end
+
+  context ".match_alias" do 
+    it "returns a matchadata object if it finds an alias in the method" do 
+      Searchlogic::ScopeReflection.match_alias(:username_gte).should be_kind_of(MatchData)
+    end
+    it "returns nil if it doesn't find alias in the method" do 
+      Searchlogic::ScopeReflection.match_alias(:username_greater_than_or_equal_to).should be_nil
+    end
+
+    context "doesn't match methods that are contained in real scopes" do
+      it "does_not_end_with doesn't get matched by _ends_with" do 
+        Searchlogic::ScopeReflection.match_alias(:name_ends_with).should be_nil
+      end
+      it "does_not_end_with" do 
+        Searchlogic::ScopeReflection.match_alias(:name_ends_with).should be_nil
+      end
+    end
   end
 
   describe "works with OR conditionals" do 
@@ -43,23 +74,6 @@ describe Searchlogic::AliasesConverter do
       users.count.should eq(3)
       names = users.map(&:name)
       names.should eq(  ["James", "Ben", "Tren"])
-    end
-  end
-  describe "doesn't incorrectly add alias" do 
-    it "does_not_begin_with" do 
-      users = User.name_does_not_begin_with("J")
-      users.count.should eq(3)
-      users.map(&:name).should eq(["aJJ", "Ben", "Tren"])
-    end
-    it "does_not_end_with" do 
-      users = User.name_does_not_end_with("n")
-      users.count.should eq(2)
-      users.map(&:name).should eq(["James", "aJJ"])
-    end
-    it "does_not_equal" do 
-      users = User.name_does_not_equal("James")
-      users.count.should eq(4)
-      users.map(&:name).should eq(["Jon", "aJJ", "Ben", "Tren"])
     end
   end
 

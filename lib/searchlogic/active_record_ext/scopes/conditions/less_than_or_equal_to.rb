@@ -11,6 +11,9 @@ module Searchlogic
             end
           end
 
+            def self.matcher
+              "_less_than_or_equal_to"
+            end
           private
 
             def find_column
@@ -18,8 +21,9 @@ module Searchlogic
               
             end
             def applicable? 
-              !(/_less_than_or_equal_to$/ =~ method_name).nil?
+              !(/#{self.class.matcher}$/ =~ method_name).nil?
             end      
+
         end
       end
     end
