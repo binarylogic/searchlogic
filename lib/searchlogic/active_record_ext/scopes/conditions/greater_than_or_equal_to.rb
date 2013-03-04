@@ -17,7 +17,6 @@ module Searchlogic
             def find_column
               @column_name = /(.*)_greater_than_or_equal_to$/.match(method_name)[1]
             end
-
         end
       end
     end

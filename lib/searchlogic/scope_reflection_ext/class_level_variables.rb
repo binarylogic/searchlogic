@@ -1,7 +1,7 @@
 module Searchlogic
   module ScopeReflectionExt
     module ClassLevelVariables
-      
+      ##Class Instance Variables
       def method
         @method
       end

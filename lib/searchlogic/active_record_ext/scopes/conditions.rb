@@ -43,7 +43,7 @@ module Searchlogic
         end
 
         def scopeable?(method)
-          !!(/(#{all_matchers.join("|")})/.match(method)) #|| !!(AliasesConverter.match_alias(method))
+          !!(/(#{all_matchers.join("|")})/.match(method)) || !!(ScopeReflection.match_alias(method))
         end
 
         def condition_klasses

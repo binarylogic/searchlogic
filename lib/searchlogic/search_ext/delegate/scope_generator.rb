@@ -20,7 +20,7 @@ module Searchlogic
           end
 
           def create_scope(scope, condition, value)
-            std_condition = scope # AliasesConverter.new(scope, condition, value).scope
+            std_condition = ScopeReflection.convert_alias(condition)
             scope_lambda = initial_scope.named_scopes[std_condition]
             if scope_lambda && !(value).nil?
               if scope_lambda.arity == 0 && value == true
