@@ -10,7 +10,6 @@ module Searchlogic
           name = args.first
           scopeable?(name)  || super
         end
-
           
         def all_matchers
           condition_klasses.map { |kc| kc.matcher }.compact

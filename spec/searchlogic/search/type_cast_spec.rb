@@ -167,6 +167,19 @@ describe Searchlogic::SearchExt::TypeCast do
         search.users_username_eq("James")
         search.count.should eq(1)
       end
+  end
+  context "named Scopes" do 
+    it "typcasts named scope with arity = 1 when explicity set type" do 
+      User.create(:created_at => Date.new(2014,2,2))
+      class User; scope :too_old, lambda{ |date| where(created_at_greater_than(date))};end
+      search = User.search
+      search.too_old = "2014, 2, 1"
+      search.conditions[:too_old].should eq("2014, 2, 1")
+      binding.pry
+      User.named_scopes[:too_old][:type] = :date      
+      search.too_old = "2014, 2, 1"
+      search.conditions[:too_old].should be_kind_of(Date)
+    end
 
   end
 end

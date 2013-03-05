@@ -12,8 +12,13 @@ module Searchlogic
         else
           column_for_type_cast = ::ActiveRecord::ConnectionAdapters::Column.new("", nil)
           column_for_type_cast.instance_variable_set(:@type, type)
+          value = sanitize_cdl_in_date(value) if type == :date && value.kind_of?(String) && value.include?(',')
           column_for_type_cast.type_cast(value)
         end
+      end
+
+      def sanitize_cdl_in_date(value)
+        value.split(",").join("/")
       end
     end
   end
