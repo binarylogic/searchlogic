@@ -91,8 +91,8 @@ describe Searchlogic::ActiveRecordExt::ScopeProcedure::ClassMethods do
   it "individual classes keeps track of all scopes created" do 
     User.scope :second_one, lambda { User.first}
     User.scope :third_one, lambda {User.last}
-    Company.scope :company_scope_one, :conditions => {:name => "Concierge Live"}
-    Company.scope :company_scope_two, :conditions => {:name => "NECO"}
+    Company.scope :company_scope_one, lambda{where(Company.name_eq("ConciergeLIve"))}
+    Company.scope :company_scope_two,  lambda{where(Company.name_eq("NEco"))}
     user_scopes = User.named_scopes 
     company_scopes = Company.named_scopes 
     user_scopes.count.should eq(3)

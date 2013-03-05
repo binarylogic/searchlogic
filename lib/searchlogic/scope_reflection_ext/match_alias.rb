@@ -15,13 +15,6 @@ module Searchlogic
         /(#{aliases.sort_by(&:size).reverse.join("|")})$/.match(method_name)
       end
 
-      def aliases
-        f = File.open(File.dirname(__FILE__) + '/aliases.rb')
-        f.readlines.select do |line| 
-          /[\%w]/ =~ line 
-        end.map { |line| re = /\%w\{(.*)\}/; re.match(line)[1].split(" ") if re.match(line)}.flatten.compact.sort_by(&:size).reverse.map(&:strip)
-      end
-
       def replace_method(value)
         method.to_s.gsub(/(#{aliases.join("|")})$/, value)
       end

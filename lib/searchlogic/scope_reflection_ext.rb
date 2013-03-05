@@ -4,10 +4,10 @@ module Searchlogic
     def self.included(klass)
       klass.class_eval do 
         extend Aliases
-        include Column
-        extend ClassLevelVariables
+        extend ClassLevelMethods
         extend MatchAlias
         extend SearchlogicConditions
+        include Type
       end
     end
   end

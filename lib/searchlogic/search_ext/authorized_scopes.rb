@@ -4,7 +4,7 @@ module Searchlogic
     
       private
         def known_scopes        
-          Searchlogic::ScopeReflection.recognized_scopes
+          Searchlogic::ScopeReflection.recognized_scopes + klass.named_scopes.collect{|k,v| k.to_s}
         end
         
         def authorized_scope?(scope) 

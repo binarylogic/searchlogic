@@ -21,7 +21,7 @@ module Searchlogic
 
           def create_scope(scope, condition, value)
             std_condition = ScopeReflection.convert_alias(condition)
-            scope_lambda = initial_scope.named_scopes[std_condition]
+            scope_lambda = initial_scope.named_scopes[std_condition] ? initial_scope.named_scopes[std_condition][:scope] : nil
             if scope_lambda && !(value).nil?
               if scope_lambda.arity == 0 && value == true
                 scope.send(std_condition)

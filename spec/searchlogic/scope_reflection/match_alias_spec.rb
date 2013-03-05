@@ -9,10 +9,6 @@ describe Searchlogic::ScopeReflectionExt::MatchAlias do
     User.create(:name=>"Tren", :age =>45)
   end
   context ".aliases" do 
-    it "reads all aliases from aliases file into 1 array" do 
-      Searchlogic::ScopeReflection.aliases.should be_kind_of(Array)
-      Searchlogic::ScopeReflection.aliases.count.should eq(27)
-    end
 
   end
 

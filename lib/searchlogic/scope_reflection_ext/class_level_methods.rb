@@ -1,7 +1,7 @@
 module Searchlogic
   module ScopeReflectionExt
-    module ClassLevelVariables
-      ##Class Instance Variables
+    module ClassLevelMethods
+      ##Class level method
       def method
         @method
       end
@@ -10,9 +10,6 @@ module Searchlogic
         @method = method
       end
 
-      def defined_named_scopes
-        @defined_named_scopes ||= {}
-      end
     end
   end
 end

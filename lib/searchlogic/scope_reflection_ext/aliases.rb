@@ -20,6 +20,11 @@ module Searchlogic
           :not_null => %w{_not_nil},
         }
       end
+
+      def aliases
+        alias_hash.collect{|k,v| v }.flatten
+      end
+
     end
   end
 end

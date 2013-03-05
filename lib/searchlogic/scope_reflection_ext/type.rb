@@ -1,27 +1,42 @@
 module Searchlogic
   module ScopeReflectionExt
-    module Column
-
-      def column_name
+    module Type
+      BOOLEAN_MATCHER = [
+        :null,
+        :present,
+        :nil,
+        :blank,
+      ]
+      def name
         column_names = klass.column_names.sort_by(&:size).reverse
         column_names.find{|cn| method.to_s.include?(cn.to_s)}
       end
 
-      def column_type
-        @column_type || calculated_column_type
+      def type
+        @type || calculated_column_type
       end
 
-      def column_type=(type)
-        @column_type = type
+      def type=(type)
+        @type = type
       end
       private 
 
       def calculated_column_type
-        if association_method = association_in_method(klass, method)
+        if klass.named_scopes.keys.include?(method.to_sym)
+          klass.named_scopes[method][:type]
+        elsif boolean_matcher?
+          :boolean
+        elsif association_method = association_in_method(klass, method)
           column_type_in_association(association_method)
+        elsif column = klass.columns.find{ |kc| kc.name == name}
+          column.type
         else
-          klass.columns.find{ |kc| kc.name == column_name}.type
+          raise NoMethodError.new()
         end
+      end
+
+      def boolean_matcher?
+        !!(BOOLEAN_MATCHER.detect{|k| /#{k}$/ =~ method})
       end
 
       def association_in_method(current_klass, method)
@@ -45,7 +60,6 @@ module Searchlogic
         ass_method = association_in_method(new_klass, new_method)
         column ? column.type : column_type_in_association(ass_method)
       end
-      
     end
   end
 end
