@@ -12,17 +12,11 @@ module Searchlogic
       
       def write_condition(key, value)
         vals = value.flatten
-        conditions[key.to_sym] = typecast(key, *vals)
-        self
+        tap{  conditions[key.to_sym] = typecast(key, *vals) }
       end
 
       def read_condition(key)
         conditions[key]
-      end
-
-      def reader_writer_sanitize(key, value)
-        return value.first if [value].flatten.first.nil? || [value].flatten.first == false
-        typecast(key, one_value || first_val)
       end
     end
   end

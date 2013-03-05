@@ -14,9 +14,7 @@ module Searchlogic
       end
 
       def ordering_by
-        order = conditions[:order]
-        return order if order.nil?  
-        order.split("_by_").last
+        conditions[:order]
       end
 
       def klass

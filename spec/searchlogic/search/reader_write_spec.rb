@@ -26,7 +26,36 @@ describe Searchlogic::SearchExt::ReaderWriter do
       search = User.searchlogic(:name_ew => "man")
       search.name_ew.should eq("man")
     end
+    it "should allow you to assign blank values" do
+      #Will be ignored when search is performed
+      User.create(:username => "")
+      search = User.search
+      search.username_eq = ""
+      search.username_eq.should eq("")
+    end
+    it "should allow blank values" do 
+      search = User.search
+      search.username_equals_any = ""
+      search.username_equals_any.should eq("")
+      search.name_eq(["", "Tren"])
+      search.name_eq.should eq(["","Tren"])
+      search.conditions.should eq({ :name_eq => ["",  "Tren"], :username_equals_any => ""})
+    end    
 
+    it "should not remove nils" do 
+      search = User.searchlogic
+      search.username_eq = nil 
+      search.count.should eq(4)
+      search.map(&:name).should eq([ nil, nil, nil, "Ben"])
+    end
+
+    it "finds with explicit assignment and other args" do 
+      search = User.search(:name_contains => "James")
+      search.email_eq = nil 
+      search.conditions.should eq({:name_contains => "James", :email_eq => nil})
+      search.count.should eq(2)
+      search.map(&:name).should eq(["James", "James Vanneman"])
+    end
     it "lets you write methods on associatiated columns" do 
       search = User.search 
       search.orders_total_equals = 10
@@ -103,37 +132,5 @@ describe Searchlogic::SearchExt::ReaderWriter do
     end 
 
 
-  end
-  context "#reader_writer_sanitize" do
-    it "should allow you to assign blank values" do
-      #Will be ignored when search is performed
-      User.create(:username => "")
-      search = User.search
-      search.username_eq = ""
-      search.username_eq.should eq("")
-    end
-    it "should allow blank values" do 
-      search = User.search
-      search.username_equals_any = ""
-      search.username_equals_any.should eq("")
-      search.name_eq(["", "Tren"])
-      search.name_eq.should eq(["","Tren"])
-      search.conditions.should eq({ :name_eq => ["",  "Tren"], :username_equals_any => ""})
-    end    
-
-    it "should not remove nils" do 
-      search = User.searchlogic
-      search.username_eq = nil 
-      search.count.should eq(4)
-      search.map(&:name).should eq([ nil, nil, nil, "Ben"])
-    end
-
-    it "finds with explicit assignment and other args" do 
-      search = User.search(:name_contains => "James")
-      search.email_eq = nil 
-      search.conditions.should eq({:name_contains => "James", :email_eq => nil})
-      search.count.should eq(2)
-      search.map(&:name).should eq(["James", "James Vanneman"])
-    end
   end
 end

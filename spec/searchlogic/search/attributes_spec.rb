@@ -9,7 +9,7 @@ describe Searchlogic::SearchExt::Attributes do
 
     it "should return the column name for ascending" do
       search = User.search(:order => "ascend_by_first_name")
-      search.ordering_by.should eq("first_name")
+      search.ordering_by.should eq("ascend_by_first_name")
     end
 
   end
