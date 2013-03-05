@@ -158,8 +158,8 @@ describe Searchlogic::SearchExt::TypeCast do
 
       it "should type cast deep association conditions" do
         search = User.search
-        search.orders_line_items_price = "10"
-        search.orders_line_items_price == 10
+        search.orders_line_items_price_eq = "10"
+        search.orders_line_items_price_eq.should eq(10)
       end
       it "doesn't incorrectly match columns" do 
         User.create(:username => "James", :company => Company.create)
