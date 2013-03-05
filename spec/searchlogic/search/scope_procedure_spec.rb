@@ -167,7 +167,6 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
         })
       end
       search = User.search
-      binding.pry
       search.multiple_args = [2,3,4]
       search.count.should eq(3)
       names = search.map(&:name)

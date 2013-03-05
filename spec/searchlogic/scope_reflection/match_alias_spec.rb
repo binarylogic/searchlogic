@@ -76,7 +76,7 @@ describe Searchlogic::ScopeReflectionExt::MatchAlias do
   describe ".convert_alias" do
 
     it "matches ordering" do 
-      Searchlogic::ScopeReflection.convert_alias(:order, :ascend_by_id).should eq(:ascend_by_id)
+      Searchlogic::ScopeReflection.convert_alias(:order, User, :ascend_by_id).should eq(:ascend_by_id)
 
     end    
     it "is == equals" do 

@@ -4,9 +4,9 @@ module Searchlogic
     def self.included(klass)
       klass.class_eval do 
         extend Aliases
-        extend ClassLevelMethods
-        extend MatchAlias
         extend SearchlogicConditions
+        include ClassLevelMethods
+        include MatchAlias
         include Type
       end
     end

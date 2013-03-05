@@ -20,6 +20,7 @@ module Searchlogic
       def sanitize_cdl_in_date(value)
         value.split(",").join("/")
       end
+      
       def ordering?(scope_name)
         scope_name.to_s == "order"
       end

@@ -22,7 +22,7 @@ module Searchlogic
 
         private
         def method_missing(method, *args, &block) 
-          std_method = ScopeReflection.convert_alias(method, args, self)
+          std_method = ScopeReflection.new(self, method).convert_alias
           return memoized_scope[std_method] if memoized_scope[std_method]
           generate_scope(std_method, args, &block) || super 
         end
