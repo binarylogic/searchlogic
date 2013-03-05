@@ -41,6 +41,7 @@ module Searchlogic
       def named_scope?
         klass.named_scopes.keys.include?(method.to_sym)
       end
+      
       def association_in_method(current_klass, method)
         first_association = current_klass.reflect_on_all_associations.find{|a| /^#{a.name.to_s}/.match(method.to_s)}
         if first_association

@@ -7,7 +7,7 @@ module Searchlogic
           DELIMITER = "__"
           def scope
             if applicable?
-              method = convert_syntax
+              method = convert_syntax 
               klass.send(method, value)
             end
           end

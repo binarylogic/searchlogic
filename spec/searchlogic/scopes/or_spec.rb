@@ -28,6 +28,10 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Oor do
     usernames.should eq(["James", "Ben", "Tren"])
   end
 
+  it "returns and ActiveRecord::Relation" do 
+    users = User.username_like_or_name_like("ame").should be_kind_of(ActiveRecord::Relation)
+  end
+
   it "works with 'or' in first method" do 
     users = User.id_greater_than_or_equal_to_or_age_lt(4)
   end 

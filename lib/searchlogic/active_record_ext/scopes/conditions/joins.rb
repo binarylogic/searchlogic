@@ -7,6 +7,7 @@ module Searchlogic
           DELIMITER = "__"
 
           def initialize(*args)
+
             super
             @method_parts = method_name.to_s.split(DELIMITER) 
             @join_name = find_join_name
@@ -20,6 +21,7 @@ module Searchlogic
             nested_scope = created_nested_scope
             where_values = nested_scope.where_values 
             join_values = nested_scope.joins_values
+            binding.pry 
             if where_values.empty?
               generate_join_and_send_method(join_values)
             else
@@ -34,7 +36,7 @@ module Searchlogic
 
           private
             def created_nested_scope
-
+              binding.pry
               args.compact!
               args.empty? ? association.klass.send(new_method) : association.klass.send(new_method, value)
             end

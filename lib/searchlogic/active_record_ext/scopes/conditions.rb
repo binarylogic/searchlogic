@@ -22,7 +22,7 @@ module Searchlogic
 
         private
         def method_missing(method, *args, &block) 
-          std_method = ScopeReflection.convert_alias(method)
+          std_method = ScopeReflection.convert_alias(method, args, self)
           return memoized_scope[std_method] if memoized_scope[std_method]
           generate_scope(std_method, args, &block) || super 
         end
@@ -50,12 +50,12 @@ module Searchlogic
          [  
             NormalizeInput,
             Polymorphic,
-            Oor,
+            Oor,            
             Joins,
+            ScopeProcedure,
             Any,
             GreaterThanOrEqualTo,
             LessThanOrEqualTo,
-            ScopeProcedure,
             Equals,
             BeginsWith,
             DoesNotEqual,
