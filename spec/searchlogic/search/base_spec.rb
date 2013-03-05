@@ -78,7 +78,6 @@
       search1 = User.search
       search2 = search1.clone
       search2.age_gt = 12
-
       search2.all.should eq([@James, @JamesV, user2])
       search1.all.should eq(User.all)
     end

@@ -7,7 +7,6 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::ScopeProcedure do
     order3 = Order.create(:total=>16, :line_items => [LineItem.create(:price => 6), LineItem.create(:price => 7)])
     User.create(:name=>"James", :orders => [order1])
     User.create(:name=>"Tren", :orders => [order2])
-
     User.create(:name=>"Ben", :orders => [order3])
   end
   it "can add a scope procedure to a method call" do 

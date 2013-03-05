@@ -9,7 +9,7 @@ module Searchlogic
       def conditions=(hash)
         hash.each do |k,v|
           next if (v.is_a?(String) && v.blank?) || v.nil?
-          send("#{k}=", v)
+          __send__("#{k}=", v)
         end
       end
 

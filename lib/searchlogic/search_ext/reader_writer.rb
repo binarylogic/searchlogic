@@ -6,13 +6,14 @@ module Searchlogic
         if authorized_scope?(scope_name) || associated_column?(scope_name)
           args.empty? ? read_condition(scope_name) : write_condition(scope_name, args)
         else
-          ::Kernel.send(:raise, UnknownConditionError, scope_name.to_s)
+          ::Object.__send__(:raise, UnknownConditionError, scope_name.to_s)
         end
       end
       
       def write_condition(key, value)
         vals = value.flatten
-        tap{  conditions[key.to_sym] = typecast(key, *vals) }
+        conditions[key.to_sym] = typecast(key, *vals)
+        self
       end
 
       def read_condition(key)

@@ -7,9 +7,9 @@ module Searchlogic
       end
 
       def clone
-        self.class.new(klass, conditions)
+        Searchlogic::Search.new(klass, conditions)
       end
-
+      
       def klass
         @klass
       end 
