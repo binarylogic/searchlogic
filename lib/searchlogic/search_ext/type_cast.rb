@@ -15,11 +15,6 @@ module Searchlogic
           column_for_type_cast.type_cast(value)
         end
       end
-
-
-      def ordering?(method)
-        method.to_sym == :order
-      end
     end
   end
 end

@@ -130,13 +130,6 @@ describe Searchlogic::SearchExt::Delegate::ScopeGenerator do
         search.map(&:name).should eq(["Tren", "Ben"])
       end
 
-
-      xit "works with singular association names" do 
-        search = User.search(:order_total_gt => 10)
-        search.all.should eq(User.all)
-      end
-
-
       it "retuns all users with nil username" do 
         User.all.count.should eq(4)
         search = User.searchlogic(:username_nil => true)

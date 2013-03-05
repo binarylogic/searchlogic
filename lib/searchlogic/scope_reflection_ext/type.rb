@@ -22,7 +22,7 @@ module Searchlogic
       private 
 
       def calculated_column_type
-        if klass.named_scopes.keys.include?(method.to_sym)
+        if named_scope?
           klass.named_scopes[method][:type]
         elsif boolean_matcher?
           :boolean
@@ -31,14 +31,16 @@ module Searchlogic
         elsif column = klass.columns.find{ |kc| kc.name == name}
           column.type
         else
-          raise NoMethodError.new()
+          raise NoMethodError.new(method.to_s + " is not a defined column or scope on #{klass.to_s}")
         end
       end
 
       def boolean_matcher?
         !!(BOOLEAN_MATCHER.detect{|k| /#{k}$/ =~ method})
       end
-
+      def named_scope?
+        klass.named_scopes.keys.include?(method.to_sym)
+      end
       def association_in_method(current_klass, method)
         first_association = current_klass.reflect_on_all_associations.find{|a| /^#{a.name.to_s}/.match(method.to_s)}
         if first_association

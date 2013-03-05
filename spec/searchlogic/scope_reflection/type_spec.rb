@@ -74,9 +74,10 @@ describe Searchlogic::ScopeReflectionExt::Type do
       scope_refl.type.should eq(:boolean)
     end
 
-    xit "should raise an error if not a recognized scope, association, or column" do 
+    it "should raise an error if not a recognized scope, association, or column" do 
       scope_refl = Searchlogic::ScopeReflection.new(User, :boogie)
-      scope_refl.type
+      binding.pry
+      expect{scope_refl.type}.to raise_error(NoMethodError)
     end
   end
 end
