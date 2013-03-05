@@ -5,8 +5,8 @@ module Searchlogic
       klass.class_eval do 
         extend Aliases
         extend SearchlogicConditions
-        include ClassLevelMethods
-        include MatchAlias
+        extend ClassLevelMethods
+        extend MatchAlias
         include Type
       end
     end

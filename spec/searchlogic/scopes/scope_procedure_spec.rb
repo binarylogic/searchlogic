@@ -10,13 +10,13 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::ScopeProcedure do
     ben = User.create(:name=>"Ben", :orders => [order3], :id => 12, :orders => [order3])
     Company.create(:users => [ben], :name => "Ben's co")
   end
-  xit "can add a scope procedure to a method call" do 
+  it "can add a scope procedure to a method call" do 
     LineItem.scope(:expensive, lambda {LineItem.price_gt (7)})
     users = User.orders_line_items_expensive
     users.map(&:name).should eq(["James", "Tren"])
   end
 
-  xit "doesn't get confused with scope proc that has an aliased condition" do
+  it "doesn't get confused with scope proc that has an aliased condition" do
     User.scope :doesnt_have_id_gt, lambda {|id1, id2| User.id_gt(id1).name_not_blank.orders_id_gt(id2) }
     users = User.doesnt_have_id_gt(2,2)
     users.count.should eq(1)

@@ -20,9 +20,22 @@ module Searchlogic
         end
 
 
+
+
+        def association_in_method( method)
+          first_association = reflect_on_all_associations.find{|a| /^#{a.name.to_s}/.match(method.to_s)}
+          if first_association
+            klassname = first_association.name.to_s
+            new_method = /[#{klassname}|#{klassname.singularize}]_(.*)/.match(method)[1]
+            [klassname, new_method]
+          else
+            nil
+          end
+        end
+        
         private
         def method_missing(method, *args, &block) 
-          std_method = ScopeReflection.new(self, method).convert_alias
+          std_method = ScopeReflection.convert_alias(self, :method => method)
           return memoized_scope[std_method] if memoized_scope[std_method]
           generate_scope(std_method, args, &block) || super 
         end

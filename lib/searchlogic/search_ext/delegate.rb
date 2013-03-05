@@ -11,7 +11,7 @@ module Searchlogic
       private 
 
         def create_scope(curr_scope, condition, value)
-          std_condition = ScopeReflection.new(klass, condition).convert_alias(value)
+          std_condition = ScopeReflection.convert_alias(klass, :method => condition, :value => value)
           scope_lambda = klass.named_scopes[std_condition].try(:[], :scope)
           if (scope_lambda.try(:arity) == 0 && value == true) || ordering?(condition)
             curr_scope.send(std_condition)
