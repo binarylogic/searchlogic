@@ -77,8 +77,8 @@ describe Searchlogic::ScopeReflectionExt::MatchAlias do
 
     it "matches ordering" do 
       Searchlogic::ScopeReflection.convert_alias(User, :method => :order, :value => :ascend_by_id).should eq(:ascend_by_id)
-
-    end    
+    end 
+       
     it "is == equals" do 
       users = User.name_is("James")
       users.count.should eq(1)

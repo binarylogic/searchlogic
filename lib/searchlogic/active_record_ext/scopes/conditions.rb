@@ -19,9 +19,6 @@ module Searchlogic
           ActiveRecord::Base.connection.tables
         end
 
-
-
-
         def association_in_method( method)
           first_association = reflect_on_all_associations.find{|a| /^#{a.name.to_s}/.match(method.to_s)}
           if first_association
@@ -32,7 +29,7 @@ module Searchlogic
             nil
           end
         end
-        
+
         private
         def method_missing(method, *args, &block) 
           std_method = ScopeReflection.convert_alias(self, :method => method)
