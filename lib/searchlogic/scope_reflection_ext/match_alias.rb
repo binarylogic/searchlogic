@@ -6,7 +6,7 @@ module Searchlogic
         self.method = method
         return method if match_alias.nil?
         alias_name = match_alias[1]
-        replacement_value = "_" + alias_hash.find{|k, v| v.include?(alias_name)}.first.to_s
+        replacement_value = alias_hash.find{|method, alias_array| alias_array.include?(alias_name)}.first.to_s
         replace_method(replacement_value)
       end
 

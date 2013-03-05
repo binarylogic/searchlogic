@@ -31,7 +31,7 @@ describe Searchlogic::ScopeReflectionExt::MatchAlias do
         Searchlogic::ScopeReflection.match_alias(:name_ends_with).should be_nil
       end
       it "does_not_end_with" do 
-        Searchlogic::ScopeReflection.match_alias(:name_ends_with).should be_nil
+        Searchlogic::ScopeReflection.match_alias(:name_begins_with).should be_nil
       end
     end
   end

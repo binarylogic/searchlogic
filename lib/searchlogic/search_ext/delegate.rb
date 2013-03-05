@@ -23,14 +23,6 @@ module Searchlogic
         def false_scope_proc?(key, value)
           klass.named_scopes.keys.include?(key.to_sym) && !value
         end
-
-        def column_or_association?(key)
-          !!(klass.column_names.detect{|kcn| kcn.to_sym == key} || klass.reflect_on_all_associations.detect{ |association| key.to_s.include?(association.name.to_s) && !authorized_scope?(key.to_s) })
-        end
-
-        def ordering?(scope_name)
-          scope_name.to_s == "order"
-        end
     end
   end
 end

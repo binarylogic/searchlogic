@@ -4,9 +4,7 @@ module Searchlogic
       private
         def method_missing(method, *args, &block)
           scope_name = method.to_s.gsub(/=$/, '').to_sym
-          if method.to_s == "delete"
-            delete_condition(args)
-          elsif valid_accessor?(scope_name, method)
+          if valid_accessor?(scope_name, method)
             read_or_write_condition(scope_name, args)
           else
             delegate(method, args, &block)
