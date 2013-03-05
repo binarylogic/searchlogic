@@ -175,7 +175,6 @@ describe Searchlogic::SearchExt::TypeCast do
       search = User.search
       search.too_old = "2014, 2, 1"
       search.conditions[:too_old].should eq("2014, 2, 1")
-      binding.pry
       User.named_scopes[:too_old][:type] = :date      
       search.too_old = "2014, 2, 1"
       search.conditions[:too_old].should be_kind_of(Date)

@@ -73,7 +73,12 @@ describe Searchlogic::ScopeReflectionExt::MatchAlias do
     end
   end
 
-  describe "map to correct value" do
+  describe ".convert_alias" do
+
+    it "matches ordering" do 
+      Searchlogic::ScopeReflection.convert_alias(:order, :ascend_by_id).should eq(:ascend_by_id)
+
+    end    
     it "is == equals" do 
       users = User.name_is("James")
       users.count.should eq(1)
