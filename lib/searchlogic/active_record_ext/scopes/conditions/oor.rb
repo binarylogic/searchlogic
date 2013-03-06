@@ -2,7 +2,7 @@ module Searchlogic
   module ActiveRecordExt
     module Scopes
       module Conditions
-        class Oor < Condition
+        class Or < Condition
           def scope
             if applicable?
               method_without_ending_condition = method_name.to_s.chomp(ending_alias_condition)
@@ -41,11 +41,7 @@ module Searchlogic
             end
 
             def add_condition(method)
-              if !has_condition?(method)
-                method + ending_alias_condition
-              else
-                method            
-              end
+              has_condition?(method) ? method : method + ending_alias_condition
             end
 
             def has_condition?(method)

@@ -60,7 +60,7 @@ module Searchlogic
          [  
             NormalizeInput,
             Polymorphic,
-            Oor,            
+            Or,            
             Joins,
             ScopeProcedure,
             Any,

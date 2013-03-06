@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Oor do 
+describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Or do 
   before(:each) do 
     l1 = LineItem.new(:price => 1)
     l2 = LineItem.new(:price => 4)
