@@ -7,9 +7,16 @@ module Searchlogic
             if applicable?
               method_without_ending_condition = method_name.to_s.chomp(ending_alias_condition)
               methods = join_equal_to(method_without_ending_condition.split("_or_"))
-
               results = methods.map do |m| 
-                klass.send(add_condition(m), *value)
+                if klass.named_scopes.keys.include?(m.to_sym)
+                  if klass.named_scopes[m.to_sym][:scope].arity == 0
+                    klass.send(m) 
+                  else
+                    klass.send(m, *value)
+                  end
+                else
+                  klass.send(add_condition(m), *value)
+                end
               end
               ##need to return ActiveRecord::Relation object, combining 'where_values' from individual scopes fails when
               ##scope is an association so collect the results and run a where clause vs their id's to return correct results
@@ -58,7 +65,11 @@ module Searchlogic
             end
 
             def ending_alias_condition 
-              /(_#{self.class.all_matchers.sort_by(&:size).reverse.join("|")})$/.match(method_name)[0]
+              begin
+                /(_#{self.class.all_matchers.sort_by(&:size).reverse.join("|")})$/.match(method_name)[0]
+              rescue NoMethodError
+                raise NoMethodError.new("There was no condition defined on the method")
+              end
             end
 
             def applicable? 
@@ -71,4 +82,3 @@ module Searchlogic
     end
   end
 end
-

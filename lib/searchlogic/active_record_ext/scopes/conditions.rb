@@ -84,6 +84,7 @@ module Searchlogic
             DescendBy,
             All,
             NamedScopeArity,
+            Boolean,
           ] 
         end
       end

@@ -89,5 +89,25 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Or do
     User.username_like_or_name_like_all("Jam", "mes").should eq([@james, @tren])
   end
 
+  it "should work with boolean conditions" do 
+    class User
+      scope :male, lambda{ where("male = ?", true)}
+    end
+    jason = User.create(:male => true, :name => "Jason")
+    User.male_or_name_eq("James").should eq([@james, jason])
+  end
+
+  it "shoudl work with scopes with arity > 0" do 
+    class User
+      scope :old, lambda{|age| age_gte(age)}
+    end
+    jason = User.create(:age => 50, :name => "Jason")
+    User.old_or_id_gt(50).should eq([jason])
+  end
   
+  it "should raise an error on missing condition" do 
+    expect{User.name_or_id(26)}.to raise_error
+
+  end
+
 end
