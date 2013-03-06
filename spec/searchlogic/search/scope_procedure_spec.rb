@@ -87,6 +87,7 @@ describe "Searchlogic::SearchExt::Search::ScopeProcedure" do
     end
 
     it "should create a search proxy" do
+      binding.pry
       User.search(:username_eq => "joe").should be_kind_of(Searchlogic::Search)
     end
 

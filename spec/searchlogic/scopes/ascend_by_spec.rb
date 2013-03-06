@@ -2,13 +2,13 @@ require 'spec_helper'
 
 describe Searchlogic::ActiveRecordExt::Scopes::Conditions::AscendBy do 
   before(:each) do 
-    james = User.create(:name=>"James")
-    ben = User.create(:name=>"Ben")
+    @james = User.create(:name=>"James")
+    @ben = User.create(:name=>"Ben")
     tren = User.create(:name => "Tren")
-    Order.create(:total=>100, :user => tren)
-    Order.create(:total=>125, :user => ben)
-    Order.create(:total=>94, :user => james)
-    Order.create(:total=>112, :user => ben)
+    @o1 = Order.create(:total=>100, :user => tren)
+    @o2 = Order.create(:total=>125, :user => @ben)
+    Order.create(:total=>94, :user => @james)
+    Order.create(:total=>112, :user => @ben)
   end
 
   it "orders users ascending on id" do 
@@ -23,6 +23,13 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::AscendBy do
     orders = Order.ascend_by_total
     order_totals = orders.sort_by(&:total).map { |o| o.total }
     order_totals.should eq([94,100,112,125])
+  end
+
+  it "orders with deep association and asending at begining of method" do 
+    co1 = Company.create(:users =>[User.create(:orders =>[Order.create(:total =>75)])])
+    co2 = Company.create(:users =>[User.create(:orders =>[Order.create(:total =>55)])])
+    co3 = Company.create(:users =>[User.create(:orders =>[Order.create(:total =>45)])])
+    Company.ascend_by_users_orders_total.should eq([co3, co2, co1])
   end
 
   it "orders based with an association" do 

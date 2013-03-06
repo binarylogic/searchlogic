@@ -21,14 +21,6 @@ describe Searchlogic::ScopeReflectionExt::Type do
       scope_refl = Searchlogic::ScopeReflection.new(User, :created_at_greater_than_or_equal_to)
       scope_refl.type.should eq(:datetime)
     end
-
-    it "can be explicity set" do 
-      scope_refl = Searchlogic::ScopeReflection.new(User, :name_gte)
-      scope_refl.type.should eq(:string)
-      scope_refl.type = :datetime
-      scope_refl.type.should eq(:datetime)
-    end
-
     it "finds column types on associated columns" do 
       scope_refl = Searchlogic::ScopeReflection.new(Company, :users_orders_line_items_price_greater_than_or_equal_to)
       scope_refl.type.should eq(:float)

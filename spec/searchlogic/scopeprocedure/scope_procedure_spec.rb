@@ -5,15 +5,23 @@ describe Searchlogic::ActiveRecordExt::ScopeProcedure::ClassMethods do
     class User
       scope :awesome, lambda{ name_like("James")}
     end
-    User.create(:name=>"James", :age =>20, :username => "jvans1", :email => "jvannem@gmail.com" )
-    User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1", :email => "jvannem@gmail.com" )
-    User.create(:name => "Tren", :age =>45, :email => "jvannem@gmail.com" )
-    User.create(:name=>"Ben", :age =>20, :email => "Ben@gmail.com" )
+    @james = User.create(:name=>"James", :age =>20, :username => "jvans1", :email => "jvannem@gmail.com" )
+    @jamesv = User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1", :email => "jvannem@gmail.com" )
+    @tren = User.create(:name => "Tren", :age =>45, :email => "jvannem@gmail.com" )
+    @ben =  User.create(:name=>"Ben", :age =>20, :email => "Ben@gmail.com", :username => "bjohnson" )
   end
   after(:each) do 
     User.named_scopes.clear
     Order.named_scopes.clear
   end
+
+  it "should allow named scopes to be called multiple times and reflect the value passed" do
+    @co1 = Company.create(:users => [@james, @jamesv, @ben, @tren])
+    @co2 = Company.create(:users => [@james])
+    Company.users_username_like("bjohnson").should eq([@co1])
+    Company.users_username_like("jvans1").should eq([@co2, @co1])
+  end
+
 
   it "creates a scopes procedure with custom conditions" do 
     class User;
@@ -86,7 +94,6 @@ describe Searchlogic::ActiveRecordExt::ScopeProcedure::ClassMethods do
     names = last_three.map(&:name)
     names.should eq(["James Vanneman", "Tren", "Ben"])
   end
-
 
   it "individual classes keeps track of all scopes created" do 
     User.scope :second_one, lambda { User.first}

@@ -9,7 +9,7 @@ module Searchlogic
       def clone
         Searchlogic::Search.new(klass, conditions)
       end
-      
+
       def klass
         @klass
       end 

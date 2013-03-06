@@ -82,7 +82,8 @@ module Searchlogic
             Blank,
             AscendBy,
             DescendBy,
-            All
+            All,
+            NamedScopeArity,
           ] 
         end
       end

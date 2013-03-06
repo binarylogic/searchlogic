@@ -4,7 +4,7 @@ module Searchlogic
       def alias_hash
         {
           :_not_blank => %w{_present},
-          :_equals => %w{_eq _is _equal},
+          :_equals => %w{_eq _is _equal },
           :_does_not_equal => %w{_not_equal_to _is_not _not _ne _not_equal},
           :_less_than => %w{_lt _before},
           :_greater_than => %w{_gt _after},

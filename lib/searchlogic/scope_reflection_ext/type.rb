@@ -12,13 +12,7 @@ module Searchlogic
         column_names.find{|cn| method.to_s.include?(cn.to_s)}
       end
 
-      def type()
-        calculated_column_type
-      end
-
-      private 
-
-      def calculated_column_type
+      def type
         if named_scope?
           klass.named_scopes[method][:type]
         elsif boolean_matcher?
@@ -32,10 +26,12 @@ module Searchlogic
         end
       end
 
+      private 
+
       def boolean_matcher?
         !!(BOOLEAN_MATCHER.detect{|k| /#{k}$/ =~ method})
       end
-      
+
       def named_scope?
         klass.named_scopes.keys.include?(method.to_sym)
       end
