@@ -3,8 +3,8 @@ require 'spec_helper'
 describe Searchlogic::ScopeReflectionExt::MatchAlias do 
   before(:each) do 
     User.create(:name=>"James", :age => 26, :company_id => 34)
-    User.create(:name=>"Jon", :email => "jon@James.com", :company_id => 4)
-    User.create(:name=>"aJJ", :username => "James", :company_id => 12)
+    @jon = User.create(:name=>"Jon", :email => "jon@James.com", :company_id => 4)
+    @james = User.create(:name=>"aJJ", :username => "James", :company_id => 12)
     User.create(:name=>"Ben", :age => 28, :username => "JamesVanneman", :company_id => 15)
     User.create(:name=>"Tren", :age =>45)
   end
@@ -152,5 +152,12 @@ describe Searchlogic::ScopeReflectionExt::MatchAlias do
       begins_j.map(&:name).should eq(["James", "Jon"])
     end
 
+    it "should have in" do 
+      User.id_in(2,3).should eq([@jon, @james])
+    end
+
+    it "should have in" do 
+      User.id_not_in(2,3).should eq(User.all - [@jon, @james])
+    end
   end
 end

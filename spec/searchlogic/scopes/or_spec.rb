@@ -12,11 +12,11 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Or do
     o3 = Order.new(:line_items => [l4])
     o4 = Order.new(:line_items => [l5], :total => 15)
 
-    User.create(:name => "Vanneman", :orders => [o1] )
+    @vanneman  = User.create(:name => "Vanneman", :orders => [o1] )
     User.create(:name => "Bill", :username => "Bill_Vanneman_JR", :orders => [o4])
-    User.create(:name=>"James")
+    @james = User.create(:name=>"James")
     User.create(:name=>"Ben", :username => "america", :email => "Ben@Vanneman", :orders => [o3])
-    User.create(:name=> "Tren", :username => "ANTJamesan", :orders => [o2])
+    @tren = User.create(:name=> "Tren", :username => "ANTJamesan", :orders => [o2])
     User.create(:name => "John", :username => "amicus")
   end
 
@@ -85,6 +85,9 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Or do
     names.should eq( ["Vanneman", "Bill", "Ben"])
   end
 
+  it "works with _or_equal_to_all" do 
+    User.username_like_or_name_like_all("Jam", "mes").should eq([@james, @tren])
+  end
 
   
 end

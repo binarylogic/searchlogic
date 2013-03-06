@@ -7,8 +7,9 @@ module Searchlogic
             if applicable?
               method_without_ending_condition = method_name.to_s.chomp(ending_alias_condition)
               methods = join_equal_to(method_without_ending_condition.split("_or_"))
+
               results = methods.map do |m| 
-                klass.send(add_condition(m), value)
+                klass.send(add_condition(m), *value)
               end
               ##need to return ActiveRecord::Relation object, combining 'where_values' from individual scopes fails when
               ##scope is an association so collect the results and run a where clause vs their id's to return correct results
@@ -22,6 +23,10 @@ module Searchlogic
               nil
             end
           private
+
+          def value
+            args.size == 1 ? args.first : args
+          end
 
             def join_equal_to(method_array)
               methods = []
@@ -41,7 +46,11 @@ module Searchlogic
             end
 
             def add_condition(method)
-              has_condition?(method) ? method : method + ending_alias_condition
+              if has_condition?(method) && ending_alias_condition != "_any" && ending_alias_condition != "_all"
+                method 
+              else
+                method + ending_alias_condition
+              end
             end
 
             def has_condition?(method)

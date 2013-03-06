@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Any do 
+describe Searchlogic::ActiveRecordExt::Scopes::Conditions::All do 
   before(:each) do 
     @james = User.create(:name => "James")
     @james_ben = User.create(:name=>"JamesBen")
@@ -15,10 +15,17 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Any do
     names = users.map(&:name)
     names.should eq(["JamesBen"])
   end 
+
   it "finds users specified by both conditions with an array" do 
     users = User.name_like_all(["James", "Ben"])
     users.count.should eq(1)
     names = users.map(&:name)
     names.should eq(["JamesBen"])
   end
+
+  it "doesn't throw an error with 1 argument" do
+    users = User.name_like_all("James")
+    users.should eq([@james, @james_ben])
+  end
+
 end

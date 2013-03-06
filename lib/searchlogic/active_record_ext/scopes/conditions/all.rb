@@ -5,7 +5,7 @@ module Searchlogic
         class All < Condition
           def scope
             if applicable?
-              where_values = value.map{|arg| klass.send(new_method, arg).where_values}.
+              where_values = [value].flatten.map{|arg| klass.send(new_method, arg).where_values}.
                             flatten.
                             join(" AND ")
               klass.where(where_values)

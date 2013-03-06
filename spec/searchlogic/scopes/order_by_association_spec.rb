@@ -39,7 +39,6 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Joins do
     users.count.should eq(8)
     names = users.map(&:name)
     names.should eq(["James", "James", "Ben", "Ben", "John", "John", "Tren", "Tren"])
-
   end
 end
 

@@ -17,15 +17,14 @@ module Searchlogic
             def new_method
               /(.*)_any/.match(method_name)[1]
             end
-            def chained_method
 
+            def chained_method
               value.map{|arg| new_method + "#{arg}" + "_or_"}.join
             end
+
             def value
               args.flatten
             end
-
-
 
             def separate_scopes(where_values)
               or_values = where_values.map { |wv| wv.last }.join(" OR ")              
