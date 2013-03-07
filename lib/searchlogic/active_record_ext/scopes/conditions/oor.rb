@@ -5,9 +5,7 @@ module Searchlogic
         class Or < Condition
           def scope
             if applicable?
-              method_without_ending_condition = method_name.to_s.chomp(ending_alias_condition)
-              methods = join_equal_to(method_without_ending_condition.split("_or_"))
-              results = methods.map do |m| 
+              results = methods_array.map do |m| 
                 if klass.named_scopes.keys.include?(m.to_sym)
                   if klass.named_scopes[m.to_sym][:scope].arity == 0
                     klass.send(m) 
@@ -26,6 +24,8 @@ module Searchlogic
             end
           end
 
+
+
             def self.matcher
               nil
             end
@@ -35,6 +35,13 @@ module Searchlogic
             args.size == 1 ? args.first : args
           end
 
+
+          def methods_array
+            join_equal_to(method_without_ending_condition.split("_or_"))            
+          end
+          def method_without_ending_condition
+            method_name.to_s.chomp(ending_alias_condition)
+          end
             def join_equal_to(method_array)
               methods = []
               method_array.each_with_index do |item, index| 
