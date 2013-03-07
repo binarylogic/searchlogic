@@ -18,7 +18,7 @@ module Searchlogic
               @column_name = /(.*)_greater_than_or_equal_to$/.match(method_name)[1]
             end
             def applicable? 
-              !(/(#{klass.column_names.join("|")})#{self.class.matcher}$/ =~ method_name).nil?
+              !(/^(#{klass.column_names.join("|")})#{self.class.matcher}$/ =~ method_name).nil?
             end
             
         end

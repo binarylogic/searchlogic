@@ -57,10 +57,8 @@ module Searchlogic
 
         def condition_klasses
          [  
-            NormalizeInput,
             Polymorphic,
             Or,            
-            Joins,
             ScopeProcedure,
             Any,
             GreaterThanOrEqualTo,
@@ -79,10 +77,13 @@ module Searchlogic
             Null,
             NotBlank,
             Blank,
-            AscendBy,
-            DescendBy,
             All,
             Boolean,
+            NormalizeInput,
+            Joins,
+            AscendBy,
+            DescendBy,
+
           ] 
         end
       end
