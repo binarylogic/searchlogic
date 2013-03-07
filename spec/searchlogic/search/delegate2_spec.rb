@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Searchlogic::SearchExt::Delegate do 
+describe "scoping" do 
   before(:each) do 
     l1 = LineItem.create(:price=> 10)
     l2 = LineItem.create(:price=> 20)
