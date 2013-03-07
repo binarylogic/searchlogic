@@ -16,7 +16,10 @@ module Searchlogic
             end
 
           private
- 
+            def applicable? 
+              !(/#{self.class.matcher}$/ =~ method_name).nil?
+            end
+
             def find_column
               /(.*)_like$/.match(method_name)
             end

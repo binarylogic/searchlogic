@@ -28,6 +28,9 @@ module Searchlogic
               @column_name = (/(.*)_null/).match(method_name)[1]
             end
 
+            def applicable? 
+              !(/#{self.class.matcher}$/ =~ method_name).nil?
+            end
 
 
             def send_to_not_null

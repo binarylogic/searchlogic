@@ -31,6 +31,11 @@ module Searchlogic
               and_values = where_values.map { |wv| next if wv.size ==1; wv.take_while{|e| e != wv.last } }.compact
               and_values.empty? ? or_values : or_values + " AND " + and_values.join(" AND ")
             end
+            
+            def applicable? 
+              !(/#{self.class.matcher}$/ =~ method_name).nil?
+            end
+
         end
       end
     end

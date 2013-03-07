@@ -31,10 +31,10 @@ module Searchlogic
             def polymorphic_association
               klass.reflect_on_all_associations.flatten.detect{|association| association.options[:polymorphic]}
             end
+
             def klass_symbol
               klass.name.downcase.pluralize.to_sym
             end
-
         end
       end
     end

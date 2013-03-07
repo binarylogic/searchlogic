@@ -42,7 +42,6 @@ module Searchlogic
             klass.tables.map { |k| k + "_" }.join("|")
           end
 
-
           def incorrect_syntax_in_ordering
             singular_tables = klass.tables.map { |k| k.singularize + "_" }.join("|")
             #match an ordering that includes a singular table followed by column,

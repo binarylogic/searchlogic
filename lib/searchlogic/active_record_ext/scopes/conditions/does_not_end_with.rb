@@ -21,6 +21,9 @@ module Searchlogic
             def find_column
               @column_name = /(.*)_does_not_end_with$/.match(method_name)[1]
             end
+            def applicable? 
+              !(/#{self.class.matcher}$/ =~ method_name).nil?
+            end
 
         end
       end

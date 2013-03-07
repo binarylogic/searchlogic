@@ -23,10 +23,14 @@ module Searchlogic
                 args.first
               end
             end
+
             def new_method
               /(.*)_all/.match(method_name)[1]
             end
-
+            
+            def applicable? 
+              !(/#{self.class.matcher}$/ =~ method_name).nil?
+            end
 
         end
       end

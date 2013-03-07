@@ -21,15 +21,11 @@ module Searchlogic
           end
 
           def self.matcher
-            raise NotImplementedError.new("You must define a self.matcher method for applicable? If you're applicable? method doesn't use one, have it return nil")
+            raise NotImplementedError.new("You must define a self.matcher method so searchlogic can identify the scope")
           end
           
-          def applicable? 
-            !(/#{self.class.matcher}$/ =~ method_name).nil?
-          end
-
-          def method_missing(method, *args, &block)
-            raise NoMethodError.new(method.to_s + " is not defined in searchlogic")  
+          def applicable?
+            raise NotImplementedError.new("You must define an #applicable? method ")
           end
         end
       end

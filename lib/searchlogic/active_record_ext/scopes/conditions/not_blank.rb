@@ -29,6 +29,10 @@ module Searchlogic
             def send_to_blank
               klass.send(find_column + "_blank")
             end
+            
+            def applicable? 
+              !(/#{self.class.matcher}$/ =~ method_name).nil?
+            end
 
 
         end

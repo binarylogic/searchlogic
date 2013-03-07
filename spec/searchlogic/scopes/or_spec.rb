@@ -106,8 +106,8 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Or do
   end
   
   it "should raise an error on missing condition" do 
+    binding.pry
     expect{User.name_or_id(26)}.to raise_error
-
   end
 
 end
