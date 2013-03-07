@@ -44,4 +44,10 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::AscendBy do
     co2 = Company.create(:users_count => 31, :users => [@tren, @ben, @james])
     Company.ascend_by_users_count.should eq([co2, co1])
   end
+
+  it "should have order by custom scope" do
+    User.column_names.should_not include("custom")
+    class User;scope(:ascend_by_custom, lambda{ ascend_by_username.descend_by_id});end
+    User.ascend_by_custom.should eq([@tren, @ben, @james])
+  end
 end
