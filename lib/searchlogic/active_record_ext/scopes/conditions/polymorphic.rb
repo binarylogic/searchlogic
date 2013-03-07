@@ -24,6 +24,7 @@ module Searchlogic
               method_parts = method_name.to_s.split("_type_")
               method_parts[0].split(polymorphic_association_name + "_").last.camelize.constantize
             end
+            
             def new_method
               method_parts = method_name.to_s.split("_type_").last
             end

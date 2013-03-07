@@ -26,6 +26,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Condition do
   end
 
   it "should not allow conditions on columns that don't exist" do 
+    binding.pry
     expect{User.non_existant_col_equal(4).all}.to raise_error
   end
 end
