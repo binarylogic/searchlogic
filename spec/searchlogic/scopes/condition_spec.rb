@@ -29,4 +29,9 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Condition do
     expect{User.non_existant_col_equal(4).all}.to raise_error
   end
 
+  context "#association_names" do 
+    it "should return a list of association names for class" do 
+      User.association_names.should eq(["company", "carts", "orders", "orders_big", "audits", "user_groups"])
+    end
+  end
 end

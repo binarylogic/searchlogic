@@ -15,8 +15,8 @@ module Searchlogic
           condition_klasses.map { |kc| kc.matcher }.compact
         end
 
-        def tables
-          ActiveRecord::Base.connection.tables
+        def association_names
+          reflect_on_all_associations.map{|a| a.name.to_s}
         end
 
         def association_in_method( method)
@@ -42,11 +42,7 @@ module Searchlogic
 
         def generate_scope(method, args, &block)
           condition_klasses.each do |ck|
-            begin
               scope = ck.generate_scope(self, method, args, &block)
-            rescue
-              nil
-            end
             if scope 
               return scope
             end

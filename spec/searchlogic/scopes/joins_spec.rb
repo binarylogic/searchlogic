@@ -65,8 +65,8 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Joins do
     names.should eq(["noorder", "Tren", "John", "Ben", "James"])
   end
 
-  it "orders descending by associated column with singular name" do 
-    ordered_users = User.descend_by_order__total
+  it "orders descending by associated column" do 
+    ordered_users = User.descend_by_orders_total
     ordered_users.count.should eq(5)
     ordered_users_names = ordered_users.map(&:name)
     ordered_users_names.should eq(["noorder", "Tren", "John", "Ben", "James"].reverse)

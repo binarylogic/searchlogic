@@ -45,14 +45,14 @@ module Searchlogic
           end
 
           def matching_incorrect_syntax
-            klass.tables.map { |k| k + "_" }.join("|")
+            ActiveRecord::Base.connection.tables.map { |k| k + "_" }.join("|")
           end
 
           def incorrect_syntax_in_ordering
-            singular_tables = klass.tables.map { |k| k.singularize + "_" }.join("|")
+            tables = ActiveRecord::Base.connection.tables.join("|")
             #match an ordering that includes a singular table followed by column,
             #assume the table is meant as an association and pluralize
-            /(ascend_by_|descend_by_)(#{singular_tables})[^_]/
+            /(ascend_by_|descend_by_)(#{tables})[^_]/
           end
         end
       end

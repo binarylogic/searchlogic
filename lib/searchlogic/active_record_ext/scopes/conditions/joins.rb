@@ -52,11 +52,11 @@ module Searchlogic
             end
 
             def applicable?
-              !(/#{DELIMITER}/.match(method_name).nil?) || match_ordering
+              !(/#{DELIMITER}/.match(method_name).nil?)
             end
 
             def match_ordering
-              /(descend_by_|ascend_by_)(#{klass.tables.join("|")}|#{klass.tables.map(&:singularize).join("|")})/.match(method_name.to_s.split(DELIMITER).first)
+              /(descend_by_|ascend_by_)(#{klass.association_names.join("|")})/.match(method_name.to_s.split(DELIMITER).first)
             end
 
             def send_method

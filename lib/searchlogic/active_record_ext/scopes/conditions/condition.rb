@@ -21,7 +21,7 @@ module Searchlogic
           end
 
           def self.matcher
-            raise NotImplementedError.new("You must define a self.matcher method so searchlogic can identify the scope")
+            raise NotImplementedError.new("You must define a self.matcher method so searchlogic can mark it as authorized. If your matching method contains already authorized scopes you can define it as nil.")
           end
           
           def applicable?
