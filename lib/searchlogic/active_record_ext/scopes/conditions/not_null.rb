@@ -14,7 +14,7 @@ module Searchlogic
             end
           end
             def self.matcher
-              "not_null"
+              "_not_null"
             end
           private
             def value
@@ -26,7 +26,7 @@ module Searchlogic
             end
 
             def applicable? 
-              !(/#{self.class.matcher}$/ =~ method_name).nil?
+              !(/(#{klass.column_names.join("|")})#{self.class.matcher}$/ =~ method_name).nil?
             end
 
             def send_to_null
