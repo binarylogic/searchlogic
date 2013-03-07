@@ -39,7 +39,11 @@ module Searchlogic
 
         def generate_scope(method, args, &block)
           condition_klasses.each do |ck|
-            scope = ck.generate_scope(self, method, args, &block)
+            begin
+              scope = ck.generate_scope(self, method, args, &block)
+            rescue
+              nil
+            end
             if scope 
               memoized_scope[method] = scope 
               return scope

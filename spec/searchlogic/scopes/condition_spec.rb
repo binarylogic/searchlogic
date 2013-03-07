@@ -7,7 +7,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Condition do
   end
 
   context "#association_in_method" do
-    it "returns an array of the klass and next method in a method with an association" do 
+    it "returns an array of the klass and next method from the original method" do 
       User.association_in_method(:orders_line_items_total).should eq(["orders", "line_items_total"])
     end
 
@@ -26,7 +26,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Condition do
   end
 
   it "should not allow conditions on columns that don't exist" do 
-    binding.pry
     expect{User.non_existant_col_equal(4).all}.to raise_error
   end
+
 end

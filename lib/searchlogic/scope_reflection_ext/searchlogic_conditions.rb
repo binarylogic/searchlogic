@@ -18,6 +18,9 @@ module Searchlogic
         searchlogic_methods + aliases
       end
 
+      def all_scopes(klass)
+        recognized_scopes + klass.named_scopes.keys.map{|k| "_" + k.to_s }
+      end
     end
   end
 end

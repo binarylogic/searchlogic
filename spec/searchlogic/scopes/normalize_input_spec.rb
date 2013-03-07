@@ -21,9 +21,23 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::NormalizeInput do
     company_names = companies.map(&:name)
     company_names.should eq(["Neco", "ConcLive2"])
   end
+
   it "works on a method with normalized and non normalized inputs" do 
     companies = Company.users_orders__line_items_price_greater_than_or_orders_total_gt(8)
     company_names = companies.map(&:name)
     company_names.should eq(["Neco", "ConcLive1", "ConcLive2"])
+  end
+  context " prioritizing columns" do 
+    it "doesn't normalize inputs if they're also a column on the receiver" do 
+      co1 = Company.create
+      User.create(:count => 14, :company => co1 )
+      Company.users_count_gt(10).should_not include(co1)
+    end
+
+    it "doesn't normalize inputs if they're a column works with OR conditions" do 
+      co2 = Company.create
+      User.create(:count => 11 , :company => co2 )
+      Company.users_count_gt_or_id_equal(10).should_not include(co2)
+    end
   end
 end

@@ -20,7 +20,7 @@ module Searchlogic
           def convert_syntax
             methods = method_name.to_s.split(DELIMITER)
             methods.map do |method| 
-              if incorrect_syntax.match(method)
+              if !!(incorrect_syntax.match(method))
                 method.to_s.gsub(incorrect_syntax.match(method)[1], incorrect_syntax.match(method)[1] + "_")    
               elsif incorrect_syntax_in_ordering.match(method)
                 syntax_error = method.to_s.scan(incorrect_syntax_in_ordering).flatten.last
@@ -32,10 +32,15 @@ module Searchlogic
           end
 
           def applicable?
-            (incorrect_syntax =~ method_name) || (incorrect_syntax_in_ordering =~ method_name)
+            (incorrect_syntax =~ method_name || incorrect_syntax_in_ordering =~ method_name)  && !(preference_to_columns =~ method_name)
           end
+
           def incorrect_syntax
             /(#{matching_incorrect_syntax})[^_]/
+          end
+
+          def preference_to_columns
+            /^(#{klass.column_names.join("|")})(#{ScopeReflection.all_scopes(klass).join("|")})/
           end
 
           def matching_incorrect_syntax

@@ -38,6 +38,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.integer :company_id
     t.string :username
     t.string :name
+    t.integer :count
     t.integer :age
     t.boolean :male
     t.string :email

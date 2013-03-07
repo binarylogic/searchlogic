@@ -42,8 +42,6 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Joins do
       co1 = Company.create
       User.create(:count => 14, :company => co1 )
       Company.users_count_gt(10).should_not include(co1)
-      # User.company_id_null.count.should == 1
-      # User.company_id_not_null.count.should == 0
     end
   end
   describe "joining by association" do 
