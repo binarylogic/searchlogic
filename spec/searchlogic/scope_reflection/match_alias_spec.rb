@@ -8,9 +8,6 @@ describe Searchlogic::ScopeReflectionExt::MatchAlias do
     User.create(:name=>"Ben", :age => 28, :username => "JamesVanneman", :company_id => 15)
     @tren = User.create(:name=>"Tren", :age =>45)
   end
-  context ".aliases" do 
-
-  end
 
   context ".searchlogic_methods" do
     it "should return an array of defined searchlogic method matchers" do 
@@ -39,8 +36,12 @@ describe Searchlogic::ScopeReflectionExt::MatchAlias do
       class User; scope :group_gt, lambda{|age| age_gt(age).created_at_after("yesterday")};end
       User.group_gt(44).should eq([@tren])
     end
+
   end
 
+  context "#scope_from_association" do
+
+  end
   describe "works with OR conditionals" do 
     it "with two of the same conditionals" do 
       users = User.name_eq_or_username_eq("James")
@@ -79,7 +80,6 @@ describe Searchlogic::ScopeReflectionExt::MatchAlias do
   end
 
   describe ".convert_alias" do
-
     it "matches ordering" do 
       Searchlogic::ScopeReflection.convert_alias(User, :method => :order, :value => :ascend_by_id).should eq(:ascend_by_id)
     end 
@@ -161,7 +161,7 @@ describe Searchlogic::ScopeReflectionExt::MatchAlias do
       User.id_in(2,3).should eq([@jon, @james])
     end
 
-    it "should have in" do 
+    it "should have not in" do 
       User.id_not_in(2,3).should eq(User.all - [@jon, @james])
     end
   end

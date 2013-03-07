@@ -3,12 +3,9 @@ module Searchlogic
     module AuthorizedScopes
     
       private
-        def known_scopes        
-          Searchlogic::ScopeReflection.recognized_scopes + klass.named_scopes.collect{|k,v| k.to_s}
-        end
-        
+
         def authorized_scope?(scope) 
-          !!(known_scopes.detect{ |ks| scope.to_s.include?(ks.to_s)} || ordering?(scope))
+          !!(ScopeReflection.all_scopes(klass).detect{ |ks| scope.to_s.include?(ks.to_s)} || ordering?(scope))
         end
         
         def associated_column?(method)

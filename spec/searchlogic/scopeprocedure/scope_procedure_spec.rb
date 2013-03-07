@@ -11,6 +11,7 @@ describe Searchlogic::ActiveRecordExt::ScopeProcedure::ClassMethods do
       @tren = User.create(:name => "Tren", :age =>45, :email => "jvannem@gmail.com" )
       @ben =  User.create(:name=>"Ben", :age =>20, :email => "Ben@gmail.com", :username => "bjohnson" )
     end
+    
     after(:each) do 
       User.named_scopes.clear
       Order.named_scopes.clear

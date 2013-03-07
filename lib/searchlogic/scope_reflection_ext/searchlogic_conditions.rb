@@ -1,12 +1,6 @@
 module Searchlogic
   module ScopeReflectionExt
     module SearchlogicConditions
-      
-      def match_alias(method_name = self.method)
-        return nil if !!(searchlogic_methods.detect{ |slm| /#{slm.to_s}$/ =~ method_name})
-        /(#{aliases.sort_by(&:size).reverse.join("|")})$/.match(method_name)
-      end
-
       def searchlogic_methods
         ##Assign a method on acitve Rcord
         ## Define method on Conditions => condition then knows about all of it's subclasses
@@ -14,12 +8,8 @@ module Searchlogic
         ActiveRecord::Base.all_matchers
       end
 
-      def recognized_scopes
-        searchlogic_methods + aliases
-      end
-
       def all_scopes(klass)
-        recognized_scopes + klass.named_scopes.keys.map{|k| "_" + k.to_s }
+        searchlogic_methods + aliases + klass.named_scopes.keys.map(&:to_s)
       end
     end
   end

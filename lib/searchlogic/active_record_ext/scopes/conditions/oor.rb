@@ -73,7 +73,7 @@ module Searchlogic
 
             def ending_alias_condition 
               begin
-                /(_#{self.class.all_matchers.sort_by(&:size).reverse.join("|")})$/.match(method_name)[0]
+                /(#{self.class.all_matchers.sort_by(&:size).reverse.join("|")})$/.match(method_name)[0]
               rescue NoMethodError
                 raise NoMethodError.new("There was no condition defined on the method")
               end

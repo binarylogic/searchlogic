@@ -1,6 +1,7 @@
 module Searchlogic
   module ScopeReflectionExt
     module Aliases
+      ##Leading underscore indicates that the condition is expected at the end of the method, important for replaceing aliases
       def alias_hash
         {
           :_not_blank => %w{_present},
