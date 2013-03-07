@@ -119,7 +119,6 @@ describe Searchlogic::ActiveRecordExt::ScopeProcedure::ClassMethods do
       User.older.should eq([u1])
     end
     it "allows you to alias scope with arity > 0" do 
-      binding.pry
       u2 = User.create(:name => "James", :created_at => Date.new(2012,1,31))
       u1 = User.create(:name => "James")
       class User 

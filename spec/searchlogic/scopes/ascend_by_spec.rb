@@ -4,8 +4,8 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::AscendBy do
   before(:each) do 
     @james = User.create(:name=>"James")
     @ben = User.create(:name=>"Ben")
-    tren = User.create(:name => "Tren")
-    @o1 = Order.create(:total=>100, :user => tren)
+    @tren = User.create(:name => "Tren")
+    @o1 = Order.create(:total=>100, :user => @tren)
     @o2 = Order.create(:total=>125, :user => @ben)
     Order.create(:total=>94, :user => @james)
     Order.create(:total=>112, :user => @ben)
@@ -39,4 +39,9 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::AscendBy do
     names.should eq(["Ben", "Ben", "Tren", "James"])
   end
 
+  it "should have priorty to columns over conflicting association columns" do
+    co1 = Company.create(:users_count => 35, :users => [])
+    co2 = Company.create(:users_count => 31, :users => [@tren, @ben, @james])
+    Company.ascend_by_users_count.should eq([co2, co1])
+  end
 end

@@ -32,15 +32,16 @@ module Searchlogic
           end
 
           def applicable?
-            (incorrect_syntax =~ method_name || incorrect_syntax_in_ordering =~ method_name)  && !(preference_to_columns =~ method_name)
+            (incorrect_syntax =~ method_name || incorrect_syntax_in_ordering =~ method_name)  && !(preference_to_columns?)
           end
 
           def incorrect_syntax
             /(#{matching_incorrect_syntax})[^_]/
           end
 
-          def preference_to_columns
-            /^(#{klass.column_names.join("|")})(#{ScopeReflection.all_scopes(klass).join("|")})/
+          def preference_to_columns?
+            ##give preference to columns if method starts with col_nam_known_scope or known_scope_col_name
+            /^(#{klass.column_names.join("|")})(#{ScopeReflection.all_scopes(klass).join("|")})/ =~ method_name ||  /^(ascend_by_|descend_by_)(#{klass.column_names.join("|")})/ =~ method_name
           end
 
           def matching_incorrect_syntax
