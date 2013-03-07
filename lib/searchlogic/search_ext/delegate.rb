@@ -15,6 +15,8 @@ module Searchlogic
           scope_lambda = klass.named_scopes[std_condition].try(:[], :scope)
           if (scope_lambda.try(:arity) == 0 && value == true) || ordering?(condition)
             curr_scope.send(std_condition)
+          elsif scope_lambda.try(:arity) == 1
+            curr_scope.send(std_condition, value)
           else
             curr_scope.send(std_condition, *value)
           end

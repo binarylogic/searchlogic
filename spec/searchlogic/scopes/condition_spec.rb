@@ -17,10 +17,10 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Condition do
   end 
 
   context "#memoized_scope" do
-    it "should be created and then cached" do 
-      User.send(:memoized_scope).keys.should be_empty
+    xit "scopes should be cached" do 
+      User.memoized_scopes.keys.should be_empty
       User.name_greater_than_or_equal_to("James")
-      User.send(:memoized_scope).keys.should eq([:name_greater_than_or_equal_to])
+      User.memoized_scopes.keys.should eq([[:name_greater_than_or_equal_to, ["James"]]])
     end
 
   end

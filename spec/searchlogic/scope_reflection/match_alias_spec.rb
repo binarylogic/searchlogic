@@ -6,7 +6,7 @@ describe Searchlogic::ScopeReflectionExt::MatchAlias do
     @jon = User.create(:name=>"Jon", :email => "jon@James.com", :company_id => 4)
     @james = User.create(:name=>"aJJ", :username => "James", :company_id => 12)
     User.create(:name=>"Ben", :age => 28, :username => "JamesVanneman", :company_id => 15)
-    User.create(:name=>"Tren", :age =>45)
+    @tren = User.create(:name=>"Tren", :age =>45)
   end
   context ".aliases" do 
 
@@ -33,6 +33,11 @@ describe Searchlogic::ScopeReflectionExt::MatchAlias do
       it "does_not_end_with" do 
         Searchlogic::ScopeReflection.match_alias(:name_begins_with).should be_nil
       end
+    end
+
+    it "should not convert alias if it matches a named scope" do
+      class User; scope :group_gt, lambda{|age| age_gt(age).created_at_after("yesterday")};end
+      User.group_gt(44).should eq([@tren])
     end
   end
 

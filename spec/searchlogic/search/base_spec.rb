@@ -20,8 +20,8 @@
   end
 
 
-  context "#initial_sanitize" do 
-    it "ignores nil on mass assignment" do 
+  context "mass assignment" do 
+    it "ignores nil" do 
       search = User.searchlogic(:username_eq => nil, :name_like =>"James")
       search.conditions.should eq({:name_like => "James"})
       search.count.should eq(2)

@@ -3,7 +3,7 @@ module Searchlogic
     module ScopeProcedure
       module ClassMethods
         def scope(name, scope)
-          named_scopes[name] = {}
+          named_scopes[name.to_sym] = {}
           named_scopes[name][:scope] = scope
           scope.arity == 0 ? named_scopes[name][:type] = :boolean : named_scopes[name][:type] = :unspecified
           super(name, scope)
@@ -16,8 +16,7 @@ module Searchlogic
               send(original_name, *args)
             end
           end
-          named_scopes[new_name] = named_scopes[original_name]
-          
+          named_scopes[new_name.to_sym] = named_scopes[original_name]
         end
       end
     end

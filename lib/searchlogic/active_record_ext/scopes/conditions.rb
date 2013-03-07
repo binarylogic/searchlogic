@@ -30,10 +30,13 @@ module Searchlogic
           end
         end
 
+        def memoized_scopes
+          @memoized_scopes ||= {}
+        end
         private
+
         def method_missing(method, *args, &block) 
           std_method = ScopeReflection.convert_alias(self, :method => method)
-          return memoized_scope[std_method] if memoized_scope[std_method]
           generate_scope(std_method, args, &block) || super 
         end
 
@@ -45,16 +48,12 @@ module Searchlogic
               nil
             end
             if scope 
-              memoized_scope[method] = scope 
               return scope
             end
           end
           nil
         end
 
-        def memoized_scope
-          {}
-        end
 
         def scopeable?(method)
           !!(/(#{all_matchers.join("|")})/.match(method)) || !!(ScopeReflection.match_alias(method))
