@@ -6,6 +6,12 @@ describe Searchlogic::SearchExt::TypeCast do
   it "should cast values with custom scopes" do 
     User.scope :custom, lambda { User.where("age IN (10)")}
   end
+    context "mass assignment" do 
+      it "should typecast chronic phrases on mass assignment" do 
+        search = User.search(:created_at_after => "yesterday")
+        search.created_at_after.should be_kind_of Time
+      end
+    end
     context '#castboolean' do
       it "should be a boolean  given col_null" do 
         search = User.search(:name_blank => "true")

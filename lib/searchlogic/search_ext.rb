@@ -10,7 +10,7 @@ module Searchlogic
         include ReaderWriter
         include MethodMissing
         include TypeCast
-        include Delete
+        include Methods
       end
     end
   end

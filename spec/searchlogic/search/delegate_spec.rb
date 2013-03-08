@@ -21,6 +21,7 @@ describe Searchlogic::SearchExt::Delegate do
 
       it "delegates with arguements" do 
         search = User.searchlogic(:username_is => "jvans1")
+        binding.pry
         james = search.find_by_name("James Vanneman")
         james.name.should eq("James Vanneman")
       end
