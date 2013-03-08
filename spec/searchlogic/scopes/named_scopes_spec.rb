@@ -67,7 +67,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::NamedScopes do
       it "should work with scope and other conditions" do
         class User; scope :similar_name, lambda{|name| name_like(name).age_lte(40)};end
         u1 = User.create(:name => "James", :age => 39)
-        u2 = User.create(:usename =>"Van,James")
+        u2 = User.create(:username =>"Van,James")
         u3 = User.create(:name => "James", :age =>41)
         User.username_like_or_similar_name("James").should eq([u1, u2])
       end
