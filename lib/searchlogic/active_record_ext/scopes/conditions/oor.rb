@@ -70,7 +70,7 @@ module Searchlogic
             end
 
             def ending_alias_condition 
-              return nil if /#{ScopeReflection.joined_named_scopes}/ =~ method_name
+              return nil if /#{ScopeReflection.joined_named_scopes}$/ =~ method_name && ScopeReflection.joined_named_scopes
               begin
                 /(#{self.class.all_matchers.sort_by(&:size).reverse.join("|")})$/.match(method_name)[0]
               rescue NoMethodError

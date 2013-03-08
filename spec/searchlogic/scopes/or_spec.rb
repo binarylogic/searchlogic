@@ -121,7 +121,6 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Or do
       class User; scope :young, lambda{ age_lte(25)};scope :last_ne, lambda{ |last| username_eq(last)};end
       vman = User.create(:username => "Vanneman")
       User.young_or_last_ne("Vanneman").should eq([vman])
-      
     end
   end
 end
