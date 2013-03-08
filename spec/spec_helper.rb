@@ -144,6 +144,7 @@ Spec::Runner.configure do |config|
   config.before(:suite) do
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
+
   end
 
   config.before(:each) do
@@ -151,7 +152,7 @@ Spec::Runner.configure do |config|
   end
 
   config.after(:each) do
-  
+
     DatabaseCleaner.clean
   end
 
