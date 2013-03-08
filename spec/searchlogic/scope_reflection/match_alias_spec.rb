@@ -39,9 +39,6 @@ describe Searchlogic::ScopeReflectionExt::MatchAlias do
 
   end
 
-  context "#scope_from_association" do
-
-  end
   describe "works with OR conditionals" do 
     it "with two of the same conditionals" do 
       users = User.name_eq_or_username_eq("James")

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Searchlogic::ActiveRecordExt::Scopes::Conditions::ScopeProcedure do 
+describe Searchlogic::ActiveRecordExt::Scopes::Conditions::NamedScopes do 
   before(:each) do 
     order1 = Order.create(:total=>25, :line_items => [LineItem.create(:price => 12), LineItem.create(:price => 13)])
     order2 = Order.create(:total=>18, :line_items => [LineItem.create(:price => 5), LineItem.create(:price => 9)])
@@ -10,6 +10,14 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::ScopeProcedure do
     @ben = User.create(:name=>"Ben", :orders => [@order3], :id => 12, :username => "bjohnson")
     User.create(:username => "bjohnson")
     @benco = Company.create(:users => [@ben], :name => "Ben's co")
+  end
+
+  after(:each) do
+    Company.destroy_all
+    User.destroy_all
+    Order.destroy_all
+    LineItem.destroy_all
+
   end
 
   it "can add a scope procedure to a method call" do 
@@ -28,30 +36,40 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::ScopeProcedure do
   it "should ignore polymorphic associations" do
     expect { Fee.owner_created_at_gt(Time.now) }.to raise_error(NameError)
   end
-
-  it "should not raise errors for scopes that don't return anything" do
-    class User; scope :blank_scope, lambda { |value| where("1=1") };end
-    expect{Company.users_blank_scope("bjohnson")}.to_not raise_error
-  end
-
-  it "can add scope proc onto association that also matches alias" do
-    User.scope :has_id_gt, lambda { User.id_gt(2).name_not_blank.orders_id_gt(2) }
-    users = Company.users_has_id_gt
-    users.count.should eq(1)
-    users.first.name.should eq("Ben's co")
-  end
-
-  it "should allow the use of deep foreign pre-existing named scopes" do
-    class Order
-      scope :big_id, lambda{ where("orders.id > 2")}
+  describe "associations and conflicts" do 
+    it "should not raise errors for scopes that don't return anything" do
+      class User; scope :blank_scope, lambda { |value| where("1=1") };end
+      expect{Company.users_blank_scope("bjohnson")}.to_not raise_error
     end
-    Company.users_orders_big_id.should eq([Company.first])
-  end  
 
-  it "should allow the use of foreign pre-existing alias scopes" do
-    class User; scope :username_has, lambda { |value| username_like(value) }; end
-    Company.users_username_has("bjohnson").should eq([@benco])
+    it "can add scope proc onto association that also matches alias" do
+      User.scope :has_id_gt, lambda { User.id_gt(2).name_not_blank.orders_id_gt(2) }
+      users = Company.users_has_id_gt
+      users.count.should eq(1)
+      users.first.name.should eq("Ben's co")
+    end
+
+    it "should allow the use of deep foreign pre-existing named scopes" do
+      class Order
+        scope :big_id, lambda{ where("orders.id > 2")}
+      end
+      Company.users_orders_big_id.should eq([Company.first])
+
+    end  
+
+    it "should allow the use of foreign pre-existing alias scopes" do
+      class User; scope :username_has, lambda { |value| username_like(value) }; end
+      Company.users_username_has("bjohnson").should eq([@benco])
+    end
+    context "with OR conditions" do 
+      it "should work with OR conditions and conflicting names" do 
+        class User; scope :name_lt, lambda{ name_like("Jimmy")};end
+        class User; scope :seniority_gt, lambda{ |age| age_gte(age)};end
+        user1 = User.create(:name => "JimmyJohn")
+        user2 = User.create(:age => 41)
+        User.name_lt_or_seniority_gt(40).should eq([user1, user2])
+      end
+    end
   end
-
 end
 

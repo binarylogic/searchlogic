@@ -1,6 +1,6 @@
 module Searchlogic
   module ActiveRecordExt
-    module ScopeProcedure
+    module NamedScopes
       module ClassMethods
         def scope(name, scope)
           named_scopes[name.to_sym] = {}

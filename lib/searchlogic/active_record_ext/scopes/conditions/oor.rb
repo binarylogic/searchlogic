@@ -23,9 +23,6 @@ module Searchlogic
               klass.where("id in (?)", ids)
             end
           end
-
-
-
             def self.matcher
               nil
             end
@@ -42,6 +39,7 @@ module Searchlogic
           def method_without_ending_condition
             method_name.to_s.chomp(ending_alias_condition)
           end
+
             def join_equal_to(method_array)
               methods = []
               method_array.each_with_index do |item, index| 
@@ -72,6 +70,7 @@ module Searchlogic
             end
 
             def ending_alias_condition 
+              return nil if /#{ScopeReflection.joined_named_scopes}/ =~ method_name
               begin
                 /(#{self.class.all_matchers.sort_by(&:size).reverse.join("|")})$/.match(method_name)[0]
               rescue NoMethodError
@@ -81,7 +80,8 @@ module Searchlogic
 
             def applicable? 
               return nil if /(find_or_create)/ =~ method_name 
-              !(/_or_(#{klass.column_names.join("|")}|#{klass.reflect_on_all_associations.map(&:name).join("|")})/ =~ method_name).nil? 
+              named_scopes = klass.named_scopes.keys.map(&:to_s).join("|")
+              !(/_or_(#{klass.column_names.join("|")}|#{klass.association_names.join("|")}#{'|'+ named_scopes unless named_scopes.empty?})/ =~ method_name).nil? 
             end
 
         end

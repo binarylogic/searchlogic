@@ -108,5 +108,20 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Or do
   it "should raise an error on missing condition" do 
     expect{User.name_or_id(26)}.to raise_error
   end
+  context "scopes" do
+    it "should work with scopes with arity > 0" do 
+      class User
+        scope :old, lambda{|age| age_gte(age)}
+      end
+      jason = User.create(:age => 50, :name => "Jason")
+      User.old_or_id_gt(50).should eq([jason])
+    end
 
+    it "workds with multiple scopes" do 
+      class User; scope :young, lambda{ age_lte(25)};scope :last_ne, lambda{ |last| username_eq(last)};end
+      vman = User.create(:username => "Vanneman")
+      User.young_or_last_ne("Vanneman").should eq([vman])
+      
+    end
+  end
 end

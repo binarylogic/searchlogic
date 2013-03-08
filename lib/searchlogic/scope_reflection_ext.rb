@@ -7,6 +7,7 @@ module Searchlogic
         extend SearchlogicConditions
         extend ClassLevelMethods
         extend MatchAlias
+        extend NamedScopeMethods
         include Type
       end
     end

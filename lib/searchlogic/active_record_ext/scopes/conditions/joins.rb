@@ -17,7 +17,7 @@ module Searchlogic
           end      
 
           def scope
-            return nil unless applicable?
+            return nil unless applicable?            
             nested_scope = created_nested_scope
             where_values = nested_scope.where_values 
             join_values = nested_scope.joins_values

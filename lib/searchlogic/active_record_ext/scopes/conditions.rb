@@ -59,7 +59,7 @@ module Searchlogic
          [  
             Polymorphic,
             Or,            
-            ScopeProcedure,
+            NamedScopes,
             Any,
             GreaterThanOrEqualTo,
             LessThanOrEqualTo,

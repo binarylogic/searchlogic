@@ -151,6 +151,7 @@ Spec::Runner.configure do |config|
   end
 
   config.after(:each) do
+  
     DatabaseCleaner.clean
   end
 

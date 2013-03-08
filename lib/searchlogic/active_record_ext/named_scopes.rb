@@ -1,7 +1,7 @@
 Dir[File.dirname(__FILE__) + '/named_scopes/*.rb'].each { |f| require(f) }
 module Searchlogic
   module ActiveRecordExt
-    module ScopeProcedure
+    module NamedScopes
       def self.included(klass)
         klass.class_eval do
           extend ClassMethods
@@ -17,4 +17,4 @@ module Searchlogic
   end
 end
 
-ActiveRecord::Base.send(:include, Searchlogic::ActiveRecordExt::ScopeProcedure)
+ActiveRecord::Base.send(:include, Searchlogic::ActiveRecordExt::NamedScopes)
