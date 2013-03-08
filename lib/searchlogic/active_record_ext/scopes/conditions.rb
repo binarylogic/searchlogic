@@ -37,7 +37,7 @@ module Searchlogic
 
         def method_missing(method, *args, &block) 
           std_method = ScopeReflection.convert_alias(self, :method => method)
-          return memoized_scopes[std_method].send(method, args, &block) if memoized_scopes[std_method]
+          # return memoized_scopes[std_method].generate_scope(self, std_method, args, &block) if memoized_scopes[std_method]
           generate_scope(std_method, args, &block) || super 
         end
 
@@ -45,7 +45,7 @@ module Searchlogic
           condition_klasses.each do |ck|
               scope = ck.generate_scope(self, method, args, &block)
             if scope 
-              memoized_scopes[method.to_sym] = ck.name.split("::").last
+              # memoized_scopes[method.to_sym]
               return scope
             end
           end
