@@ -71,7 +71,7 @@ describe Searchlogic::ActiveRecordExt::NamedScopes::ClassMethods do
       really_old.first.name.should eq("Tren")
     end
 
-    xit "should pass array values as multiple arguments with arity -1" do
+    it "should pass array values as multiple arguments with arity -1" do
       class User
         scope(:not_array_args, lambda { |args| #*
         raise "This should not be an array, it should be 1" if args.first.is_a?(Array)
@@ -119,6 +119,38 @@ describe Searchlogic::ActiveRecordExt::NamedScopes::ClassMethods do
       end
       User.older.should eq([u1])
     end
+    it "works on class methods" do 
+      class User
+        alias_scope :fun_name, :my_name
+        def self.fun_name
+          name_ew("mes")
+        end
+      end
+      u1 = User.create(:name => "James")
+      User.create(:name =>"messy")
+      User.my_name.should eq([u1])
+    end
+
+    it "keeps track of type on class method" do 
+      class User
+        alias_scope :fun_name, :my_name
+        def self.fun_name
+          name_ew("mes")
+        end
+      end      
+      User.named_scopes[:my_name].should eq({:type => :unspecified})
+    end
+
+    it "allows you to specify a type" do 
+      class User
+        alias_scope :fun_name, :my_name, :type => :boolean   
+        def self.fun_name
+          name_ew("mes")
+        end
+      end
+
+    end
+
     it "allows you to alias scope with arity > 0" do 
       u2 = User.create(:name => "James", :created_at => Date.new(2012,1,31))
       u1 = User.create(:name => "James")
