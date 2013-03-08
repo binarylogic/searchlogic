@@ -17,10 +17,11 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Condition do
   end 
 
   context "#memoized_scope" do
-    xit "scopes should be cached" do 
+    it "scopes should be cached" do 
       User.memoized_scopes.keys.should be_empty
       User.name_greater_than_or_equal_to("James")
-      User.memoized_scopes.keys.should eq([[:name_greater_than_or_equal_to, ["James"]]])
+      User.memoized_scopes.keys.should eq([:name_greater_than_or_equal_to])
+      User.memoized_scopes[:name_greater_than_or_equal_to].to_s.should eq("GreaterThanOrEqualTo")
     end
 
   end

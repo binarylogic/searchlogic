@@ -7,7 +7,6 @@ module Searchlogic
           DELIMITER = "__"
 
           def initialize(*args)
-
             super
             @method_parts = method_name.to_s.split(DELIMITER) 
             @join_name = find_join_name

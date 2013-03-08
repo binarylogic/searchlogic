@@ -13,7 +13,7 @@ module Searchlogic
         def alias_scope(original_name, new_name, options ={:type => :unspecified})
           ##Searchlogic needs to be aware of defined scopes so it can allow you to assign it to a search object
           ##This is a security measure to prevent users from passing in destructive methods such as :destroy_all => true
-          ## Searchlogic automatically registers the scope when defined with scope, :name, lambda However
+          ## Searchlogic automatically registers the scope when defined by: scope, :name, lambda; However
           ## if you have a class level scope (e.g. def self.my_scope; <scope> end;) and want searchlogic to recognize it as safe you need to alias the scope
           ## so searchlogic can add it to a list of safe scopes.
           ## If you want searchlogic to typecast inputs values you must specify the type of input. 
@@ -24,11 +24,7 @@ module Searchlogic
               send(original_name, *args)
             end
           end
-          if named_scopes[original_name]
-            named_scopes[new_name.to_sym] = named_scopes[original_name]
-          else
-            named_scopes[new_name.to_sym] = options
-          end
+          named_scopes[new_name.to_sym] = named_scopes[original_name] || options
         end
       end
     end

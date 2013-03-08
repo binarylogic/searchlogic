@@ -74,7 +74,7 @@ module Searchlogic
               begin
                 /(#{self.class.all_matchers.sort_by(&:size).reverse.join("|")})$/.match(method_name)[0]
               rescue NoMethodError
-                raise NoMethodError.new("There was no condition defined on the method")
+                raise NoConditionError.new
               end
             end
 

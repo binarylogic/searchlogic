@@ -1,5 +1,4 @@
 require 'spec_helper'
-
 describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Or do 
   before(:each) do 
     l1 = LineItem.new(:price => 1)
