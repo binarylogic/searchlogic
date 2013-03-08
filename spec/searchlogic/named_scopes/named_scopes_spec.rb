@@ -196,7 +196,19 @@ describe Searchlogic::ActiveRecordExt::NamedScopes::ClassMethods do
 
       end
       User.search(:most_talented => [Date.new(2014,1,30), "am"]).all.should eq([u2])
+    end
 
+    it "works on end of method calls" do 
+      u2 = User.create(:name => "James", :created_at => Date.new(2014,1,31))
+      u1 = User.create(:name => "James", :created_at => Date.new(2012,1,31))
+      u3 = User.create(:username => "James")
+      class User 
+        def self.talented(name)
+          created_at_after(Date.today).name_like(name)
+        end
+        alias_scope :talented, :most_talented
+      end
+      User.username_is_or_most_talented("James").should eq([u2,u3])
     end
   end
 
