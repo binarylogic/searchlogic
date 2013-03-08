@@ -148,7 +148,7 @@ describe Searchlogic::ActiveRecordExt::NamedScopes::ClassMethods do
           name_ew("mes")
         end
       end
-
+      User.named_scopes[:my_name].should eq({:type => :boolean})
     end
 
     it "allows you to alias scope with arity > 0" do 
@@ -162,16 +162,42 @@ describe Searchlogic::ActiveRecordExt::NamedScopes::ClassMethods do
     end
 
     it "assigns named scope values for alias_scope's" do
-      @@proc = lambda{ User.created_at_after("2012/2/3")}
+      $proc = lambda{ User.created_at_after("2012/2/3")}
       class User 
-        scope :fun, @@proc 
+        scope :fun, $proc 
         alias_scope :fun, :most_fun
       end
       User.named_scopes.keys.should include(:most_fun)
-      User.named_scopes[:most_fun].should eq({:type => :boolean, :scope => @@proc})
+      User.named_scopes[:most_fun].should eq({:type => :boolean, :scope => $proc})
     end
 
+    it "works with a search object" do 
+      class User
+        alias_scope :fun_name, :my_name, :type => :boolean   
+        def self.fun_name
+          name_ew("mes")
+        end
+      end
+      search = User.search(:my_name => "true")
+      u1 =  User.create
+      u2 = User.create(:name => "James")
+      search.all.should eq([u2])
+      User.search(:my_name => "false").all.should eq([u1, u2])
+    end
 
+    it "works with search object and arity > 0 " do 
+      u2 = User.create(:name => "James", :created_at => Date.new(2014,1,31))
+      u1 = User.create(:name => "James")
+      class User 
+        def self.talented(date, name)
+          created_at_after(date).name_like(name)
+        end
+        alias_scope :talented, :most_talented
+
+      end
+      User.search(:most_talented => [Date.new(2014,1,30), "am"]).all.should eq([u2])
+
+    end
   end
 
   describe "In Search object" do 
@@ -199,7 +225,7 @@ describe Searchlogic::ActiveRecordExt::NamedScopes::ClassMethods do
         search.map(&:name).should eq(["James", "James Vanneman", "Tren", "Ben"])
       end
 
-      it "can combine scope procedure with other args" do 
+      it "can come scope procedure with other args" do 
         search = User.search( :age_gte => "21", :awesome => true )
         search.count.should eq(1)
         search.first.should eq(@jamesv)
@@ -375,6 +401,8 @@ describe Searchlogic::ActiveRecordExt::NamedScopes::ClassMethods do
       user1 = User.create(:age => 41)
       user2 = User.create(:name => "James")
       User.name_lt_or_seniority_gt(40).should eq([user1, user2])
+      User.name_lt_or_seniority_gt(40).name_begins_with_or_id_greater_than_or_equal_to(10)
+
     end
   end
 end

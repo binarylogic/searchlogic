@@ -12,10 +12,10 @@ module Searchlogic
 
         def create_scope(curr_scope, condition, value)
           std_condition = ScopeReflection.convert_alias(klass, :method => condition, :value => value)
-          scope_lambda = klass.named_scopes[std_condition].try(:[], :scope)
-          if (scope_lambda.try(:arity) == 0 && value == true) || ordering?(condition)
+          scope_lambda = klass.named_scopes[std_condition]
+          if (scope_lambda.try(:[], :type) == :boolean && value == true) || ordering?(condition)
             curr_scope.send(std_condition)
-          elsif scope_lambda.try(:arity) == 1
+          elsif scope_lambda.try(:[], :scope).try(:arity) == 1
             curr_scope.send(std_condition, value)
           else
             curr_scope.send(std_condition, *value)
