@@ -12,7 +12,9 @@ module Searchlogic
 
         def create_scope(curr_scope, condition, value)
           std_condition = ScopeReflection.convert_alias(klass, :method => condition, :value => value)
-          scope_lambda = klass.named_scopes[std_condition]
+          scope_name = ScopeReflection.scope_name(std_condition)
+          scope_lambda = ScopeReflection.all_named_scopes_hash.try(:[], scope_name)
+
           if (scope_lambda.try(:[], :type) == :boolean && value == true) || ordering?(condition)
             curr_scope.send(std_condition)
           elsif scope_lambda.try(:[], :scope).try(:arity) == 1
@@ -23,7 +25,7 @@ module Searchlogic
         end
 
         def false_scope_proc?(key, value)
-          klass.named_scopes.keys.include?(key.to_sym) && !value
+          ScopeReflection.named_scope?(key) && !value
         end
     end
   end

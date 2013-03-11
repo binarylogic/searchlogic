@@ -32,7 +32,6 @@ describe Searchlogic::ScopeReflectionExt::Type do
       scope_refl.type.should eq(:unspecified)
     end
 
-
     it "allows you to specify a type of variable" do 
       class User; scope :cool, lambda{|date| where("created_at > ?", date)};end
       User.named_scopes[:cool][:type] = :datetime

@@ -44,8 +44,8 @@ describe Searchlogic::ScopeReflectionExt::NamedScopeMethods do
       Searchlogic::ScopeReflection.scope_name(:fool).should eq(:fool)
     end
 
-    it "returns nil if scope doesn't exist" do 
-      Searchlogic::ScopeReflection.scope_name(:foool).should be_nil
+    it "raises an error if scope doesn't exist" do 
+      expect{Searchlogic::ScopeReflection.scope_name(:foool)}.to raise_error
     end
   end
   context "#all_named_scopes" do 

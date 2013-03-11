@@ -30,6 +30,14 @@ describe Searchlogic::SearchExt::Delegate do
         james = search.first
         james.name.should eq("James")
       end
+
+      it "delegates scopes on associations" do 
+        class User; scope :uname, lambda { name_eq("James") };end
+        james = User.create(:name => "James")
+        co1 = Company.create(:users =>[james])
+        search = Company.search(:users_uname => true)
+        search.all.should eq([co1])
+      end
     end
 
     context "#empty" do 

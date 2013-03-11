@@ -1,5 +1,5 @@
 require 'spec_helper'
-describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Condition do 
+describe Searchlogic::ActiveRecordExt::Scopes::Conditions do 
   context ".matchers" do 
     it "returns an array of all matchers for conditions" do 
       ActiveRecord::Base.all_matchers.should be_kind_of(Array)
@@ -23,7 +23,19 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Condition do
       User.memoized_scopes.keys.should eq([:name_greater_than_or_equal_to])
       User.memoized_scopes[:name_greater_than_or_equal_to].to_s.should eq("GreaterThanOrEqualTo")
     end
+  end
 
+  context "#respond_to" do 
+    it "should return true for scopes" do 
+      class User; scope :uname, lambda{name_eq("James")};end
+      ar_assoc = Company.where("1=1")
+      ar_assoc.respond_to?(:uname).should be_true
+    end
+    it "should return true for scopes on associations" do 
+      class User; scope :uname, lambda{name_eq("James")};end
+      ar_assoc = Company.where("1=1")
+      ar_assoc.respond_to?(:users_uname).should be_true
+    end
   end
 
   it "should not allow conditions on columns that don't exist" do 

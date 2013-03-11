@@ -9,7 +9,7 @@ module Searchlogic
       end
 
       def all_scopes(klass)
-        searchlogic_methods + aliases + klass.named_scopes.keys.map(&:to_s)
+        searchlogic_methods + aliases + all_named_scopes.map(&:to_s)
       end
     end
   end

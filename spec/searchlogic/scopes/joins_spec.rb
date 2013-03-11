@@ -39,9 +39,10 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Joins do
 
 
     it "it gives preference to columns over conflicting association names" do
-      co1 = Company.create
-      User.create(:count => 14, :company => co1 )
+      u1 = User.create(:count => 14 )
+      co1 = Company.create(:users => [u1])
       Company.users_count_gt(10).should_not include(co1)
+
     end
   end
   describe "joining by association" do 

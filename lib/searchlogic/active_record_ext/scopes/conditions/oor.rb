@@ -80,7 +80,7 @@ module Searchlogic
             end
 
             def applicable? 
-              return nil if /(find_or_create)/ =~ method_name 
+              return nil if /(find_or_)/ =~ method_name 
               named_scopes = klass.named_scopes.keys.map(&:to_s).join("|")
               !(/_or_(#{klass.column_names.join("|")}|#{klass.association_names.join("|")}#{'|'+ named_scopes unless named_scopes.empty?})/ =~ method_name).nil? 
             end
