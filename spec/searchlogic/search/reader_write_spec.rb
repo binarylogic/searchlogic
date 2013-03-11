@@ -19,7 +19,7 @@ describe Searchlogic::SearchExt::ReaderWriter do
     User.create(:name => "Tren", :username => "Tren")
     User.create(:name=>"Ben", :email => "ben@gmail.com")                
   end
-
+  
 
   context "accessors" do 
     it "has readers for conditions" do

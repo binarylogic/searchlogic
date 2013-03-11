@@ -19,7 +19,8 @@ module Searchlogic
           :boolean
         elsif association_method = klass.association_in_method(method)
           column_type_in_association(association_method)
-        elsif column = klass.columns.find{ |kc| kc.name == name}
+        elsif column = klass.columns.detect{ |kc| /#{kc.name}_/ =~ method  }
+
           column.type
         else
           raise NoMethodError.new(method.to_s + " is not a defined column or scope on #{klass.to_s}")
@@ -37,7 +38,9 @@ module Searchlogic
       end
 
       def column_type_in_association(association_method)
+
         association, new_method = association_method
+
         new_klass = association.singularize.camelize.constantize
         #Since find returns the first  match, columns sorted by largest name so
         #more specicific names get matched first e.g. "username" matches itself before "user" incorrectly does

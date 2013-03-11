@@ -14,8 +14,8 @@ describe Searchlogic::SearchExt::Methods do
   
   context "#to_params" do 
     it "should convert the conditions to a query string" do 
-      search = User.search(:username_like => "jvans1", :age_gte_or_id_eq => 20, :created_at_before => "yesterday")
-      search.to_params.should eq("age_gte_or_id_eq&20&created_at_before&2013-03-07 12:00:00 -0500&username_like&jvans1")
+      search = User.search(:username_like => "jvans1", :age_gte_or_id_eq => 20, :created_at_before => Date.new(2012,2,4))
+      search.to_params.should eq("age_gte_or_id_eq&20&created_at_before&2012-02-04&username_like&jvans1")
     end
 
   end

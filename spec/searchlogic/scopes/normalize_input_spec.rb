@@ -31,6 +31,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::NormalizeInput do
     it "doesn't normalize inputs if they're also a column on the receiver" do 
       co1 = Company.create
       User.create(:count => 14, :company => co1 )
+      binding.pry
       Company.users_count_gt(10).should_not include(co1)
     end
 

@@ -21,7 +21,6 @@ describe Searchlogic::SearchExt::Delegate do
 
       it "delegates with arguements" do 
         search = User.searchlogic(:username_is => "jvans1")
-        binding.pry
         james = search.find_by_name("James Vanneman")
         james.name.should eq("James Vanneman")
       end
@@ -64,7 +63,11 @@ describe Searchlogic::SearchExt::Delegate do
       Company.create(:users => [@u2], :name => "ConciergeLive1")
       Company.create(:users => [u3, u4], :name => "ConciergeLive2")
     end
+    it "" do 
+      search = Company.search
+      binding.pry
 
+    end
     context "#scope" do
       it "chains scopes" do
         search = User.search(:name_like => "James")

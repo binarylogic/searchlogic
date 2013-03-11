@@ -4,7 +4,7 @@ Gem::Specification.new do |s|
   s.name        = "searchlogic"
   s.version   = "3.0.0"
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["Ben Johnson"]
+  s.authors     = ["James Vanneman", "Ben Johnson"]
   s.email       = ["bjohnson@binarylogic.com"]
   s.homepage    = "http://github.com/binarylogic/searchlogic"
   s.summary     = %q{Searchlogic makes using ActiveRecord named scopes easier and less repetitive.}

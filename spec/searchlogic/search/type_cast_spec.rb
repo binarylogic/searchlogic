@@ -6,12 +6,19 @@ describe Searchlogic::SearchExt::TypeCast do
   it "should cast values with custom scopes" do 
     User.scope :custom, lambda { User.where("age IN (10)")}
   end
+
+  it "should raise error on incorrectly spelled columns" do 
+    expect{User.search(:agee_eq => 10)}.to raise_error
+  end
+
     context "mass assignment" do 
       it "should typecast chronic phrases on mass assignment" do 
         search = User.search(:created_at_after => "yesterday")
         search.created_at_after.should be_kind_of Time
       end
     end
+
+
     context '#castboolean' do
       it "should be a boolean  given col_null" do 
         search = User.search(:name_blank => "true")
@@ -167,6 +174,7 @@ describe Searchlogic::SearchExt::TypeCast do
         search.orders_line_items_price_eq = "10"
         search.orders_line_items_price_eq.should eq(10)
       end
+
       it "doesn't incorrectly match columns" do 
         User.create(:username => "James", :company => Company.create)
         search = Company.search 
