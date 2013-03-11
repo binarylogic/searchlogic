@@ -5,7 +5,9 @@ module Searchlogic
         class Polymorphic < Condition
           def scope
             if applicable?
-              association_klass.send(new_method, value).map{|returned_obj| returned_obj.send(klass_symbol)}.flatten
+              scope = association_klass.send(new_method, value) #.map{|returned_obj| returned_obj.send(klass_symbol)}.flatten
+              scope.inject(scope){|scope, item_in_scope| scope + item_in_scope.send(klass_symbol)}
+              binding.pry
             end
           end
             def self.matcher

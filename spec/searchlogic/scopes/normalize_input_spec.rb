@@ -27,6 +27,12 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::NormalizeInput do
     company_names = companies.map(&:name)
     company_names.should eq(["Neco", "ConcLive1", "ConcLive2"])
   end
+
+  it "normalizes input on ordering conditions" do 
+    companies = Company.users_orders_line_items_descend_by_price
+    company_names = companies.map(&:name)
+  end
+  
   context " prioritizing columns" do 
     it "doesn't normalize inputs if they're also a column on the receiver" do 
       u1 = User.create(:count => 14)

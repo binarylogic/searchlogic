@@ -11,11 +11,6 @@ describe Searchlogic::ActiveRecordExt::NamedScopes::ClassMethods do
       @tren = User.create(:name => "Tren", :age =>45, :email => "jvannem@gmail.com" )
       @ben =  User.create(:name=>"Ben", :age =>20, :email => "Ben@gmail.com", :username => "bjohnson" )
     end
-    
-    after(:each) do 
-      User.named_scopes.clear
-      Order.named_scopes.clear
-    end
 
     it "should allow named scopes to be called multiple times and reflect the value passed" do
       @co1 = Company.create(:users => [@james, @jamesv, @ben, @tren])
@@ -37,7 +32,6 @@ describe Searchlogic::ActiveRecordExt::NamedScopes::ClassMethods do
     it "works with deep OR conditions " do
       class User
         scope(:winning, lambda{ age_greater_than_or_equal_to_or_id_less_than_or_equal_to_or_name_like("10")})
-
       end
       User.winning.should eq(User.all)
     end
@@ -98,18 +92,21 @@ describe Searchlogic::ActiveRecordExt::NamedScopes::ClassMethods do
     end
 
     it "individual classes keeps track of all scopes created" do 
-      User.scope :second_one, lambda { User.first}
-      User.scope :third_one, lambda {User.last}
+      existing_user = User.named_scopes.keys
+      existing_co = Company.named_scopes.keys
+      User.scope :first_one, lambda { User.first}
+      User.scope :second_one, lambda {User.last}
       Company.scope :company_scope_one, lambda{where(Company.name_eq("ConciergeLIve"))}
       Company.scope :company_scope_two,  lambda{where(Company.name_eq("NEco"))}
-      user_scopes = User.named_scopes 
-      company_scopes = Company.named_scopes 
-      user_scopes.count.should eq(3)
-      user_scopes.keys.should eq([:awesome, :second_one, :third_one])
-      company_scopes.count.should eq(2)
-      company_scopes.keys.should eq([:company_scope_one, :company_scope_two])
+      user_scopes = User.named_scopes
+      company_scopes = Company.named_scopes
+      (user_scopes.count - existing_user.count).should eq(2)
+      (user_scopes.keys - existing_user).should eq([:first_one, :second_one])
+      (company_scopes.count - existing_co.count).should eq(2)
+      (company_scopes.keys - existing_co).should eq([:company_scope_one, :company_scope_two])
     end
   end
+
   context "alias scope" do 
     it "allows you to alias a scope" do 
       u1 = User.create(:age => 41)
@@ -413,7 +410,6 @@ describe Searchlogic::ActiveRecordExt::NamedScopes::ClassMethods do
       user2 = User.create(:name => "James")
       User.name_lt_or_seniority_gt(40).should eq([user1, user2])
       User.name_lt_or_seniority_gt(40).name_begins_with_or_id_greater_than_or_equal_to(10)
-
     end
   end
 end

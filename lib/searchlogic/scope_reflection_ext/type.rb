@@ -21,10 +21,9 @@ module Searchlogic
         elsif association_method = klass.association_in_method(method)
           column_type_in_association(association_method)
         elsif column = klass.columns.detect{ |kc| /#{kc.name}_/ =~ method  }
-
           column.type
         else
-          raise NoMethodError.new(method.to_s + " is not a defined column or scope on #{klass.to_s}")
+          raise NoMethodError.new(method.to_s + " is not a defined column or scope on #{klass.klass.to_s}")
         end
       end
 

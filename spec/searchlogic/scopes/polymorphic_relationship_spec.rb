@@ -22,5 +22,8 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Polymorphic do
     name = user.map(&:name).first
     name.should eq("James")
   end
-
+  it "returns an AR relation" do 
+    audits = Audit.auditable_user_type_orders_ascend_by_total
+    audits.class.should be_kind_of ActiveRecord::Relation
+  end
 end

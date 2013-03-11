@@ -2,8 +2,7 @@ require 'spec_helper'
 
 describe Searchlogic::ScopeReflectionExt::Type do 
 
-
-  context "#column_name" do 
+  context "#name" do 
     it "takes a method and returns the column name" do 
       scope_refl = Searchlogic::ScopeReflection.new(User, :created_at_greater_than_or_equal_to)
       scope_refl.name.should eq("created_at")
@@ -16,7 +15,7 @@ describe Searchlogic::ScopeReflectionExt::Type do
   end
 
   
-  context "#column_type" do 
+  context "#type" do 
     it "takes a method and returns the column type" do 
       scope_refl = Searchlogic::ScopeReflection.new(User, :created_at_greater_than_or_equal_to)
       scope_refl.type.should eq(:datetime)
