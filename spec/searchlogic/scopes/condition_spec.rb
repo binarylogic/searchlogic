@@ -36,6 +36,13 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions do
       ar_assoc = Company.where("1=1")
       ar_assoc.respond_to?(:users_uname).should be_true
     end
+
+    it "should respond to aliases" do 
+      ar = User.where("1=1")
+      ar.respond_to?(:_gt).should be_true
+      ar.respond_to?(:_all).should be_true
+
+    end
   end
 
   it "should not allow conditions on columns that don't exist" do 

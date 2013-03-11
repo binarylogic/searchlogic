@@ -41,7 +41,7 @@ module Searchlogic
 
           def preference_to_columns?
             ##give preference to columns if method starts with col_nam_known_scope or known_scope_col_name
-            /^(#{klass.column_names.join("|")})(#{ScopeReflection.all_scopes(klass).join("|")})/ =~ method_name ||  /^(ascend_by_|descend_by_)(#{klass.column_names.join("|")})/ =~ method_name
+            /^(#{klass.column_names.join("|")})(#{ScopeReflection.all_scopes.join("|")})/ =~ method_name ||  /^(ascend_by_|descend_by_)(#{klass.column_names.join("|")})/ =~ method_name
           end
 
           def matching_incorrect_syntax

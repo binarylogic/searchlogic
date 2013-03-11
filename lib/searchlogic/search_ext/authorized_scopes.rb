@@ -5,7 +5,7 @@ module Searchlogic
       private
 
         def authorized_scope?(scope) 
-          !!(ScopeReflection.all_scopes(klass).detect{ |ks| scope.to_s.include?(ks.to_s)} || ordering?(scope))
+          !!(ScopeReflection.all_scopes.detect{ |ks| scope.to_s.include?(ks.to_s)} || ordering?(scope))
         end
         
         def associated_column?(method)

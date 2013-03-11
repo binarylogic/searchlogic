@@ -8,7 +8,7 @@ module Searchlogic
         ActiveRecord::Base.all_matchers
       end
 
-      def all_scopes(klass)
+      def all_scopes
         searchlogic_methods + aliases + all_named_scopes.map(&:to_s)
       end
     end
