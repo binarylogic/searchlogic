@@ -57,14 +57,17 @@ describe Searchlogic::SearchExt::Delegate do
       o5 = Order.create(:total=> 21, :user_id => 6, :line_items => [l7,l8])
       @u1 = User.create(:orders=> [o1], :name=>"James", :age =>20, :username => "jvans1", :email => "jvannem@gmail.com" )
       @u2 = User.create(:orders=> [o2], :name=>"James Vanneman", :age =>21, :username => "jvans1")
-      u3 = User.create(:orders=> [o3], :name => "Tren")
-      u4 = User.create(:orders=> [o4, o5], :name=>"Ben")
+      @u3 = User.create(:orders=> [o3], :name => "Tren")
+      @u4 = User.create(:orders=> [o4, o5], :name=>"Ben")
       Company.create(:users => [@u1], :name => "NEco")
       Company.create(:users => [@u2], :name => "ConciergeLive1")
-      Company.create(:users => [u3, u4], :name => "ConciergeLive2")
+      Company.create(:users => [@u3, @u4], :name => "ConciergeLive2")
     end
-    it "" do 
-      search = Company.search
+    it "works with scopes and or" do 
+      class User; scope :cool, lambda{created_at_after("last year")};end
+      search = Company.search(:username_eq_or_name_like => "James", :users_cool => true)
+
+    
       binding.pry
 
     end
@@ -146,7 +149,6 @@ describe Searchlogic::SearchExt::Delegate do
       end
       context "associations" do 
         it "chains deeply nested association" do 
-          ## Should association be able to be singular?
           search = Company.search(:users_orders_line_items_price_gt => 10)
           companies = search.all
           companies.count.should eq(2)
@@ -159,6 +161,14 @@ describe Searchlogic::SearchExt::Delegate do
           search = User.searchlogic(:username_not_nil => true)
           search.all.count.should eq(2)
           search.map(&:name).should eq(["James", "James Vanneman"])
+        end
+
+        it "can assign nil as value" do 
+          User.all.count.should eq(4)
+          search = User.searchlogic
+          search.username_eq = nil
+          search.all.count.should eq(2)
+          search.all.should eq([@u3, @u4])
         end
 
         it "returns all users with nil username when value set to false" do 

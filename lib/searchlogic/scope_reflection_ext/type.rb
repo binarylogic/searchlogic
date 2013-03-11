@@ -13,8 +13,9 @@ module Searchlogic
       end
 
       def type
-        if named_scope?
-          klass.named_scopes[method][:type]
+        if self.class.named_scope?(method)
+          scope_name = /(#{self.class.joined_named_scopes})$/.match(method)[1].to_sym
+          self.class.all_named_scopes_hash[scope_name][:type]
         elsif boolean_matcher?
           :boolean
         elsif association_method = klass.association_in_method(method)
@@ -33,12 +34,7 @@ module Searchlogic
         !!(BOOLEAN_MATCHER.detect{|k| /#{k}$/ =~ method})
       end
 
-      def named_scope?
-        klass.named_scopes.keys.include?(method.to_sym)
-      end
-
       def column_type_in_association(association_method)
-
         association, new_method = association_method
 
         new_klass = association.singularize.camelize.constantize

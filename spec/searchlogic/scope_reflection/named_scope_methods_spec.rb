@@ -20,11 +20,18 @@ describe Searchlogic::ScopeReflectionExt::NamedScopeMethods do
     end
     it "returns false for undefined scopes" do 
       Searchlogic::ScopeReflection.named_scope?(:undefined).should be_false
-
-
     end
   end
+  context "#all_named_scopes_hash" do 
+    it "returns a hash of all the named scopes" do 
+      existing = Searchlogic::ScopeReflection.all_named_scopes_hash
 
+      class User; scope :fool, lambda{|age| age_gte(age)};end
+      class Company; scope :comp, lambda{|price| orders_line_items_price_eq(price)};end
+      Searchlogic::ScopeReflection.all_named_scopes_hash.should eq(existing.merge(User.named_scopes).merge(Company.named_scopes))
+    end
+
+  end
   context "#all_named_scopes" do 
     it "should return an array of all naemd scopes for all klasses" do 
       existing = Searchlogic::ScopeReflection.all_named_scopes

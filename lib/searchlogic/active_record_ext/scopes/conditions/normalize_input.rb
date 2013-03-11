@@ -50,8 +50,6 @@ module Searchlogic
 
           def incorrect_syntax_in_ordering
             tables = ActiveRecord::Base.connection.tables.join("|")
-            #match an ordering that includes a singular table followed by column,
-            #assume the table is meant as an association and pluralize
             /(ascend_by_|descend_by_)(#{tables})[^_]/
           end
         end

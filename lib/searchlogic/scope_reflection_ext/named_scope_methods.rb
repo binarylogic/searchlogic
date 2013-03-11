@@ -7,7 +7,13 @@ module Searchlogic
       end
 
       def all_named_scopes
-        ActiveRecord::Base.connection.tables.map{|t| t.singularize.camelize.constantize rescue nil}.compact.map{|klass| klass.named_scopes.keys}.flatten
+        all_named_scopes_hash.keys
+      end
+
+      def all_named_scopes_hash
+        ActiveRecord::Base.connection.tables.map{|t| t.singularize.camelize.constantize rescue nil}.
+            compact.map{|klass| klass.named_scopes.empty? ? nil : klass.named_scopes}.
+            compact.inject({}){ |start, hash| start.merge(hash)}
       end
 
       def named_scope?(method)
