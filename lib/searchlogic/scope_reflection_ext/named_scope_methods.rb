@@ -26,7 +26,7 @@ module Searchlogic
           return nil if joined_named_scopes.nil?
           /(#{joined_named_scopes})$/.match(method)[1].to_sym
         rescue
-          NoMethodError.new("There is no scope named #{method}")
+          nil
         end
       end      
     end

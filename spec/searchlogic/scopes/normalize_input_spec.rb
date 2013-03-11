@@ -29,14 +29,15 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::NormalizeInput do
   end
   context " prioritizing columns" do 
     it "doesn't normalize inputs if they're also a column on the receiver" do 
-      co1 = Company.create
-      User.create(:count => 14, :company => co1 )
+      u1 = User.create(:count => 14)
+      co1 = Company.create(:users => [u1])
+
       Company.users_count_gt(10).should_not include(co1)
     end
 
     it "doesn't normalize inputs if they're a column works with OR conditions" do 
-      co2 = Company.create
-      User.create(:count => 11 , :company => co2 )
+      u2 = User.create(:count => 14)
+      co2 = Company.create(:users => [u2])
       Company.users_count_gt_or_id_equal(10).should_not include(co2)
     end
   end

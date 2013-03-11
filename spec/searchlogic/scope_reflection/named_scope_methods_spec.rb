@@ -25,7 +25,6 @@ describe Searchlogic::ScopeReflectionExt::NamedScopeMethods do
   context "#all_named_scopes_hash" do 
     it "returns a hash of all the named scopes" do 
       existing = Searchlogic::ScopeReflection.all_named_scopes_hash
-
       class User; scope :fool, lambda{|age| age_gte(age)};end
       class Company; scope :comp, lambda{|price| orders_line_items_price_eq(price)};end
       Searchlogic::ScopeReflection.all_named_scopes_hash.should eq(existing.merge(User.named_scopes).merge(Company.named_scopes))
@@ -44,8 +43,8 @@ describe Searchlogic::ScopeReflectionExt::NamedScopeMethods do
       Searchlogic::ScopeReflection.scope_name(:fool).should eq(:fool)
     end
 
-    it "raises an error if scope doesn't exist" do 
-      expect{Searchlogic::ScopeReflection.scope_name(:foool)}.to raise_error
+    it "return nil if no scope exists" do 
+      Searchlogic::ScopeReflection.scope_name(:foool).should be_nil
     end
   end
   context "#all_named_scopes" do 
