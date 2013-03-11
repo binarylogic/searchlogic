@@ -19,7 +19,7 @@ describe Searchlogic::SearchExt::ReaderWriter do
     User.create(:name => "Tren", :username => "Tren")
     User.create(:name=>"Ben", :email => "ben@gmail.com")                
   end
-  
+
 
   context "accessors" do 
     it "has readers for conditions" do
@@ -27,12 +27,12 @@ describe Searchlogic::SearchExt::ReaderWriter do
       search.name_ew.should eq("man")
     end
     it "should allow you to assign blank values" do
-      #Will be ignored when search is performed
       User.create(:username => "")
       search = User.search
       search.username_eq = ""
       search.username_eq.should eq("")
     end
+
     it "should allow blank values" do 
       search = User.search
       search.username_equals_any = ""
@@ -42,7 +42,7 @@ describe Searchlogic::SearchExt::ReaderWriter do
       search.conditions.should eq({ :name_eq => ["",  "Tren"], :username_equals_any => ""})
     end    
 
-    it "should not remove nils" do 
+    it "should not remove nils on explicit assignment" do 
       search = User.searchlogic
       search.username_eq = nil 
       search.count.should eq(4)

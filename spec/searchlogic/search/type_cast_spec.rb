@@ -11,6 +11,7 @@ describe Searchlogic::SearchExt::TypeCast do
     expect{User.search(:agee_eq => 10)}.to raise_error
   end
 
+
     context "mass assignment" do 
       it "should typecast chronic phrases on mass assignment" do 
         search = User.search(:created_at_after => "yesterday")

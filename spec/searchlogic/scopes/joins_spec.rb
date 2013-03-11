@@ -58,32 +58,65 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Joins do
       User.create(:name=>"noorder", :orders => [Order.create(:total => 0)])
     end
 
-  it "orders ascending by associated column" do
-    ordered_users = User.ascend_by_orders_total
-    ordered_users.count.should eq(5)
-    names = ordered_users.map(&:name)
-    names.should eq(["noorder", "Tren", "John", "Ben", "James"])
-  end
+    it "orders ascending by associated column" do
+      ordered_users = User.ascend_by_orders_total
+      ordered_users.count.should eq(5)
+      names = ordered_users.map(&:name)
+      names.should eq(["noorder", "Tren", "John", "Ben", "James"])
+    end
 
-  it "orders descending by associated column" do 
-    ordered_users = User.descend_by_orders_total
-    ordered_users.count.should eq(5)
-    ordered_users_names = ordered_users.map(&:name)
-    ordered_users_names.should eq(["noorder", "Tren", "John", "Ben", "James"].reverse)
-  end
+    it "orders descending by associated column" do 
+      ordered_users = User.descend_by_orders_total
+      ordered_users.count.should eq(5)
+      ordered_users_names = ordered_users.map(&:name)
+      ordered_users_names.should eq(["noorder", "Tren", "John", "Ben", "James"].reverse)
+    end
 
-  it "orders ascending by associations in method" do 
-    users = User.ascend_by_orders_line_items_price
-    users.count.should eq(8)
-    names = users.map(&:name)
-    names.should eq(["Tren",  "John", "John","Tren", "Ben", "Ben", "James", "James"])
-  end
+    it "orders ascending by associations in method" do 
+      users = User.ascend_by_orders_line_items_price
+      users.count.should eq(8)
+      names = users.map(&:name)
+      names.should eq(["Tren",  "John", "John","Tren", "Ben", "Ben", "James", "James"])
+    end
 
-  it "orders by associations at end of method" do
-    users = User.orders__line_items_ascend_by_id
-    users.count.should eq(8)
-    names = users.map(&:name)
-    names.should eq(["James", "James", "Ben", "Ben", "John", "John", "Tren", "Tren"])
+    it "orders by associations at end of method" do
+      users = User.orders__line_items_ascend_by_id
+      users.count.should eq(8)
+      names = users.map(&:name)
+      names.should eq(["James", "James", "Ben", "Ben", "John", "John", "Tren", "Tren"])
+    end
+    it "should allow the use of :include when a join was created" do
+      company = Company.create
+      user = company.users.create
+      order = user.orders.create(:total => 20, :taxes => 3)
+      Company.users_orders_total_gt(10).users_orders_taxes_lt(5).ascend_by_users_orders_total.all(:include => :users).should == Company.all
+    end
+    it "should allow the use of deep :include when a join was created" do
+      company = Company.create
+      user = company.users.create
+      order = user.orders.create(:total => 20, :taxes => 3)
+      Company.users_orders_total_gt(10).users_orders_taxes_lt(5).ascend_by_users_orders_total.all(:include => {:users => :orders}).should == Company.all
+    end
+
+    it "should allow the use of :include when traveling through the duplicate join" do
+      company = Company.create
+      user = company.users.create(:username => "bjohnson")
+      order = user.orders.create(:total => 20, :taxes => 3)
+      Company.users_username_like("bjohnson").users_orders_taxes_lt(5).ascend_by_users_orders_total.all(:include => :users).should == Company.all
+    end
+
+    it "should allow the use of deep :include when traveling through the duplicate join" do
+      company = Company.create
+      user = company.users.create(:username => "bjohnson")
+      order = user.orders.create(:total => 20, :taxes => 3)
+      Company.users_orders_taxes_lt(50).ascend_by_users_orders_total.all(:include => {:users => :orders}).should == Company.all
+    end
+  it "should allow chained dynamic scopes without losing association scope conditions" do
+    user = User.create
+    order1 = Order.create :user => user, :shipped_on => Time.now, :total => 2
+    order2 = Order.create :shipped_on => Time.now, :total => 2
+    user.orders.id_equals(order1.id).count.should == 1
+    user.orders.id_equals(order1.id).total_equals(2).count.should == 1
   end
   end
 end
