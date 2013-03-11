@@ -38,6 +38,12 @@ describe Searchlogic::SearchExt::Delegate do
         search = Company.search(:users_uname => true)
         search.all.should eq([co1])
       end
+
+      it "should pass on context from a named scope" do 
+        class User; scope :my_name, lambda {name_eq("James")};end
+        User.my_name.search.all.should eq([@james])
+      end
+
     end
 
     context "#empty" do 

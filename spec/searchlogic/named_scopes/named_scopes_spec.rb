@@ -325,7 +325,6 @@ describe Searchlogic::ActiveRecordExt::NamedScopes::ClassMethods do
 
       end
 
-
       it "works with arity > 2" do 
         class User
           scope(:winning, lambda{ |age, email, name| age_eq(age).email_like(email).name_ew(name)})
