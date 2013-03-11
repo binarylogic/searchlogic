@@ -6,8 +6,9 @@ module Searchlogic
           def scope
             if applicable?
               results = methods_array.map do |m| 
-                if klass.named_scopes.keys.include?(m.to_sym)
-                  if klass.named_scopes[m.to_sym][:scope].arity == 0
+                if ScopeReflection.named_scope?(m)
+                  scope_key = ScopeReflection.scope_name(m)
+                  if ScopeReflection.all_named_scopes_hash[scope_key][:scope].arity == 0
                     klass.send(m) 
                   else
                     klass.send(m, *value)

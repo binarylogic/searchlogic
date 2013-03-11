@@ -30,7 +30,23 @@ describe Searchlogic::ScopeReflectionExt::NamedScopeMethods do
       class Company; scope :comp, lambda{|price| orders_line_items_price_eq(price)};end
       Searchlogic::ScopeReflection.all_named_scopes_hash.should eq(existing.merge(User.named_scopes).merge(Company.named_scopes))
     end
+  end
 
+  context "scope_name" do 
+    it "returns the name of the scope in the method on an association" do 
+      class User; scope :fool, lambda{|age| age_gte(age)};end
+      class Company; scope :comp, lambda{|price| orders_line_items_price_eq(price)};end
+      Searchlogic::ScopeReflection.scope_name(:users_fool).should eq(:fool)
+    end
+
+    it "returns scope name" do 
+      class User; scope :fool, lambda{|age| age_gte(age)};end
+      Searchlogic::ScopeReflection.scope_name(:fool).should eq(:fool)
+    end
+
+    it "returns nil if scope doesn't exist" do 
+      Searchlogic::ScopeReflection.scope_name(:foool).should be_nil
+    end
   end
   context "#all_named_scopes" do 
     it "should return an array of all naemd scopes for all klasses" do 

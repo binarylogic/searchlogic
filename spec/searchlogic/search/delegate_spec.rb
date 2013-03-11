@@ -66,10 +66,6 @@ describe Searchlogic::SearchExt::Delegate do
     it "works with scopes and or" do 
       class User; scope :cool, lambda{created_at_after("last year")};end
       search = Company.search(:username_eq_or_name_like => "James", :users_cool => true)
-
-    
-      binding.pry
-
     end
     context "#scope" do
       it "chains scopes" do

@@ -19,6 +19,15 @@ module Searchlogic
       def named_scope?(method)
         return false if all_named_scopes.map(&:to_s).join("|").empty?
         !!(/(#{joined_named_scopes})$/ =~ method)
+      end
+
+      def scope_name(method)
+        begin
+          return nil if joined_named_scopes.nil?
+          /(#{joined_named_scopes})$/.match(method)[1].to_sym
+        rescue
+          NoMethodError.new("There is no scope named #{method}")
+        end
       end      
     end
   end

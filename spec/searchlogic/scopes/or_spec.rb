@@ -116,6 +116,13 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Or do
       User.old_or_id_gt(50).should eq([jason])
     end
 
+    it "works with scopes on associations" do 
+      class User; scope :uname, lambda{ name_like("ck")};end
+      co1  = Company.create(:users => [User.create(:name => "Rocky")])
+      rocky_co = Company.name_not_nil_or_users_uname
+      rocky_co.should eq([co1])
+    end
+
     it "workds with multiple scopes" do 
       class User; scope :young, lambda{ age_lte(25)};scope :last_ne, lambda{ |last| username_eq(last)};end
       vman = User.create(:username => "Vanneman")
