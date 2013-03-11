@@ -20,7 +20,7 @@ module Searchlogic
         end
 
         def association_in_method( method)
-            first_association = reflect_on_all_associations.find{|a| /^#{a.name.to_s}/.match(method.to_s)}
+          first_association = reflect_on_all_associations.find{|a| /^#{a.name.to_s}/.match(method.to_s)}
           if first_association
             klassname = first_association.name.to_s
             new_method = /[#{klassname}|#{klassname.singularize}]_(.*)/.match(method)[1]

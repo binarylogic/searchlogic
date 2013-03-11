@@ -35,8 +35,11 @@ module Searchlogic
 
       def column_type_in_association(association_method)
         association, new_method = association_method
-
-        new_klass = association.singularize.camelize.constantize
+        begin 
+          new_klass = association.singularize.camelize.constantize
+        rescue NameError
+          new_klass = Searchlogic::ActiveRecordExt::Scopes::Conditions::Polymorphic.new(klass, method, []).new_method
+        end
         #Since find returns the first  match, columns sorted by largest name so
         #more specicific names get matched first e.g. "username" matches itself before "user" incorrectly does
         columns = new_klass.columns.sort{|c1, c2| c2.name.size <=> c1.name.size } if new_klass.columns.kind_of?(Array) && new_klass.columns.size >1 
