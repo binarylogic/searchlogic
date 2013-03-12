@@ -44,6 +44,19 @@ describe Searchlogic::SearchExt::Delegate do
         User.my_name.search.all.should eq([@james])
       end
 
+    context "errors" do 
+      it "should raise NoConditionError when the method is just a column" do
+        search = User.search
+        expect{search.age = 10}.to raise_error Searchlogic::ActiveRecordExt::Scopes::NoConditionError
+      end    
+
+      it "should raise no method error if method is not recognized" do
+        search = User.search 
+        expect{search.boogie = 21}.to raise_error NoMethodError
+
+      end
+    end
+
     end
 
     context "#empty" do 

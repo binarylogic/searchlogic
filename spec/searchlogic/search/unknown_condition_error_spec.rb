@@ -19,5 +19,4 @@ describe Searchlogic::SearchExt::UnknownConditionError do
     search = User.searchlogic
     expect{search.destroy = true }.to raise_error
   end
-
 end

@@ -82,6 +82,4 @@
       search1.all.should eq(User.all)
     end
   end
-
-
 end
