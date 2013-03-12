@@ -89,7 +89,6 @@ module Searchlogic
             Joins,
             AscendBy,
             DescendBy,
-
           ] 
         end
       end

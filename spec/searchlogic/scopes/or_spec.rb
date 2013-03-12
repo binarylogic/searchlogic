@@ -21,9 +21,9 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Or do
 
   it "gathers users based on OR condition" do 
     users = User.username_like_or_name_like("ame")
+
     users.count.should eq(3)
     usernames = users.map(&:name)
-
     usernames.should eq(["James", "Ben", "Tren"])
   end
 

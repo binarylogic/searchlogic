@@ -5,27 +5,52 @@ module Searchlogic
         class Or < Condition
           def scope
             if applicable?
-              results = methods_array.map do |m| 
+              joins_values = []
+              where_values = []
+              methods_array.each do |m|
                 if ScopeReflection.named_scope?(m)
                   scope_key = ScopeReflection.scope_name(m)
-                  if ScopeReflection.all_named_scopes_hash[scope_key][:scope].arity == 0
-                    klass.send(m) 
+
+                  if ScopeReflection.all_named_scopes_hash[scope_key][:scope].try(:arity) == 0
+                    scope = klass.send(m)
+                    joins_values << scope.joins_values
+                    wv = scope.where_values
+                    combined_values = wv.count > 1 ? wv.join(" AND ") : wv 
+                    where_values << combined_values
                   else
-                    klass.send(m, *value)
+                    scope = klass.send(m, *value)
+                    joins_values << scope.joins_values
+                    wv = scope.where_values
+                    combined_values = wv.count > 1 ? wv.join(" AND ") : wv 
+                    where_values << combined_values
                   end
                 else
-                  klass.send(add_condition(m), *value)
-                end
+                  if value.kind_of?(Array)
+                    scope = klass.send(add_condition(m), *value)
+                    joins_values << scope.joins_values
+                    wv = scope.where_values
+                    combined_values = wv.count > 1 ? wv.join(" AND ") : wv 
+                    where_values << combined_values
+                  else
+                    scope = klass.send(add_condition(m), value)
+                    joins_values << scope.joins_values
+                    wv = scope.where_values
+                    combined_values = wv.count > 1 ? wv.join(" AND ") : wv 
+                    where_values << combined_values
+                  end
+                end                  
               end
-              ##need to return ActiveRecord::Relation object, combining 'where_values' from individual scopes fails when
-              ##scope is an association so collect the results and run a where clause vs their id's to return correct results
-              ##and an ActiveRecord::Relation
-              ids = results.flatten.uniq.map(&:id)
-              klass.where("id in (?)", ids)
+
+              !joins_values.flatten.empty? ? klass.includes(joins_values.flatten).where(where_values.flatten.join(" OR ")) : klass.where(where_values.flatten.join(" OR "))
+
             end
           end
             def self.matcher
               nil
+            end
+
+            def proxy_table(klass, data)
+              c
             end
           private
 

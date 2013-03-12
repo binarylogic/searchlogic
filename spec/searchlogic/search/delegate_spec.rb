@@ -4,7 +4,7 @@ describe Searchlogic::SearchExt::Delegate do
   describe "delegates" do 
     before(:each) do 
       @james = User.create(:name=>"James", :age =>20, :username => "jvans1" )
-      User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
+      @jv = User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
       @tren = User.create(:name => "Tren", :username =>"jvans")
       User.create(:name=>"Ben", :username =>"jvans1")
     end
@@ -42,6 +42,11 @@ describe Searchlogic::SearchExt::Delegate do
       it "should pass on context from a named scope" do 
         class User; scope :my_name, lambda {name_eq("James")};end
         User.my_name.search.all.should eq([@james])
+      end
+
+      it "works with an any condition" do 
+        search = User.search(:id_eq_any => [1,2], :order => :descend_by_id)
+        search.all.should eq([@jv, @james])
       end
 
     context "errors" do 
@@ -109,7 +114,10 @@ describe Searchlogic::SearchExt::Delegate do
         search.all.count.should eq(1)
         search.map(&:name).should eq(["jvans1's order"])
       end
-
+      it "works with multiple conditions" do
+        search = Company.search(:users_orders_line_items_price_gt => 10, :name_like => "e", :created_at_after_or_created_at_before => ("2012/2/3"),  :id_eq_any => [1,2,3])
+        search.all
+      end
       it "doesn't remove conditions from object" do 
         search = User.searchlogic
         search.name_contains = "James"

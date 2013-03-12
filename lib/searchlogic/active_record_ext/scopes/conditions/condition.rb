@@ -21,7 +21,7 @@ module Searchlogic
           end
 
           def method_missing(method, *args, &block)
-            raise NoMethodError.new(method.to_s + " is not recognized by searchlogic")
+            raise NoMethodError.new("A NoMethodError was raised within the searchlogic stack '" + method.to_s + "' is not defined on #{self.klass.name}")
           end
           
           def self.matcher

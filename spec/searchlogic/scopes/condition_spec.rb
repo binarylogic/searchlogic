@@ -44,7 +44,6 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions do
     end
 
     it "should respond to sl methods" do 
-      binding.pry
       ar = User.where("1=1")
       ar.respond_to?(:_greater_than).should be_true
       ar.respond_to?(:_greater_than_or_equal_to).should be_true

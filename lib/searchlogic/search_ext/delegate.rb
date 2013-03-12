@@ -25,7 +25,7 @@ module Searchlogic
           elsif scope_lambda.try(:[], :scope).try(:arity) == 1
             curr_scope.send(std_condition, value)
           else
-            curr_scope.send(std_condition, *value)
+            value.kind_of?(Array) ? curr_scope.send(std_condition, *value) : curr_scope.send(std_condition, value)
           end
         end
 
