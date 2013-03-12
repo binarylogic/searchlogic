@@ -94,7 +94,7 @@ describe Searchlogic::ActiveRecordExt::NamedScopes::ClassMethods do
     it "individual classes keeps track of all scopes created" do 
       existing_user = User.named_scopes.keys
       existing_co = Company.named_scopes.keys
-      User.scope :first_one, lambda { User.first}
+      class User; scope :first_one, lambda { id_eq(1)};end
       User.scope :second_one, lambda {User.last}
       Company.scope :company_scope_one, lambda{where(Company.name_eq("ConciergeLIve"))}
       Company.scope :company_scope_two,  lambda{where(Company.name_eq("NEco"))}

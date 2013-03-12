@@ -19,6 +19,9 @@ module Searchlogic
               method_parts[0].split(polymorphic_association_name + "_").last.camelize.constantize
             end
             
+            def new_method
+              method_parts = method_name.to_s.split("_type_").last
+            end            
 
           private
             def applicable? 
@@ -27,10 +30,6 @@ module Searchlogic
 
             def polymorphic_association_name
               klass.reflect_on_all_associations.map{ |a| a.name if a.options[:polymorphic]}.compact.first.to_s
-            end
-            
-            def new_method
-              method_parts = method_name.to_s.split("_type_").last
             end
 
             def polymorphic_association

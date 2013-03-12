@@ -37,8 +37,10 @@ module Searchlogic
         association, new_method = association_method
         begin 
           new_klass = association.singularize.camelize.constantize
-        rescue NameError
-          new_klass = Searchlogic::ActiveRecordExt::Scopes::Conditions::Polymorphic.new(klass, method, []).new_method
+        rescue NameError          
+          polymorphic_association = Searchlogic::ActiveRecordExt::Scopes::Conditions::Polymorphic.new(klass, method, [])
+          new_klass = polymorphic_association.association_klass
+          new_method = polymorphic_association.new_method
         end
         #Since find returns the first  match, columns sorted by largest name so
         #more specicific names get matched first e.g. "username" matches itself before "user" incorrectly does
