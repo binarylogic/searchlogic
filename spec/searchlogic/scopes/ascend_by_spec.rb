@@ -2,13 +2,14 @@ require 'spec_helper'
 
 describe Searchlogic::ActiveRecordExt::Scopes::Conditions::AscendBy do 
   before(:each) do 
-    @james = User.create(:name=>"James")
-    @ben = User.create(:name=>"Ben")
-    @tren = User.create(:name => "Tren")
-    @o1 = Order.create(:total=>100, :user => @tren)
-    @o2 = Order.create(:total=>125, :user => @ben)
-    Order.create(:total=>94, :user => @james)
-    Order.create(:total=>112, :user => @ben)
+    @o1 = Order.create(:total=>100)
+    @o2 = Order.create(:total=>125)
+    @o3 = Order.create(:total=>94)
+    @o4 = Order.create(:total=>112)
+    @james = User.create(:name=>"James", :orders => [@o4])
+    @ben = User.create(:name=>"Ben", :orders => [@o2, @o1])
+    @tren = User.create(:name => "Tren", :orders => [@o3])
+
   end
 
   it "orders users ascending on id" do 
@@ -33,10 +34,10 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::AscendBy do
   end
 
   it "orders based with an association" do 
-    users = User.orders__descend_by_total
+    users = User.orders__ascend_by_total
     users.count.should eq(4)
-    names = users.map(&:name)
-    names.should eq(["Ben", "Ben", "Tren", "James"])
+    binding.pry
+    users.should eq([@tren, @ben, @james, @ben])
   end
 
   it "should have priorty to columns over conflicting association columns" do

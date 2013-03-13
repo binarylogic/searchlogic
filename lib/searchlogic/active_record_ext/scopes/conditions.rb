@@ -29,7 +29,9 @@ module Searchlogic
             nil
           end
         end
-
+        def tables
+          ActiveRecord::Base.connection.tables
+        end
         def memoized_scopes
           @memoized_scopes ||= {}
         end

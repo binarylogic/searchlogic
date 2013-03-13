@@ -3,57 +3,48 @@ module Searchlogic
     module Scopes
       module Conditions
         class Or < Condition
+          attr_reader :joins_values, :where_values
+          def initialize(*args)
+            super
+            @joins_values ||= []
+            @where_values ||= []
+          end
+
           def scope
             if applicable?
-              joins_values = []
-              where_values = []
               methods_array.each do |m|
                 if ScopeReflection.named_scope?(m)
                   scope_key = ScopeReflection.scope_name(m)
-
                   if ScopeReflection.all_named_scopes_hash[scope_key][:scope].try(:arity) == 0
                     scope = klass.send(m)
-                    joins_values << scope.joins_values
-                    wv = scope.where_values
-                    combined_values = wv.count > 1 ? wv.join(" AND ") : wv 
-                    where_values << combined_values
+                    store_values(scope)
                   else
                     scope = klass.send(m, *value)
-                    joins_values << scope.joins_values
-                    wv = scope.where_values
-                    combined_values = wv.count > 1 ? wv.join(" AND ") : wv 
-                    where_values << combined_values
+                    store_values(scope)
                   end
                 else
                   if value.kind_of?(Array)
                     scope = klass.send(add_condition(m), *value)
-                    joins_values << scope.joins_values
-                    wv = scope.where_values
-                    combined_values = wv.count > 1 ? wv.join(" AND ") : wv 
-                    where_values << combined_values
+                    store_values(scope)
                   else
                     scope = klass.send(add_condition(m), value)
-                    joins_values << scope.joins_values
-                    wv = scope.where_values
-                    combined_values = wv.count > 1 ? wv.join(" AND ") : wv 
-                    where_values << combined_values
+                    store_values(scope)
                   end
                 end                  
               end
-
               !joins_values.flatten.empty? ? klass.includes(joins_values.flatten).where(where_values.flatten.join(" OR ")) : klass.where(where_values.flatten.join(" OR "))
-
             end
           end
             def self.matcher
               nil
             end
-
-            def proxy_table(klass, data)
-              c
-            end
           private
-
+          def store_values(scope)
+            joins_values << scope.joins_values
+            wv = scope.where_values
+            combined_values = wv.count > 1 ? wv.join(" AND ") : wv 
+            where_values << combined_values
+          end
           def value
             args.size == 1 ? args.first : args
           end

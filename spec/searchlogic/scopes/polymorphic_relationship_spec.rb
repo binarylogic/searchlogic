@@ -38,11 +38,13 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Polymorphic do
       search = Audit.search(:auditable_user_type_orders_total_gte => 23, :name_like => "en")
       search.all.should eq([@a2])
     end
+
     it "works with a associations in a search proxy" do 
       search = Audit.search(:auditable_user_type_orders_line_items_price_gte => 15)
       search.all.should eq([@a1])
 
     end
+    
     it "works from other direction in search proxy" do 
       search = User.search(:audits_name_eq => "James' Audit")
       search.all.should eq([@u2])

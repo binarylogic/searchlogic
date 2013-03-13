@@ -3,12 +3,20 @@ module Searchlogic
     module Scopes
       module Conditions
         class Polymorphic < Condition
+            attr_accessor :where_values, :joins_values
+            def initialize(*args)
+              super
+              @where_values ||= []
+              @joins_values ||= []
+            end
           def scope
             if applicable?
-              ids = association_klass.
-                      send(new_method, value).map{|returned_obj| returned_obj.send(klass_symbol)}.
-                      flatten.map(&:id)
-              klass.where("id IN (?)", ids)
+              obj = association_klass.send(new_method, value)
+              where_values << obj.where_values
+              joins_values << obj.joins_values
+              obj.map do |returned_obj| 
+                returned_obj.send(klass_symbol)
+              end                                
             end
           end
             def self.matcher

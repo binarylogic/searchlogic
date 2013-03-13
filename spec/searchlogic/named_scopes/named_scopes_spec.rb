@@ -296,13 +296,10 @@ describe Searchlogic::ActiveRecordExt::NamedScopes::ClassMethods do
       end
 
       it "should create a search proxy" do
-        ### this returns the correct result but rspec calls class on the object
-        ### Which Searchlogic::Search delegates back to ActiveRecord::Relation
         User.search(:username_eq => "joe").should be_kind_of(Searchlogic::Search)
       end
 
       it "should create a search proxy using the same class" do
-
         User.search.klass.klass.should eq(User)
       end
 
@@ -318,8 +315,9 @@ describe Searchlogic::ActiveRecordExt::NamedScopes::ClassMethods do
       end
 
       it "works with or conditions" do 
-        search = User.search(:name_equals => "James", :age_greater_than_or_equal_to => 20, :id_eq_or_orders_price_greater_than_or_equal_to => 5)
-
+        u1 = User.create(:orders => [Order.create(:total => 6)], :name => "James", :age => 26)
+        search = User.search(:name_equals => "James", :age_greater_than_or_equal_to => 20, :id_eq_or_orders_total_greater_than_or_equal_to => 5)
+        search.all.should eq([u1])
       end
 
       it "works with arity > 2" do 
@@ -410,6 +408,11 @@ describe Searchlogic::ActiveRecordExt::NamedScopes::ClassMethods do
       user2 = User.create(:name => "James")
       User.name_lt_or_seniority_gt(40).should eq([user1, user2])
       User.name_lt_or_seniority_gt(40).name_begins_with_or_id_greater_than_or_equal_to(10)
+    end
+    it "works with or conditiosn in associations" do 
+      class User; scope :name_lt, lambda{name_like("Ja")}; scope :seniority_gt, lambda{|age| age_gt(age)};end
+      search = User.search(:created_at_after => "2012/3/2", :orders_line_items_price_or_id_gte => 1, :name_lt => true, :audits_name_or_carts_id_eq => "5", :order => :descend_by_id)
+      search.all.should be_empty
     end
   end
 end
