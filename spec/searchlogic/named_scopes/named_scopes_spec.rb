@@ -36,6 +36,21 @@ describe Searchlogic::ActiveRecordExt::NamedScopes::ClassMethods do
       User.winning.should eq(User.all)
     end
 
+    it "works with belongs_to association in search" do 
+      o1 = Order.create(:total => 25)
+      o2 = Order.create(:total =>15)
+      l1 = LineItem.create(:price =>10, :order => o1)
+      LineItem.create(:price => 10, :order => o2)      
+      search = LineItem.search(:order_total_gt => 15, :price_eq =>10, :order => :descend_by_order_price)
+      search.all.should eq(l1)
+
+    end
+
+    it "works with or conditiosn in associations" do 
+      class User; scope :name_lt, lambda{name_like("Ja")}; scope :seniority_gt, lambda{|age| age_gt(age)};end
+      search = User.search(:created_at_after => "2012/3/2", :orders_line_items_price_or_id_gte => 1, :name_lt => true, :audits_name_or_carts_id_eq => "5", :order => :descend_by_id)
+      search.all.should be_empty
+    end
     it "calls scope proc with an arity of 0" do 
       class User; scope :cool, lambda{ where("name LIKE ?", "%Jam%") }; end
       cool_users = User.cool
@@ -409,11 +424,7 @@ describe Searchlogic::ActiveRecordExt::NamedScopes::ClassMethods do
       User.name_lt_or_seniority_gt(40).should eq([user1, user2])
       User.name_lt_or_seniority_gt(40).name_begins_with_or_id_greater_than_or_equal_to(10)
     end
-    it "works with or conditiosn in associations" do 
-      class User; scope :name_lt, lambda{name_like("Ja")}; scope :seniority_gt, lambda{|age| age_gt(age)};end
-      search = User.search(:created_at_after => "2012/3/2", :orders_line_items_price_or_id_gte => 1, :name_lt => true, :audits_name_or_carts_id_eq => "5", :order => :descend_by_id)
-      search.all.should be_empty
-    end
+
   end
 end
 

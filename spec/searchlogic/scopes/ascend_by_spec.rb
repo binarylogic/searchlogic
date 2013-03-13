@@ -36,7 +36,6 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::AscendBy do
   it "orders based with an association" do 
     users = User.orders__ascend_by_total
     users.count.should eq(4)
-    binding.pry
     users.should eq([@tren, @ben, @james, @ben])
   end
 
