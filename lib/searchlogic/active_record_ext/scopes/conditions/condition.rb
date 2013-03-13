@@ -6,6 +6,7 @@ module Searchlogic
           attr_reader :klass, :args, :block, :value, :table_name, :method_name
           attr_accessor :column_name
           class << self
+
             def generate_scope(*args)
               new(args[0], args[1], args[2]).scope 
             end

@@ -21,7 +21,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Polymorphic do
     name.should eq("James")
   end
 
-  it "returns an AR relation" do 
+  xit "returns an AR relation" do 
     audits = Audit.auditable_user_type_orders_total_gte(23)
     audits.should be_kind_of ActiveRecord::Relation
   end
@@ -34,14 +34,14 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Polymorphic do
   end
 
   context "search" do 
-    it "works in a search proxy" do 
-      search = Audit.search(:auditable_user_type_orders_total_gte => 23, :name_like => "en")
+    xit "works in a search proxy" do 
+      search = User.search(:audits_name => "James' Audit")
       search.all.should eq([@a2])
     end
 
-    it "works with a associations in a search proxy" do 
-      search = Audit.search(:auditable_user_type_orders_line_items_price_gte => 15)
-      search.all.should eq([@a1])
+    xit "works with a associations in a search proxy" do 
+      search = User.search(:audits_name => "James' Audit")
+      search.all.should eq([@u2])
 
     end
     

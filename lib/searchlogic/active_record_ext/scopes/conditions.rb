@@ -29,17 +29,20 @@ module Searchlogic
             nil
           end
         end
+
         def tables
           ActiveRecord::Base.connection.tables
         end
+
         def memoized_scopes
           @memoized_scopes ||= {}
         end
         private
 
         def method_missing(method, *args, &block) 
+
           std_method = ScopeReflection.convert_alias(self, :method => method)
-          # return memoized_scopes[std_method].generate_scope(self, std_method, args, &block) if memoized_scopes[std_method]
+
           generate_scope(std_method, args, &block) || super 
         end
 

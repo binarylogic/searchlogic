@@ -3,18 +3,9 @@ module Searchlogic
     module Scopes
       module Conditions
         class Polymorphic < Condition
-            attr_accessor :where_values, :joins_values
-            def initialize(*args)
-              super
-              @where_values ||= []
-              @joins_values ||= []
-            end
           def scope
             if applicable?
-              obj = association_klass.send(new_method, value)
-              where_values << obj.where_values
-              joins_values << obj.joins_values
-              obj.map do |returned_obj| 
+              association_klass.send(new_method, value).map do |returned_obj| 
                 returned_obj.send(klass_symbol)
               end                                
             end
