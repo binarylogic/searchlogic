@@ -6,6 +6,7 @@ module Searchlogic
         self.conditions = conditions
       end
 
+
       def clone
         Searchlogic::Search.new(klass, conditions)
       end
