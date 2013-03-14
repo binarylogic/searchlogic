@@ -24,6 +24,11 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Joins do
       users.map(&:name).should eq(["James", "Ben"])
     end
 
+    it "works with belongs_to " do 
+      LineItem.order_total_gte(18).count.should eq(4)
+
+    end
+
     it "allows multiple joins" do  
       companies = Company.orders__total_greater_than(17)
       # companies.count.should eq(2)
@@ -80,7 +85,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Joins do
     end
 
     it "orders by associations at end of method" do
-      users = User.orders__line_items_ascend_by_id
+      users = User.orders_line_items_ascend_by_id
       users.count.should eq(8)
       names = users.map(&:name)
       names.should eq(["James", "James", "Ben", "Ben", "John", "John", "Tren", "Tren"])

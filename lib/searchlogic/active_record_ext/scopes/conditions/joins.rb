@@ -63,7 +63,7 @@ module Searchlogic
             end
 
             def find_join_name
-              match_ordering ? match_ordering[2].to_s.pluralize : method_parts.first.to_s.pluralize
+              match_ordering ? match_ordering[2] : method_parts.first
             end
 
             def find_new_method

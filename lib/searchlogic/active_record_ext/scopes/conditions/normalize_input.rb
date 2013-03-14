@@ -5,9 +5,13 @@ module Searchlogic
       module Conditions
         class NormalizeInput < Condition
           DELIMITER = "__"
+          attr_accessor :converted_method
           def scope
             if applicable?
-              method = convert_syntax 
+              convert_syntax(method_name, klass)
+              method = converted_method
+              return nil if method.nil?
+
               klass.send(method, value)
             end
           end
@@ -17,26 +21,25 @@ module Searchlogic
           end
           private 
 
-          def convert_syntax
-            methods = method_name.to_s.split(DELIMITER)
-            methods.map do |method| 
-              if !!(incorrect_syntax.match(method))
-                method.to_s.gsub(incorrect_syntax.match(method)[1], incorrect_syntax.match(method)[1] + "_")    
-              elsif incorrect_syntax_in_ordering.match(method)
-                syntax_error = method.to_s.scan(incorrect_syntax_in_ordering).flatten.last
-                method.to_s.gsub(syntax_error, syntax_error + "_")
-              else
-                method
-              end
-            end.join(DELIMITER)
+          def convert_syntax(method, for_klass)
+            meth = method
+            if !!(incorrect_syntax(for_klass).match(meth))
+              syntax_error = meth.to_s.scan(incorrect_syntax(for_klass)).flatten.first
+              associated_klass = syntax_error.gsub(/_$/, "").singularize.camelize.constantize
+              converted_method = meth.to_s.gsub(syntax_error, syntax_error + "_") 
+              convert_syntax(converted_method, associated_klass ) if incorrect_syntax(associated_klass) =~ converted_method
+              self.converted_method = converted_method unless incorrect_syntax(associated_klass) =~ converted_method
+            else
+              meth
+            end 
           end
 
           def applicable?
-            (incorrect_syntax =~ method_name || incorrect_syntax_in_ordering =~ method_name)  && !(preference_to_columns?)
+            /(#{(ActiveRecord::Base.connection.tables + ActiveRecord::Base.connection.tables.map(&:singularize)).join("|")})_[^_]/ =~ method_name && !(preference_to_columns?)
           end
 
-          def incorrect_syntax
-            /(#{matching_incorrect_syntax})[^_]/
+          def incorrect_syntax(match_klass)
+            /(#{matching_incorrect_syntax(match_klass)})[^_]/
           end
 
           def preference_to_columns?
@@ -44,13 +47,8 @@ module Searchlogic
             /^(#{klass.column_names.join("|")})(#{ScopeReflection.all_scopes.join("|")})/ =~ method_name ||  /^(ascend_by_|descend_by_)(#{klass.column_names.join("|")})/ =~ method_name
           end
 
-          def matching_incorrect_syntax
-            ActiveRecord::Base.connection.tables.map { |k| k + "_" }.join("|")
-          end
-
-          def incorrect_syntax_in_ordering
-            tables = ActiveRecord::Base.connection.tables.join("|")
-            /(ascend_by_|descend_by_)(#{tables})[^_]/
+          def matching_incorrect_syntax(match_klass)
+            match_klass.reflect_on_all_associations.map(&:name).map { |k| k.to_s + "_" }.join("|")
           end
         end
       end
