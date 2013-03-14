@@ -62,6 +62,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.integer :company_id
     t.string :username
     t.string :name
+    t.integer :orders_count
     t.integer :count
     t.integer :age
     t.boolean :male
@@ -85,6 +86,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.float :total
     t.string :name
     t.string :title
+    t.integer :count
   end
 
   create_table :fees do |t|
