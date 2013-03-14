@@ -96,6 +96,11 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Or do
     User.male_or_name_eq("James").should eq([@james, jason])
   end
 
+  it "passes array values as an array with arity =1 " do 
+    class User; scope :ary, lambda{ |array| raise "This Should be an array" unless array.kind_of?(Array)};end
+    User.ary([1,2])
+  end
+
   it "shoudl work with scopes with arity > 0" do 
     class User
       scope :old, lambda{|age| age_gte(age)}

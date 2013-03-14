@@ -13,24 +13,7 @@ module Searchlogic
           def scope
             if applicable?
               methods_array.each do |m|
-                if ScopeReflection.named_scope?(m)
-                  scope_key = ScopeReflection.scope_name(m)
-                  if ScopeReflection.all_named_scopes_hash[scope_key][:scope].try(:arity) == 0
-                    scope = klass.send(m)
-                    store_values(scope)
-                  else
-                    scope = klass.send(m, *value)
-                    store_values(scope)
-                  end
-                else
-                  if value.kind_of?(Array)
-                    scope = klass.send(add_condition(m), *value)
-                    store_values(scope)
-                  else
-                    scope = klass.send(add_condition(m), value)
-                    store_values(scope)
-                  end
-                end                  
+                send_and_store(m)
               end
               !joins_values.flatten.empty? ? klass.includes(joins_values.flatten).where(where_values.flatten.join(" OR ")) : klass.where(where_values.flatten.join(" OR "))
             end
@@ -39,12 +22,36 @@ module Searchlogic
               nil
             end
           private
+
+          def send_and_store(m)
+            scope_key = ScopeReflection.scope_name(m)              
+            if no_arg_scope?(scope_key)
+              scope = klass.send(m)
+              store_values(scope)
+            else
+              begin
+                scope = klass.send(add_condition(m), *value)
+                ### this will raise an error on sql query Prevents Date/DateTime objects from being sent with * operator
+                scope.all
+                scope
+              rescue
+                scope = klass.send(add_condition(m), value)
+              end
+            end            
+            store_values(scope)
+          end
+
+          def no_arg_scope?(scope_key)
+            !!(ScopeReflection.all_named_scopes_hash[scope_key].try(:[], :scope).try(:arity) == 0)
+          end
+
           def store_values(scope)
             joins_values << scope.joins_values
             wv = scope.where_values
             combined_values = wv.count > 1 ? wv.join(" AND ") : wv 
             where_values << combined_values
           end
+
           def value
             args.size == 1 ? args.first : args
           end
@@ -53,6 +60,7 @@ module Searchlogic
           def methods_array
             join_equal_to(method_without_ending_condition.split("_or_"))            
           end
+
           def method_without_ending_condition
             method_name.to_s.chomp(ending_alias_condition)
           end
@@ -75,7 +83,7 @@ module Searchlogic
             end
 
             def add_condition(method)
-              if has_condition?(method) && ending_alias_condition != "_any" && ending_alias_condition != "_all"
+              if (has_condition?(method) && ending_alias_condition != "_any" && ending_alias_condition != "_all") || scope?(method)
                 method 
               else
                 method + ending_alias_condition
@@ -83,9 +91,11 @@ module Searchlogic
             end
 
             def has_condition?(method)
-              !!(/(#{ScopeReflection.aliases.join("|")}|#{self.class.all_matchers.join("|")})/.match(method))
+              !!(/(#{ScopeReflection.aliases.join("|")}|#{self.class.all_matchers.join("|")})/.match(method) )
             end
-
+            def scope?(method)
+              !!(ScopeReflection.all_named_scopes_hash[method.to_sym])
+            end
             def ending_alias_condition 
               return nil if /#{ScopeReflection.joined_named_scopes}$/ =~ method_name && ScopeReflection.joined_named_scopes
               begin
