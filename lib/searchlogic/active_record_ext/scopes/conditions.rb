@@ -40,9 +40,7 @@ module Searchlogic
         private
 
         def method_missing(method, *args, &block) 
-
           std_method = ScopeReflection.convert_alias(self, :method => method)
-
           generate_scope(std_method, args, &block) || super 
         end
 

@@ -26,7 +26,13 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Joins do
 
     it "works with belongs_to " do 
       LineItem.order_total_gte(18).count.should eq(4)
+    end
 
+    
+    it "long search" do 
+      LineItem.order_user_age_gt(4)
+      search = LineItem.search(:created_at_after => "last year", :updated_at_before => "yesterday", :order_user_id_nil => true, :order => :descend_by_order_user_id)
+      search.all
     end
 
     it "allows multiple joins" do  
@@ -123,12 +129,14 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Joins do
       order = user.orders.create(:total => 20, :taxes => 3)
       Company.users_orders_taxes_lt(50).ascend_by_users_orders_total.all(:include => {:users => :orders}).should == Company.all
     end
-  it "should allow chained dynamic scopes without losing association scope conditions" do
-    user = User.create
-    order1 = Order.create :user => user, :shipped_on => Time.now, :total => 2
-    order2 = Order.create :shipped_on => Time.now, :total => 2
-    user.orders.id_equals(order1.id).count.should == 1
-    user.orders.id_equals(order1.id).total_equals(2).count.should == 1
-  end
+    it "should allow chained dynamic scopes without losing association scope conditions" do
+      user = User.create
+      order1 = Order.create :user => user, :shipped_on => Time.now, :total => 2
+      order2 = Order.create :shipped_on => Time.now, :total => 2
+      user.orders.id_equals(order1.id).count.should == 1
+      user.orders.id_equals(order1.id).total_equals(2).count.should == 1
+    end
+
+
   end
 end

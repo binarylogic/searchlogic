@@ -19,4 +19,9 @@ describe Searchlogic::SearchExt::UnknownConditionError do
     search = User.searchlogic
     expect{search.destroy = true }.to raise_error
   end
+
+  it "shoudl be raised when omit " do 
+      search = LineItem.search(:order => :descend_order_user_id)
+      expect{search.all}.to raise_error Searchlogic::ActiveRecordExt::Scopes::NoConditionError
+  end
 end

@@ -32,7 +32,12 @@ describe Searchlogic::SearchExt::ReaderWriter do
       search.username_eq = ""
       search.username_eq.should eq("")
     end
+    it "should raise an error if conditions aren't a hash" do 
+      search = User.search
+      expect{search.conditions = [:username_eq, "james"]}.to raise_error ArgumentError
 
+
+    end
     it "should allow blank values" do 
       search = User.search
       search.username_equals_any = ""

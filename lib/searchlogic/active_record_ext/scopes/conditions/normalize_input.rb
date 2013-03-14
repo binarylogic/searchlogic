@@ -27,12 +27,12 @@ module Searchlogic
               syntax_error = meth.to_s.scan(incorrect_syntax(for_klass)).flatten.first
               associated_klass = syntax_error.gsub(/_$/, "").singularize.camelize.constantize
               converted_method = meth.to_s.gsub(syntax_error, syntax_error + "_") 
-                if incorrect_syntax(associated_klass) =~ converted_method && !(preference_to_columns?(associated_klass, converted_method.split(DELIMITER).last))
-                    convert_syntax(converted_method, associated_klass)
+              if incorrect_syntax(associated_klass) =~ converted_method && !(preference_to_columns?(associated_klass, converted_method.split(DELIMITER).last))
+                convert_syntax(converted_method, associated_klass)
               elsif preference_to_columns?(associated_klass, converted_method.split(DELIMITER).last)
-                    self.converted_method = converted_method
+                self.converted_method = converted_method
               else
-                    self.converted_method = converted_method unless incorrect_syntax(associated_klass) =~ converted_method
+                self.converted_method = converted_method unless incorrect_syntax(associated_klass) =~ converted_method
               end
             else
               meth

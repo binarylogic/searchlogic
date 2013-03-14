@@ -5,10 +5,10 @@ module Searchlogic
       def delegate(method_name, args, &block)
         begin 
           conditions.inject(klass) do |current_scope, (condition, value)| 
-              false_scope_proc?(condition, value) ? current_scope : create_scope(current_scope, condition, value) 
+            false_scope_proc?(condition, value) ? current_scope : create_scope(current_scope, condition, value) 
           end.send(method_name, *args, &block)
-        rescue NoMethodError => e
-          no_condition?(e) ? raise(Searchlogic::ActiveRecordExt::Scopes::NoConditionError.new) : raise(NoMethodError.new(e.name))
+        rescue NoMethodError
+          raise(Searchlogic::ActiveRecordExt::Scopes::NoConditionError.new) 
         end
       end
 

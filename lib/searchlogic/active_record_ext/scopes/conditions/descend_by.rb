@@ -5,8 +5,8 @@ module Searchlogic
         class DescendBy < Condition
           def scope
             if applicable?
-              sort_on = find_sort_on(method_name)              
-              klass.joins(join).order("#{order_on}.#{sort_on} DESC")
+              sort_on = find_sort_on(method_name)
+              klass.joins(join).order("#{order_on.to_s.pluralize}.#{sort_on} DESC")
             end
           end
 
@@ -18,7 +18,7 @@ module Searchlogic
               !(/^#{self.class.matcher}/ =~ method_name).nil?
             end
             def join 
-              joins_values = klass.where("1=1").joins_values.flatten.first
+              joins_values = klass.where("1=1").joins_values.flatten.last
             end
 
             def order_on 
