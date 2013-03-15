@@ -4,7 +4,8 @@ module Searchlogic
     module Scopes
       class InvalidConditionError < StandardError
         def initialize(error)
-          msg = "#{error.name.to_s} is an invalid condition. You probably misspelled a column or left off a condition"
+          message = error.name.to_s.gsub(/=$/, "")
+          msg = "`#{message}' is an invalid condition"
           super(msg)
         end
       end

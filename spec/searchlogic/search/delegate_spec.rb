@@ -57,7 +57,7 @@ describe Searchlogic::SearchExt::Delegate do
 
       it "should raise no method error if method is not recognized" do
         search = User.search 
-        expect{search.boogie = 21}.to raise_error NoMethodError
+        expect{search.boogie = 21}.to raise_error Searchlogic::ActiveRecordExt::Scopes::InvalidConditionError
 
       end
     end
