@@ -1,3 +1,5 @@
+Dir[File.dirname(__FILE__) + '/or/*.rb'].each { |f| require(f) }
+
 module Searchlogic
   module ActiveRecordExt
     module Scopes
@@ -12,6 +14,7 @@ module Searchlogic
 
           def scope
             if applicable?
+              methods_array = MethodConstructor.new(method_name).methods_array
               methods_array.each do |m|
                 send_and_store(m)
               end
@@ -29,7 +32,7 @@ module Searchlogic
               scope = klass.send(m)
               store_values(scope)
             else
-              [value].flatten.size == 1 ? scope = klass.send(add_condition(m), value) : scope = klass.send(add_condition(m), *value)                
+              [value].flatten.size == 1 ? scope = klass.send(m, value) : scope = klass.send(m, *value)                
             end            
             store_values(scope)
           end
@@ -47,57 +50,11 @@ module Searchlogic
 
           def value
             [args].flatten.size == 1 ? args.first : args
-          end
+          end      
 
-
-          def methods_array
-            join_equal_to(method_without_ending_condition.split("_or_"))            
-          end
-
-          def method_without_ending_condition
-            method_name.to_s.chomp(ending_alias_condition)
-          end
-
-            def join_equal_to(method_array)
-              methods = []
-              method_array.each_with_index do |item, index| 
-                if item == "equal" || item == "equal_to"
-                  methods.delete_at(-1)
-                  methods << [method_array[index-1], item ].join("_or_")
-                else
-                  methods << item
-                end
-              end
-              methods
-            end
 
             def find_condition
               klass.joined_condition_klasses.split("|").find{ |jck| last_method.include?(jck)}
-            end
-
-            def add_condition(method)
-              if (has_condition?(method) && ending_alias_condition != "_any" && ending_alias_condition != "_all") || scope?(method)
-                method 
-              else
-                method + ending_alias_condition
-              end
-            end
-
-            def has_condition?(method)
-              !!(/(#{ScopeReflection.aliases.join("|")}|#{self.class.all_matchers.join("|")})/.match(method) )
-            end
-            def scope?(method)
-              !!(ScopeReflection.all_named_scopes_hash[method.to_sym])
-            end
-
-            def ending_alias_condition 
-
-              return nil if /#{ScopeReflection.joined_named_scopes}$/ =~ method_name && ScopeReflection.joined_named_scopes
-              begin
-                /(#{self.class.all_matchers.sort_by(&:size).reverse.join("|")})$/.match(method_name)[0]
-              rescue NoMethodError => e
-                raise InvalidConditionError.new(e)
-              end
             end
 
             def applicable? 
@@ -105,7 +62,6 @@ module Searchlogic
               named_scopes = klass.named_scopes.keys.map(&:to_s).join("|")
               !(/_or_(#{klass.column_names.join("|")}|#{klass.association_names.join("|")}#{'|'+ named_scopes unless named_scopes.empty?})/ =~ method_name).nil? 
             end
-
         end
       end
     end

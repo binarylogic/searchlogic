@@ -28,7 +28,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::All do
     users.should eq([@james, @james_ben])
   end
 
-  it "long search conditiosn" do
+  it "works with or conditions" do
     users = User.search(:orders_line_items_price_gt => 5, :name_or_username_like_all => ["ja","m"], :order => :descend_by_orders_name)
     expect {users.all}.to_not raise_error
   end
