@@ -3,8 +3,8 @@ module Searchlogic
   module ActiveRecordExt
     module Scopes
       class NoConditionError < StandardError
-        def initialize
-          msg = "There was no condition defined on the method, perhaps you misspelled it"
+        def initialize(error)
+          msg = "There was no condition defined on the method. #{error.message}"
           super(msg)
         end
       end

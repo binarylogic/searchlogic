@@ -361,7 +361,7 @@ describe Searchlogic::ActiveRecordExt::NamedScopes::ClassMethods do
       it "should pass array values as multiple arguments with arity -1 in search object" do
         class User
           scope(:multiple_args, lambda { |*args|
-          # raise "This should not be an array, it should be 1" if args.is_a?(Array)          
+          raise "This should not be an array, it should be 1" if args.is_a?(Array)          
           where("id IN (?)", args)
         })
         end

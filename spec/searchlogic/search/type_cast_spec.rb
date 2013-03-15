@@ -107,12 +107,15 @@ describe Searchlogic::SearchExt::TypeCast do
       it "should be a Date given 'Jan 1, 2009'" do
         search = Order.search
         search.shipped_on_after = "Jan 1, 2009"
-        search.shipped_on_after.should == Date.parse("Jan 1, 2009")
+        search.shipped_on_after.should eq(Date.parse("Jan 1, 2009"))
       end
       it "should accept a Date Object" do 
         search = Order.search
         search.shipped_on_before = Date.today
         search.shipped_on_before.should eq(Date.today)
+        s2 = Order.search
+        s2.created_at_after = Date.today
+        s2.conditions.should eq({:created_at_after => Date.today})
       end
     end
     context "#cast_time" do 

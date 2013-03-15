@@ -21,28 +21,38 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Polymorphic do
     name.should eq("James")
   end
 
-  xit "returns an AR relation" do 
-    audits = Audit.auditable_user_type_orders_total_gte(23)
-    audits.should be_kind_of ActiveRecord::Relation
+  it "returns an AR relation" do 
+    user = Audit.auditable_user_type_id_gte(23)
+    user.should be_kind_of ActiveRecord::Relation
+  end
+
+  it " works with associations off of polymorph relationship" do 
+    user = Audit.auditable_user_type_name_eq("James")
+    user.should eq([@a1])
   end
 
   context "#new_method" do 
     it "returns the method that follows the specified Polymorphic association type" do 
       pmr = Searchlogic::ActiveRecordExt::Scopes::Conditions::Polymorphic.new(User, :auditable_user_type_orders_total_gte, [])
-      pmr.new_method.should eq("orders_total_gte")
+      pmr.method_on_association.should eq("orders_total_gte")
     end
   end
 
   context "search" do 
-    xit "works in a search proxy" do 
-      search = User.search(:audits_name => "James' Audit")
-      search.all.should eq([@a2])
+    it "works in a search proxy" do 
+      search = User.search(:audits_name_eq => "James' Audit")
+      search.all.should eq([@u2])
     end
 
-    xit "works with a associations in a search proxy" do 
-      search = User.search(:audits_name => "James' Audit")
+    it "works with a associations in a search proxy" do 
+      search = User.search(:audits_name_eq => "James' Audit")
       search.all.should eq([@u2])
 
+    end
+    it "works with lots of conditions " do 
+      search = User.search(:name_equals => "James", :age_greater_than_or_equal_to => 20, :id_eq_or_orders_total_greater_than_or_equal_to => 5, :audits_name_like => "ames", :order =>:descend_by_orders_line_items_price)
+      expect{search.all}.to_not raise_error
+      
     end
     
     it "works from other direction in search proxy" do 

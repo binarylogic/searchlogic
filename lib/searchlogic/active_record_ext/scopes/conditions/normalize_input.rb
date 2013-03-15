@@ -8,8 +8,7 @@ module Searchlogic
           attr_accessor :converted_method
           def scope
             if applicable?
-                convert_syntax(method_name, klass)
-
+              convert_syntax(method_name, klass)
               return nil if converted_method.nil?
               klass.send(converted_method, value)
             end

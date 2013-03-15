@@ -29,14 +29,7 @@ module Searchlogic
               scope = klass.send(m)
               store_values(scope)
             else
-              begin
-                scope = klass.send(add_condition(m), *value)
-                ### this will raise an error on sql query Prevents Date/DateTime objects from being sent with * operator
-                scope.all
-                scope
-              rescue
-                scope = klass.send(add_condition(m), value)
-              end
+              [value].flatten.size == 1 ? scope = klass.send(add_condition(m), value) : scope = klass.send(add_condition(m), *value)                
             end            
             store_values(scope)
           end
@@ -53,7 +46,7 @@ module Searchlogic
           end
 
           def value
-            args.size == 1 ? args.first : args
+            [args].flatten.size == 1 ? args.first : args
           end
 
 
@@ -100,8 +93,8 @@ module Searchlogic
               return nil if /#{ScopeReflection.joined_named_scopes}$/ =~ method_name && ScopeReflection.joined_named_scopes
               begin
                 /(#{self.class.all_matchers.sort_by(&:size).reverse.join("|")})$/.match(method_name)[0]
-              rescue NoMethodError
-                raise NoConditionError.new
+              rescue NoMethodError => e
+                raise NoConditionError.new(e)
               end
             end
 

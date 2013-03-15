@@ -108,7 +108,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Or do
     expect{User.name_or_id(26)}.to raise_error Searchlogic::ActiveRecordExt::Scopes::NoConditionError
   end
   it "should raise an error on unknown conditions" do
-    expect{ User.usernme_begins_with_or_name_like("ben") }.to raise_error Searchlogic::SearchExt::UnknownConditionError
+    expect{ User.usernme_begins_with_or_name_like("ben") }.to raise_error NoMethodError
   end
   context "scopes" do
     it "should work with scopes with arity > 0" do 

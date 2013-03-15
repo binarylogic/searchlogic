@@ -19,11 +19,11 @@ module Searchlogic
             return nil unless applicable?            
             nested_scope = created_nested_scope
             where_values = nested_scope.where_values 
-            join_values = nested_scope.joins_values
+            join_values = nested_scope.joins_values            
             if where_values.empty?
               generate_join_and_send_method(join_values)
             else
-              generate_join_with_where_values(where_values.first, join_values)
+              generate_join_with_where_values(where_values.last, join_values)
             end
           end
 
@@ -43,6 +43,7 @@ module Searchlogic
                 joins(join_values.any? ? {join_name => join_values.first} : join_name.to_sym).
                 send(send_method)          
             end
+
 
             def generate_join_with_where_values(where_values, join_values)
               klass.

@@ -7,8 +7,8 @@ module Searchlogic
           conditions.inject(klass) do |current_scope, (condition, value)| 
             false_scope_proc?(condition, value) ? current_scope : create_scope(current_scope, condition, value) 
           end.send(method_name, *args, &block)
-        rescue NoMethodError
-          raise(Searchlogic::ActiveRecordExt::Scopes::NoConditionError.new) 
+        rescue NoMethodError => e
+          raise(Searchlogic::ActiveRecordExt::Scopes::NoConditionError.new(e)) 
         end
       end
 
@@ -25,7 +25,7 @@ module Searchlogic
           elsif scope_lambda.try(:[], :scope).try(:arity) == 1
             curr_scope.send(std_condition, value)
           else
-            value.kind_of?(Array) ? curr_scope.send(std_condition, *value) : curr_scope.send(std_condition, value)
+            [value].flatten.size == 1 ? curr_scope.send(std_condition, value) : curr_scope.send(std_condition, *value) 
           end
         end
 

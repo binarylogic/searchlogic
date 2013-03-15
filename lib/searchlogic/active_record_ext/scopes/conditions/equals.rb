@@ -4,9 +4,9 @@ module Searchlogic
       module Conditions
         class Equals < Condition
           def initialize(klass, method_name, *args, &block)
-            @klass = klass
+            @klass = klass.where("1=1")
             @method_name = method_name
-            @table_name = args[1] || klass.to_s.underscore.pluralize
+            @table_name = table_name
             @value = args[0]
             @args = *args.flatten
             @block = block
@@ -31,7 +31,7 @@ module Searchlogic
             end
 
             def table_name
-              klass.to_s.underscore.pluralize
+              klass.name.underscore.pluralize 
             end
 
             def find_column
