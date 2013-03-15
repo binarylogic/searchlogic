@@ -89,12 +89,14 @@ module Searchlogic
             def scope?(method)
               !!(ScopeReflection.all_named_scopes_hash[method.to_sym])
             end
+
             def ending_alias_condition 
+
               return nil if /#{ScopeReflection.joined_named_scopes}$/ =~ method_name && ScopeReflection.joined_named_scopes
               begin
                 /(#{self.class.all_matchers.sort_by(&:size).reverse.join("|")})$/.match(method_name)[0]
               rescue NoMethodError => e
-                raise NoConditionError.new(e)
+                raise InvalidConditionError.new(e)
               end
             end
 

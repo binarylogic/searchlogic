@@ -17,11 +17,11 @@ module Searchlogic
               !(/^#{self.class.matcher}/ =~ method_name).nil?
             end
             def join 
-              joins_values = klass.where("1=1").joins_values.flatten.last
+              joins_values = klass.scoped.joins_values.flatten.last
             end
 
             def order_on 
-              joins_values = Array(klass.where("1=1").joins_values.flatten.try(:last)).flatten
+              joins_values = Array(klass.scoped.joins_values.flatten.try(:last)).flatten
               if joins_values.empty?
                 klass.name.underscore.pluralize
               else

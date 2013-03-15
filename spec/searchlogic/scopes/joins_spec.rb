@@ -31,7 +31,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Joins do
     
     it "long search" do 
       LineItem.order_user_age_gt(4)
-      search = LineItem.search(:created_at_after => "last year", :updated_at_before => "yesterday", :order_user_id_nil => true, :order => :descend_by_order_user_id)
+      search = LineItem.search(:created_at_after => "last year", :updated_at_before => "yesterday", :order_user_id_nil => true, :order => :descend_by_order_user_id, :order_user_name_like => "Ja")
       search.all
     end
 

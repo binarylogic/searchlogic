@@ -50,12 +50,12 @@ describe Searchlogic::SearchExt::Delegate do
       end
 
     context "errors" do 
-      xit "should raise NoConditionError when the method is just a column" do
+      it "should raise InvalidConditionError when the method is just a column" do
         search = User.search
-        expect{search.age = 10}.to raise_error Searchlogic::ActiveRecordExt::Scopes::NoConditionError
+        expect{search.age = 10}.to raise_error Searchlogic::ActiveRecordExt::Scopes::InvalidConditionError
       end    
 
-      xit "should raise no method error if method is not recognized" do
+      it "should raise no method error if method is not recognized" do
         search = User.search 
         expect{search.boogie = 21}.to raise_error NoMethodError
 

@@ -4,7 +4,7 @@ module Searchlogic
       module Conditions
         class Equals < Condition
           def initialize(klass, method_name, *args, &block)
-            @klass = klass.where("1=1")
+            @klass = klass
             @method_name = method_name
             @table_name = table_name
             @value = args[0]

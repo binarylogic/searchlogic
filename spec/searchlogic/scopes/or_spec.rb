@@ -21,7 +21,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Or do
 
   it "gathers users based on OR condition" do 
     users = User.username_like_or_name_like("ame")
-
+    binding.pry
     users.count.should eq(3)
     usernames = users.map(&:name)
     usernames.should eq(["James", "Ben", "Tren"])
@@ -105,7 +105,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::Or do
   end
   
   it "should raise an error on missing condition" do 
-    expect{User.name_or_id(26)}.to raise_error Searchlogic::ActiveRecordExt::Scopes::NoConditionError
+    expect{User.name_or_id(26)}.to raise_error Searchlogic::ActiveRecordExt::Scopes::InvalidConditionError
   end
   it "should raise an error on unknown conditions" do
     expect{ User.usernme_begins_with_or_name_like("ben") }.to raise_error NoMethodError
