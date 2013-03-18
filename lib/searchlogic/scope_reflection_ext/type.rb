@@ -35,9 +35,9 @@ module Searchlogic
 
       def column_type_in_association(association_method)
         association, new_method = association_method
-        begin 
-          new_klass = association.singularize.camelize.constantize
-        rescue NameError          
+        if new_klass = association.singularize.camelize.try(:constantize)
+          new_klass
+        else
           polymorphic_association = Searchlogic::ActiveRecordExt::Scopes::Conditions::Polymorphic.new(klass, method, [])
           new_klass = polymorphic_association.association_klass
           new_method = polymorphic_association.new_method
