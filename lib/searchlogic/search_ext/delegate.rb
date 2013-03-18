@@ -8,7 +8,7 @@ module Searchlogic
             false_scope_proc?(condition, value) ? current_scope : create_scope(current_scope, condition, value) 
           end.__send__(method_name, *args, &block)
         rescue NoMethodError => e
-          raise(Searchlogic::ActiveRecordExt::Scopes::InvalidConditionError.new(e))
+          ::Object.send(:raise, Searchlogic::ActiveRecordExt::Scopes::InvalidConditionError.new(e))
         end
       end
 
