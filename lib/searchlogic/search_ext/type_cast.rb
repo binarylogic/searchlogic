@@ -1,4 +1,3 @@
-require 'chronic'
 module Searchlogic
   module SearchExt
     module TypeCast
@@ -11,20 +10,9 @@ module Searchlogic
         elsif value.kind_of?(Array)
           value.collect{|v| typecast(method, v)}
         else
-          column_for_type_cast = ::ActiveRecord::ConnectionAdapters::Column.new("", nil)
-          column_for_type_cast.instance_variable_set(:@type, type)
-          value = sanitize_cdl_in_date(value) if (type == :datetime || type == :date || type == :time) && value.kind_of?(String)
-          if defined?(Chronic) && value.kind_of?(String) && (type == :date || type == :time || type == :datetime)
-            column_for_type_cast.type_cast(value) || Chronic.try(:parse, value) 
-          else
-            column_for_type_cast.type_cast(value)
-          end
+          typecaster = TypeCaster.new(value, type)
+          typecaster.column_type 
         end
-      end
-
-      def sanitize_cdl_in_date(value)
-        value.gsub(",", "/")
-
       end
 
       def ordering?(scope_name)

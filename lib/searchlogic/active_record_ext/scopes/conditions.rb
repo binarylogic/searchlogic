@@ -48,7 +48,7 @@ module Searchlogic
           condition_klasses.each do |ck|
               scope = ck.generate_scope(self, method, args, &block)
             if scope 
-              # memoized_scopes[method.to_sym]
+              memoized_scopes[method.to_sym]
               return scope
             end
           end

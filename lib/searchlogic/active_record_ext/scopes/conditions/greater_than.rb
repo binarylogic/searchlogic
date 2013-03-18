@@ -20,8 +20,6 @@ module Searchlogic
             def applicable? 
               !(/^(#{klass.column_names.join("|")})#{self.class.matcher}$/ =~ method_name).nil?
             end
-
-
         end
       end
     end
