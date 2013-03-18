@@ -11,7 +11,7 @@ module Searchlogic
           value.collect{|v| typecast(method, v)}
         else
           typecaster = TypeCaster.new(value, type)
-          typecaster.column_type 
+          typecaster.call 
         end
       end
 

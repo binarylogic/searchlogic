@@ -6,10 +6,9 @@ module Searchlogic
         @value = value
         @type = type
         @column_for_typecast = set_column(type)
-        binding.pry
       end
 
-      def column_type
+      def call
         if defined?(Chronic) && value.kind_of?(String) && date_or_time?
           column_for_typecast.type_cast(value) || Chronic.try(:parse, sanitize_cdl_in_date(value)) 
         else
