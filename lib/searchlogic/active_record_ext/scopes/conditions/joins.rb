@@ -48,7 +48,8 @@ module Searchlogic
             def generate_join_with_where_values(where_values, join_values)
               klass.
                 joins(join_values.any? ? {join_name => join_values.first} : join_name.to_sym).
-                where(where_values).uniq          
+                where(where_values).
+                select("DISTINCT #{klass.name.underscore.pluralize}.*")
             end
 
             def applicable?
