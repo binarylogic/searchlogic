@@ -36,7 +36,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::NormalizeInput do
 
   it "sets method and normalizes all of the associations in the method" do 
     norm_input = Searchlogic::ActiveRecordExt::Scopes::Conditions::NormalizeInput.new(Company, :users_orders_line_items_descend_by_price, [])
-    norm_input.send(:convert_syntax,:users_orders_line_items_descend_by_price ,Company)
+    norm_input.__send__(:convert_syntax,:users_orders_line_items_descend_by_price ,Company)
     norm_input.converted_method.should eq("users__orders__line_items__descend_by_price")
 
   end

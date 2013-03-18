@@ -9,14 +9,11 @@ module Searchlogic
             @associated_klass_name = association_klass.name.underscore.pluralize rescue nil
           end
           def scope
-
             if applicable?
               klass.where("#{polymorphic_association.name}_type = '#{association_klass}'").
                     joins("LEFT OUTER JOIN #{associated_klass_name} ON #{associated_klass_name}.id = #{klass.name.underscore.pluralize}.#{polymorphic_association.name}_id ").
                     where(where_values)
             end
-
-
           end
             def self.matcher
               nil
@@ -36,7 +33,7 @@ module Searchlogic
             end
 
             def where_values
-              association_klass.send(method_on_association, value).where_values.last
+              association_klass.__send__(method_on_association, value).where_values.last
             end
 
             def polymorphic_association_name

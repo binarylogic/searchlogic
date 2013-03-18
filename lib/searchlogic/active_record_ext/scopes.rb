@@ -11,5 +11,5 @@ module Searchlogic
   end
 end
 
-ActiveRecord::Base.send(:include, Searchlogic::ActiveRecordExt::Scopes)
+ActiveRecord::Base.__send__(:include, Searchlogic::ActiveRecordExt::Scopes)
 

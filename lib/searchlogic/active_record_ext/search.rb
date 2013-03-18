@@ -17,4 +17,4 @@ module Searchlogic
   end
 end
 
-ActiveRecord::Base.send(:include, Searchlogic::ActiveRecordExt::SearchProxy)
+ActiveRecord::Base.__send__(:include, Searchlogic::ActiveRecordExt::SearchProxy)

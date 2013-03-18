@@ -9,7 +9,7 @@ module Searchlogic
               find_column
               klass.where("#{table_name}.#{column_name} is NULL")
             elsif applicable? && args.first == false
-              send_to_not_null
+              __send___to_not_null
             else
               false
             end
@@ -33,8 +33,8 @@ module Searchlogic
             end
 
 
-            def send_to_not_null
-              klass.send(find_column + "_not_null")
+            def __send___to_not_null
+              klass.__send__(find_column + "_not_null")
             end
         end
       end

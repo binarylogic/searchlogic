@@ -5,7 +5,7 @@ module Searchlogic
         class Any < Condition
           def scope
             if applicable?
-              where_values = value.map{|arg| klass.send(new_method, arg).where_values}
+              where_values = value.map{|arg| klass.__send__(new_method, arg).where_values}
               joined_scopes = separate_scopes(where_values)
               klass.where(joined_scopes)
             end

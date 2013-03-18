@@ -8,7 +8,7 @@ module Searchlogic
               find_column
               klass.where("#{table_name}.#{column_name} is null OR #{table_name}.#{column_name} = ? OR #{table_name}.#{column_name} = ?", false ,  "") 
             elsif applicable? && args.first == false
-              send_to_not_blank
+              __send___to_not_blank
             else
               false
             end
@@ -30,8 +30,8 @@ module Searchlogic
               !(/^(#{klass.column_names.join("|")})#{self.class.matcher}$/ =~ method_name).nil?
             end
 
-            def send_to_not_blank
-              klass.send(find_column + "_not_blank")
+            def __send___to_not_blank
+              klass.__send__(find_column + "_not_blank")
             end
         end
       end

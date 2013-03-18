@@ -7,7 +7,7 @@ module Searchlogic
       end
 
       def conditions=(hash)
-        ::Object.send(:raise, ::ArgumentError.new("Attributes must be a hash")) if !(hash.kind_of?(Hash))
+        ::Object.__send__(:raise, ::ArgumentError.new("Attributes must be a hash")) if !(hash.kind_of?(Hash))
         hash.each do |k,v|
           next if (v.is_a?(String) && v.blank?) || v.nil?
           __send__("#{k}=", v)

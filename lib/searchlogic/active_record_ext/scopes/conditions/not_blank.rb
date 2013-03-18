@@ -8,7 +8,7 @@ module Searchlogic
               find_column
               klass.where("#{table_name}.#{column_name} not null AND #{table_name}.#{column_name} <> ? AND #{table_name}.#{column_name} <> ?", false , "") 
             elsif applicable? && args.first == false
-              send_to_blank
+              __send___to_blank
             else
               false
             end
@@ -26,8 +26,8 @@ module Searchlogic
               @column_name = /(.*)_not_blank$/.match(method_name)[1]
             end
 
-            def send_to_blank
-              klass.send(find_column + "_blank")
+            def __send___to_blank
+              klass.__send__(find_column + "_blank")
             end
             
             def applicable? 

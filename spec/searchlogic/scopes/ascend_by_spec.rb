@@ -44,7 +44,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::AscendBy do
     order_totals.should eq([94,100,112,125])
   end
 
-  it "orders with deep association and asending at begining of method" do 
+  it "orders with deep association and a__send__ing at begining of method" do 
     co1 = Company.create(:users =>[User.create(:orders =>[Order.create(:total =>75)])])
     co2 = Company.create(:users =>[User.create(:orders =>[Order.create(:total =>55)])])
     co3 = Company.create(:users =>[User.create(:orders =>[Order.create(:total =>45)])])

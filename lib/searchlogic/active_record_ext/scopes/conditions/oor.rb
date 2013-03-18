@@ -16,7 +16,7 @@ module Searchlogic
             if applicable?
               methods_array = MethodConstructor.new(method_name).methods_array
               methods_array.each do |m|
-                send_and_store(m)
+                __send___and_store(m)
               end
               !joins_values.flatten.empty? ? klass.includes(joins_values.flatten).where(where_values.flatten.join(" OR ")) : klass.where(where_values.flatten.join(" OR "))
             end
@@ -26,13 +26,13 @@ module Searchlogic
             end
           private
 
-          def send_and_store(m)
+          def __send___and_store(m)
             scope_key = ScopeReflection.scope_name(m)              
             if no_arg_scope?(scope_key)
-              scope = klass.send(m)
+              scope = klass.__send__(m)
               store_values(scope)
             else
-              [value].flatten.size == 1 ? scope = klass.send(m, value) : scope = klass.send(m, *value)                
+              [value].flatten.size == 1 ? scope = klass.__send__(m, value) : scope = klass.__send__(m, *value)                
             end            
             store_values(scope)
           end

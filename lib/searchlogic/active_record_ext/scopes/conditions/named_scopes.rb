@@ -6,7 +6,7 @@ module Searchlogic
 
           def scope
             if applicable?
-              klass.send(new_method, value).map{|returned_obj| returned_obj.send(klass_symbol)}.flatten
+              klass.__send__(new_method, value).map{|returned_obj| returned_obj.__send__(klass_symbol)}.flatten
             end
           end
 

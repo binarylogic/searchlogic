@@ -21,7 +21,7 @@ module Searchlogic
 
           singleton_class.instance_eval do 
             define_method(new_name) do |*args|
-              send(original_name, *args)
+              __send__(original_name, *args)
             end
           end
           named_scopes[new_name.to_sym] = named_scopes[original_name] || options

@@ -35,13 +35,13 @@ module Searchlogic
           private
             def created_nested_scope
               args.compact!
-              args.empty? ? association.klass.send(new_method) : association.klass.send(new_method, value)
+              args.empty? ? association.klass.__send__(new_method) : association.klass.__send__(new_method, value)
             end
 
             def generate_join_and_send_method(join_values)
               klass.
                 joins(join_values.any? ? {join_name => join_values.first} : join_name.to_sym).
-                send(send_method)          
+                __send__(send_method)          
             end
 
 

@@ -10,7 +10,7 @@ module Searchlogic
             if applicable?
               convert_syntax(method_name, klass)
               return nil if converted_method.nil?
-              klass.send(converted_method, value)
+              klass.__send__(converted_method, value)
             end
           end
 
