@@ -18,25 +18,45 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::AscendBy do
     user_ids = users.map(&:id)
     user_ids.should eq([1,2,3,4])
   end
+  describe "ordering in search object" do
+    it "orders on the correct column whena  scope already with joins values is ordered" do 
+      james = User.create(:name=>"James", :age =>20, :username => "jvans1" )
+      zed = User.create(:name=>"Zed", :age =>20, :username => "jvans1" )
+      tren = User.create(:name => "Tren", :username =>"jvans")
+      User.create(:name=>"Ben", :username =>"jvans1")
+      jv = User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
+      l1 = LineItem.create(:price =>2)
+      james.orders = [Order.create(:line_items => [l1])]
+      tren.orders = [Order.create(:line_items => [LineItem.create(:price =>5)])]
+      jv.orders = [Order.create(:line_items => [LineItem.create(:price =>1)])]
+      c1 = Company.create(:identifier => 1, :users => [james, zed])
+      c2 = Company.create(:identifier => 2, :users => [tren])
+      c3 = Company.create(:identifier => 4, :users => [jv])
 
-  it "orders on the correct column whena  scope already with joins values is ordered" do 
-    james = User.create(:name=>"James", :age =>20, :username => "jvans1" )
-    zed = User.create(:name=>"Zed", :age =>20, :username => "jvans1" )
-    tren = User.create(:name => "Tren", :username =>"jvans")
-    User.create(:name=>"Ben", :username =>"jvans1")
-    jv = User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
-    l1 = LineItem.create(:price =>2)
-    james.orders = [Order.create(:line_items => [l1])]
-    tren.orders = [Order.create(:line_items => [LineItem.create(:price =>5)])]
-    jv.orders = [Order.create(:line_items => [LineItem.create(:price =>1)])]
-    c1 = Company.create(:identifier => 1, :users => [james, zed])
-    c2 = Company.create(:identifier => 2, :users => [tren])
-    c3 = Company.create(:identifier => 4, :users => [jv])
+      search = Company.search(:users_orders_line_items_price_lte => "2",  :order => :ascend_by_id )
+      search.all.should eq([c1, c3])
+      search = LineItem.search(:order_user_name_equal => "James", :order => :ascend_by_price)
+      search.all.should eq([l1])
+    end
+    it "orders on correct column when scope contains joins values before and also within the ordering" do 
+      james = User.create(:name=>"James", :age =>20, :username => "jvans1" )
+      zed = User.create(:name=>"Zed", :age =>20, :username => "jvans1" )
+      tren = User.create(:name => "Tren", :username =>"jvans")
+      User.create(:name=>"Ben", :username =>"jvans1")
+      jv = User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
+      l1 = LineItem.create(:price =>2)
+      james.orders = [Order.create(:line_items => [l1])]
+      tren.orders = [Order.create(:line_items => [LineItem.create(:price =>5)])]
+      jv.orders = [Order.create(:line_items => [LineItem.create(:price =>1)])]
+      c1 = Company.create(:identifier => 1, :users => [james, zed])
+      c2 = Company.create(:identifier => 2, :users => [tren])
+      c3 = Company.create(:identifier => 4, :users => [jv])
 
-    search = Company.search(:users_orders_line_items_price_lte => "2",  :order => :ascend_by_id )
-    search.all.should eq([c1, c3])
-    search = LineItem.search(:order_user_name_equal => "James", :order => :ascend_by_price)
-    search.all.should eq([l1])
+      search = Company.search(:users_orders_line_items_price_lte => "2",  :order => :ascend_by_orders_line_items_id )
+      search.all.should eq([c1, c3])
+      search = LineItem.search(:order_user_name_equal => "James", :order => :ascend_by_order_total)
+      search.all.should eq([l1])
+    end
   end
   it "orders ascending" do 
     orders = Order.ascend_by_total
