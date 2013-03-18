@@ -127,7 +127,8 @@ describe Searchlogic::SearchExt::Delegate do
       it "works with long queries" do 
         search = Company.search(:users_orders_line_items_price_gt_or_orders_total_lt => 15, :order =>:descend_by_identifier, :created_at_after_or_updated_at_before => "2012/10/3", :users_name_like => "James", :users_age_gte => 10)
         search.all
-        s = LineItem.search(:order_user_name_like => "james")
+        s = LineItem.search(:order_user_name_like => "james", :order => :descend_by_price)
+        s.all
       end
 
       it "chains multiple scopes" do 

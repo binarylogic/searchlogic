@@ -22,12 +22,9 @@ module Searchlogic
       end
 
       def scope_name(method)
-        begin
-          return nil if joined_named_scopes.nil?
-          /(#{joined_named_scopes})$/.match(method)[1].to_sym
-        rescue
-          nil
-        end
+        return nil if joined_named_scopes.nil?
+        match = /(#{joined_named_scopes})$/.match(method)
+        match ? match[1].to_sym : nil
       end      
     end
   end
