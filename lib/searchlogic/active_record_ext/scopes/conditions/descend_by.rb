@@ -22,7 +22,8 @@ module Searchlogic
 
             def order_on 
               joins_values = Array(klass.scoped.joins_values.flatten.try(:last)).flatten
-              if joins_values.empty?
+              potential_column = /descend_by_/.match(method_name).post_match
+              if klass.column_names.include?(potential_column)
                 klass.name.underscore.pluralize
               else
                 Array(joins_values.last).flatten.last

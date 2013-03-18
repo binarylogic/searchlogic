@@ -4,9 +4,10 @@ describe Searchlogic::SearchExt::Delegate do
   describe "delegates" do 
     before(:each) do 
       @james = User.create(:name=>"James", :age =>20, :username => "jvans1" )
-      @jv = User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
       @tren = User.create(:name => "Tren", :username =>"jvans")
       User.create(:name=>"Ben", :username =>"jvans1")
+      @jv = User.create(:name=>"James Vanneman", :age =>21, :username => "jvans1")
+
     end
 
     context "#delegate" do
@@ -31,6 +32,22 @@ describe Searchlogic::SearchExt::Delegate do
         james.name.should eq("James")
       end
 
+      it "works with belongs_to " do 
+        @james.orders = [Order.create(:line_items => [LineItem.create(:price =>3)])]
+        @tren.orders = [Order.create(:line_items => [LineItem.create(:price =>5)])]
+        @jv.orders = [Order.create(:line_items => [LineItem.create(:price =>1)])]
+        Company.create(:identifier => 1, :users => [@james])
+        Company.create(:identifier => 2, :users => [@tren])
+        Company.create(:identifier => 4, :users => [@jv])
+
+        # search = Company.search(:users_orders_line_items_price_gte => "2",  :order => :ascend_by_identifier )
+        # search.all
+        # User.descend_by_orders_line_items_price
+        search = LineItem.search(:order_user_name_equal => "James", :order => :descend_by_price)
+        search.all
+
+      end
+
       it "delegates scopes on associations" do 
         class User; scope :uname, lambda { name_eq("James") };end
         james = User.create(:name => "James")
@@ -46,7 +63,7 @@ describe Searchlogic::SearchExt::Delegate do
 
       it "works with an any condition" do 
         search = User.search(:id_eq_any => [1,2], :order => :descend_by_id)
-        search.all.should eq([@jv, @james])
+        search.all.should eq([@tren, @james])
       end
 
     context "errors" do 

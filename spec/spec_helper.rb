@@ -43,6 +43,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.datetime :created_at
     t.datetime :updated_at
     t.string :name
+    t.integer :identifier
     t.string :description
     t.integer :users_count, :default => 0
   end
