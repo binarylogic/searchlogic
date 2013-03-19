@@ -13,7 +13,8 @@ module Searchlogic
       def write_condition(key, value)
         vals = value.flatten
         type = ScopeReflection.new(klass, key).type unless ordering?(key)
-        conditions[key.to_sym] = TypeCaster.call(type, key, vals)
+        casted_value = ordering?(key) ? value.first : TypeCaster.call(type, vals)
+        conditions[key.to_sym] = casted_value
         self
       end
 
