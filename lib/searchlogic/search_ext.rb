@@ -9,7 +9,6 @@ module Searchlogic
         include Delegate
         include ReaderWriter
         include MethodMissing
-        include TypeCast
         include Methods
       end
     end

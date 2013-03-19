@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Searchlogic::SearchExt::TypeCast do 
+describe Searchlogic::SearchExt::TypeCaster do 
 
  context "type casting" do
   it "should cast values with custom scopes" do 

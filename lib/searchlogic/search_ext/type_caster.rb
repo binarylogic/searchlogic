@@ -1,23 +1,42 @@
 module Searchlogic
   module SearchExt
     class TypeCaster
-      attr_reader :value, :type, :column_for_typecast
-      def initialize(value, type)
-        @value = value
-        @type = type
-        @column_for_typecast = set_column(type)
+      attr_reader :value, :type, :method
+      ##TODO Memoize col types
+      def self.call(type, method, *vals)
+        new(type, method, vals).cast 
       end
 
-      def call
-        if defined?(Chronic) && value.kind_of?(String) && date_or_time?
-          column_for_typecast.type_cast(value) || Chronic.try(:parse, sanitize_cdl_in_date(value)) 
-        else
-          column_for_typecast.type_cast(value)
-        end
+      def initialize(type, method, values)
+        values.flatten!
+        @value = values.size == 1 ? values.first : values
+        @type = type
+        @method = method
       end
+
+
+      def cast(val = self.value)
+        return val if ordering?(method)
+        case val
+        when Range then Range.new(cast(val.first), cast(val.last))
+        when Array then val.collect{|v| cast(v)}
+        else
+          parse(val)
+        end
+      end        
+
 
       private
-        def set_column(type)
+
+        def parse(input)
+          if defined?(Chronic) && input.kind_of?(String) && date_or_time?
+            column_type.type_cast(input) || Chronic.try(:parse, sanitize_cdl_in_date(input)) 
+          else
+            column_type.type_cast(input)
+          end
+        end
+
+        def column_type
           ::ActiveRecord::ConnectionAdapters::Column.new("", nil).tap{|col| col.instance_variable_set(:@type, type)}
         end
 
@@ -27,6 +46,10 @@ module Searchlogic
 
         def sanitize_cdl_in_date(value)
           value.gsub(",", "/")
+        end
+
+        def ordering?(scope_name)
+          scope_name.to_s == "order"
         end
     end
   end
