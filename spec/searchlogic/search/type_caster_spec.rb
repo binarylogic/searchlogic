@@ -19,7 +19,6 @@ describe Searchlogic::SearchExt::TypeCaster do
       end
     end
 
-
     context '#castboolean' do
       it "should be a boolean  given col_null" do 
         search = User.search(:name_blank => "true")
@@ -205,8 +204,6 @@ describe Searchlogic::SearchExt::TypeCaster do
       Searchlogic::SearchExt::TypeCaster.new(:date, :created_at_after, "2013/2/2").cast
       Searchlogic::SearchExt::TypeCaster.memoized_types.keys.should include :date
       Searchlogic::SearchExt::TypeCaster.memoized_types[:date].should be_kind_of ::ActiveRecord::ConnectionAdapters::Column
-      
     end
-
   end
 end

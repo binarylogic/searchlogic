@@ -21,8 +21,8 @@ describe Searchlogic::SearchExt::UnknownConditionError do
   end
 
   it "shoudl be raised when omit " do 
-      search = LineItem.search(:order => :descend_order_user_id)
-      expect{search.all}.to raise_error Searchlogic::ActiveRecordExt::Scopes::InvalidConditionError
+    search = LineItem.search(:order => :descend_order_user_id)
+    expect{search.all}.to raise_error Searchlogic::ActiveRecordExt::Scopes::InvalidConditionError
   end
 
 

@@ -1,0 +1,18 @@
+module Searchlogic
+  module ScopeReflectionExt
+    module ScopeLambda
+
+      def scope_lambda
+        if all_named_scopes_hash.keys.include?(method)
+          all_named_scopes_hash[method.to_sym][:scope]
+        else
+          nil
+        end
+      end
+
+      def scope_lambda_type
+        scope_lambda ? all_named_scopes_hash[method.to_sym][:type] : nil
+      end
+    end
+  end
+end

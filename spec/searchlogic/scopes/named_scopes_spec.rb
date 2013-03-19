@@ -19,6 +19,12 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::NamedScopes do
       users.map(&:name).should eq(["James", "Tren"])
     end
 
+
+    it "returns an active record relation" do 
+      LineItem.scope(:expensive, lambda {LineItem.price_gt (7)})
+      User.orders_line_items_expensive.should be_kind_of ActiveRecord::Relation
+    end
+    
     it "allows the use of scopes on methods " do
       User.scope :has_id_gt, lambda {|id1, id2| User.id_gt(id1).name_not_blank.orders_id_gt(id2) }
       users = User.has_id_gt(2,2)

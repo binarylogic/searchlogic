@@ -13,7 +13,7 @@ module Searchlogic
         end
 
         def valid_accessor?(scope_name, method)                    
-          authorized_scope?(scope_name) || associated_column?(method)
+          ScopeReflection.authorized?(scope_name) || associated_column?(method)
         end
 
         def ordering?(scope_name)

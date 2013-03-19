@@ -16,16 +16,16 @@ module Searchlogic
             compact.inject({}){ |start, hash| start.merge(hash)}
       end
 
-      def named_scope?(method)
-        return false if all_named_scopes.map(&:to_s).join("|").empty?
+      def named_scope?
+        return false unless joined_named_scopes
         !!(/(#{joined_named_scopes})$/ =~ method)
       end
 
-      def scope_name(method)
+      def scope_name
         return nil if joined_named_scopes.nil?
         match = /(#{joined_named_scopes})$/.match(method)
         match ? match[1].to_sym : nil
-      end      
+      end     
     end
   end
 end

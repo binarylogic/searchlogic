@@ -22,6 +22,7 @@ describe Searchlogic::ScopeReflectionExt::NamedScopeMethods do
       Searchlogic::ScopeReflection.named_scope?(:undefined).should be_false
     end
   end
+  
   context "#all_named_scopes_hash" do 
     it "returns a hash of all the named scopes" do 
       existing = Searchlogic::ScopeReflection.all_named_scopes_hash
@@ -47,6 +48,7 @@ describe Searchlogic::ScopeReflectionExt::NamedScopeMethods do
       Searchlogic::ScopeReflection.scope_name(:foool).should be_nil
     end
   end
+
   context "#all_named_scopes" do 
     it "should return an array of all naemd scopes for all klasses" do 
       existing = Searchlogic::ScopeReflection.all_named_scopes

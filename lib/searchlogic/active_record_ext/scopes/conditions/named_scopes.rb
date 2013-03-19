@@ -6,7 +6,7 @@ module Searchlogic
 
           def scope
             if applicable?
-              klass.__send__(new_method, value).map{|returned_obj| returned_obj.__send__(klass_symbol)}.flatten
+              klass.__send__(method_name, value).map{|returned_obj| returned_obj.__send__(klass_symbol)}.flatten
             end
           end
 
@@ -15,8 +15,7 @@ module Searchlogic
           end
 
           def applicable?             
-            return false unless Searchlogic::ScopeReflection.joined_named_scopes
-            /^(#{Searchlogic::ScopeReflection.joined_named_scopes})/ =~ method_name
+            ScopeReflection.new(method_name).named_scope?
           end
 
           def self.matcher

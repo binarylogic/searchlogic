@@ -40,7 +40,7 @@ module Searchlogic
         private
 
         def method_missing(method, *args, &block) 
-          std_method = ScopeReflection.convert_alias(self, :method => method)
+          std_method = ScopeReflection.new(method).condition
           generate_scope(std_method, args, &block) || super 
         end
 
@@ -58,7 +58,7 @@ module Searchlogic
 
         def scopeable?(method)
           if ActiveRecord::Base.connected?
-            !!(/(#{all_matchers.join("|")})/.match(method)) || !!(ScopeReflection.match_alias(method)) || ScopeReflection.named_scope?(method)
+            !!(/(#{all_matchers.join("|")})/.match(method)) || ScopeReflection.authorized?(method)
           else
             false
           end

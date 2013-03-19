@@ -1,6 +1,26 @@
 require 'spec_helper'
 
-describe Searchlogic::ScopeReflectionExt::MatchAlias do 
+describe Searchlogic::Alias do 
+  context ".convert_alias" do 
+    it "converts an alias with an `all' condition" do 
+      Searchlogic::Alias.convert_alias(:name_lte_all).should eq("name_less_than_or_equal_to_all")
+
+    end
+    it "converts an alias with an `any' condition" do 
+      Searchlogic::Alias.convert_alias(:name_lte_any).should eq("name_less_than_or_equal_to_any")
+    end
+
+    it "returns a matchadata object if it finds an alias in the method" do 
+      Searchlogic::Alias.convert_alias(:username_gte).should eq("username_greater_than_or_equal_to")
+    end
+
+    it "returns nil if it doesn't find alias in the method" do 
+      Searchlogic::Alias.convert_alias(:username_greater_than_or_equal_to).should be_nil
+    end
+
+  end
+
+describe "Searchlogic::ScopeReflectionExt::MatchAlias "do 
   before(:each) do 
     User.create(:name=>"James", :age => 26, :company_id => 34)
     @jon = User.create(:name=>"Jon", :email => "jon@James.com", :company_id => 4)
@@ -10,32 +30,13 @@ describe Searchlogic::ScopeReflectionExt::MatchAlias do
   end
 
   context ".searchlogic_methods" do
-    it "should return an array of defined searchlogic method matchers" do 
+    xit "should return an array of defined searchlogic method matchers" do 
 
     end
   end
 
   context ".match_alias" do 
-    it "returns a matchadata object if it finds an alias in the method" do 
-      Searchlogic::ScopeReflection.match_alias(:username_gte).should be_kind_of(MatchData)
-    end
-    it "returns nil if it doesn't find alias in the method" do 
-      Searchlogic::ScopeReflection.match_alias(:username_greater_than_or_equal_to).should be_nil
-    end
-
-    context "doesn't match methods that are contained in real scopes" do
-      it "does_not_end_with doesn't get matched by _ends_with" do 
-        Searchlogic::ScopeReflection.match_alias(:name_ends_with).should be_nil
-      end
-      it "does_not_end_with" do 
-        Searchlogic::ScopeReflection.match_alias(:name_begins_with).should be_nil
-      end
-    end
-
-    it "should not convert alias if it matches a named scope" do
-      class User; scope :group_gt, lambda{|age| age_gt(age).created_at_after("yesterday")};end
-      User.group_gt(44).should eq([@tren])
-    end
+    
 
   end
 
@@ -162,4 +163,5 @@ describe Searchlogic::ScopeReflectionExt::MatchAlias do
       User.id_not_in(2,3).should eq(User.all - [@jon, @james])
     end
   end
+end  
 end

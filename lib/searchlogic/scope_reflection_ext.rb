@@ -3,11 +3,11 @@ module Searchlogic
   module ScopeReflectionExt
     def self.included(klass)
       klass.class_eval do 
-        extend Aliases
-        extend SearchlogicConditions
+        include SearchlogicConditions
         extend ClassLevelMethods
-        extend MatchAlias
-        extend NamedScopeMethods
+        include NamedScopeMethods
+        include InstanceMethods
+        include ScopeLambda
         include Type
       end
     end

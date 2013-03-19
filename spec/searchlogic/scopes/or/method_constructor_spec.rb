@@ -18,5 +18,11 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::MethodConstructor do
       Searchlogic::ActiveRecordExt::Scopes::Conditions::MethodConstructor.new(:username_like_or_name_like_all).methods_array.should eq(["username_like_all", "name_like_all"])
     end
 
+
+    it "shouldn't get confused with 2 grouping conditions" do 
+      Searchlogic::ActiveRecordExt::Scopes::Conditions::MethodConstructor.new(:username_like_any_or_name_like_all).methods_array.should eq(["username_like_any", "name_like_all"])
+
+    end
+
   end 
 end

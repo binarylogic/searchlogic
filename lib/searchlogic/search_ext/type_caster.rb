@@ -2,6 +2,7 @@ module Searchlogic
   module SearchExt
     class TypeCaster
       attr_reader :value, :type
+      
       def self.call(type, *vals)
         new(type, vals).cast 
       end
@@ -25,8 +26,6 @@ module Searchlogic
           type_cast(val)
         end
       end        
-
-
       private
 
         def type_cast(input)

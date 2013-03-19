@@ -9,6 +9,9 @@ module Searchlogic
         @method = method
       end
 
+      def authorized?(method)
+        new(method).authorized?
+      end
     end
   end
 end

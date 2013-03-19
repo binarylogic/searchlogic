@@ -4,12 +4,14 @@ module Searchlogic
       module Conditions
         class GreaterThan < Condition
           include ChronicSupport
-          def scope
-            if applicable?
-              find_column
-              klass.where("#{table_name}.#{column_name} > ?", "#{value}")
+
+            def scope
+              if applicable?
+                find_column
+                klass.where("#{table_name}.#{column_name} > ?", "#{value}")
+              end
             end
-          end
+
             def self.matcher
               "_greater_than"
             end
