@@ -7,7 +7,8 @@ module Searchlogic
         new(type, method, vals).cast 
       end
 
-      def initialize(type, method, values)
+
+      def initialize(type, method, *values)
         values.flatten!
         @value = values.size == 1 ? values.first : values
         @type = type
@@ -26,6 +27,9 @@ module Searchlogic
       end        
 
 
+        def self.memoized_types
+          @memoized_types ||= {}
+        end
       private
 
         def parse(input)
@@ -37,7 +41,9 @@ module Searchlogic
         end
 
         def column_type
-          ::ActiveRecord::ConnectionAdapters::Column.new("", nil).tap{|col| col.instance_variable_set(:@type, type)}
+          set_column = ::ActiveRecord::ConnectionAdapters::Column.new("", nil).tap{|col| col.instance_variable_set(:@type, type)}
+          self.class.memoized_types[type.to_sym] = set_column
+          set_column
         end
 
         def date_or_time?
@@ -51,6 +57,7 @@ module Searchlogic
         def ordering?(scope_name)
           scope_name.to_s == "order"
         end
+
     end
   end
 end

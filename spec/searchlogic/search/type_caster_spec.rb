@@ -197,6 +197,16 @@ describe Searchlogic::SearchExt::TypeCaster do
       search.too_old = "2014, 2, 1"
       search.conditions[:too_old].should be_kind_of(Date)
     end
+  end
+  context "#memoized_types" do 
+    it "should cache column objects" do 
+      Searchlogic::SearchExt::TypeCaster.memoized_types.clear
+      Searchlogic::SearchExt::TypeCaster.memoized_types.should be_empty
+      Searchlogic::SearchExt::TypeCaster.new(:date, :created_at_after, "2013/2/2").cast
+      Searchlogic::SearchExt::TypeCaster.memoized_types.keys.should include :date
+      Searchlogic::SearchExt::TypeCaster.memoized_types[:date].should be_kind_of ::ActiveRecord::ConnectionAdapters::Column
+      
+    end
 
   end
 end
