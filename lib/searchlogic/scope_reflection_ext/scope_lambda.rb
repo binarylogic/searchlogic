@@ -3,7 +3,7 @@ module Searchlogic
     module ScopeLambda
 
       def scope_lambda
-        if all_named_scopes.include?(method)
+        if all_named_scopes.include?(method.to_sym)
           all_named_scopes_hash[method.to_sym][:scope]
         else
           nil

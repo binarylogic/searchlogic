@@ -30,7 +30,7 @@ describe Searchlogic::ScopeReflectionExt::InstanceMethods do
 
     it "should not convert alias if it matches a named scope" do
       class User; scope :group_gt, lambda{|age| age_gt(age).created_at_after("yesterday")};end
-      User.group_gt(44).should eq([@tren])
+      Searchlogic::ScopeReflection.new(:group_gt).condition.should eq(:group_gt)
     end
 
     it "does_not_end_with doesn't get matched by _ends_with" do 
@@ -40,6 +40,7 @@ describe Searchlogic::ScopeReflectionExt::InstanceMethods do
       Searchlogic::ScopeReflection.new(:name_does_not_end_with).condition.should eq(:name_does_not_end_with)
     end    
   end
+
   context "#predicate" do 
     it "returns the predicate on a condition" do 
       Searchlogic::ScopeReflection.new(:username_equals, User).predicate.should eq("_equals")
