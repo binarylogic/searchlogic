@@ -23,7 +23,7 @@ module Searchlogic
             return method if /(_any|_all)$/ =~ method
             if ScopeReflection.authorized?(method)
               grouping = /(_any|_all)$/.match(ending_alias_condition)
-              grouping.nil? ? method : method + grouping 
+              grouping.nil? ? method : method + grouping[1]
             else
               method + ending_alias_condition
             end

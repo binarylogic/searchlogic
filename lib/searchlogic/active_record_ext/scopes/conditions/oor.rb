@@ -28,7 +28,7 @@ module Searchlogic
 
           def send_and_store(m)
             method = ScopeReflection.new(m)              
-            if method.scope_lambda.try(:arity) == 0
+            if method.scope_lambda.try(:arity) == 0 || (value.kind_of?(Array) && value.empty?)
               scope = klass.__send__(m)
               store_values(scope)
             else

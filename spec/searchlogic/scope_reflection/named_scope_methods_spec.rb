@@ -25,7 +25,7 @@ describe Searchlogic::ScopeReflectionExt::NamedScopeMethods do
   
   context "#all_named_scopes_hash" do 
     it "returns a hash of all the named scopes" do 
-      existing = Searchlogic::ScopeReflection.all_named_scopes_hash
+      existing = Searchlogic::ScopeReflection.new("").all_named_scopes_hash
       class User; scope :fool, lambda{|age| age_gte(age)};end
       class Company; scope :comp, lambda{|price| orders_line_items_price_eq(price)};end
       Searchlogic::ScopeReflection.all_named_scopes_hash.should eq(existing.merge(User.named_scopes).merge(Company.named_scopes))
@@ -51,11 +51,11 @@ describe Searchlogic::ScopeReflectionExt::NamedScopeMethods do
 
   context "#all_named_scopes" do 
     it "should return an array of all naemd scopes for all klasses" do 
-      existing = Searchlogic::ScopeReflection.all_named_scopes
+      existing = Searchlogic::ScopeReflection.new("").all_named_scopes
       class User; scope :one, lambda{};end;
       class Company; scope :two, lambda{};end;
       class LineItem; scope :three, lambda{};end;
-      Searchlogic::ScopeReflection.all_named_scopes.sort.should eq((existing + [:two,:one, :three]).sort)
+      Searchlogic::ScopeReflection.new("").all_named_scopes.sort.should eq((existing + [:two,:one, :three]).sort)
     end
   end  
 end

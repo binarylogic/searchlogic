@@ -68,7 +68,6 @@ module Searchlogic
          [  
             Polymorphic,
             Or,            
-            NamedScopes,
             Any,
             GreaterThanOrEqualTo,
             LessThanOrEqualTo,
@@ -90,6 +89,7 @@ module Searchlogic
             Boolean,
             NormalizeInput,
             Joins,
+            NamedScopes,
             AscendBy,
             DescendBy,
           ] 

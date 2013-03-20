@@ -60,7 +60,6 @@ describe Searchlogic::ScopeReflectionExt::InstanceMethods do
 
     it "should return the alias if present" do 
       Searchlogic::ScopeReflection.new(:username_lte).predicate.should eq("_lte")
-
     end
 
   end
