@@ -27,18 +27,14 @@ module Searchlogic
           private
 
           def send_and_store(m)
-            scope_key = ScopeReflection.scope_name(m)              
-            if no_arg_scope?(scope_key)
+            method = ScopeReflection.new(m)              
+            if method.scope_lambda.try(:arity) == 0
               scope = klass.__send__(m)
               store_values(scope)
             else
-              [value].flatten.size == 1 ? scope = klass.__send__(m, value) : scope = klass.__send__(m, *value)                
+              scope = [value].flatten.size == 1 ? klass.__send__(m, value) : klass.__send__(m, *value)                
             end            
             store_values(scope)
-          end
-
-          def no_arg_scope?(scope_key)
-            !!(ScopeReflection.all_named_scopes_hash[scope_key].try(:[], :scope).try(:arity) == 0)
           end
 
           def store_values(scope)

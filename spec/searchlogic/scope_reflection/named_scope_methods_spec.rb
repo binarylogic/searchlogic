@@ -16,10 +16,10 @@ describe Searchlogic::ScopeReflectionExt::NamedScopeMethods do
   context "#named_scope?" do 
     it "returns true for defined named scopes" do 
       class User; scope :young, lambda{};end
-      Searchlogic::ScopeReflection.named_scope?(:young).should be_true
+      Searchlogic::ScopeReflection.new(:young).named_scope?.should be_true
     end
     it "returns false for undefined scopes" do 
-      Searchlogic::ScopeReflection.named_scope?(:undefined).should be_false
+      Searchlogic::ScopeReflection.new(:undefined).named_scope?.should be_false
     end
   end
   
@@ -36,16 +36,16 @@ describe Searchlogic::ScopeReflectionExt::NamedScopeMethods do
     it "returns the name of the scope in the method on an association" do 
       class User; scope :fool, lambda{|age| age_gte(age)};end
       class Company; scope :comp, lambda{|price| orders_line_items_price_eq(price)};end
-      Searchlogic::ScopeReflection.scope_name(:users_fool).should eq(:fool)
+      Searchlogic::ScopeReflection.new(:users_fool).scope_name.should eq(:fool)
     end
 
     it "returns scope name" do 
       class User; scope :fool, lambda{|age| age_gte(age)};end
-      Searchlogic::ScopeReflection.scope_name(:fool).should eq(:fool)
+      Searchlogic::ScopeReflection.new(:fool).scope_name.should eq(:fool)
     end
 
     it "return nil if no scope exists" do 
-      Searchlogic::ScopeReflection.scope_name(:foool).should be_nil
+      Searchlogic::ScopeReflection.new(:foool).scope_name.should be_nil
     end
   end
 

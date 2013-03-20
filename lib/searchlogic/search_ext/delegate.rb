@@ -17,7 +17,7 @@ module Searchlogic
           scope_reflection = ScopeReflection.new(condition)
           if scope_reflection.scope_lambda_type == :boolean && value == true || ordering?(condition)
             curr_scope.__send__(scope_reflection.condition)
-          elsif scope_reflection.scope_lambda.try(:[], :scope).try(:arity) == 1
+          elsif scope_reflection.scope_lambda.try(:arity) == 1
             curr_scope.__send__(scope_reflection.condition, value)
           else
             [value].flatten.size == 1 ? curr_scope.__send__(scope_reflection.condition, value) : curr_scope.__send__(scope_reflection.condition, *value) 
@@ -25,7 +25,7 @@ module Searchlogic
         end
 
         def false_scope_proc?(key, value)
-          ScopeReflection.new(key).scope_lambda && !value
+          ScopeReflection.new(key).named_scope? && !value
         end
     end
   end

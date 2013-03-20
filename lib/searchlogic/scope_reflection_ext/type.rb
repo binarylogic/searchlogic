@@ -14,7 +14,7 @@ module Searchlogic
 
       def type
         if named_scope?
-          all_named_scopes_hash[condition][:type]
+          all_named_scopes_hash[scope_name][:type]
         elsif boolean_matcher?
           :boolean
         elsif association_method = klass.association_in_method(method)

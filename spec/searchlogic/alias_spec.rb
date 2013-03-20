@@ -14,8 +14,8 @@ describe Searchlogic::Alias do
       Searchlogic::Alias.convert_alias(:username_gte).should eq("username_greater_than_or_equal_to")
     end
 
-    it "returns nil if it doesn't find alias in the method" do 
-      Searchlogic::Alias.convert_alias(:username_greater_than_or_equal_to).should be_nil
+    it "returns the method" do 
+      Searchlogic::Alias.convert_alias(:username_greater_than_or_equal_to).should eq(:username_greater_than_or_equal_to)
     end
 
   end
@@ -29,16 +29,6 @@ describe "Searchlogic::ScopeReflectionExt::MatchAlias "do
     @tren = User.create(:name=>"Tren", :age =>45)
   end
 
-  context ".searchlogic_methods" do
-    xit "should return an array of defined searchlogic method matchers" do 
-
-    end
-  end
-
-  context ".match_alias" do 
-    
-
-  end
 
   describe "works with OR conditionals" do 
     it "with two of the same conditionals" do 
@@ -79,7 +69,7 @@ describe "Searchlogic::ScopeReflectionExt::MatchAlias "do
 
   describe ".convert_alias" do
     it "matches ordering" do 
-      Searchlogic::ScopeReflection.convert_alias(User, :method => :order, :value => :ascend_by_id).should eq(:ascend_by_id)
+      Searchlogic::Alias.convert_alias(:ascend_by_id).should eq(:ascend_by_id)
     end 
        
     it "is == equals" do 

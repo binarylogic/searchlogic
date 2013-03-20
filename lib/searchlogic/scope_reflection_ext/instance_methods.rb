@@ -25,7 +25,22 @@ module Searchlogic
           msg = "`#{method}' is not defined in searchlogic"
           raise NoMethodError.new(msg)
         end
+      end
 
+      def column?
+        begin
+          /^(#{klass.column_names.join("|")})/ =~ method ||  /^(ascend_by_|descend_by_)(#{klass.column_names.join("|")})/ =~ method
+        rescue NoMethodError
+          raise UninitializedClassError.new
+        end
+      end
+
+      def scope?
+        begin
+          /^(#{klass.named_scopes.keys.join("|")})/ =~ method ||  /^(ascend_by_|descend_by_)(#{klass.named_scopes.keys.join("|")})/ =~ method
+        rescue
+          raise UninitializedClassError.new
+        end
       end
     end
   end

@@ -7,10 +7,6 @@ module Searchlogic
         #Searchlogic::ActiveRecordExt::Scopes::Conditions::Condition.all_matchers
         ActiveRecord::Base.all_matchers
       end
-
-      def all_scopes
-        searchlogic_methods + aliases + all_named_scopes.map(&:to_s)
-      end
     end
   end
 end
