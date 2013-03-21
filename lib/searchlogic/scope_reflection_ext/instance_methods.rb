@@ -31,6 +31,7 @@ module Searchlogic
 
       def scope?
         begin
+          return false if klass.named_scopes.keys.join("|").empty?
           /^(#{klass.named_scopes.keys.join("|")})/ =~ method ||  /^(ascend_by_|descend_by_)(#{klass.named_scopes.keys.join("|")})/ =~ method
         rescue
           raise UninitializedClassError.new

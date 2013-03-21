@@ -28,7 +28,7 @@ describe Searchlogic::ScopeReflectionExt::NamedScopeMethods do
       existing = Searchlogic::ScopeReflection.new("").all_named_scopes_hash
       class User; scope :fool, lambda{|age| age_gte(age)};end
       class Company; scope :comp, lambda{|price| orders_line_items_price_eq(price)};end
-      Searchlogic::ScopeReflection.all_named_scopes_hash.should eq(existing.merge(User.named_scopes).merge(Company.named_scopes))
+      Searchlogic::ScopeReflection.new("").all_named_scopes_hash.should eq(existing.merge(User.named_scopes).merge(Company.named_scopes))
     end
   end
 

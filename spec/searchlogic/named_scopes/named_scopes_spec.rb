@@ -389,13 +389,13 @@ describe Searchlogic::ActiveRecordExt::NamedScopes::ClassMethods do
       it "should pass a date object" do 
         class Order
           scope(:expired, lambda { |end_date| where("created_at < ?", end_date)})
-          named_scopes[:expired][:type] = :date
+          named_scopes[:expired][:type] = :time
         end
 
         Order.create
         search = Order.search
         search.expired = "2020, 1, 2"
-        search.conditions[:expired].should be_kind_of(Date)
+        search.conditions[:expired].should be_kind_of(Time)
       end
     end
     context "type cast" do 

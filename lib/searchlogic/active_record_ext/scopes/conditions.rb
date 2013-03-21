@@ -53,24 +53,27 @@ module Searchlogic
 
         def scopeable?(method)
           if ActiveRecord::Base.connected?
+            define_matchers_on_scope_reflection
             ScopeReflection.authorized?(method)
-          elsif !ScopeReflection.respond_to?(:searchlogic_methods) 
-            ##Before the database connections, define the matchers 
-            ## on scope reflection(only once)
-            lambda { 
-                  conditions = condition_klasses
-                  Searchlogic::ScopeReflection.class_eval do 
-                    define_method(:searchlogic_methods) do 
-                      conditions.map { |kc| kc.matcher }.compact
-                    end
-                  end
-              }.call          
           else
             false
           end
         end
 
-          
+        def define_matchers_on_scope_reflection
+          ##Before the database connects, define the matchers 
+          ## on scope reflection(only once)
+          unless ScopeReflection.respond_to?(:searchlogic_methods) 
+            lambda { 
+              conditions = condition_klasses
+              Searchlogic::ScopeReflection.class_eval do 
+                define_method(:searchlogic_methods) do 
+                  conditions.map { |kc| kc.matcher }.compact
+                end
+              end
+            }.call  
+          end    
+        end
         
 
         def condition_klasses

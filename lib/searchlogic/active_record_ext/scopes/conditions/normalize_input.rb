@@ -48,7 +48,7 @@ module Searchlogic
 
           def preference_to_column_or_scope?(for_klass, method)
             scope_refl = ScopeReflection.new(method, for_klass)
-            scope_refl.column? && scope_refl.scope?
+            scope_refl.column? || scope_refl.scope?
           end
 
           def matching_incorrect_syntax(match_klass)

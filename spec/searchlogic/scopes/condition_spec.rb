@@ -1,11 +1,5 @@
 require 'spec_helper'
 describe Searchlogic::ActiveRecordExt::Scopes::Conditions do 
-  context ".matchers" do 
-    it "returns an array of all matchers for conditions" do 
-      ActiveRecord::Base.all_matchers.should be_kind_of(Array)
-    end
-  end
-
   context "#association_in_method" do
     it "returns an array of the klass and next method from the original method" do 
       User.association_in_method(:orders_line_items_total).should eq(["orders", "line_items_total"])

@@ -150,7 +150,12 @@ Spec::Runner.configure do |config|
     class ::LineItem < ActiveRecord::Base
       belongs_to :order
     end
-
+    
+    ::Company.named_scopes.clear
+    ::User.named_scopes.clear
+    ::LineItem.named_scopes.clear
+    ::Order.named_scopes.clear
+    ::Audit.named_scopes.clear
     ::Company.destroy_all
     ::User.destroy_all
     ::Order.destroy_all

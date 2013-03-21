@@ -35,7 +35,12 @@ module Searchlogic
           private
             def created_nested_scope
               args.compact!
-              args.empty? ? association.klass.__send__(new_method) : association.klass.__send__(new_method, value)
+              named_scope = ScopeReflection.new(new_method).scope_lambda
+              if named_scope && named_scope.arity == 0 
+                association.klass.__send__(new_method)
+              else
+                args.empty? ? association.klass.__send__(new_method) : association.klass.__send__(new_method, value)
+              end
             end
 
             def generate_join_and_send_method(join_values)
