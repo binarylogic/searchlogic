@@ -11,10 +11,6 @@ module Searchlogic
           scopeable?(name)  || super
         end
           
-        def all_matchers
-          condition_klasses.map { |kc| kc.matcher }.compact
-        end
-
         def association_names
           reflect_on_all_associations.map{|a| a.name.to_s}
         end
@@ -55,14 +51,27 @@ module Searchlogic
           nil
         end
 
-
         def scopeable?(method)
           if ActiveRecord::Base.connected?
-            !!(/(#{all_matchers.join("|")})/.match(method)) || ScopeReflection.authorized?(method)
+            ScopeReflection.authorized?(method)
+          elsif !ScopeReflection.respond_to?(:searchlogic_methods) 
+            ##Before the database connections, define the matchers 
+            ## on scope reflection(only once)
+            lambda { 
+                  conditions = condition_klasses
+                  Searchlogic::ScopeReflection.class_eval do 
+                    define_method(:searchlogic_methods) do 
+                      conditions.map { |kc| kc.matcher }.compact
+                    end
+                  end
+              }.call          
           else
             false
           end
         end
+
+          
+        
 
         def condition_klasses
          [  

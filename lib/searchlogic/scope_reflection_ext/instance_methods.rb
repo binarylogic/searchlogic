@@ -8,7 +8,7 @@ module Searchlogic
 
 
       def authorized?
-        !!(Alias.match(method)) || named_scope? || /#{searchlogic_methods.join("|")}$/ =~ method
+        !!(Alias.match(method)) || named_scope? || /#{searchlogic_methods.join("|")}/ =~ method
       end
 
       def predicate

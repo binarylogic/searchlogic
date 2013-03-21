@@ -22,7 +22,7 @@ module Searchlogic
       return method if match.nil?
       alias_name = match[1]
       replacement_value = alias_hash.find{|method, alias_array| alias_array.include?(alias_name)}.first.to_s
-      method.to_s.gsub(/#{alias_name}$/, replacement_value)
+      method.to_s.gsub(/#{alias_name}(_|$)/, replacement_value + "_").gsub(/_$/, "")
     end
 
     def aliases

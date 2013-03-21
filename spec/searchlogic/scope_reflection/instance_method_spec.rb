@@ -46,13 +46,11 @@ describe Searchlogic::ScopeReflectionExt::InstanceMethods do
       Searchlogic::ScopeReflection.new(:username_equals, User).predicate.should eq("_equals")
     end
     it "should raise unknown condition error if doesn't exist" do 
-      expect{Searchlogic::ScopeReflection.new(:username_eqquals, User).predicate}.to raise_error NoMethodError
+      expect{Searchlogic::ScopeReflection.new(:username_eqquals, User).predicate}.to raise_error Searchlogic::ActiveRecordExt::Scopes::InvalidConditionError
     end
 
     it "should include an any condition if present" do 
       Searchlogic::ScopeReflection.new(:username_equals_any, User).predicate.should eq("_equals_any")
-
-
     end
     it "should include an or condition if present" do 
       Searchlogic::ScopeReflection.new(:username_equals_all, User).predicate.should eq("_equals_all")
