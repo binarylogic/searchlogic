@@ -2,13 +2,13 @@ require 'spec_helper'
 
 describe Searchlogic::ScopeReflectionExt::NamedScopeMethods do 
   context "#joined_named_scopes" do 
-    xit "returns nil if there are no named scopes" do 
-        Searchlogic::ScopeReflection.joined_named_scopes.should be_nil
+    it "returns nil if there are no named scopes" do 
+        Searchlogic::ScopeReflection.new("").joined_named_scopes.should be_nil
       end
-    xit "returns a list of all named scopes separated by | in brackets" do 
+    it "returns a list of all named scopes separated by | in brackets" do 
       class User; scope :late, lambda{created_at_after(Date.today)};end
       class Order; scope :early, lambda{created_at_before(Date.today)};end
-      Searchlogic::ScopeReflection.joined_named_scopes.should eq(("late|early"))
+      Searchlogic::ScopeReflection.new("").joined_named_scopes.should eq(("late|early"))
     end
   end
 

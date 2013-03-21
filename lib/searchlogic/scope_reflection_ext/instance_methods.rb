@@ -2,7 +2,7 @@ module Searchlogic
   module ScopeReflectionExt
     module InstanceMethods
       def condition
-        return method if !!(searchlogic_methods.detect{ |slm| /#{slm.to_s}$/ =~ method}) || named_scope? 
+        return method if !!(searchlogic_methods.detect{ |slm| /#{slm.to_s}$/ =~ method}) || named_scope?
         Alias.convert_alias(method)
       end
 
@@ -29,13 +29,13 @@ module Searchlogic
         end
       end
 
-      def scope?
-        begin
-          return false if klass.named_scopes.keys.join("|").empty?
-          /^(#{klass.named_scopes.keys.join("|")})/ =~ method ||  /^(ascend_by_|descend_by_)(#{klass.named_scopes.keys.join("|")})/ =~ method
-        rescue
-          raise UninitializedClassError.new
-        end
+      def named_scope_on_klass?
+        (named_scope? && !start_with_association?)
+      end
+
+      def start_with_association?
+        tables = ActiveRecord::Base.tables.join("|")
+        !!(/^#{tables}_/ =~ method)
       end
     end
   end

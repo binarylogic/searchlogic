@@ -42,7 +42,7 @@ describe Searchlogic::ActiveRecordExt::Scopes::Conditions::NamedScopes do
       end
 
       it "can add scope proc onto association that also matches alias" do
-        User.scope :has_id_gt, lambda { User.id_gt(2).name_not_blank.orders_id_gt(2) }
+        class User; scope :has_id_gt, lambda { User.id_gt(2).name_not_blank.orders_id_gt(2) };end
         users = Company.users_has_id_gt
         users.count.should eq(1)
         users.first.name.should eq("Ben's co")
