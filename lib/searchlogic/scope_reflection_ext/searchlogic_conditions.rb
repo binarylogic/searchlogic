@@ -4,7 +4,7 @@ module Searchlogic
       # def searchlogic_methods
           ##This Method is dynamically defined in the Conditions module
           ##That way you can add conditions and matchers without having to
-          ## update any code class
+          ## update any code in this class
       # end
     end
   end

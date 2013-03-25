@@ -12,8 +12,8 @@ module Searchlogic
       end
 
       def predicate
-        return nil if /#{joined_named_scopes}$/ =~ method && joined_named_scopes
         return Alias.match(method)[1] if Alias.match(method)
+        return nil if /#{joined_named_scopes}$/ =~ method && joined_named_scopes
         begin
           /(#{searchlogic_methods.sort_by(&:size).reverse.join("|")})_(any|all)$/.match(method).try(:[], 0) || /(#{searchlogic_methods.sort_by(&:size).reverse.join("|")})$/.match(method)[0] 
         rescue NoMethodError  => e
