@@ -1,7 +1,7 @@
 module Searchlogic
   class Search
     module MethodMissing
-      def respond_to?(*args)
+      def respond_to_missing?(*args)
         super || scope?(normalize_scope_name(args.first))
       rescue Searchlogic::NamedScopes::OrConditions::UnknownConditionError
         false
