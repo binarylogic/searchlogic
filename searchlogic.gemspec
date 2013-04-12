@@ -4,7 +4,7 @@ require File.expand_path('../lib/searchlogic/version', __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "searchlogic"
-  s.version   = Searchlogic::VERSION
+  s.version     = Searchlogic::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Ben Johnson"]
   s.email       = ["bjohnson@binarylogic.com"]
