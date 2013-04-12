@@ -7,7 +7,7 @@ module Searchlogic
       end
 
       def ordering_direction
-        @ordering_direction ||= order && order.to_s.match(/^(ascend|descend)_by_ass/).try(:[], 1)
+        @ordering_direction ||= order && order.to_s.match(/^(ascend|descend)_by_/).try(:[], 1)
       end
     end
   end
