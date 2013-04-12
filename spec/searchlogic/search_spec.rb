@@ -372,6 +372,23 @@ describe Searchlogic::Search do
     end
   end
 
+  context "#ordering_direction" do
+    it "should return nil if we aren't ordering" do
+      search = User.search
+      search.ordering_direction.should be_nil
+    end
+
+    it "should return the column name for ascending" do
+      search = User.search(:order => "ascend_by_ticket_request_event_occurs_at")
+      search.ordering_direction.should == "ascend"
+    end
+
+    it "should return the column name for descending" do
+      search = User.search(:order => "descend_by_ticket_request_event_occurs_at")
+      search.ordering_direction.should == "descend"
+    end
+  end
+
   context "#method_missing" do
     context "setting" do
       it "should call named scopes for conditions" do
