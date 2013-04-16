@@ -18,9 +18,9 @@ module Searchlogic
 
         def create_condition(name)
           if name == :order
-            named_scope name, lambda { |scope_name|
-              return {} if !condition?(scope_name)
-              send(scope_name).proxy_options
+            alias_scope name, lambda { |scope_name|
+              return scoped({}) if !condition?(scope_name)
+              send(scope_name)
             }
           elsif details = ordering_condition_details(name)
             create_ordering_conditions(details[:column])
