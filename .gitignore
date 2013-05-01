@@ -4,3 +4,4 @@ pkg/*
 coverage/*
 doc/*
 benchmarks/*
+*.gem
