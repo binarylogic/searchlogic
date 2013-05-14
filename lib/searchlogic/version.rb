@@ -1,3 +1,3 @@
 module Searchlogic
-  VERSION = "2.5.13"
+  VERSION = "2.5.14"
 end
