@@ -1,3 +1,4 @@
+require 'active_support'
 require 'active_record'
 require "searchlogic/version"
 require "searchlogic/core_ext/proc"

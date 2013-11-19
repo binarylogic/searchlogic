@@ -62,7 +62,7 @@ module Searchlogic
           raise ArgumentError.new("The #{klass} class does not respond to the #{association_condition} scope") if !klass.respond_to?(association_condition)
           arity = klass.named_scope_arity(association_condition)
 
-          if !arity
+          if !arity || arity == 0
             # The underlying condition doesn't require any parameters, so let's just create a simple
             # named scope that is based on a hash.
             options = {}

@@ -321,18 +321,6 @@ describe Searchlogic::Search do
         search.id_equals_any.should == [1, 2, 3]
       end
 
-      it "should be an Array given a single value for *_equals_any" do
-        search = Order.search
-        search.id_equals_any = 5
-        search.id_equals_any.should == [5]
-      end
-
-      it "shouldn't change to an Array given a single value for *_equals" do
-        search = Order.search
-        search.id_equals = 5
-        search.id_equals.should_not == [5]
-      end
-
       it "should type cast association conditions" do
         search = User.search
         search.orders_total_gt = "10"

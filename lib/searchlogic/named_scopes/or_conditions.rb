@@ -128,13 +128,41 @@ module Searchlogic
         end
 
         def merge_scopes_with_or(scopes)
-          scopes_options = scopes.collect { |scope| scope.scope(:find) }
-          conditions = scopes_options.reject { |o| o[:conditions].nil? }.collect { |o| sanitize_sql(o[:conditions]) }
-          scope = scopes_options.inject(scoped({})) { |current_scope, options| current_scope.scoped(options) }
-          options = {}
-          in_searchlogic_delegation { options = scope.scope(:find) }
-          options.delete(:readonly) unless scopes.any? { |scope| scope.proxy_options.key?(:readonly) }
-          options.merge(:conditions => "(" + conditions.join(") OR (") + ")")
+          options = scopes_options(scopes)
+          merged_options = merge_options(options)
+          merged_options.delete(:readonly)
+          if !merged_options[:joins].blank?
+            merged_options[:joins] = convert_joins_to_optional(merged_options[:joins])
+          else
+            merged_options.delete(:joins)
+          end
+          conditions = normalized_conditions(options)
+          if conditions.any?
+            merged_options[:conditions] = "(" + conditions.join(") OR (") + ")"
+          end
+          merged_options
+        end
+
+        def scopes_options(scopes)
+          scopes.collect { |scope| with_exclusive_scope { scope.scope(:find) } }
+        end
+
+        def convert_joins_to_optional(joins)
+          joins ||= []
+
+          (joins || []).collect { |join| join.gsub(/INNER JOIN/, 'LEFT OUTER JOIN') }
+        end
+
+        def merge_options(options)
+          with_exclusive_scope do
+            options.inject(scoped({:joins => "", :conditions => ""})) do |current_scope, option|
+              current_scope.scoped(option)
+            end.scope(:find)
+          end
+        end
+
+        def normalized_conditions(options)
+          options.collect { |option| option[:conditions] && sanitize_sql(option[:conditions]) }.compact
         end
     end
   end

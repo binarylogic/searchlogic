@@ -15,15 +15,12 @@ module Searchlogic
           if setter?(name)
             if scope?(scope_name)
               if args.size == 1
-                options = scope_options(scope_name).respond_to?(:searchlogic_options) ? scope_options(scope_name).searchlogic_options : {}
-                options[:cast_single_val_to_array] = cast_single_val_to_array?(condition_name)
-
                 write_condition(
                   condition_name,
                   type_cast(
                     args.first,
                     cast_type(scope_name),
-                    options
+                    scope_options(scope_name).respond_to?(:searchlogic_options) ? scope_options(scope_name).searchlogic_options : {}
                   )
                 )
               else
@@ -103,7 +100,7 @@ module Searchlogic
             casted_value = column_for_type_cast.type_cast(value)
 
             if Time.zone && casted_value.is_a?(Time)
-              casted_value = if value.is_a?(String)
+              if value.is_a?(String)
                 # if its a string, we should assume the user means the local time
                 # we need to update the object to include the proper time zone without changing
                 # the time
@@ -111,15 +108,10 @@ module Searchlogic
               else
                 casted_value.in_time_zone
               end
+            else
+              casted_value
             end
-
-            options[:cast_single_val_to_array] ? [casted_value] : casted_value
           end
-        end
-
-        # For *_equals_any conditions, cast single values to an array, ex: 5 to [5] or 'ben' to ['ben']
-        def cast_single_val_to_array?(condition_name)
-          condition_name =~ /^\w+_equals_any/
         end
     end
   end

@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec', '~> 1.3.1'
   s.add_development_dependency 'sqlite3'
   s.add_development_dependency 'appraisal', '0.4.1'
+  s.add_development_dependency 'pry'
 
 
   s.files         = `git ls-files`.split("\n")
