@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    searchlogic (2.5.12)
+    searchlogic (2.5.15)
       activerecord (~> 2.3.12)
       activesupport (~> 2.3.12)
 
@@ -16,7 +16,7 @@ GEM
       rake
     coderay (1.1.0)
     method_source (0.8.2)
-    pry (0.9.12.3)
+    pry (0.9.12.4)
       coderay (~> 1.0)
       method_source (~> 0.8)
       slop (~> 3.4)
