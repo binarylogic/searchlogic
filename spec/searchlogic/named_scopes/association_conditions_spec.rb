@@ -57,11 +57,9 @@ describe Searchlogic::NamedScopes::AssociationConditions do
     Company.named_scope_arity("users_orders_total_greater_than").should == Order.named_scope_arity("total_greater_than")
   end
 
-  it "should have an arity of 0 if the underlying scope has an arity of nil" do
+  it "should have an arity of nil if the underlying scope has an arity of nil" do
     Company.users_orders_total_null
-
-    Order.named_scope_arity("total_null").should be nil
-    Company.named_scope_arity("users_orders_total_null").should be 0
+    Company.named_scope_arity("users_orders_total_null").should == Order.named_scope_arity("total_null")
   end
 
   it "should have an arity of -1 if the underlying scope has an arity of -1" do

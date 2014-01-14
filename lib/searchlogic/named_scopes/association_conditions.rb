@@ -12,7 +12,7 @@ module Searchlogic
         end
 
         # We need to try and create other conditions first so that we give priority to conflicting names.
-        # Such as having a column names the exact same name as an association condition.
+        # Such as having a column name with the exact same name as an association condition.
         def create_condition(name)
           if result = super
             result
@@ -62,13 +62,13 @@ module Searchlogic
           raise ArgumentError.new("The #{klass} class does not respond to the #{association_condition} scope") if !klass.respond_to?(association_condition)
           arity = klass.named_scope_arity(association_condition)
 
-          if !arity || arity == 0
+          if !arity
             # The underlying condition doesn't require any parameters, so let's just create a simple
             # named scope that is based on a hash.
             options = {}
             in_searchlogic_delegation { options = klass.send(association_condition).scope(:find) }
             prepare_named_scope_options(options, association, poly_class)
-            lambda {options} # wrap in a lambda so that conditions such as Dates/Times don't cache for chained named scopes
+            options
           else
             scope_options = klass.named_scope_options(association_condition)
             scope_options = scope_options.respond_to?(:searchlogic_options) ? scope_options.searchlogic_options.clone : {}
