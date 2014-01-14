@@ -1,6 +1,7 @@
 Bundler.setup
 require 'searchlogic'
 require "pry"
+require "timecop"
 
 ENV['TZ'] = 'UTC'
 Time.zone = 'Eastern Time (US & Canada)'
