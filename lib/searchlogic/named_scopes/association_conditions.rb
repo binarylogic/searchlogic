@@ -68,7 +68,7 @@ module Searchlogic
             options = {}
             in_searchlogic_delegation { options = klass.send(association_condition).scope(:find) }
             prepare_named_scope_options(options, association, poly_class)
-            options
+            lambda {options} # wrap in a lambda so that conditions such as Dates/Times don't cache for chained named scopes
           else
             scope_options = klass.named_scope_options(association_condition)
             scope_options = scope_options.respond_to?(:searchlogic_options) ? scope_options.searchlogic_options.clone : {}
