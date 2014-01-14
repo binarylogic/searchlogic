@@ -57,9 +57,11 @@ describe Searchlogic::NamedScopes::AssociationConditions do
     Company.named_scope_arity("users_orders_total_greater_than").should == Order.named_scope_arity("total_greater_than")
   end
 
-  it "should have an arity of nil if the underlying scope has an arity of nil" do
+  it "should have an arity of 0 if the underlying scope has an arity of nil" do
     Company.users_orders_total_null
-    Company.named_scope_arity("users_orders_total_null").should == Order.named_scope_arity("total_null")
+
+    Order.named_scope_arity("total_null").should be nil
+    Company.named_scope_arity("users_orders_total_null").should be 0
   end
 
   it "should have an arity of -1 if the underlying scope has an arity of -1" do
@@ -209,7 +211,7 @@ describe Searchlogic::NamedScopes::AssociationConditions do
     user.orders.count.should == 1
     user.orders.shipped_on_not_null.shipped_on_greater_than(2.days.ago).count.should == 1
   end
-  
+
   it "should allow chained dynamic scopes without losing association scope conditions" do
     user = User.create
     order1 = Order.create :user => user, :shipped_on => Time.now, :total => 2
