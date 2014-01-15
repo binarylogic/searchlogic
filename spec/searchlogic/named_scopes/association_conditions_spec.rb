@@ -209,13 +209,33 @@ describe Searchlogic::NamedScopes::AssociationConditions do
     user.orders.count.should == 1
     user.orders.shipped_on_not_null.shipped_on_greater_than(2.days.ago).count.should == 1
   end
-  
+
   it "should allow chained dynamic scopes without losing association scope conditions" do
     user = User.create
     order1 = Order.create :user => user, :shipped_on => Time.now, :total => 2
     order2 = Order.create :shipped_on => Time.now, :total => 2
     user.orders.id_equals(order1.id).count.should == 1
     user.orders.id_equals(order1.id).total_equals(2).count.should == 1
+  end
+
+  it "shouldn't cache the lambda of a named_scope for a chained association" do
+    user = User.create
+    Order.create :user => user, :shipped_on => Time.current
+
+    # create the named_scope and use it through a chained association
+    Order.named_scope :shipped, lambda { {:conditions => ["shipped_on <= ?", Time.current]} }
+    User.orders_shipped
+
+    # simulate a day passing after the chained scope is first used
+    Timecop.travel(Date.tomorrow)
+
+    # make a new object that is active on our simulated day
+    Order.create :user => user, :shipped_on => Time.current
+
+    # we have 2 orders and both were shipped on or before the current time,
+    # so both should be included in the scope
+    user.orders.count.should == 2
+    User.orders_shipped.count.should == 2
   end
 
   it "should allow Marshal.dump on objects that only have polymorphic associations where a polymorphic association is loaded" do
