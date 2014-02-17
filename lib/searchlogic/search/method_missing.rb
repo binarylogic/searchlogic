@@ -89,7 +89,7 @@ module Searchlogic
         def type_cast(value, type, options = {})
           case value
           when Array
-            value.collect { |v| type_cast(v, type) }
+            value.collect { |v| type_cast(v, type) }.uniq
           when Range
             Range.new(type_cast(value.first, type), type_cast(value.last, type))
           else

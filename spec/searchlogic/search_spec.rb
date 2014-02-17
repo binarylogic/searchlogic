@@ -100,6 +100,12 @@ describe Searchlogic::Search do
       search.conditions = {"id_equals_any" => ["", "1"]}
       search.id_equals_any.should == [1]
     end
+
+    it "should remove duplicate values in arrays" do
+      search = User.search
+      search.conditions = {"username_equals_any" => ["dup", "dup"]}
+      search.username_equals_any.should == ["dup"]
+    end
   end
 
   context "#compact_conditions" do
