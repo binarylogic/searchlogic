@@ -35,6 +35,7 @@ module Searchlogic
           elsif name.to_s =~ /^order$/
             {}
           end
+        rescue ActiveRecord::StatementInvalid
         end
 
         def create_ordering_conditions(column)

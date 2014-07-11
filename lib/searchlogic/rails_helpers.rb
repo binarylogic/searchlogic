@@ -71,7 +71,7 @@ module Searchlogic
         args.unshift(:search) if args.first == search_obj
         options = args.extract_options!
         if !options[:skip_order_field]
-          concat(content_tag("div", hidden_field_tag("#{args.first}[order]", search_obj.order)))
+          concat(content_tag("div", hidden_field_tag("#{args.first}[order]", search_obj.order), :style => "display: inline"))
         end
         args << options
         super
