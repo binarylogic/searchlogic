@@ -10,8 +10,8 @@ Gem::Specification.new do |s|
   s.summary     = %q{Searchlogic makes using ActiveRecord named scopes easier and less repetitive.}
   s.description = %q{Searchlogic makes using ActiveRecord named scopes easier and less repetitive.}
 
-  s.add_dependency 'activerecord', '3.2.11'
-  s.add_dependency 'activesupport', '3.2.11'
+  s.add_dependency 'activerecord', [">= 3.2.11"]
+  s.add_dependency 'activesupport', [">= 3.2.11"]
   s.add_development_dependency 'debugger'
   s.add_development_dependency 'pry'
   s.add_development_dependency 'rspec', '2.12.0'
