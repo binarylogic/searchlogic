@@ -16,9 +16,9 @@ Gem::Specification.new do |s|
   s.add_dependency 'activesupport', '~> 2.3.12'
   s.add_development_dependency 'rspec', '~> 1.3.1'
   s.add_development_dependency 'timecop', '~> 0.5.9.1'
-  s.add_development_dependency 'sqlite3'
+  s.add_development_dependency 'sqlite3', '~> 1.3.8'
   s.add_development_dependency 'appraisal', '0.4.1'
-  s.add_development_dependency 'pry'
+  s.add_development_dependency 'pry', '>= 0'
 
 
   s.files         = `git ls-files`.split("\n")
