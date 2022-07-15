@@ -3,7 +3,7 @@ module Searchlogic
     module ToYaml
       def self.included(klass)
         klass.class_eval do
-          yaml_as "tag:ruby.yaml.org,2002:class"
+          yaml_tag "tag:ruby.yaml.org,2002:class"
           include InstanceMethods
         end
       end
