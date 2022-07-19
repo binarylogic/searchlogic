@@ -21,11 +21,11 @@ module Searchlogic
       # The problem is that ruby has no variable types, so Searchlogic needs to know what type you are expecting
       # for your named scope. So instead of this:
       #
-      #   named_scope :id_gt, lambda { |value| {:conditions => ["id > ?", value]} }
+      #   scope :id_gt, lambda { |value| {:conditions => ["id > ?", value]} }
       #
       # You need to do this:
       #
-      #   named_scope :id_gt, searchlogic_lambda(:integer) { |value| {:conditions => ["id > ?", value]} }
+      #   scope :id_gt, searchlogic_lambda(:integer) { |value| {:conditions => ["id > ?", value]} }
       #
       # If you are wanting a string, you don't have to do anything, because Searchlogic assumes you want a string.
       # If you want something else, you need to specify it as I did in the above example. Comments are appreciated

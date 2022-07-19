@@ -54,7 +54,7 @@ module Searchlogic
 
         def create_association_condition(association, condition_name, poly_class = nil)
           name = [association.name, poly_class && "#{poly_class.name.underscore}_type", condition_name].compact.join("_")
-          named_scope(name, association_condition_options(association, condition_name, poly_class))
+          scope(name, association_condition_options(association, condition_name, poly_class))
         end
 
         def association_condition_options(association, association_condition, poly_class = nil)
@@ -66,7 +66,7 @@ module Searchlogic
             # The underlying condition doesn't require any parameters, so let's just create a simple
             # named scope that is based on a hash.
             options = {}
-            in_searchlogic_delegation { options = klass.send(association_condition).scope(:find) }
+            options = klass.send(association_condition).scope(:find)
             prepare_named_scope_options(options, association, poly_class)
             options
           else
@@ -79,10 +79,8 @@ module Searchlogic
               searchlogic_lambda(:#{arg_type}, #{scope_options.inspect}) { |#{proc_args.join(",")}|
                 options = {}
 
-                in_searchlogic_delegation do
-                  scope = klass.send(association_condition, #{proc_args.join(",")})
-                  options = scope.scope(:find) if scope
-                end
+                scope = klass.send(association_condition, #{proc_args.join(",")})
+                options = scope.scope(:find) if scope
 
                 prepare_named_scope_options(options, association, poly_class)
                 options

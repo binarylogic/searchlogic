@@ -43,7 +43,7 @@ module Searchlogic
            cond = $2
            poly_class = poly_type.camelcase.constantize if poly_type
          end
-         named_scope("#{order_as}_by_#{association.name}_#{condition}", association_condition_options(association, "#{order_as}_by_#{cond}", poly_class))
+         scope("#{order_as}_by_#{association.name}_#{condition}", association_condition_options(association, "#{order_as}_by_#{cond}", poly_class))
         end
     end
   end

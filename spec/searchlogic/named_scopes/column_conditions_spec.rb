@@ -2,9 +2,9 @@ require 'spec_helper'
 
 describe Searchlogic::NamedScopes::ColumnConditions do
   it "should be dynamically created and then cached" do
-    User.scopes.key?(:age_less_than).should == false
+    User.singleton_class.method_defined?(:age_less_than).should == false
     User.age_less_than(5)
-    User.scopes.key?(:age_less_than).should == true
+    User.singleton_class.method_defined?(:age_less_than).should == true
   end
   
   it "should respond to the scope" do
@@ -120,7 +120,7 @@ describe Searchlogic::NamedScopes::ColumnConditions do
   
   context "any and all conditions" do
     it "should do nothing if no arguments are passed" do
-      User.username_equals_any.proxy_options.should == {}
+      User.username_equals_any.to_sql.should == User.scoped.to_sql
     end
   
     it "should treat an array and multiple arguments the same" do
@@ -136,7 +136,8 @@ describe Searchlogic::NamedScopes::ColumnConditions do
     # PostgreSQL does not allow null in "in" statements
     it "should have equals any and handle nils" do
       %w(bjohnson thunt dgainor).each { |username| User.create(:username => username) }
-      User.username_equals_any("bjohnson", "thunt", nil).proxy_options.should == {:conditions=>["users.username IN (?) OR users.username IS ?", ["bjohnson", "thunt"], nil]}
+      User.username_equals_any("bjohnson", "thunt", nil).to_sql.should ==
+        User.where("users.username IN (?) OR users.username IS ?", ["bjohnson", "thunt"], nil).to_sql
     end
     
     it "should have equals all" do
@@ -228,63 +229,63 @@ describe Searchlogic::NamedScopes::ColumnConditions do
   
   context "alias conditions" do
     it "should have is" do
-      User.age_is(5).proxy_options.should == User.age_equals(5).proxy_options
+      User.age_is(5).to_sql.should == User.age_equals(5).to_sql
     end
     
     it "should have eq" do
-      User.age_eq(5).proxy_options.should == User.age_equals(5).proxy_options
+      User.age_eq(5).to_sql.should == User.age_equals(5).to_sql
     end
     
     it "should have not_equal_to" do
-      User.age_not_equal_to(5).proxy_options.should == User.age_does_not_equal(5).proxy_options
+      User.age_not_equal_to(5).to_sql.should == User.age_does_not_equal(5).to_sql
     end
     
     it "should have is_not" do
-      User.age_is_not(5).proxy_options.should == User.age_does_not_equal(5).proxy_options
+      User.age_is_not(5).to_sql.should == User.age_does_not_equal(5).to_sql
     end
     
     it "should have not" do
-      User.age_not(5).proxy_options.should == User.age_does_not_equal(5).proxy_options
+      User.age_not(5).to_sql.should == User.age_does_not_equal(5).to_sql
     end
     
     it "should have ne" do
-      User.age_ne(5).proxy_options.should == User.age_does_not_equal(5).proxy_options
+      User.age_ne(5).to_sql.should == User.age_does_not_equal(5).to_sql
     end
     
     it "should have lt" do
-      User.age_lt(5).proxy_options.should == User.age_less_than(5).proxy_options
+      User.age_lt(5).to_sql.should == User.age_less_than(5).to_sql
     end
     
     it "should have lte" do
-      User.age_lte(5).proxy_options.should == User.age_less_than_or_equal_to(5).proxy_options
+      User.age_lte(5).to_sql.should == User.age_less_than_or_equal_to(5).to_sql
     end
     
     it "should have gt" do
-      User.age_gt(5).proxy_options.should == User.age_greater_than(5).proxy_options
+      User.age_gt(5).to_sql.should == User.age_greater_than(5).to_sql
     end
     
     it "should have gte" do
-      User.age_gte(5).proxy_options.should == User.age_greater_than_or_equal_to(5).proxy_options
+      User.age_gte(5).to_sql.should == User.age_greater_than_or_equal_to(5).to_sql
     end
     
     it "should have contains" do
-      User.username_contains(5).proxy_options.should == User.username_like(5).proxy_options
+      User.username_contains(5).to_sql.should == User.username_like(5).to_sql
     end
     
     it "should have contains" do
-      User.username_includes(5).proxy_options.should == User.username_like(5).proxy_options
+      User.username_includes(5).to_sql.should == User.username_like(5).to_sql
     end
     
     it "should have bw" do
-      User.username_bw(5).proxy_options.should == User.username_begins_with(5).proxy_options
+      User.username_bw(5).to_sql.should == User.username_begins_with(5).to_sql
     end
     
     it "should have ew" do
-      User.username_ew(5).proxy_options.should == User.username_ends_with(5).proxy_options
+      User.username_ew(5).to_sql.should == User.username_ends_with(5).to_sql
     end
     
     it "should have nil" do
-      User.username_nil.proxy_options.should == User.username_nil.proxy_options
+      User.username_nil.to_sql.should == User.username_nil.to_sql
     end
   end
   

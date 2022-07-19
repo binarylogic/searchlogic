@@ -1,5 +1,5 @@
 module Searchlogic
-  # A class that acts like a model, creates attr_accessors for named_scopes, and then
+  # A class that acts like a model, creates attr_accessors for scopes, and then
   # chains together everything when an "action" method is called. It basically makes
   # implementing search forms in your application effortless:
   #

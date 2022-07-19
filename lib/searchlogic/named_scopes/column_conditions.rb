@@ -105,7 +105,7 @@ module Searchlogic
 
           elsif boolean_condition?(name)
             column = name.to_s.gsub(/^not_/, "")
-            named_scope name, :conditions => {column => (name.to_s =~ /^not_/).nil?}
+            scope name, :conditions => {column => (name.to_s =~ /^not_/).nil?}
           end
         end
 
@@ -152,7 +152,7 @@ module Searchlogic
             {:conditions => "#{table_name}.#{column.name} != '' AND #{table_name}.#{column.name} IS NOT NULL"}
           end
 
-          named_scope("#{column.name}_#{condition}".to_sym, scope_options)
+          scope("#{column.name}_#{condition}".to_sym, scope_options)
         end
 
         # This method helps cut down on defining scope options for conditions that allow *_any or *_all conditions.
@@ -219,6 +219,19 @@ module Searchlogic
             "%#{value}"
           else
             value
+          end
+        end
+
+        def attribute_condition(quoted_column_name, argument)
+          case argument
+            when nil   then "#{quoted_column_name} IS ?"
+            when Array, ActiveRecord::Associations::AssociationCollection, ActiveRecord::Relation then "#{quoted_column_name} IN (?)"
+            when Range then if argument.exclude_end?
+                              "#{quoted_column_name} >= ? AND #{quoted_column_name} < ?"
+                            else
+                              "#{quoted_column_name} BETWEEN ? AND ?"
+                            end
+            else            "#{quoted_column_name} = ?"
           end
         end
 

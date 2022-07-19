@@ -39,8 +39,8 @@ module Searchlogic
         end
 
         def create_ordering_conditions(column)
-          named_scope("ascend_by_#{column}".to_sym, {:order => "#{table_name}.#{column} ASC"})
-          named_scope("descend_by_#{column}".to_sym, {:order => "#{table_name}.#{column} DESC"})
+          scope("ascend_by_#{column}".to_sym, {:order => "#{table_name}.#{column} ASC"})
+          scope("descend_by_#{column}".to_sym, {:order => "#{table_name}.#{column} DESC"})
         end
     end
   end

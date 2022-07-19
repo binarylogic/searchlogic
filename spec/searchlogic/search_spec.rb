@@ -69,7 +69,7 @@ describe Searchlogic::Search do
 
     it "should use custom scopes before normalizing" do
       User.create(:username => "bjohnson")
-      User.named_scope :username, lambda { |value| {:conditions => {:username => value.reverse}} }
+      User.scope :username, lambda { |value| {:conditions => {:username => value.reverse}} }
       search1 = User.search(:username => "bjohnson")
       search2 = User.search(:username => "nosnhojb")
       search1.count.should == 0
@@ -144,7 +144,7 @@ describe Searchlogic::Search do
     end
 
     it "should allow setting pre-existing association conditions" do
-      User.named_scope :uname, lambda { |value| {:conditions => ["users.username = ?", value]} }
+      User.scope :uname, lambda { |value| {:conditions => ["users.username = ?", value]} }
       search = Company.search
       search.users_uname = "bjohnson"
       search.users_uname.should == "bjohnson"
@@ -158,7 +158,7 @@ describe Searchlogic::Search do
     end
 
     it "should allow using custom conditions" do
-      User.named_scope(:four_year_olds, { :conditions => { :age => 4 } })
+      User.scope(:four_year_olds, { :conditions => { :age => 4 } })
       search = User.search
       search.four_year_olds = true
       search.four_year_olds.should == true
@@ -176,14 +176,14 @@ describe Searchlogic::Search do
     end
 
     it "should allow setting custom conditions individually with an arity of 0" do
-      User.named_scope(:four_year_olds, :conditions => {:age => 4})
+      User.scope(:four_year_olds, :conditions => {:age => 4})
       search = User.search
       search.four_year_olds = true
       search.four_year_olds.should == true
     end
 
     it "should allow setting custom conditions individually with an arity of 1" do
-      User.named_scope(:username_should_be, lambda { |u| {:conditions => {:username => u}} })
+      User.scope(:username_should_be, lambda { |u| {:conditions => {:username => u}} })
       search = User.search
       search.username_should_be = "bjohnson"
       search.username_should_be.should == "bjohnson"
@@ -422,7 +422,7 @@ describe Searchlogic::Search do
       end
 
       it "should pass array values as multiple arguments with arity -1" do
-        User.named_scope(:multiple_args, lambda { |*args|
+        User.scope(:multiple_args, lambda { |*args|
           raise "This should not be an array, it should be 1" if args.first.is_a?(Array)
           {:conditions => ["id IN (?)", args]}
         })
@@ -430,7 +430,7 @@ describe Searchlogic::Search do
       end
 
       it "should pass array as a single value with arity >= 0" do
-        User.named_scope(:multiple_args, lambda { |args|
+        User.scope(:multiple_args, lambda { |args|
           raise "This should be an array" if !args.is_a?(Array)
           {:conditions => ["id IN (?)", args]}
         })
@@ -482,7 +482,7 @@ describe Searchlogic::Search do
     end
 
     it "should implement the current scope based on a named scope" do
-      User.named_scope(:four_year_olds, :conditions => {:age => 4})
+      User.scope(:four_year_olds, :conditions => {:age => 4})
       (3..5).each { |age| User.create(:age => age) }
       User.four_year_olds.search.all.should == User.find_all_by_age(4)
     end
@@ -504,7 +504,7 @@ describe Searchlogic::Search do
     end
 
     it "should delegate to named scopes with arity > 1" do
-      User.named_scope :paged, lambda {|start, limit| { :limit => limit, :offset => start }}
+      User.scope :paged, lambda {|start, limit| { :limit => limit, :offset => start }}
       User.create(:username => "bjohnson")
       search = User.search(:username => "bjohnson")
       search.paged(0, 1).count.should == 1

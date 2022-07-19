@@ -18,7 +18,7 @@ describe Searchlogic::NamedScopes::Ordering do
   it "should have order by custom scope" do
     User.column_names.should_not include("custom")
     %w(bjohnson thunt fisons).each { |username| User.create(:username => username) }
-    User.named_scope(:ascend_by_custom, :order => "username ASC, name DESC")
+    User.scope(:ascend_by_custom, :order => "username ASC, name DESC")
     User.order("ascend_by_custom").proxy_options.should == User.ascend_by_custom.proxy_options
   end
 

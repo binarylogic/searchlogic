@@ -105,7 +105,7 @@ This is recursive, you can travel through your associations simply by typing it 
 
 Also, these conditions aren't limited to the scopes Searchlogic provides. You can use your own scopes. Like this:
 
-  LineItem.named_scope :expensive, :conditions => "line_items.price > 500"
+  LineItem.scope :expensive, :conditions => "line_items.price > 500"
   
   User.orders_line_items_expensive
 
@@ -255,7 +255,7 @@ The first one will create a link that alternates between calling "ascend_by_age"
 
 This is one of the big differences between Searchlogic v1 and v2. What about your existing named scopes? Let's say you have this:
 
-  User.named_scope :four_year_olds, :conditions => {:age => 4}
+  User.scope :four_year_olds, :conditions => {:age => 4}
 
 Again, these are all just named scopes, use it in the same way:
 
